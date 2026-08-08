@@ -253,7 +253,8 @@ nav {
   inset: 0;
   background: rgba(0, 0, 0, 0);
   backdrop-filter: blur(0px);
-  -webkit-backdrop-filter: blur(0px)
+  -webkit-backdrop-filter: blur(0px);
+  transition: background .32s ease, backdrop-filter .32s ease
 }
 
 .drawer-ov.open .drawer-backdrop {
@@ -274,9 +275,10 @@ nav {
   box-shadow: -8px 0 32px rgba(0, 0, 0, .14);
   display: flex;
   flex-direction: column;
-  padding: 80px 8px 24px;
+  padding: 56px 8px 24px;
   transform: translateX(100%);
-  overflow-y: auto
+  overflow-y: auto;
+  transition: transform .32s cubic-bezier(.32, .72, 0, 1)
 }
 
 .drawer-ov.open .drawer-panel {
@@ -2913,6 +2915,24 @@ nav {
 .branch-dropdown-backdrop.open {
   display: block
 }
+
+.drawer-close-x {
+  position: absolute;
+  top: 16px;
+  right: 14px;
+  background: none;
+  border: none;
+  padding: 6px;
+  color: #1d1d1f;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center
+}
+
+.drawer-close-x:active {
+  opacity: .4
+}
   </style>
  </head>
  <body>
@@ -3853,6 +3873,14 @@ nav {
     <div class="drawer-backdrop" onclick="closeDrawer()">
     </div>
     <div class="drawer-panel" id="drawerPanel">
+     <button aria-label="Закрыть" class="drawer-close-x" onclick="closeDrawer()">
+      <svg fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewBox="0 0 24 24" width="20">
+       <line x1="18" x2="6" y1="6" y2="18">
+       </line>
+       <line x1="6" x2="18" y1="6" y2="18">
+       </line>
+      </svg>
+     </button>
      <div class="drawer-cats" id="drawerCats">
      </div>
      <a class="drawer-admin" href="https://taplink.cc/seventimes/p/1165364/" rel="noopener noreferrer" style="color:#0071e3;font-size:0.72rem;font-weight:600;border-top:1px solid #eee;padding-top:14px;text-decoration:none;display:block" target="_blank">
@@ -6157,13 +6185,18 @@ function openDrawer() {
   buildDrawerCats();
   var ov = document.getElementById("navDrawerOv"),
     btn = document.getElementById("hamburgerBtn");
-  ov && (ov.style.display = "block", btn && btn.classList.add("open"), ov.classList.add("open"), document.body.style.overflow = "hidden")
+  if (!ov) return;
+  ov.style.display = "block", document.body.style.overflow = "hidden", void ov.offsetWidth, requestAnimationFrame(function() {
+    ov.classList.add("open"), btn && btn.classList.add("open")
+  })
 }
 
 function closeDrawer() {
   var ov = document.getElementById("navDrawerOv"),
     btn = document.getElementById("hamburgerBtn");
-  ov && (ov.classList.remove("open"), btn && btn.classList.remove("open"), document.body.style.overflow = "", ov.style.display = "none")
+  ov && (ov.classList.remove("open"), btn && btn.classList.remove("open"), document.body.style.overflow = "", setTimeout(function() {
+    ov.classList.contains("open") || (ov.style.display = "none")
+  }, 320))
 }
 
 function toggleDrawer() {
