@@ -39,14 +39,16 @@ html {
   scroll-behavior: smooth
 }
 
-html,
+html {
+  overflow-x: hidden
+}
+
 body {
   color: #1d1d1f;
   background: #f5f5f7;
   width: 100%;
   min-height: 100vh;
   font-family: Inter, sans-serif;
-  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility
@@ -78,13 +80,25 @@ nav {
   right: 0
 }
 
-.nav-menu-title {
+.nav-branch-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
   color: #1d1d1f;
-  letter-spacing: -.02em;
-  text-transform: uppercase;
+  letter-spacing: -.01em;
+  text-align: left;
   font-family: Inter, sans-serif;
-  font-size: 1.14rem;
-  font-weight: 800
+  font-size: 0.85rem;
+  font-weight: 600;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap
+}
+
+.nav-branch-btn:active {
+  opacity: .5
 }
 
 .cart-btn {
@@ -2819,8 +2833,7 @@ nav {
 #appShell {
   position: relative;
   background: #f5f5f7;
-  min-height: 100vh;
-  overflow-x: hidden
+  min-height: 100vh
 }
 
 @media (min-width:560px) {
@@ -2840,9 +2853,11 @@ nav {
  <body>
   <div id="appShell">
    <nav>
-    <div class="nav-menu-title" data-i18n="nav_title">
-     МЕНЮ
-    </div>
+    <button class="nav-branch-btn" id="navBranchBtn" onclick="showBranchModal()">
+     <span data-i18n="choose_restaurant_short" id="navBranchLabel">
+      Выбор филиала
+     </span>
+    </button>
     <div style="align-items:center;gap:2px;display:flex">
      <a href="https://taplink.cc/seventimes/p/1153949/" style="text-decoration:none;color:#fff;background:#1d1d1f;font-size:0.62rem;font-weight:700;white-space:nowrap;padding:7px 11px;border-radius:14px;display:flex;align-items:center;gap:4px;margin-right:2px" target="_blank">
       Бронь столика
@@ -3985,6 +4000,9 @@ const I18N = {
   nav_title: {
     ru: "МЕНЮ"
   },
+  choose_restaurant_short: {
+    ru: "Выбор филиала"
+  },
   choose_restaurant: {
     ru: "Выберите ресторан"
   },
@@ -4674,8 +4692,17 @@ function findCategoryIndexByName(catName) {
   return -1;
 }
 
+function updateNavBranchLabel() {
+  var lbl = document.getElementById("navBranchLabel");
+  if (!lbl) return;
+  var br = BRANCHES.find(function(x) {
+    return x.id === branch
+  });
+  lbl.textContent = br ? br.name : "Выбор филиала"
+}
+
 function switchBranch(b) {
-  branch = b, renderBranchCarousel(), tagNearestBranch();
+  branch = b, renderBranchCarousel(), tagNearestBranch(), updateNavBranchLabel();
   var bs = document.getElementById("branchSubtitle");
   bs && (bs.style.display = "none"), cart = [], updBadge(), loadMenu(), logStat("visit", "")
 }
