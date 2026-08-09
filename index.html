@@ -2907,9 +2907,9 @@ nav {
   position: relative;
   flex: 0 0 auto;
   scroll-snap-align: start;
-  width: 72vw;
-  max-width: 270px;
-  height: 92px;
+  width: 78vw;
+  max-width: 300px;
+  height: 120px;
   border-radius: 15px;
   padding: 2px;
   background: linear-gradient(90deg, #ff6a3d, #ff3d77, #a04dff, #3d7bff, #ff6a3d);
@@ -2984,9 +2984,9 @@ nav {
 }
 
 .promo-card-label-title {
-  font-size: 0.76rem;
+  font-size: 0.84rem;
   font-weight: 600;
-  line-height: 1.22;
+  line-height: 1.24;
   letter-spacing: -.005em
 }
 
@@ -2996,9 +2996,9 @@ nav {
   color: #1d1d1f;
   border: none;
   border-radius: 980px;
-  padding: 5px 10px;
+  padding: 6px 12px;
   font-family: Inter, sans-serif;
-  font-size: 0.58rem;
+  font-size: 0.62rem;
   font-weight: 700;
   pointer-events: none
 }
@@ -4420,8 +4420,8 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
  <button class="stories-close" onclick="closeDreamStories()" aria-label="Закрыть">
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
  </button>
- <div class="stories-tap-zone left" onclick="dreamStoriesPrev()"></div>
- <div class="stories-tap-zone right" onclick="dreamStoriesNext()"></div>
+ <div class="stories-tap-zone left" onclick="dreamStoriesPrev()" onpointerdown="dreamPauseStart()" onpointerup="dreamPauseEnd()" onpointerleave="dreamPauseEnd()" onpointercancel="dreamPauseEnd()"></div>
+ <div class="stories-tap-zone right" onclick="dreamStoriesNext()" onpointerdown="dreamPauseStart()" onpointerup="dreamPauseEnd()" onpointerleave="dreamPauseEnd()" onpointercancel="dreamPauseEnd()"></div>
  <div class="stories-slide active" data-slide="0">
   <div class="stories-slide-label">О проекте</div>
   <div class="stories-slide-title">АРМАНДАР ОРЫНДАЛАДЫ</div>
@@ -5797,7 +5797,38 @@ function dreamStoryAdvance() {
   _dreamStoryTimer = setTimeout(dreamStoryAdvance, DREAM_STORY_DURATION);
 }
 
+var _dreamHoldStart = 0, _dreamLongPress = false;
+
+function dreamPauseStart() {
+  _dreamHoldStart = Date.now();
+  _dreamLongPress = false;
+  clearTimeout(_dreamStoryTimer);
+  var fill = document.querySelector('.stories-progress-fill[data-i="' + _dreamStoryIdx + '"]');
+  if (fill) fill.style.animationPlayState = "paused";
+}
+
+function dreamPauseEnd() {
+  var fill = document.querySelector('.stories-progress-fill[data-i="' + _dreamStoryIdx + '"]');
+  var heldMs = Date.now() - _dreamHoldStart;
+  if (heldMs < 250) {
+    if (fill) fill.style.animationPlayState = "running";
+    return;
+  }
+  _dreamLongPress = true;
+  var remaining = DREAM_STORY_DURATION;
+  if (fill) {
+    var trackW = fill.parentElement.getBoundingClientRect().width;
+    var pct = trackW ? fill.getBoundingClientRect().width / trackW : 0;
+    remaining = Math.max(300, DREAM_STORY_DURATION * (1 - pct));
+    fill.style.animationDuration = remaining + "ms";
+    fill.style.animationPlayState = "running";
+  }
+  clearTimeout(_dreamStoryTimer);
+  _dreamStoryTimer = setTimeout(dreamStoryAdvance, remaining);
+}
+
 function dreamStoriesNext() {
+  if (_dreamLongPress) { _dreamLongPress = false; return; }
   clearTimeout(_dreamStoryTimer);
   if (_dreamStoryIdx >= _dreamStoryTotal - 1) { closeDreamStories(); return; }
   _dreamStoryIdx++;
@@ -5806,6 +5837,7 @@ function dreamStoriesNext() {
 }
 
 function dreamStoriesPrev() {
+  if (_dreamLongPress) { _dreamLongPress = false; return; }
   clearTimeout(_dreamStoryTimer);
   _dreamStoryIdx = Math.max(0, _dreamStoryIdx - 1);
   renderDreamStorySlide();
