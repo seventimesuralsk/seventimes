@@ -1212,63 +1212,6 @@ nav {
   color: #6e6e73
 }
 
-.item-fav-btn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  z-index: 4;
-  background: rgba(255, 255, 255, .88);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  border: none;
-  border-radius: 50%;
-  width: 26px;
-  height: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.88rem;
-  line-height: 1;
-  color: #1d1d1f;
-  cursor: pointer
-}
-
-.item-fav-btn:active {
-  transform: scale(.85)
-}
-
-.item-fav-btn.on {
-  color: #ff3b30
-}
-
-.item-fav-btn.shifted {
-  top: 38px
-}
-
-.profile-fav-row {
-  background: #f8f8f8;
-  border: 1px solid #ebebeb;
-  border-radius: 12px;
-  margin-bottom: 8px;
-  padding: 11px 12px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px
-}
-
-.profile-fav-name {
-  font-size: 0.74rem;
-  font-weight: 600;
-  color: #1d1d1f
-}
-
-.profile-fav-price {
-  font-size: 0.65rem;
-  color: #6e6e73;
-  margin-top: 2px
-}
-
 .item-hit-badge {
   position: absolute;
   top: 8px;
@@ -2489,14 +2432,18 @@ nav {
   background: #ccc
 }
 
-.banners-wrap {
+.sticky-header {
+  position: sticky;
+  top: 56px;
   z-index: 200;
+  background: #f5f5f7
+}
+
+.banners-wrap {
   -webkit-backdrop-filter: blur(20px)saturate(180%);
   background: #f5f5f7f5;
   border-bottom: none;
-  padding: 6px 0;
-  position: sticky;
-  top: 56px
+  padding: 6px 0
 }
 
 .banners-track {
@@ -3036,20 +2983,22 @@ nav {
     <div id="branchTrack">
     </div>
    </div>
-   <div class="branch-promo-banner">
-    <div class="branch-promo-clip">
-     <span class="branch-promo-text" id="branchPromoText">
-      Ресторан на Самал 70/3 теперь работает до 02:00 — ждём всех!
-     </span>
+   <div class="sticky-header" id="stickyHeader">
+    <div class="branch-promo-banner">
+     <div class="branch-promo-clip">
+      <span class="branch-promo-text" id="branchPromoText">
+       Ресторан на Самал 70/3 теперь работает до 02:00 — ждём всех!
+      </span>
+     </div>
     </div>
-   </div>
-   <div id="catSectionTitle" style="padding:10px var(--px)2px;display:none">
-    <div class="sec-title" data-i18n="choose_category" style="margin-bottom:2px">
-     Выберите категорию
+    <div id="catSectionTitle" style="padding:10px var(--px)2px;display:none">
+     <div class="sec-title" data-i18n="choose_category" style="margin-bottom:2px">
+      Выберите категорию
+     </div>
     </div>
-   </div>
-   <div class="banners-wrap" id="bannersWrap">
-    <div class="banners-track" id="bannersTrack">
+    <div class="banners-wrap" id="bannersWrap">
+     <div class="banners-track" id="bannersTrack">
+     </div>
     </div>
    </div>
    <div class="menu-content" id="menuContent">
@@ -4110,7 +4059,7 @@ let _synonyms = [];
 
 function updateSearchTop() {
   var nav = document.querySelector("nav"),
-    bw = document.querySelector(".banners-wrap"),
+    bw = document.getElementById("stickyHeader"),
     top = (nav ? nav.offsetHeight : 56) + (bw && "none" !== bw.style.display ? bw.offsetHeight : 0);
   document.documentElement.style.setProperty("--search-top", top + "px")
 }
@@ -4403,9 +4352,6 @@ const I18N = {
   },
   time_window_from_to: {
     ru: "с {0} до {1}"
-  },
-  favorites_title: {
-    ru: "Избранное"
   },
   wa_fallback_link: {
     ru: "Не открылся чат? Написать вручную"
@@ -4787,12 +4733,7 @@ function renderProfile() {
   }
   let html = "";
   profile && profile.name && (html += '<div style="margin-bottom:16px"><div style="font-size:0.88rem;font-weight:700;color:#1d1d1f">' + profile.name + "</div>" + (profile.phone ? '<div style="font-size:0.69rem;color:#6e6e73;margin-top:2px">' + profile.phone + "</div>" : "") + "</div>");
-  let favItems = getFavorites().map(findItem).filter(function(it) {
-    return it && !it.stopped
-  });
-  favItems.length && (html += '<div style="font-size:0.62rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#6e6e73;margin-bottom:8px">' + t("favorites_title") + "</div>", favItems.forEach(function(it) {
-    html += '<div class="profile-fav-row"><div><div class="profile-fav-name">' + it.name + '</div><div class="profile-fav-price">' + it.price.toLocaleString("ru") + ' ₸</div></div><button class="adm-mini-btn" onclick="profileFavAdd(\'' + it.id + "')\">В корзину</button></div>"
-  }), html += '<div style="height:6px"></div>'), arr.length ? arr.forEach((o, idx) => {
+  arr.length ? arr.forEach((o, idx) => {
     let bn = "samal" === o.branch ? "Самал 70/3" : "Скоробогатова 65/1";
     html += '<div class="profile-order"><div class="profile-order-top"><span>' + bn + (o.orderNum ? " · " + o.orderNum : "") + "</span><span>" + o.total.toLocaleString("ru") + ' ₸</span></div><div class="profile-order-meta">' + o.dateStr + " · " + ("delivery" === o.type ? t("delivery") : t("pickup")) + " · " + o.itemCount + " " + t("positions_word") + "</div>" + (o.items ? '<div style="font-size:0.67rem;color:#555;margin-top:6px;line-height:1.4">' + o.items + "</div>" : "") + (o.itemsList && o.itemsList.length ? '<button class="profile-repeat-btn" onclick="repeatOrder(' + idx + ')">' + t("repeat_order_btn") + "</button>" : "") + "</div>"
   }) : html += '<div class="profile-empty"><div style="font-size:1.94rem;margin-bottom:8px"></div><div style="font-weight:600;color:#1d1d1f;margin-bottom:4px">' + t("no_orders_yet") + '</div><div style="font-size:0.69rem;color:#6e6e73">' + t("order_history_appears") + "</div></div>", body.innerHTML = html
@@ -5083,7 +5024,7 @@ function scrollToSec(i) {
   let sec = document.getElementById("sec-" + i);
   if (sec) {
     var offset = 0;
-    document.querySelectorAll("nav,.banners-wrap,.search-wrap").forEach(function(el) {
+    document.querySelectorAll("nav,#stickyHeader,.search-wrap").forEach(function(el) {
       var st = window.getComputedStyle(el).position;
       "sticky" !== st && "-webkit-sticky" !== st || (offset += el.offsetHeight)
     }), offset += 54, sec.style.scrollMarginTop = offset + "px", sec.scrollIntoView({
@@ -5142,7 +5083,7 @@ function initCardObserver() {
     threshold: .05
   }), window._secObserver && window._secObserver.disconnect(), window._scrollHandler && window.removeEventListener("scroll", window._scrollHandler), window._scrollHandler = function() {
     var offset = 0;
-    document.querySelectorAll("nav,.banners-wrap,.search-wrap").forEach(function(el) {
+    document.querySelectorAll("nav,#stickyHeader,.search-wrap").forEach(function(el) {
       var st = window.getComputedStyle(el).position;
       "sticky" !== st && "-webkit-sticky" !== st || (offset += el.offsetHeight)
     }), offset += 10;
@@ -5225,10 +5166,8 @@ function buildCard(item) {
     photoUrl = rawPhoto ? convertPhotoUrl(rawPhoto) : "",
     img = photoUrl ? `<img src="${photoUrl}" alt="" onerror="imgErrorRetry(this,'Фото добавляется')">` : '<span class="item-photo-placeholder">' + t("photo_coming") + "</span>",
     qty = getQty(item.id),
-    btype = getBadgeType(item.badge),
-    favOn = isFavorite(item.id),
-    isHitInit = -1 !== _hitTodayNames.indexOf(item.name.toLowerCase());
-  return div.innerHTML = `\n <div class="item-img-wrap">\n <div class="item-img">${img}</div>\n ${item.teaser?"":'<button class="item-fav-btn'+(favOn?" on":"")+(isHitInit?" shifted":"")+'" onclick="event.stopPropagation();toggleFavorite(\''+item.id+'\')" data-fav-id="'+item.id+'" aria-label="В избранное">'+(favOn?"●":"○")+"</button>"}\n ${item.teaser?'<div class="teaser-lbl">'+t("teaser_soon")+"</div>":isPopular?`<div class="item-badge" data-type="${btype}">${item.badge}</div>`:""}${item.teaser||-1===_hitTodayNames.indexOf(item.name.toLowerCase())?"":'<div class="item-hit-badge">Топ недели</div>'}\n </div>\n <div class="item-body">\n <div class="item-name">${item.name}</div>\n ${item.desc?`<div class="item-desc-short">${item.desc}</div>`:""}\n ${item.mods?'<div class="item-mods-hint">'+t("choose_variant_hint")+"</div>":""}${item.lunchLocked?'<div class="item-mods-hint" style="color:#e53e3e;font-weight:600">⏰ '+item.lunchScheduleText+"</div>":""}\n ${item.stopped?'<div class="stopped-lbl">'+t("sold_out")+"</div>"+(item.until&&item.until>Date.now()?'<div class="item-timer"><span class="item-timer-dot"></span><span id="timer-'+item.id+'">'+fmtTimer(item.until)+"</span></div>":""):`<div class="item-price-row">\n <div class="item-price">${item.price.toLocaleString("ru")} ₸</div>\n <div class="item-add-wrap" id="cc-${item.id}">${ctrlHtml(item.id,item.price,qty)}</div>\n </div>\n ${item.allowDelivery?item.allowSelf?"":`<div class="item-selfonly">${t("delivery_only")}</div>`:`<div class="item-selfonly">${t("pickup_only")}</div>`}`}\n </div>`, div.addEventListener("pointerdown", () => {
+    btype = getBadgeType(item.badge);
+  return div.innerHTML = `\n <div class="item-img-wrap">\n <div class="item-img">${img}</div>\n ${item.teaser?'<div class="teaser-lbl">'+t("teaser_soon")+"</div>":isPopular?`<div class="item-badge" data-type="${btype}">${item.badge}</div>`:""}${item.teaser||-1===_hitTodayNames.indexOf(item.name.toLowerCase())?"":'<div class="item-hit-badge">Топ недели</div>'}\n </div>\n <div class="item-body">\n <div class="item-name">${item.name}</div>\n ${item.desc?`<div class="item-desc-short">${item.desc}</div>`:""}\n ${item.mods?'<div class="item-mods-hint">'+t("choose_variant_hint")+"</div>":""}${item.lunchLocked?'<div class="item-mods-hint" style="color:#e53e3e;font-weight:600">⏰ '+item.lunchScheduleText+"</div>":""}\n ${item.stopped?'<div class="stopped-lbl">'+t("sold_out")+"</div>"+(item.until&&item.until>Date.now()?'<div class="item-timer"><span class="item-timer-dot"></span><span id="timer-'+item.id+'">'+fmtTimer(item.until)+"</span></div>":""):`<div class="item-price-row">\n <div class="item-price">${item.price.toLocaleString("ru")} ₸</div>\n <div class="item-add-wrap" id="cc-${item.id}">${ctrlHtml(item.id,item.price,qty)}</div>\n </div>\n ${item.allowDelivery?item.allowSelf?"":`<div class="item-selfonly">${t("delivery_only")}</div>`:`<div class="item-selfonly">${t("pickup_only")}</div>`}`}\n </div>`, div.addEventListener("pointerdown", () => {
     if (photoUrl) {
       var pre = new Image;
       pre.src = photoUrl
@@ -5408,35 +5347,6 @@ function clearCartStorage() {
   if (branch) try {
     localStorage.removeItem("st_cart_" + branch)
   } catch {}
-}
-
-function getFavorites() {
-  try {
-    return JSON.parse(localStorage.getItem("st_favorites") || "[]")
-  } catch {
-    return []
-  }
-}
-
-function isFavorite(id) {
-  return -1 !== getFavorites().indexOf(id)
-}
-
-function profileFavAdd(id) {
-  let it = findItem(id);
-  it ? (navigator.vibrate && navigator.vibrate(8), addCart(it, 1), updBadge(), showToast(it.name + " " + t("added_to_cart"))) : showToast(t("item_unavailable"))
-}
-
-function toggleFavorite(id) {
-  let nowFav, favs = getFavorites(),
-    idx = favs.indexOf(id);
-  idx >= 0 ? (favs.splice(idx, 1), nowFav = !1) : (favs.push(id), nowFav = !0);
-  try {
-    localStorage.setItem("st_favorites", JSON.stringify(favs))
-  } catch {}
-  document.querySelectorAll('[data-fav-id="' + id + '"]').forEach(function(btn) {
-    btn.classList.toggle("on", nowFav), btn.textContent = nowFav ? "●" : "○"
-  }), navigator.vibrate && navigator.vibrate(8)
 }
 
 function findItem(id) {
@@ -6031,9 +5941,7 @@ function refreshHitBadges() {
     if (nameEl) {
       var isHit = -1 !== _hitTodayNames.indexOf(nameEl.textContent.toLowerCase()),
         existing = card.querySelector(".item-hit-badge"),
-        wrap = card.querySelector(".item-img-wrap"),
-        favBtn = card.querySelector(".item-fav-btn");
-      favBtn && favBtn.classList.toggle("shifted", isHit);
+        wrap = card.querySelector(".item-img-wrap");
       isHit && !existing && wrap ? wrap.insertAdjacentHTML("beforeend", '<div class="item-hit-badge">Топ недели</div>') : !isHit && existing && existing.remove()
     }
   })
