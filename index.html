@@ -14,46 +14,7 @@
   <meta content="yes" name="mobile-web-app-capable"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
   <style>
-   :root {
-  --t-ink: #1d1d1f;
-  --t-sub: #6e6e73;
-  --t-mute: #999;
-  --t-onfill: #fff;
-  --f-page: #f5f5f7;
-  --f-surface: #fff;
-  --f-subtle: #f5f5f5;
-  --f-strong: #1d1d1f;
-  --b-subtle: #e5e5e5;
-  --b-strong: #1d1d1f;
-  --glass86: rgba(255, 255, 255, .86);
-  --glass85: rgba(255, 255, 255, .85);
-  --glass88: rgba(255, 255, 255, .88);
-}
-
-@media (prefers-color-scheme:dark) {
-  :root {
-    --t-ink: #f2f2f5;
-    --t-sub: #9a9aa0;
-    --t-mute: #7a7a80;
-    --t-onfill: #f2f2f5;
-    --f-page: #000;
-    --f-surface: #1c1c1e;
-    --f-subtle: #2c2c2e;
-    --f-strong: #2c2c2e;
-    --b-subtle: #38383a;
-    --b-strong: #f2f2f5;
-    --glass86: rgba(44, 44, 46, .86);
-    --glass85: rgba(44, 44, 46, .85);
-    --glass88: rgba(44, 44, 46, .88);
-  }
-
-  html,
-  body {
-    background: #000
-  }
-}
-
-*,
+   *,
 :before,
 :after {
   box-sizing: border-box;
@@ -67,7 +28,7 @@
   --surface: #fff;
   --text: #1d1d1f;
   --sub: #6e6e73;
-  --border: var(--b-subtle);
+  --border: #f0f0f0;
   --border2: #e5e5e5;
   --red: #e53e3e;
   --nav-h: 56px;
@@ -83,8 +44,8 @@ html {
 }
 
 body {
-  color: var(--t-ink);
-  background: var(--f-page);
+  color: #1d1d1f;
+  background: #f5f5f7;
   width: 100%;
   min-height: 100vh;
   font-family: Inter, sans-serif;
@@ -120,12 +81,12 @@ nav {
 }
 
 .nav-branch-btn {
-  background: var(--f-page);
-  border: 1.5px solid var(--b-subtle);
+  background: #f5f5f7;
+  border: 1.5px solid #e5e5e5;
   border-radius: 20px;
   padding: 7px 10px 7px 12px;
   cursor: pointer;
-  color: var(--t-ink);
+  color: #1d1d1f;
   letter-spacing: -.01em;
   text-align: left;
   font-family: Inter, sans-serif;
@@ -145,19 +106,19 @@ nav {
 
 .nav-branch-btn svg {
   flex-shrink: 0;
-  color: var(--t-sub)
+  color: #6e6e73
 }
 
 .nav-branch-btn:active {
-  background: var(--f-subtle);
+  background: #ebebeb;
   transform: scale(.96)
 }
 
 .cart-btn {
-  color: var(--t-onfill);
+  color: #fff;
   padding: 9px var(--px);
   cursor: pointer;
-  background: var(--f-strong);
+  background: #1d1d1f;
   border: none;
   border-radius: 22px;
   align-items: center;
@@ -169,10 +130,10 @@ nav {
 }
 
 .adm-nav-fab {
-  color: var(--t-ink);
+  color: #1d1d1f;
   cursor: pointer;
-  background: var(--f-subtle);
-  border: 1.5px solid var(--b-subtle);
+  background: #f5f5f5;
+  border: 1.5px solid #e5e5e5;
   border-radius: 50%;
   flex-shrink: 0;
   justify-content: center;
@@ -184,7 +145,7 @@ nav {
 }
 
 .adm-nav-fab:active {
-  background: var(--f-subtle);
+  background: #ebebeb;
   transform: scale(.9)
 }
 
@@ -197,7 +158,7 @@ nav {
   border: none;
   padding: 6px;
   cursor: pointer;
-  color: var(--t-ink);
+  color: #1d1d1f;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -253,7 +214,7 @@ nav {
   top: 56px;
   left: 0;
   right: 0;
-  background: var(--f-surface);
+  background: #fff;
   padding: 10px var(--px);
   display: flex;
   align-items: center;
@@ -308,7 +269,7 @@ nav {
   right: 0;
   bottom: 0;
   width: min(320px, 82vw);
-  background: var(--glass86);
+  background: rgba(255, 255, 255, .86);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   box-shadow: -8px 0 32px rgba(0, 0, 0, .14);
@@ -338,7 +299,7 @@ nav {
   font-family: Inter, sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--t-ink);
+  color: #1d1d1f;
   cursor: pointer
 }
 
@@ -350,7 +311,7 @@ nav {
   font-family: Inter, sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--t-ink);
+  color: #1d1d1f;
   cursor: pointer;
   display: flex;
   justify-content: space-between;
@@ -364,7 +325,7 @@ nav {
 
 .drawer-group-arrow {
   font-size: 0.97rem;
-  color: var(--t-mute)
+  color: #999
 }
 
 .drawer-group-header.open .drawer-group-arrow {
@@ -400,13 +361,13 @@ nav {
   font-family: Inter, sans-serif;
   font-size: 0.67rem;
   font-weight: 500;
-  color: var(--t-sub);
+  color: #6e6e73;
   cursor: pointer;
   flex-shrink: 0
 }
 
 .cart-n {
-  color: var(--t-onfill);
+  color: #fff;
   background: #e53e3e;
   border-radius: 50%;
   justify-content: center;
@@ -446,10 +407,10 @@ nav {
 
 .branch-btn {
   cursor: pointer;
-  color: var(--t-sub);
+  color: #6e6e73;
   text-align: center;
-  background: var(--f-page);
-  border: 1.5px solid var(--b-subtle);
+  background: #f5f5f7;
+  border: 1.5px solid #e5e5e5;
   border-radius: 11px;
   flex: 1;
   padding: 8px;
@@ -459,9 +420,9 @@ nav {
 }
 
 .branch-btn.on {
-  color: var(--t-onfill);
-  background: var(--f-strong);
-  border-color: var(--b-strong)
+  color: #fff;
+  background: #1d1d1f;
+  border-color: #1d1d1f
 }
 
 .search-wrap {
@@ -478,8 +439,8 @@ nav {
 .search-input {
   width: 100%;
   padding: 11px var(--px) 11px 38px;
-  color: var(--t-ink);
-  background: var(--f-subtle);
+  color: #1d1d1f;
+  background: #e8e8e8;
   border: none;
   border-radius: 12px;
   outline: none;
@@ -492,13 +453,13 @@ nav {
   top: 50%;
   left: 20px;
   transform: translateY(-50%);
-  color: var(--t-sub);
+  color: #6e6e73;
   pointer-events: none;
   display: flex
 }
 
 .search-input::placeholder {
-  color: var(--t-mute)
+  color: #bbb
 }
 
 .cat-pills {
@@ -519,8 +480,8 @@ nav {
   padding: 8px var(--px);
   cursor: pointer;
   white-space: nowrap;
-  background: var(--f-surface);
-  border: 1.5px solid var(--b-subtle);
+  background: #fff;
+  border: 1.5px solid #e5e5e5;
   border-radius: 22px;
   flex-shrink: 0;
   align-items: center;
@@ -538,19 +499,19 @@ nav {
 }
 
 .cat-pill-name {
-  color: var(--t-sub);
+  color: #6e6e73;
   font-size: 0.69rem;
   font-weight: 500
 }
 
 .cat-pill.on .cat-pill-name {
-  color: var(--t-onfill)
+  color: #fff
 }
 
 .cat-pill-all {
   padding: 8px var(--px);
   cursor: pointer;
-  color: var(--t-onfill);
+  color: #fff;
   white-space: nowrap;
   background: #0071e3;
   border: 1.5px solid #0071e3;
@@ -582,7 +543,7 @@ nav {
 }
 
 .sbox {
-  background: var(--f-surface);
+  background: #fff;
   border-radius: 22px 22px 0 0;
   flex-direction: column;
   width: 100%;
@@ -597,7 +558,7 @@ nav {
 }
 
 .shandle {
-  background: var(--f-subtle);
+  background: #e5e5e5;
   border-radius: 2px;
   flex-shrink: 0;
   width: 32px;
@@ -607,8 +568,8 @@ nav {
 
 .shead {
   padding: 12px var(--px)10px;
-  background: var(--f-page);
-  border-bottom: 1px solid var(--b-subtle);
+  background: #f5f5f7;
+  border-bottom: 1px solid #f0f0f0;
   flex-shrink: 0;
   justify-content: space-between;
   align-items: center;
@@ -616,16 +577,16 @@ nav {
 }
 
 .stitle2 {
-  color: var(--t-ink);
+  color: #1d1d1f;
   letter-spacing: -.01em;
   font-size: 0.79rem;
   font-weight: 700
 }
 
 .sx {
-  color: var(--t-sub);
+  color: #6e6e73;
   cursor: pointer;
-  background: var(--f-subtle);
+  background: #f5f5f5;
   border: none;
   border-radius: 50%;
   justify-content: center;
@@ -637,7 +598,7 @@ nav {
 }
 
 .sbody {
-  background: var(--f-page);
+  background: #f5f5f7;
   padding: 6px 0 32px;
   overflow-y: auto
 }
@@ -645,8 +606,8 @@ nav {
 .sitem {
   padding: 10px var(--px);
   cursor: pointer;
-  background: var(--f-surface);
-  border: 1px solid var(--b-subtle);
+  background: #fff;
+  border: 1px solid #f0f0f0;
   border-radius: 14px;
   align-items: center;
   gap: 12px;
@@ -660,7 +621,7 @@ nav {
 }
 
 .sitem:active {
-  background: var(--f-subtle);
+  background: #f8f8f8;
   transform: scale(.97)
 }
 
@@ -683,7 +644,7 @@ nav {
 .sicon-text {
   font-size: 0.62rem;
   font-weight: 800;
-  color: var(--t-onfill);
+  color: #fff;
   letter-spacing: .04em
 }
 
@@ -692,13 +653,13 @@ nav {
 }
 
 .sname {
-  color: var(--t-ink);
+  color: #1d1d1f;
   font-size: 0.77rem;
   font-weight: 600
 }
 
 .scount {
-  color: var(--t-sub);
+  color: #6e6e73;
   margin-top: 1px;
   font-size: 0.62rem;
   font-weight: 500
@@ -712,19 +673,19 @@ nav {
 
 .menu-content {
   z-index: 0;
-  background: var(--f-page);
+  background: #f5f5f7;
   padding: 0 0 150px;
   position: relative
 }
 
 .cat-section {
   padding: 10px var(--px)6px;
-  background: var(--f-page);
+  background: #f5f5f7;
   margin-bottom: 0
 }
 
 .sec-title {
-  color: var(--t-sub);
+  color: #6e6e73;
   letter-spacing: .08em;
   text-transform: uppercase;
   margin-bottom: 8px;
@@ -743,7 +704,7 @@ nav {
 .item-card {
   cursor: pointer;
   opacity: 0;
-  background: var(--f-surface);
+  background: #fff;
   border: none;
   border-radius: 14px;
   flex-direction: column;
@@ -785,7 +746,7 @@ nav {
 
 .teaser-lbl {
   z-index: 4;
-  color: var(--t-onfill);
+  color: #fff;
   white-space: nowrap;
   letter-spacing: .02em;
   backdrop-filter: blur(4px);
@@ -813,7 +774,7 @@ nav {
   z-index: 3;
   letter-spacing: .02em;
   white-space: nowrap;
-  color: var(--t-onfill);
+  color: #fff;
   border: 1px solid #00000026;
   border-radius: 20px;
   padding: 3px 9px;
@@ -868,7 +829,7 @@ nav {
 }
 
 .item-img {
-  background: var(--f-subtle);
+  background: #e8e8e8;
   justify-content: center;
   align-items: center;
   width: 100%;
@@ -889,7 +850,7 @@ nav {
 }
 
 .item-photo-placeholder {
-  color: var(--t-mute);
+  color: #aaa;
   text-align: center;
   padding: 0 12px;
   font-size: 0.63rem;
@@ -903,9 +864,9 @@ nav {
 }
 
 .add-btn {
-  color: var(--t-onfill);
+  color: #fff;
   cursor: pointer;
-  background: var(--f-strong);
+  background: #1d1d1f;
   border: none;
   border-radius: 50%;
   flex-shrink: 0;
@@ -928,10 +889,10 @@ nav {
 }
 
 .qty-btn {
-  color: var(--t-ink);
+  color: #1d1d1f;
   cursor: pointer;
-  background: var(--f-surface);
-  border: 1.5px solid var(--b-subtle);
+  background: #fff;
+  border: 1.5px solid #e5e5e5;
   border-radius: 50%;
   flex-shrink: 0;
   justify-content: center;
@@ -943,12 +904,12 @@ nav {
 }
 
 .qty-btn:active {
-  background: var(--f-subtle)
+  background: #f0f0f0
 }
 
 .qty-n {
   text-align: center;
-  color: var(--t-ink);
+  color: #1d1d1f;
   min-width: 16px;
   font-size: 0.7rem;
   font-weight: 700
@@ -964,14 +925,14 @@ nav {
 }
 
 .item-name {
-  color: var(--t-ink);
+  color: #1d1d1f;
   font-size: 0.72rem;
   font-weight: 600;
   line-height: 1.3
 }
 
 .item-desc-short {
-  color: var(--t-sub);
+  color: #6e6e73;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   margin-top: 1px;
@@ -989,7 +950,7 @@ nav {
 }
 
 .item-price {
-  color: var(--t-ink);
+  color: #1d1d1f;
   font-size: 0.79rem;
   font-weight: 700
 }
@@ -1006,7 +967,7 @@ nav {
 }
 
 .sk {
-  background: linear-gradient(90deg, var(--f-subtle) 25%, var(--f-subtle) 50%, #f0f0f0 75%) 0 0/200% 100%;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%) 0 0/200% 100%;
   border-radius: 8px
 }
 
@@ -1027,7 +988,7 @@ nav {
 }
 
 .sk-card {
-  border: 1px solid var(--b-subtle);
+  border: 1px solid #f0f0f0;
   border-radius: 14px;
   overflow: hidden
 }
@@ -1064,7 +1025,7 @@ nav {
 }
 
 .loader-t {
-  color: var(--t-sub);
+  color: #6e6e73;
   font-size: 0.69rem
 }
 
@@ -1088,7 +1049,7 @@ nav {
 }
 
 .mbox {
-  background: var(--f-surface);
+  background: #fff;
   border-radius: 22px 22px 0 0;
   flex-direction: column;
   width: 100%;
@@ -1103,7 +1064,7 @@ nav {
 }
 
 .mhandle {
-  background: var(--f-subtle);
+  background: #e5e5e5;
   border-radius: 2px;
   flex-shrink: 0;
   width: 32px;
@@ -1113,7 +1074,7 @@ nav {
 
 .mhead {
   padding: 12px var(--px)10px;
-  border-bottom: 1px solid var(--b-subtle);
+  border-bottom: 1px solid #f0f0f0;
   flex-shrink: 0;
   justify-content: space-between;
   align-items: center;
@@ -1121,15 +1082,15 @@ nav {
 }
 
 .mtitle {
-  color: var(--t-ink);
+  color: #1d1d1f;
   font-size: 0.84rem;
   font-weight: 700
 }
 
 .mx {
-  color: var(--t-sub);
+  color: #6e6e73;
   cursor: pointer;
-  background: var(--f-subtle);
+  background: #f5f5f5;
   border: none;
   border-radius: 50%;
   justify-content: center;
@@ -1148,13 +1109,13 @@ nav {
 
 .mfoot {
   padding: 12px var(--px)36px;
-  border-top: 1px solid var(--b-subtle);
+  border-top: 1px solid #f0f0f0;
   flex-shrink: 0
 }
 
 .dimg {
   aspect-ratio: 4/3;
-  background: var(--f-subtle);
+  background: #f5f5f5;
   border-radius: 22px 22px 0 0;
   flex-shrink: 0;
   justify-content: center;
@@ -1173,14 +1134,14 @@ nav {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: var(--glass85);
+  background: rgba(255, 255, 255, .85);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--t-ink);
+  color: #1d1d1f;
   cursor: pointer;
   z-index: 2
 }
@@ -1207,7 +1168,7 @@ nav {
 }
 
 .peek-card {
-  background: var(--f-surface);
+  background: #fff;
   border-radius: 20px;
   overflow: hidden;
   width: min(280px, 100%);
@@ -1221,7 +1182,7 @@ nav {
 
 .peek-img {
   aspect-ratio: 1;
-  background: var(--f-subtle);
+  background: #f5f5f5;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1241,14 +1202,14 @@ nav {
 .peek-name {
   font-size: 0.84rem;
   font-weight: 700;
-  color: var(--t-ink);
+  color: #1d1d1f;
   margin-bottom: 4px
 }
 
 .peek-price {
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--t-sub)
+  color: #6e6e73
 }
 
 .item-fav-btn {
@@ -1256,7 +1217,7 @@ nav {
   top: 8px;
   right: 8px;
   z-index: 4;
-  background: var(--glass88);
+  background: rgba(255, 255, 255, .88);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   border: none;
@@ -1268,7 +1229,7 @@ nav {
   justify-content: center;
   font-size: 0.88rem;
   line-height: 1;
-  color: var(--t-ink);
+  color: #1d1d1f;
   cursor: pointer
 }
 
@@ -1285,8 +1246,8 @@ nav {
 }
 
 .profile-fav-row {
-  background: var(--f-subtle);
-  border: 1px solid var(--b-subtle);
+  background: #f8f8f8;
+  border: 1px solid #ebebeb;
   border-radius: 12px;
   margin-bottom: 8px;
   padding: 11px 12px;
@@ -1299,12 +1260,12 @@ nav {
 .profile-fav-name {
   font-size: 0.74rem;
   font-weight: 600;
-  color: var(--t-ink)
+  color: #1d1d1f
 }
 
 .profile-fav-price {
   font-size: 0.65rem;
-  color: var(--t-sub);
+  color: #6e6e73;
   margin-top: 2px
 }
 
@@ -1314,7 +1275,7 @@ nav {
   right: 8px;
   z-index: 3;
   background: linear-gradient(135deg, #ff6b00, #ff3d00);
-  color: var(--t-onfill);
+  color: #fff;
   font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: .02em;
@@ -1328,8 +1289,8 @@ nav {
   width: 100%;
   margin-top: 9px;
   padding: 9px;
-  background: var(--f-strong);
-  color: var(--t-onfill);
+  background: #1d1d1f;
+  color: #fff;
   border: none;
   border-radius: 9px;
   font-family: Inter, sans-serif;
@@ -1351,7 +1312,7 @@ nav {
 }
 
 .dhandle {
-  background: var(--f-subtle);
+  background: #e5e5e5;
   border-radius: 2px;
   width: 32px;
   height: 3px;
@@ -1359,7 +1320,7 @@ nav {
 }
 
 .dname {
-  color: var(--t-ink);
+  color: #1d1d1f;
   letter-spacing: -.02em;
   margin-bottom: 5px;
   font-family: Inter, sans-serif;
@@ -1369,7 +1330,7 @@ nav {
 }
 
 .ddesc {
-  color: var(--t-sub);
+  color: #6e6e73;
   margin-bottom: 18px;
   font-size: 0.7rem;
   line-height: 1.7
@@ -1393,7 +1354,7 @@ nav {
 }
 
 .dprice {
-  color: var(--t-ink);
+  color: #1d1d1f;
   flex-shrink: 0;
   font-size: 1.28rem;
   font-weight: 800
@@ -1407,10 +1368,10 @@ nav {
 }
 
 .dqbtn {
-  color: var(--t-ink);
+  color: #1d1d1f;
   cursor: pointer;
-  background: var(--f-subtle);
-  border: 1.5px solid var(--b-subtle);
+  background: #f6f6f6;
+  border: 1.5px solid #e5e5e5;
   border-radius: 50%;
   justify-content: center;
   align-items: center;
@@ -1421,7 +1382,7 @@ nav {
 }
 
 .dqbtn:active {
-  background: var(--f-subtle)
+  background: #e8e8e8
 }
 
 .dqn {
@@ -1432,9 +1393,9 @@ nav {
 }
 
 .dadd {
-  color: var(--t-onfill);
+  color: #fff;
   cursor: pointer;
-  background: var(--f-strong);
+  background: #1d1d1f;
   border: none;
   border-radius: 13px;
   flex: 1;
@@ -1449,7 +1410,7 @@ nav {
 }
 
 .crow {
-  border-bottom: 1px solid var(--b-subtle);
+  border-bottom: 1px solid #f0f0f0;
   align-items: center;
   gap: 10px;
   padding: 11px 0;
@@ -1466,20 +1427,20 @@ nav {
 }
 
 .cname {
-  color: var(--t-ink);
+  color: #1d1d1f;
   margin-bottom: 2px;
   font-size: 0.75rem;
   font-weight: 500
 }
 
 .cprice {
-  color: var(--t-sub);
+  color: #6e6e73;
   font-size: 0.65rem
 }
 
 .cempty {
   text-align: center;
-  color: var(--t-sub);
+  color: #6e6e73;
   padding: 44px 0
 }
 
@@ -1491,20 +1452,20 @@ nav {
 }
 
 .tlabel {
-  color: var(--t-sub);
+  color: #6e6e73;
   font-size: 0.72rem
 }
 
 .tsum {
-  color: var(--t-ink);
+  color: #1d1d1f;
   font-size: 1.14rem;
   font-weight: 800
 }
 
 .cnote {
-  color: var(--t-sub);
+  color: #6e6e73;
   padding: 8px var(--px);
-  background: var(--f-subtle);
+  background: #f8f8f8;
   border-radius: 9px;
   margin-bottom: 12px;
   font-size: 0.62rem;
@@ -1512,14 +1473,14 @@ nav {
 }
 
 .cprog-label {
-  color: var(--t-ink);
+  color: #1d1d1f;
   margin-bottom: 7px;
   font-size: 0.65rem;
   font-weight: 600
 }
 
 .cprog-track {
-  background: var(--f-subtle);
+  background: #e8e8e8;
   border-radius: 8px;
   width: 100%;
   height: 8px;
@@ -1559,8 +1520,8 @@ nav {
 
 .cprog-bridge-btn {
   flex-shrink: 0;
-  background: var(--f-strong);
-  color: var(--t-onfill);
+  background: #1d1d1f;
+  color: #fff;
   border: none;
   border-radius: 8px;
   padding: 7px 10px;
@@ -1575,7 +1536,7 @@ nav {
   padding: 10px 8px 6px;
   font-size: 0.62rem;
   font-weight: 600;
-  color: var(--t-sub);
+  color: #6e6e73;
   text-transform: uppercase;
   letter-spacing: .04em
 }
@@ -1589,8 +1550,8 @@ nav {
 
 .cross-sell-item {
   flex-shrink: 0;
-  background: var(--f-subtle);
-  border: 1.5px solid var(--b-subtle);
+  background: #f6f6f6;
+  border: 1.5px solid #e5e5e5;
   border-radius: 11px;
   padding: 9px 12px;
   display: flex;
@@ -1605,7 +1566,7 @@ nav {
 .cross-sell-name {
   font-size: 0.67rem;
   font-weight: 600;
-  color: var(--t-ink)
+  color: #1d1d1f
 }
 
 .cross-sell-price {
@@ -1616,20 +1577,20 @@ nav {
 
 .profile-empty {
   text-align: center;
-  color: var(--t-sub);
+  color: #6e6e73;
   padding: 44px 0
 }
 
 .profile-order {
-  background: var(--f-subtle);
-  border: 1px solid var(--b-subtle);
+  background: #f8f8f8;
+  border: 1px solid #ebebeb;
   border-radius: 12px;
   margin-bottom: 8px;
   padding: 12px
 }
 
 .profile-order-top {
-  color: var(--t-ink);
+  color: #1d1d1f;
   justify-content: space-between;
   margin-bottom: 4px;
   font-size: 0.72rem;
@@ -1638,14 +1599,14 @@ nav {
 }
 
 .profile-order-meta {
-  color: var(--t-sub);
+  color: #6e6e73;
   font-size: 0.63rem
 }
 
 .btn-main {
-  color: var(--t-onfill);
+  color: #fff;
   cursor: pointer;
-  background: var(--f-strong);
+  background: #1d1d1f;
   border: none;
   border-radius: 13px;
   justify-content: center;
@@ -1664,7 +1625,7 @@ nav {
 }
 
 .btn-wa {
-  color: var(--t-onfill);
+  color: #fff;
   background: #25d366
 }
 
@@ -1675,7 +1636,7 @@ nav {
 .olabel {
   text-transform: uppercase;
   letter-spacing: .1em;
-  color: var(--t-sub);
+  color: #6e6e73;
   align-items: center;
   gap: 4px;
   margin-bottom: 7px;
@@ -1690,7 +1651,7 @@ nav {
 }
 
 .stabs {
-  background: var(--f-subtle);
+  background: #f5f5f5;
   border-radius: 11px;
   gap: 5px;
   padding: 4px;
@@ -1699,7 +1660,7 @@ nav {
 
 .stab {
   cursor: pointer;
-  color: var(--t-sub);
+  color: #6e6e73;
   background: 0 0;
   border: none;
   border-radius: 8px;
@@ -1711,8 +1672,8 @@ nav {
 }
 
 .stab.on {
-  color: var(--t-ink);
-  background: var(--f-surface);
+  color: #1d1d1f;
+  background: #fff;
   font-weight: 700;
   box-shadow: 0 1px 4px #0000001a
 }
@@ -1720,9 +1681,9 @@ nav {
 .oinput {
   width: 100%;
   padding: 12px var(--px);
-  color: var(--t-ink);
+  color: #1d1d1f;
   -webkit-appearance: none;
-  background: var(--f-subtle);
+  background: #f6f6f6;
   border: 1.5px solid #0000;
   border-radius: 11px;
   outline: none;
@@ -1733,12 +1694,12 @@ nav {
 }
 
 .oinput:focus {
-  background: var(--f-surface);
-  border-color: var(--b-strong)
+  background: #fff;
+  border-color: #1d1d1f
 }
 
 .oinput::placeholder {
-  color: var(--t-mute)
+  color: #bbb
 }
 
 .oinput.err {
@@ -1760,9 +1721,9 @@ nav {
 .allergy-btn {
   padding: 8px 12px;
   cursor: pointer;
-  color: var(--t-sub);
-  background: var(--f-page);
-  border: 1.5px solid var(--b-subtle);
+  color: #6e6e73;
+  background: #f5f5f7;
+  border: 1.5px solid #e5e5e5;
   border-radius: 20px;
   font-family: Inter, sans-serif;
   font-size: 0.67rem;
@@ -1770,7 +1731,7 @@ nav {
 }
 
 .allergy-btn.on {
-  color: var(--t-onfill);
+  color: #fff;
   background: #e53e3e;
   border-color: #e53e3e;
   font-weight: 600
@@ -1783,9 +1744,9 @@ nav {
 .payopt {
   cursor: pointer;
   text-align: center;
-  color: var(--t-sub);
-  background: var(--f-page);
-  border: 1.5px solid var(--b-subtle);
+  color: #6e6e73;
+  background: #f5f5f7;
+  border: 1.5px solid #e5e5e5;
   border-radius: 11px;
   flex: 1;
   padding: 11px;
@@ -1795,14 +1756,14 @@ nav {
 }
 
 .payopt.on {
-  color: var(--t-onfill);
-  background: var(--f-strong);
-  border-color: var(--b-strong)
+  color: #fff;
+  background: #1d1d1f;
+  border-color: #1d1d1f
 }
 
 .cutrow {
   padding: 12px var(--px);
-  background: var(--f-subtle);
+  background: #f6f6f6;
   border-radius: 11px;
   justify-content: space-between;
   align-items: center;
@@ -1810,7 +1771,7 @@ nav {
 }
 
 .cutlabel {
-  color: var(--t-ink);
+  color: #1d1d1f;
   font-size: 0.76rem;
   font-weight: 500
 }
@@ -1823,13 +1784,13 @@ nav {
 
 .osum {
   padding: 12px var(--px);
-  background: var(--f-subtle);
+  background: #f6f6f6;
   border-radius: 11px;
   margin-bottom: 13px
 }
 
 .osumrow {
-  color: var(--t-sub);
+  color: #6e6e73;
   justify-content: space-between;
   margin-bottom: 7px;
   font-size: 0.7rem;
@@ -1837,8 +1798,8 @@ nav {
 }
 
 .osumrow:last-child {
-  color: var(--t-ink);
-  border-top: 1px solid var(--b-subtle);
+  color: #1d1d1f;
+  border-top: 1px solid #e8e8e8;
   margin-bottom: 0;
   padding-top: 8px;
   font-size: 0.79rem;
@@ -1875,7 +1836,7 @@ nav {
 
 .addr-suggest {
   z-index: 50;
-  background: var(--f-surface);
+  background: #fff;
   border-radius: 11px;
   max-height: 220px;
   margin-top: 4px;
@@ -1894,7 +1855,7 @@ nav {
 
 .addr-suggest-item {
   padding: 10px var(--px);
-  color: var(--t-ink);
+  color: #1d1d1f;
   cursor: pointer;
   border-bottom: 1px solid #f5f5f5;
   font-size: 0.72rem
@@ -1905,19 +1866,19 @@ nav {
 }
 
 .addr-suggest-item:active {
-  background: var(--f-subtle)
+  background: #f5f5f5
 }
 
 .addr-suggest-sub {
-  color: var(--t-sub);
+  color: #6e6e73;
   margin-top: 1px;
   font-size: 0.62rem
 }
 
 .loc-btn {
-  color: var(--t-ink);
+  color: #1d1d1f;
   cursor: pointer;
-  background: var(--f-subtle);
+  background: #f8f8f8;
   border: 1.5px dashed #ccc;
   border-radius: 11px;
   justify-content: center;
@@ -1933,7 +1894,7 @@ nav {
 }
 
 .loc-btn:active {
-  background: var(--f-subtle);
+  background: #f0f0f0;
   transform: scale(.97)
 }
 
@@ -1943,20 +1904,20 @@ nav {
 }
 
 .oinput[readonly] {
-  color: var(--t-mute);
+  color: #555;
   cursor: default;
-  background: var(--f-subtle)
+  background: #f5f5f5
 }
 
 .loc-confirm {
-  background: var(--f-subtle);
+  background: #f6f6f6;
   border-radius: 11px;
   margin-bottom: 8px;
   padding: 11px 12px
 }
 
 .loc-confirm-text {
-  color: var(--t-ink);
+  color: #1d1d1f;
   margin-bottom: 9px;
   font-size: 0.7rem;
   line-height: 1.4
@@ -1983,8 +1944,8 @@ nav {
 }
 
 .loc-confirm-btn.yes {
-  color: var(--t-onfill);
-  background: var(--f-strong)
+  color: #fff;
+  background: #1d1d1f
 }
 
 .loc-confirm-btn.no {
@@ -1995,9 +1956,9 @@ nav {
 .admi {
   width: 100%;
   padding: 12px var(--px);
-  color: var(--t-ink);
+  color: #1d1d1f;
   -webkit-appearance: none;
-  background: var(--f-subtle);
+  background: #f5f5f5;
   border: 1.5px solid #0000;
   border-radius: 11px;
   outline: none;
@@ -2008,18 +1969,18 @@ nav {
 }
 
 .admi:focus {
-  background: var(--f-surface);
-  border-color: var(--b-strong)
+  background: #fff;
+  border-color: #1d1d1f
 }
 
 .admi::placeholder {
-  color: var(--t-mute)
+  color: #bbb
 }
 
 .admloginbtn {
-  color: var(--t-onfill);
+  color: #fff;
   cursor: pointer;
-  background: var(--f-strong);
+  background: #1d1d1f;
   border: none;
   border-radius: 11px;
   width: 100%;
@@ -2035,10 +1996,10 @@ nav {
 }
 
 .admclosebtn {
-  color: var(--t-sub);
+  color: #6e6e73;
   cursor: pointer;
   background: 0 0;
-  border: 1px solid var(--b-subtle);
+  border: 1px solid #e5e5e5;
   border-radius: 11px;
   width: 100%;
   margin-top: 8px;
@@ -2057,7 +2018,7 @@ nav {
 }
 
 .admbtabs {
-  background: var(--f-subtle);
+  background: #f5f5f5;
   border-radius: 10px;
   gap: 5px;
   padding: 4px;
@@ -2066,7 +2027,7 @@ nav {
 
 .admbtab {
   cursor: pointer;
-  color: var(--t-sub);
+  color: #6e6e73;
   background: 0 0;
   border: none;
   border-radius: 7px;
@@ -2078,8 +2039,8 @@ nav {
 }
 
 .admbtab.on {
-  color: var(--t-ink);
-  background: var(--f-surface);
+  color: #1d1d1f;
+  background: #fff;
   font-weight: 600;
   box-shadow: 0 1px 3px #0000001a
 }
@@ -2087,9 +2048,9 @@ nav {
 .admsearch {
   width: 100%;
   padding: 10px var(--px);
-  color: var(--t-ink);
+  color: #1d1d1f;
   -webkit-appearance: none;
-  background: var(--f-subtle);
+  background: #f5f5f5;
   border: none;
   border-radius: 10px;
   outline: none;
@@ -2100,16 +2061,16 @@ nav {
 }
 
 .admsearch::placeholder {
-  color: var(--t-mute)
+  color: #bbb
 }
 
 .adm-nav-btn {
   padding: 14px var(--px);
-  color: var(--t-ink);
+  color: #1d1d1f;
   cursor: pointer;
   text-align: center;
-  background: var(--f-subtle);
-  border: 1.5px solid var(--b-subtle);
+  background: #f5f5f5;
+  border: 1.5px solid #ebebeb;
   border-radius: 14px;
   font-family: Inter, sans-serif;
   font-size: 0.72rem;
@@ -2117,15 +2078,15 @@ nav {
 }
 
 .adm-nav-btn:active {
-  background: var(--f-subtle);
+  background: #ebebeb;
   transform: scale(.97)
 }
 
 .adm-back {
   padding: 7px var(--px);
-  color: var(--t-sub);
+  color: #6e6e73;
   cursor: pointer;
-  background: var(--f-subtle);
+  background: #f5f5f5;
   border: none;
   border-radius: 8px;
   flex-shrink: 0;
@@ -2137,7 +2098,7 @@ nav {
 .adm-field-label {
   text-transform: uppercase;
   letter-spacing: .1em;
-  color: var(--t-sub);
+  color: #6e6e73;
   margin-bottom: 6px;
   font-size: 0.62rem;
   font-weight: 600
@@ -2150,10 +2111,10 @@ nav {
 
 .adm-select {
   padding: 12px var(--px);
-  color: var(--t-ink);
+  color: #1d1d1f;
   -webkit-appearance: none;
   appearance: none;
-  background: var(--f-subtle);
+  background: #f5f5f5;
   border: 1.5px solid #0000;
   border-radius: 11px;
   outline: none;
@@ -2163,10 +2124,10 @@ nav {
 
 .adm-mini-btn {
   padding: 12px var(--px);
-  color: var(--t-onfill);
+  color: #fff;
   cursor: pointer;
   white-space: nowrap;
-  background: var(--f-strong);
+  background: #1d1d1f;
   border: none;
   border-radius: 11px;
   flex-shrink: 0;
@@ -2177,8 +2138,8 @@ nav {
 
 .adm-item-card {
   cursor: pointer;
-  background: var(--f-subtle);
-  border: 1px solid var(--b-subtle);
+  background: #f8f8f8;
+  border: 1px solid #ebebeb;
   border-radius: 12px;
   align-items: center;
   gap: 10px;
@@ -2188,11 +2149,11 @@ nav {
 }
 
 .adm-item-card:active {
-  background: var(--f-subtle)
+  background: #f0f0f0
 }
 
 .adm-item-img {
-  background: var(--f-subtle);
+  background: #e8e8e8;
   border-radius: 8px;
   flex-shrink: 0;
   justify-content: center;
@@ -2216,7 +2177,7 @@ nav {
 }
 
 .adm-item-name {
-  color: var(--t-ink);
+  color: #1d1d1f;
   white-space: nowrap;
   text-overflow: ellipsis;
   margin-bottom: 2px;
@@ -2226,7 +2187,7 @@ nav {
 }
 
 .adm-item-meta {
-  color: var(--t-sub);
+  color: #6e6e73;
   font-size: 0.62rem
 }
 
@@ -2257,8 +2218,8 @@ nav {
 
 .adm-cat-card {
   padding: 13px var(--px);
-  background: var(--f-subtle);
-  border: 1px solid var(--b-subtle);
+  background: #f8f8f8;
+  border: 1px solid #ebebeb;
   border-radius: 12px;
   justify-content: space-between;
   align-items: center;
@@ -2267,13 +2228,13 @@ nav {
 }
 
 .adm-cat-name {
-  color: var(--t-ink);
+  color: #1d1d1f;
   font-size: 0.77rem;
   font-weight: 600
 }
 
 .adm-cat-count {
-  color: var(--t-sub);
+  color: #6e6e73;
   margin-top: 2px;
   font-size: 0.63rem
 }
@@ -2294,8 +2255,8 @@ nav {
 }
 
 .adm-cat-btn.rename {
-  color: var(--t-ink);
-  background: var(--f-subtle)
+  color: #1d1d1f;
+  background: #f0f0f0
 }
 
 .adm-cat-btn.del {
@@ -2304,8 +2265,8 @@ nav {
 }
 
 .adm-stop-section {
-  background: var(--f-subtle);
-  border: 1px solid var(--b-subtle);
+  background: #f8f8f8;
+  border: 1px solid #ebebeb;
   border-radius: 12px;
   margin-top: 12px;
   padding: 14px
@@ -2314,7 +2275,7 @@ nav {
 .adm-stop-title {
   text-transform: uppercase;
   letter-spacing: .1em;
-  color: var(--t-sub);
+  color: #6e6e73;
   margin-bottom: 10px;
   font-size: 0.62rem;
   font-weight: 600
@@ -2328,11 +2289,11 @@ nav {
 }
 
 .adm-time-btn {
-  color: var(--t-sub);
+  color: #6e6e73;
   cursor: pointer;
   text-align: center;
-  background: var(--f-page);
-  border: 1.5px solid var(--b-subtle);
+  background: #f5f5f7;
+  border: 1.5px solid #e5e5e5;
   border-radius: 10px;
   padding: 10px;
   font-family: Inter, sans-serif;
@@ -2363,10 +2324,10 @@ nav {
 }
 
 .adm-time-inp {
-  color: var(--t-ink);
+  color: #1d1d1f;
   text-align: center;
-  background: var(--f-surface);
-  border: 1.5px solid var(--b-subtle);
+  background: #fff;
+  border: 1.5px solid #e5e5e5;
   border-radius: 10px;
   outline: none;
   flex: 1;
@@ -2376,7 +2337,7 @@ nav {
 }
 
 .adm-stop-apply {
-  color: var(--t-onfill);
+  color: #fff;
   cursor: pointer;
   background: #e53e3e;
   border: none;
@@ -2393,10 +2354,10 @@ nav {
 }
 
 .adm-stop-remove {
-  color: var(--t-sub);
+  color: #6e6e73;
   cursor: pointer;
   background: 0 0;
-  border: 1px solid var(--b-subtle);
+  border: 1px solid #e5e5e5;
   border-radius: 11px;
   width: 100%;
   margin-top: 8px;
@@ -2430,7 +2391,7 @@ nav {
 }
 
 .dfreq-label {
-  color: var(--t-sub);
+  color: #6e6e73;
   margin-bottom: 8px;
   font-size: 0.63rem;
   font-weight: 600;
@@ -2446,7 +2407,7 @@ nav {
 }
 
 .dfreq-item {
-  background: var(--f-page);
+  background: #f5f5f7;
   border: none;
   border-radius: 11px;
   padding: 11px 13px;
@@ -2463,7 +2424,7 @@ nav {
 }
 
 .dfreq-name {
-  color: var(--t-ink);
+  color: #1d1d1f;
   font-size: 0.72rem;
   font-weight: 600
 }
@@ -2478,11 +2439,11 @@ nav {
 
 .mod-btn {
   padding: 9px var(--px);
-  color: var(--t-sub);
+  color: #6e6e73;
   cursor: pointer;
   white-space: nowrap;
-  background: var(--f-page);
-  border: 1.5px solid var(--b-subtle);
+  background: #f5f5f7;
+  border: 1.5px solid #e5e5e5;
   border-radius: 22px;
   font-family: Inter, sans-serif;
   font-size: 0.72rem;
@@ -2490,9 +2451,9 @@ nav {
 }
 
 .mod-btn.on {
-  color: var(--t-onfill);
-  background: var(--f-strong);
-  border-color: var(--b-strong);
+  color: #fff;
+  background: #1d1d1f;
+  border-color: #1d1d1f;
   font-weight: 600
 }
 
@@ -2503,7 +2464,7 @@ nav {
 .price-anim {}
 
 .item-mods-hint {
-  color: var(--t-sub);
+  color: #6e6e73;
   margin-top: 2px;
   font-size: 0.62rem
 }
@@ -2570,7 +2531,7 @@ nav {
 }
 
 .promo-dot.on {
-  background: var(--f-strong);
+  background: #1d1d1f;
   border-radius: 3px;
   width: 16px
 }
@@ -2617,7 +2578,7 @@ nav {
 }
 
 .promo-banner-title {
-  color: var(--t-onfill);
+  color: #fff;
   letter-spacing: -.02em;
   z-index: 2;
   font-size: 0.84rem;
@@ -2653,8 +2614,8 @@ nav {
 
 .pm-card {
   cursor: pointer;
-  background: var(--f-surface);
-  border: 1px solid var(--b-subtle);
+  background: #fff;
+  border: 1px solid #f0f0f0;
   border-radius: 14px;
   overflow: hidden
 }
@@ -2685,7 +2646,7 @@ nav {
 }
 
 .pm-name {
-  color: var(--t-ink);
+  color: #1d1d1f;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   margin-bottom: 4px;
@@ -2703,15 +2664,15 @@ nav {
 }
 
 .pm-price {
-  color: var(--t-ink);
+  color: #1d1d1f;
   font-size: 0.75rem;
   font-weight: 800
 }
 
 .pm-add {
-  color: var(--t-onfill);
+  color: #fff;
   cursor: pointer;
-  background: var(--f-strong);
+  background: #1d1d1f;
   border: none;
   border-radius: 50%;
   flex-shrink: 0;
@@ -2732,11 +2693,11 @@ nav {
 }
 
 .adm-text-btn {
-  color: var(--t-ink);
+  color: #1d1d1f;
   letter-spacing: .04em;
   cursor: pointer;
-  background: var(--f-surface);
-  border: 1.5px solid var(--b-subtle);
+  background: #fff;
+  border: 1.5px solid #e5e5e5;
   border-radius: 22px;
   flex-shrink: 0;
   padding: 9px 12px;
@@ -2746,17 +2707,17 @@ nav {
 }
 
 .adm-text-btn:active {
-  background: var(--f-subtle);
+  background: #f0f0f0;
   transform: scale(.92)
 }
 
 .scroll-top-btn {
-  color: var(--t-onfill);
+  color: #fff;
   cursor: pointer;
   z-index: 250;
   opacity: 0;
   pointer-events: none;
-  background: var(--f-strong);
+  background: #1d1d1f;
   border: none;
   border-radius: 50%;
   justify-content: center;
@@ -2789,7 +2750,7 @@ nav {
   top: 6px;
   right: 6px;
   background: #0071e3;
-  color: var(--t-onfill);
+  color: #fff;
   font-size: 0.62rem;
   font-weight: 700;
   padding: 3px 7px;
@@ -2799,13 +2760,13 @@ nav {
 }
 
 .toast {
-  color: var(--t-onfill);
+  color: #fff;
   padding: 10px var(--px);
   opacity: 0;
   z-index: 9999;
   white-space: nowrap;
   pointer-events: none;
-  background: var(--f-strong);
+  background: #1d1d1f;
   border-radius: 22px;
   font-size: 0.67rem;
   font-weight: 500;
@@ -2825,8 +2786,8 @@ nav {
   bottom: 82px;
   left: 50%;
   transform: translateX(-50%) translateY(14px);
-  background: var(--f-strong);
-  color: var(--t-onfill);
+  background: #1d1d1f;
+  color: #fff;
   border-radius: 16px;
   padding: 12px 18px;
   display: flex;
@@ -2867,7 +2828,7 @@ nav {
   transform: translateX(-50%) translateY(-120%);
   width: calc(100% - 24px);
   max-width: 420px;
-  background: var(--glass85);
+  background: rgba(255, 255, 255, .85);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   border-radius: 18px;
@@ -2886,7 +2847,7 @@ nav {
 
 #appShell {
   position: relative;
-  background: var(--f-page);
+  background: #f5f5f7;
   min-height: 100vh
 }
 
@@ -2907,7 +2868,7 @@ nav {
   position: absolute;
   top: calc(100% + 6px);
   left: 0;
-  background: var(--f-strong);
+  background: #1d1d1f;
   border-radius: 12px;
   min-width: 150px;
   padding: 6px;
@@ -2926,7 +2887,7 @@ nav {
   background: none;
   border: none;
   text-align: left;
-  color: var(--t-onfill);
+  color: #fff;
   padding: 9px 11px;
   border-radius: 8px;
   font-family: Inter, sans-serif;
@@ -2962,7 +2923,7 @@ nav {
   background: none;
   border: none;
   padding: 6px;
-  color: var(--t-ink);
+  color: #1d1d1f;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -2977,7 +2938,7 @@ nav {
   margin: 10px var(--px) 4px;
   padding: 16px 18px;
   border-radius: 14px;
-  background: var(--f-subtle)
+  background: #eef0f2
 }
 
 .branch-promo-clip {
@@ -2986,7 +2947,7 @@ nav {
 
 .branch-promo-text {
   display: block;
-  color: var(--t-ink);
+  color: #1d1d1f;
   font-size: 0.76rem;
   font-weight: 400;
   line-height: 1.55;
@@ -3118,7 +3079,7 @@ nav {
     </div>
    </div>
    <div class="mov" id="detailMov" onclick="if(event.target===this)closeDetail()" style="z-index:550">
-    <div class="mbox" style="background:var(--f-surface)">
+    <div class="mbox" style="background:#fff">
      <div class="dimg" id="dimg">
      </div>
      <button aria-label="Поделиться" class="dshare-btn" onclick="shareItem()">
@@ -3987,7 +3948,7 @@ nav {
    <div id="promoPopupOv" style="display:none;position:fixed;inset:0;z-index:900;align-items:center;justify-content:center;padding:20px">
     <div id="promoPopupBackdrop" style="position:absolute;inset:0;background:rgba(0,0,0,.55)">
     </div>
-    <div style="position:relative;background:var(--f-surface);border-radius:20px;max-width:380px;width:100%;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.3)">
+    <div style="position:relative;background:#fff;border-radius:20px;max-width:380px;width:100%;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.3)">
      <button id="promoPopupClose" style="position:absolute;top:10px;right:10px;z-index:2;width:30px;height:30px;border-radius:50%;border:none;background:rgba(0,0,0,.45);color:#fff;font-size:0.88rem;line-height:1;cursor:pointer;display:none;align-items:center;justify-content:center">
       ×
      </button>
@@ -4902,7 +4863,7 @@ var BRANCHES = [{
 
 function buildBranchCard(br, isOn, pulseIfOff, onClickFn) {
   var card = document.createElement("div");
-  if (card.id = "branchCard-" + br.id, card.className = !isOn && pulseIfOff ? "branch-modal-card" : "", card.style.cssText = "position:relative;overflow:hidden;cursor:pointer;border-radius:14px;padding:12px 10px;min-height:88px;display:flex;flex-direction:column;justify-content:space-between;" + (isOn ? "background:" + br.bg + ";outline:2.5px solid #1d1d1f;outline-offset:2px;box-shadow:0 4px 14px rgba(0,0,0,.18)" : "background:var(--f-surface);outline:1.5px dashed var(--b-subtle);outline-offset:-1.5px"), isOn)
+  if (card.id = "branchCard-" + br.id, card.className = !isOn && pulseIfOff ? "branch-modal-card" : "", card.style.cssText = "position:relative;overflow:hidden;cursor:pointer;border-radius:14px;padding:12px 10px;min-height:88px;display:flex;flex-direction:column;justify-content:space-between;" + (isOn ? "background:" + br.bg + ";outline:2.5px solid #1d1d1f;outline-offset:2px;box-shadow:0 4px 14px rgba(0,0,0,.18)" : "background:#fff;outline:1.5px dashed #ccc;outline-offset:-1.5px"), isOn)
     for (var p = 0; p < 3; p++) {
       var dot = document.createElement("div");
       dot.className = "banner-particle", dot.style.cssText = "top:" + (20 + 25 * p) + "%;left:" + (15 + 25 * p) + "%;animation-delay:" + .4 * p + "s;animation-duration:" + (2 + .5 * p) + "s", card.appendChild(dot)
@@ -6847,7 +6808,7 @@ function renderAdminStats(d) {
     return w + " — <b>" + byWd[w] + "</b>"
   }).join("<br>") + "</div></div>"), html += '<div class="adm-stop-section">', html += '<div style="font-weight:600;color:#1d1d1f;margin-bottom:8px">Последние заказы</div>', d.recentOrders && d.recentOrders.length ? d.recentOrders.forEach(function(o) {
     let bn = "samal" === o.branch ? "Самал" : "skoro" === o.branch ? "Скоробогатова" : o.branch;
-    html += '<div style="background:var(--f-surface);border-radius:10px;padding:11px;margin-bottom:8px;border:1px solid var(--b-subtle)"><div style="display:flex;justify-content:space-between;font-size:0.65rem;color:#6e6e73;margin-bottom:6px"><span>' + o.date + "</span><span>" + bn + '</span></div><div style="font-size:0.74rem;font-weight:600;color:#1d1d1f;margin-bottom:3px">' + (o.name || "Без имени") + '</div><div style="font-size:0.67rem;color:#666;margin-bottom:5px">' + (o.phone || "—") + "</div>" + ("Доставка" === o.type ? '<div style="font-size:0.67rem;color:#666;margin-bottom:5px">' + (o.address || "—") + "</div>" : '<div style="font-size:0.67rem;color:#666;margin-bottom:5px">Самовывоз</div>') + '<div style="font-size:0.67rem;color:#333;line-height:1.4;margin-bottom:5px">' + (o.items || "—") + '</div><div style="font-size:0.7rem;font-weight:700;color:#1d1d1f">' + (o.total ? parseInt(o.total).toLocaleString("ru") + " ₸" : "") + "</div></div>"
+    html += '<div style="background:#fff;border-radius:10px;padding:11px;margin-bottom:8px;border:1px solid #ebebeb"><div style="display:flex;justify-content:space-between;font-size:0.65rem;color:#6e6e73;margin-bottom:6px"><span>' + o.date + "</span><span>" + bn + '</span></div><div style="font-size:0.74rem;font-weight:600;color:#1d1d1f;margin-bottom:3px">' + (o.name || "Без имени") + '</div><div style="font-size:0.67rem;color:#666;margin-bottom:5px">' + (o.phone || "—") + "</div>" + ("Доставка" === o.type ? '<div style="font-size:0.67rem;color:#666;margin-bottom:5px">' + (o.address || "—") + "</div>" : '<div style="font-size:0.67rem;color:#666;margin-bottom:5px">Самовывоз</div>') + '<div style="font-size:0.67rem;color:#333;line-height:1.4;margin-bottom:5px">' + (o.items || "—") + '</div><div style="font-size:0.7rem;font-weight:700;color:#1d1d1f">' + (o.total ? parseInt(o.total).toLocaleString("ru") + " ₸" : "") + "</div></div>"
   }) : html += '<div style="font-size:0.69rem;color:#6e6e73">Пока нет заказов</div>', html += "</div>", body.innerHTML = html
 }
 
