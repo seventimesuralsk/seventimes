@@ -2958,6 +2958,22 @@ nav {
   pointer-events: none
 }
 
+.promo-card-seen-label {
+  position: absolute;
+  top: 9px;
+  right: 11px;
+  color: rgba(255,255,255,.85);
+  font-size: 0.58rem;
+  font-weight: 400;
+  letter-spacing: .01em;
+  text-shadow: 0 1px 2px rgba(0,0,0,.35);
+  display: none
+}
+
+.promo-card-ring.seen .promo-card-seen-label {
+  display: block
+}
+
 .promo-card-bottom-row {
   position: absolute;
   left: 14px;
@@ -4433,9 +4449,8 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
   <div class="stories-slide-text">Без повода, без графика, без правил. Мы не выбираем по нужде — мы выбираем, когда сами захотим сделать кому-то хорошо.</div>
  </div>
  <div class="stories-slide" data-slide="2">
-  <div class="stories-slide-label">Как это работает</div>
-  <div class="stories-slide-title">Поделитесь своей мечтой</div>
-  <div class="stories-slide-text">Закажите у нас что угодно, приложите фото чека и расскажите, о чём мечтаете — на сайте, в двух словах.</div>
+  <div class="stories-slide-label">Совсем скоро</div>
+  <div class="stories-slide-title">Скоро</div>
   <button class="stories-slide-cta" onclick="closeDreamStories()">Понятно</button>
  </div>
 </div>
@@ -5706,6 +5721,10 @@ function renderPromoCarousel() {
     } else {
       btn.style.background = card.bg;
     }
+    var seenLabel = document.createElement("div");
+    seenLabel.className = "promo-card-seen-label";
+    seenLabel.textContent = "Просмотрено";
+    btn.appendChild(seenLabel);
     if (card.label) {
       var gradient = document.createElement("div");
       gradient.className = "promo-card-gradient";
@@ -5847,6 +5866,7 @@ function dreamStoriesPrev() {
 function openDreamStories() {
   var ov = document.getElementById("dreamStoriesOv");
   if (!ov) return;
+  var alreadySeen = !!_promoSeen.dream;
   _promoSeen.dream = true;
   var ring = document.getElementById("promoCard-dream");
   if (ring) ring.classList.add("seen");
