@@ -333,13 +333,21 @@ nav {
 }
 
 .drawer-group-list {
-  display: none;
-  flex-direction: column;
-  padding-left: 14px
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows .38s cubic-bezier(.4,0,.2,1);
 }
 
 .drawer-group-list.open {
-  display: flex
+  grid-template-rows: 1fr
+}
+
+.drawer-group-list-inner {
+  overflow: hidden;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding-left: 14px
 }
 
 .drawer-cat-sub {
@@ -6573,6 +6581,7 @@ function buildDrawerCats() {
   });
 
   function renderGroups() {
+    var allHeaders = [], allLists = [];
     Object.keys(grouped).forEach(function(groupName) {
       var items = grouped[groupName];
       if (!items.length) return;
@@ -6581,6 +6590,8 @@ function buildDrawerCats() {
       header.innerHTML = "<span>" + groupName + "</span><span class=drawer-group-arrow>›</span>";
       var list = document.createElement("div");
       list.className = "drawer-group-list";
+      var inner = document.createElement("div");
+      inner.className = "drawer-group-list-inner";
       items.forEach(function(item) {
         var sb = document.createElement("button");
         sb.className = "drawer-cat-item drawer-cat-sub";
@@ -6592,12 +6603,21 @@ function buildDrawerCats() {
             setActivePill(item.idx);
           }, 380);
         };
-        list.appendChild(sb);
+        inner.appendChild(sb);
       });
+      list.appendChild(inner);
       header.onclick = function() {
-        list.classList.toggle("open");
-        header.classList.toggle("open");
+        var willOpen = !header.classList.contains("open");
+        allHeaders.forEach(function(h, hi) {
+          if (h === header) return;
+          h.classList.remove("open");
+          allLists[hi].classList.remove("open");
+        });
+        header.classList.toggle("open", willOpen);
+        list.classList.toggle("open", willOpen);
       };
+      allHeaders.push(header);
+      allLists.push(list);
       wrap.appendChild(header);
       wrap.appendChild(list);
     });
