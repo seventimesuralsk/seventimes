@@ -2893,7 +2893,9 @@ nav {
   display: flex;
   gap: 10px;
   overflow-x: auto;
-  padding: 12px var(--px) 2px;
+  padding: 12px 14px 2px;
+  scroll-padding-left: 14px;
+  scroll-padding-right: 14px;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch
@@ -5821,6 +5823,7 @@ function renderPromoCarousel() {
     }
   });
   if (dots) dots.style.display = PROMO_CARDS.length > 1 ? "flex" : "none";
+  wrap.scrollLeft = 0;
   if (PROMO_CARDS.length > 1) {
     wrap.onscroll = function() {
       var cardW = wrap.firstChild ? wrap.firstChild.offsetWidth + 10 : 1;
