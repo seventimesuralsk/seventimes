@@ -2933,6 +2933,39 @@ nav {
 .drawer-close-x:active {
   opacity: .4
 }
+
+.branch-promo-banner {
+  margin: 10px var(--px) 4px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: #eef0f2
+}
+
+.branch-promo-clip {
+  overflow: hidden
+}
+
+.branch-promo-text {
+  display: block;
+  color: #1d1d1f;
+  font-size: 0.76rem;
+  font-weight: 400;
+  line-height: 1.55;
+  letter-spacing: -.005em;
+  transition: transform .38s cubic-bezier(.4, 0, .2, 1), opacity .38s ease;
+  transform: translateY(0);
+  opacity: 1
+}
+
+.branch-promo-text.swipe-out {
+  transform: translateY(14px);
+  opacity: 0
+}
+
+.branch-promo-text.swipe-in {
+  transform: translateY(-14px);
+  opacity: 0
+}
   </style>
  </head>
  <body>
@@ -3001,6 +3034,13 @@ nav {
    </div>
    <div id="branchWrap" style="display:none">
     <div id="branchTrack">
+    </div>
+   </div>
+   <div class="branch-promo-banner">
+    <div class="branch-promo-clip">
+     <span class="branch-promo-text" id="branchPromoText">
+      Ресторан на Самал 70/3 теперь работает до 02:00 — ждём всех!
+     </span>
     </div>
    </div>
    <div id="catSectionTitle" style="padding:10px var(--px)2px;display:none">
@@ -4916,6 +4956,23 @@ function showBranchModal(isSwitch) {
   titleEl && (titleEl.textContent = isSwitch ? "Выберите филиал" : "Сначала выберите ресторан");
   subEl && (subEl.style.display = isSwitch ? "none" : "block", subEl.textContent = "У филиалов разное меню — без выбора мы не знаем что вам показать");
   openMov("branchModalOv")
+}
+var BRANCH_PROMO_TEXTS = ["Ресторан на Самал 70/3 теперь работает до 02:00 — ждём всех!", "Самал 70/3 мекенжайындағы ресторан енді сағат 02:00-ге дейін жұмыс істейді — барлығыңызды күтеміз!"];
+var _branchPromoIdx = 0,
+  _branchPromoTimer = null;
+
+function cycleBranchPromo() {
+  var el = document.getElementById("branchPromoText");
+  if (!el) return;
+  el.classList.add("swipe-out"), setTimeout(function() {
+    _branchPromoIdx = (_branchPromoIdx + 1) % BRANCH_PROMO_TEXTS.length, el.textContent = BRANCH_PROMO_TEXTS[_branchPromoIdx], el.classList.remove("swipe-out"), el.classList.add("swipe-in"), void el.offsetWidth, requestAnimationFrame(function() {
+      el.classList.remove("swipe-in")
+    })
+  }, 380)
+}
+
+function startBranchPromoCycle() {
+  clearInterval(_branchPromoTimer), _branchPromoTimer = setInterval(cycleBranchPromo, 4200)
 }
 
 function closeBranchDropdown() {
@@ -7135,7 +7192,7 @@ function checkSiteStatus() {
   }, function() {});
 }
 window.addEventListener("load", function() {
-  applyI18n(), renderBranchCarousel(), showNoBranchPlaceholder(), showBranchModal(), updateSearchTop(), tagNearestBranch(), checkSiteStatus(), checkPromoPopup();
+  applyI18n(), renderBranchCarousel(), showNoBranchPlaceholder(), showBranchModal(), updateSearchTop(), tagNearestBranch(), checkSiteStatus(), checkPromoPopup(), startBranchPromoCycle();
   var _saBtn = document.getElementById("siteAdminAccessBtn");
   if (_saBtn) _saBtn.addEventListener("click", function(ev) {
     ev.preventDefault();
