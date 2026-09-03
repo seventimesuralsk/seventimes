@@ -2714,6 +2714,20 @@ nav {
   z-index: 3
 }
 
+.branch-new-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: #7a1128;
+  color: #fff;
+  font-size: 0.56rem;
+  font-weight: 400;
+  letter-spacing: .08em;
+  padding: 2px 7px;
+  border-radius: 6px;
+  z-index: 4
+}
+
 .toast {
   color: #fff;
   padding: 10px var(--px);
@@ -5695,6 +5709,7 @@ function showBranchBlockedModal(reason) {
 
 function buildBranchCard(br, isOn, pulseIfOff, onClickFn) {
   var card = document.createElement("div");
+  var isNewBranch = "abulhair" === br.id;
   if (card.id = "branchCard-" + br.id, card.className = !isOn && pulseIfOff ? "branch-modal-card" : "", card.style.cssText = "position:relative;overflow:hidden;cursor:pointer;border-radius:14px;padding:12px 10px;min-height:88px;display:flex;flex-direction:column;justify-content:space-between;" + (isOn ? "background:" + br.bg + ";outline:2.5px solid #1d1d1f;outline-offset:2px;box-shadow:0 4px 14px rgba(0,0,0,.18)" : "background:#fff;outline:1.5px dashed #ccc;outline-offset:-1.5px"), isOn)
     for (var p = 0; p < 3; p++) {
       var dot = document.createElement("div");
@@ -5705,7 +5720,7 @@ function buildBranchCard(br, isOn, pulseIfOff, onClickFn) {
   var tag = document.createElement("div");
   tag.style.cssText = "font-size:0.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px;" + (isOn ? "color:rgba(255,255,255,.7)" : "color:#999"), tag.textContent = t(isOn ? "selected_tag" : "tap_to_select");
   var title = document.createElement("div");
-  title.style.cssText = "font-size:0.77rem;font-weight:800;line-height:1.2;letter-spacing:-.01em;" + (isOn ? "color:#fff" : "color:#1d1d1f"), title.textContent = br.name;
+  title.style.cssText = "font-size:0.77rem;font-weight:300;line-height:1.2;letter-spacing:-.01em;" + (isOn ? "color:#fff" : "color:#1d1d1f"), title.textContent = br.name;
   var sub = document.createElement("div");
   sub.style.cssText = "font-size:0.62rem;font-weight:500;margin-top:3px;" + (isOn ? "color:rgba(255,255,255,.65)" : "color:#999");
   var brStatus = _branchStatusData[br.id];
@@ -5716,7 +5731,14 @@ function buildBranchCard(br, isOn, pulseIfOff, onClickFn) {
   }
   sub.innerHTML = "<div>" + statusHtml + "</div>", inner.appendChild(tag), inner.appendChild(title), inner.appendChild(sub);
   var emoji = document.createElement("div");
-  return emoji.style.cssText = "position:absolute;right:8px;top:8px;font-size:1.41rem;z-index:2;" + (isOn ? "filter:drop-shadow(0 2px 6px rgba(0,0,0,.3))" : "opacity:.5"), emoji.textContent = br.emoji, card.appendChild(inner), card.appendChild(emoji), card.onclick = onClickFn, card
+  emoji.style.cssText = "position:absolute;right:8px;top:8px;font-size:1.41rem;z-index:2;" + (isOn ? "filter:drop-shadow(0 2px 6px rgba(0,0,0,.3))" : "opacity:.5"), emoji.textContent = br.emoji, card.appendChild(inner), card.appendChild(emoji), card.onclick = onClickFn;
+  if (isNewBranch) {
+    var newBadge = document.createElement("div");
+    newBadge.className = "branch-new-badge";
+    newBadge.textContent = "NEW";
+    card.appendChild(newBadge);
+  }
+  return card
 }
 const BRANCH_COORDS = {
   samal: {
