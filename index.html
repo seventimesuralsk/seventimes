@@ -4909,7 +4909,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
  </div>
 </div>
   <script>
-   const API = "https://script.google.com/macros/s/AKfycbz0zHBlV2ANi_pWiusd5HkqTo85c7tqMzpjPu6y9Lx3HwmzT1u01JWYGUmUiCC5E8qNYw/exec",
+   const API = "https://script.google.com/macros/s/AKfycbyeJo79HV9FaMOMhXKLxCqgfaKy6CojkrwDhvu6Q7n34gcPIjz54DrQeWRblhNYJmsa/exec",
   WA = "77760709898",
   CAT_META = {
     "Новинки": {
@@ -5799,16 +5799,53 @@ function branchDisplayName(id) {
   return "samal" === id ? "Самал 70/3" : "Скоробогатова 65/1";
 }
 
+// ── СТАТУС ФИЛИАЛОВ — теперь прямо в коде, без Google Таблицы ──
+// Чтобы поменять график, заблокировать/разблокировать филиал — правь прямо тут,
+// ничего кроме этого объекта трогать не нужно.
+// hours — диапазон "ЧЧ:ММ-ЧЧ:ММ" (открыто/закрыто считается автоматически по времени
+// Казахстана), либо любой текст (например "Скоро откроется") — тогда показывается как есть.
+// blocked — true значит филиал виден в списке, но недоступен для выбора;
+// при тапе гость увидит текст из reason.
+var BRANCH_STATUS_CONFIG = {
+  samal:    { hours: "11:00-01:00",       blocked: false, reason: "" },
+  skoro:    { hours: "12:00-02:00",       blocked: false, reason: "" },
+  abulhair: { hours: "Скоро откроется",   blocked: true,  reason: "Скоро откроется новый филиал" }
+};
+
+function parseBranchHoursClient(hoursText) {
+  var m = (hoursText || "").toString().match(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/);
+  if (!m) return null;
+  var openH = parseInt(m[1], 10), openM = parseInt(m[2], 10);
+  var closeH = parseInt(m[3], 10), closeM = parseInt(m[4], 10);
+  var openStr = String(openH).padStart(2, "0") + ":" + String(openM).padStart(2, "0");
+  var now = new Date();
+  var kzDate = new Date(now.getTime() + now.getTimezoneOffset() * 60000 + 5 * 60 * 60000);
+  var nowMin = kzDate.getHours() * 60 + kzDate.getMinutes();
+  var openMin = openH * 60 + openM, closeMin = closeH * 60 + closeM;
+  var isOpen = closeMin <= openMin ? (nowMin >= openMin || nowMin < closeMin) : (nowMin >= openMin && nowMin < closeMin);
+  return { isOpen: isOpen, openStr: openStr };
+}
+
 var _branchStatusData = {};
 var _branchStatusLoaded = false;
 
 function loadBranchStatus() {
-  apiGet({ action: "getBranchStatus" }, function(d) {
-    _branchStatusData = d.branches || {};
-    _branchStatusLoaded = true;
-    renderBranchCarousel();
-    renderBranchModal();
-  }, function() {});
+  Object.keys(BRANCH_STATUS_CONFIG).forEach(function(code) {
+    var cfg = BRANCH_STATUS_CONFIG[code];
+    var parsed = parseBranchHoursClient(cfg.hours);
+    var statusText, isOpenNow;
+    if (parsed) {
+      statusText = parsed.isOpen ? "Открыто" : ("Закрыто, откроется в " + parsed.openStr);
+      isOpenNow = parsed.isOpen;
+    } else {
+      statusText = cfg.hours;
+      isOpenNow = false;
+    }
+    _branchStatusData[code] = { status: statusText, isOpenNow: isOpenNow, blocked: !!cfg.blocked, reason: cfg.reason || "" };
+  });
+  _branchStatusLoaded = true;
+  renderBranchCarousel();
+  renderBranchModal();
 }
 
 function showBranchBlockedModal(reason) {
@@ -5943,7 +5980,6 @@ function renderBranchCarousel() {
   var track = document.getElementById("branchTrack");
   track && (track.innerHTML = "", BRANCHES.forEach(function(br) {
     var id, card = buildBranchCard(br, branch === br.id, !1, (id = br.id, function() {
-      if (!_branchStatusLoaded) { showToast("Секунду, проверяем филиалы..."); return; }
       var s = _branchStatusData[id];
       if (s && s.blocked) { showBranchBlockedModal(s.reason); return; }
       branch !== id && switchBranch(id)
@@ -5956,7 +5992,6 @@ function renderBranchModal() {
   var track = document.getElementById("branchModalTrack");
   track && (track.innerHTML = "", BRANCHES.forEach(function(br) {
     var id, row = buildBranchListRow(br, branch === br.id, (id = br.id, function() {
-      if (!_branchStatusLoaded) { showToast("Секунду, проверяем филиалы..."); return; }
       var s = _branchStatusData[id];
       if (s && s.blocked) { showBranchBlockedModal(s.reason); return; }
       selectBranchFromModal(id)
@@ -6487,10 +6522,45 @@ function showDreamThankYou() {
   }, 3000);
 }
 
+// ── БАННЕРЫ — теперь прямо в коде, без Google Таблицы ──
+// Каждый баннер: id (уникальный), order (порядок показа), label/title/cta — текст
+// на самой карточке-обложке в карусели, photo — ссылка на обложку, slides — до 10
+// картинок сторис (1080x1920), у каждого слайда можно указать btnText/btnUrl —
+// необязательную кнопку поверх фото.
+// Чтобы добавить/убрать баннер или поменять фото — правь прямо этот массив.
+var BANNERS_CONFIG = [
+  {
+    id: "banner2",
+    order: 1,
+    label: "Открыли новый филиал",
+    title: "Самал 70/3",
+    cta: "Подробнее",
+    photo: "", // ссылка на обложку карточки в карусели
+    slides: [
+      { photo: "" } // ссылка на 1-й слайд сторис (1080x1920)
+      // { photo: "", btnText: "Забронировать", btnUrl: "https://wa.me/..." }
+    ]
+  },
+  {
+    id: "banner3",
+    order: 2,
+    label: "Акция",
+    title: "Скидка 20%",
+    cta: "Смотреть",
+    photo: "",
+    slides: [
+      { photo: "" }
+      // { photo: "", btnText: "Заказать", btnUrl: "https://wa.me/..." }
+    ]
+  }
+];
+
 function loadDynamicBanners() {
-  apiGet({ action: "getBanners" }, function(d) {
-    window._dynamicBanners = {};
-    (d.banners || []).forEach(function(b) {
+  window._dynamicBanners = {};
+  BANNERS_CONFIG
+    .filter(function(b) { return b.slides && b.slides.some(function(s) { return s.photo; }); })
+    .sort(function(a, c) { return (a.order || 999) - (c.order || 999); })
+    .forEach(function(b) {
       window._dynamicBanners[b.id] = b;
       PROMO_CARDS.push({
         id: b.id,
@@ -6501,8 +6571,7 @@ function loadDynamicBanners() {
         onclick: "openGenericStories('" + b.id + "')"
       });
     });
-    renderPromoCarousel();
-  }, function() {});
+  renderPromoCarousel();
 }
 
 function closeBranchDropdown() {
