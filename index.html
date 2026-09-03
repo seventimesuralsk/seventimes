@@ -2728,6 +2728,85 @@ nav {
   z-index: 4
 }
 
+.branch-list {
+  display: flex;
+  flex-direction: column;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #e8e8ea
+}
+
+.branch-list-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 14px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+  -webkit-tap-highlight-color: transparent
+}
+
+.branch-list-row:last-child {
+  border-bottom: none
+}
+
+.branch-list-row:active {
+  background: #f5f5f7
+}
+
+.branch-list-row.selected {
+  background: #f5f5f7
+}
+
+.branch-list-name {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #1d1d1f;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap
+}
+
+.branch-list-new-badge {
+  background: #7a1128;
+  color: #fff;
+  font-size: 0.52rem;
+  font-weight: 400;
+  letter-spacing: .07em;
+  padding: 2px 6px;
+  border-radius: 6px;
+  flex-shrink: 0
+}
+
+.branch-list-right {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0
+}
+
+.branch-list-status-text {
+  font-size: 0.68rem;
+  color: #8e8e93;
+  white-space: nowrap
+}
+
+.branch-list-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0
+}
+
+.branch-list-chevron {
+  color: #c7c7cc;
+  flex-shrink: 0
+}
+
 .toast {
   color: #fff;
   padding: 10px var(--px);
@@ -3271,36 +3350,6 @@ nav {
   font-weight: 600;
   line-height: 1.4;
   margin-top: 18px
-}
-
-.dream-thankyou-close {
-  position: absolute;
-  bottom: 56px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(255,255,255,.16);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .35s ease;
-  z-index: 6
-}
-
-.dream-thankyou-close.show {
-  opacity: 1;
-  pointer-events: auto
-}
-
-.dream-thankyou-close:active {
-  background: rgba(255,255,255,.26)
 }
 
 
@@ -4450,7 +4499,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
       </div>
      </div>
      <div style="padding:18px var(--px)28px">
-      <div id="branchModalTrack" style="grid-template-columns:1fr 1fr;gap:10px;display:grid">
+      <div id="branchModalTrack" class="branch-list">
       </div>
      </div>
     </div>
@@ -5841,6 +5890,47 @@ function applyNearestBadge(id) {
   })
 }
 
+function buildBranchListRow(br, isSelected, onClickFn) {
+  var row = document.createElement("div");
+  row.className = "branch-list-row" + (isSelected ? " selected" : "");
+  row.id = "branchCard-" + br.id;
+
+  var nameWrap = document.createElement("div");
+  nameWrap.className = "branch-list-name";
+  var nameSpan = document.createElement("span");
+  nameSpan.textContent = br.name;
+  nameWrap.appendChild(nameSpan);
+  if ("abulhair" === br.id) {
+    var badge = document.createElement("span");
+    badge.className = "branch-list-new-badge";
+    badge.textContent = "NEW";
+    nameWrap.appendChild(badge);
+  }
+
+  var right = document.createElement("div");
+  right.className = "branch-list-right";
+  var brStatus = _branchStatusData[br.id];
+  if (brStatus && brStatus.status) {
+    var dot = document.createElement("span");
+    dot.className = "branch-list-dot";
+    dot.style.background = brStatus.isOpenNow ? "#34c759" : "#ff3b30";
+    var statusText = document.createElement("span");
+    statusText.className = "branch-list-status-text";
+    statusText.textContent = brStatus.status;
+    right.appendChild(dot);
+    right.appendChild(statusText);
+  }
+  var chevron = document.createElement("span");
+  chevron.className = "branch-list-chevron";
+  chevron.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg>';
+  right.appendChild(chevron);
+
+  row.appendChild(nameWrap);
+  row.appendChild(right);
+  row.onclick = onClickFn;
+  return row;
+}
+
 function renderBranchCarousel() {
   var track = document.getElementById("branchTrack");
   track && (track.innerHTML = "", BRANCHES.forEach(function(br) {
@@ -5856,12 +5946,12 @@ function renderBranchCarousel() {
 function renderBranchModal() {
   var track = document.getElementById("branchModalTrack");
   track && (track.innerHTML = "", BRANCHES.forEach(function(br) {
-    var id, card = buildBranchCard(br, !1, !0, (id = br.id, function() {
+    var id, row = buildBranchListRow(br, branch === br.id, (id = br.id, function() {
       var s = _branchStatusData[id];
       if (s && s.blocked) { showBranchBlockedModal(s.reason); return; }
       selectBranchFromModal(id)
     }));
-    track.appendChild(card)
+    track.appendChild(row)
   }))
 }
 
@@ -6381,14 +6471,10 @@ function showDreamThankYou() {
   if (!slide) return;
   slide.innerHTML =
     '<div class="dream-thankyou-heart">❤️</div>' +
-    '<div class="dream-thankyou-text">Спасибо, что поделились</div>' +
-    '<button class="dream-thankyou-close" id="dreamThankYouClose" onclick="closeDreamStories()" aria-label="Закрыть">' +
-    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>' +
-    "</button>";
+    '<div class="dream-thankyou-text">Спасибо, что поделились</div>';
   setTimeout(function() {
-    var btn = document.getElementById("dreamThankYouClose");
-    if (btn) btn.classList.add("show");
-  }, 2000);
+    closeDreamStories();
+  }, 3000);
 }
 
 function loadDynamicBanners() {
