@@ -3252,6 +3252,56 @@ nav {
   40%,60% { transform: translateX(4px); }
 }
 
+.dream-thankyou-heart {
+  font-size: 4.2rem;
+  animation: dreamHeartBeat 1.15s ease-in-out infinite
+}
+
+@keyframes dreamHeartBeat {
+  0%, 100% { transform: scale(1); }
+  15% { transform: scale(1.22); }
+  30% { transform: scale(0.94); }
+  45% { transform: scale(1.12); }
+  60% { transform: scale(1); }
+}
+
+.dream-thankyou-text {
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-top: 18px
+}
+
+.dream-thankyou-close {
+  position: absolute;
+  bottom: 56px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,.16);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .35s ease
+}
+
+.dream-thankyou-close.show {
+  opacity: 1;
+  pointer-events: auto
+}
+
+.dream-thankyou-close:active {
+  background: rgba(255,255,255,.26)
+}
+
 
 
 .branch-promo-text {
@@ -6115,6 +6165,7 @@ var DREAM_STORY_DURATION = 5000;
 var _dreamStoryIdx = 0, _dreamStoryTimer = null, _dreamStoryTotal = 0;
 var _dreamHoldStart = 0, _dreamLongPress = false;
 var _dreamWishSubmitted = false;
+var _dreamShowingThankYou = false;
 
 function buildDreamStoriesProgress() {
   var row = document.getElementById("dreamProgressRow");
@@ -6229,10 +6280,10 @@ function dreamPauseEnd() {
 
 function dreamStoriesNext() {
   if (_dreamLongPress) { _dreamLongPress = false; return; }
+  if (_dreamShowingThankYou) return;
   clearTimeout(_dreamStoryTimer);
   if (_dreamStoryIdx >= _dreamStoryTotal - 1) {
     if (!_dreamWishSubmitted) { shakeDreamModal(); return; }
-    closeDreamStories();
     return;
   }
   _dreamStoryIdx++;
@@ -6242,11 +6293,14 @@ function dreamStoriesNext() {
 
 function dreamStoriesPrev() {
   if (_dreamLongPress) { _dreamLongPress = false; return; }
+  if (_dreamShowingThankYou) return;
   clearTimeout(_dreamStoryTimer);
   _dreamStoryIdx = Math.max(0, _dreamStoryIdx - 1);
   renderDreamStorySlide();
   dreamScheduleAdvance(DREAM_STORY_DURATION);
 }
+
+var _dreamFormSlideHTML = null;
 
 function openDreamStories() {
   var ov = document.getElementById("dreamStoriesOv");
@@ -6254,6 +6308,12 @@ function openDreamStories() {
   _promoSeen.dream = true;
   var ring = document.getElementById("promoCard-dream");
   if (ring) ring.classList.add("seen");
+  var formSlide = ov.querySelector('.stories-slide[data-slide="2"]');
+  if (formSlide) {
+    if (_dreamFormSlideHTML === null) _dreamFormSlideHTML = formSlide.innerHTML;
+    else formSlide.innerHTML = _dreamFormSlideHTML;
+  }
+  _dreamShowingThankYou = false;
   buildDreamStoriesProgress();
   _dreamStoryIdx = 0;
   resetDreamWishForm();
@@ -6304,23 +6364,30 @@ function submitDreamWish() {
     dream: dream
   }, function() {
     _dreamWishSubmitted = true;
-    closeDreamStories();
-    showFunModal("🎉", "Спасибо, что поделились.<br>Нам приятно.", "Понятно");
-    var fb = document.getElementById("funBtn");
-    if (fb) {
-      fb.disabled = true;
-      fb.style.opacity = ".5";
-      setTimeout(function() {
-        fb.disabled = false;
-        fb.style.opacity = "";
-      }, 2000);
-    }
+    showDreamThankYou();
   }, function(errMsg) {
     btn.disabled = false;
     btn.textContent = "Поделиться";
     document.getElementById("dreamWishTextErr").textContent = errMsg || "Не получилось отправить, попробуйте ещё раз";
     shakeDreamModal();
   });
+}
+
+function showDreamThankYou() {
+  clearTimeout(_dreamStoryTimer);
+  _dreamShowingThankYou = true;
+  var slide = document.querySelector("#dreamStoriesOv .stories-slide.active");
+  if (!slide) return;
+  slide.innerHTML =
+    '<div class="dream-thankyou-heart">❤️</div>' +
+    '<div class="dream-thankyou-text">Спасибо, что поделились</div>' +
+    '<button class="dream-thankyou-close" id="dreamThankYouClose" onclick="closeDreamStories()" aria-label="Закрыть">' +
+    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>' +
+    "</button>";
+  setTimeout(function() {
+    var btn = document.getElementById("dreamThankYouClose");
+    if (btn) btn.classList.add("show");
+  }, 2000);
 }
 
 function loadDynamicBanners() {
