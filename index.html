@@ -4611,7 +4611,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
  <div class="stories-slide active" data-slide="0">
   <div class="stories-slide-label">О проекте</div>
   <div class="stories-slide-title">Проект «Армандар орындалады»</div>
-  <div class="stories-slide-text">Иногда исполняем мечты гостей — просто потому что любим вас.</div>
+  <div class="stories-slide-text">Наш проект уже запущен. Иногда исполняем мечты гостей — просто потому что любим вас.</div>
  </div>
  <div class="stories-slide" data-slide="1">
   <div class="stories-slide-label">Цель проекта</div>
@@ -5755,12 +5755,18 @@ function updateNavBranchLabel() {
   lbl.textContent = br ? br.name : "Выбор филиала"
 }
 
+var _promoPopupShown = false;
+
 function switchBranch(b) {
   var s = _branchStatusData[b];
   if (s && s.blocked) return;
   branch = b, renderBranchCarousel(), tagNearestBranch(), updateNavBranchLabel();
   var bs = document.getElementById("branchSubtitle");
-  bs && (bs.style.display = "none"), cart = [], updBadge(), loadMenu(), logStat("visit", "")
+  bs && (bs.style.display = "none"), cart = [], updBadge(), loadMenu(), logStat("visit", "");
+  if (!_promoPopupShown) {
+    _promoPopupShown = true;
+    setTimeout(checkPromoPopup, 600);
+  }
 }
 
 function showNoBranchPlaceholder() {
@@ -5794,10 +5800,12 @@ function branchDisplayName(id) {
 }
 
 var _branchStatusData = {};
+var _branchStatusLoaded = false;
 
 function loadBranchStatus() {
   apiGet({ action: "getBranchStatus" }, function(d) {
     _branchStatusData = d.branches || {};
+    _branchStatusLoaded = true;
     renderBranchCarousel();
     renderBranchModal();
   }, function() {});
@@ -5935,6 +5943,7 @@ function renderBranchCarousel() {
   var track = document.getElementById("branchTrack");
   track && (track.innerHTML = "", BRANCHES.forEach(function(br) {
     var id, card = buildBranchCard(br, branch === br.id, !1, (id = br.id, function() {
+      if (!_branchStatusLoaded) { showToast("Секунду, проверяем филиалы..."); return; }
       var s = _branchStatusData[id];
       if (s && s.blocked) { showBranchBlockedModal(s.reason); return; }
       branch !== id && switchBranch(id)
@@ -5947,6 +5956,7 @@ function renderBranchModal() {
   var track = document.getElementById("branchModalTrack");
   track && (track.innerHTML = "", BRANCHES.forEach(function(br) {
     var id, row = buildBranchListRow(br, branch === br.id, (id = br.id, function() {
+      if (!_branchStatusLoaded) { showToast("Секунду, проверяем филиалы..."); return; }
       var s = _branchStatusData[id];
       if (s && s.blocked) { showBranchBlockedModal(s.reason); return; }
       selectBranchFromModal(id)
@@ -8672,8 +8682,9 @@ function checkPromoPopup() {
     tick();
     btn.onclick = function() {
       if (locked || btn.disabled) return;
-      if (d.btnUrl) window.open(d.btnUrl, "_blank");
       ov.style.display = "none";
+      if (d.btnUrl === "dream") { openDreamStories(); return; }
+      if (d.btnUrl) window.open(d.btnUrl, "_blank");
     };
 
     function closePopup() {
@@ -8707,7 +8718,7 @@ function checkSiteStatus() {
   }, function() {});
 }
 window.addEventListener("load", function() {
-  loadBranchStatus(), applyI18n(), renderBranchCarousel(), showNoBranchPlaceholder(), showBranchModal(), updateSearchTop(), tagNearestBranch(), checkSiteStatus(), checkPromoPopup(), renderPromoCarousel(), loadDynamicBanners();
+  loadBranchStatus(), applyI18n(), renderBranchCarousel(), showNoBranchPlaceholder(), showBranchModal(), updateSearchTop(), tagNearestBranch(), checkSiteStatus(), renderPromoCarousel(), loadDynamicBanners();
   var _saBtn = document.getElementById("siteAdminAccessBtn");
   if (_saBtn) _saBtn.addEventListener("click", function(ev) {
     ev.preventDefault();
