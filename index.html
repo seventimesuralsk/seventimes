@@ -5712,7 +5712,7 @@ function buildBranchCard(br, isOn, pulseIfOff, onClickFn) {
   var statusHtml = "";
   if (brStatus && brStatus.status) {
     var dotColor = brStatus.isOpenNow ? "#34c759" : "#ff3b30";
-    statusHtml = '<span style="display:inline-block;width:5px;height:5px;border-radius:50%;margin-right:4px;background:' + dotColor + '"></span>' + brStatus.status + (brStatus.hours ? " · " + brStatus.hours : "");
+    statusHtml = '<span style="display:inline-block;width:5px;height:5px;border-radius:50%;margin-right:4px;background:' + dotColor + '"></span>' + brStatus.status;
   }
   sub.innerHTML = "<div>" + statusHtml + "</div>", inner.appendChild(tag), inner.appendChild(title), inner.appendChild(sub);
   var emoji = document.createElement("div");
