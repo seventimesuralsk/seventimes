@@ -5720,7 +5720,7 @@ function buildBranchCard(br, isOn, pulseIfOff, onClickFn) {
   var tag = document.createElement("div");
   tag.style.cssText = "font-size:0.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px;" + (isOn ? "color:rgba(255,255,255,.7)" : "color:#999"), tag.textContent = t(isOn ? "selected_tag" : "tap_to_select");
   var title = document.createElement("div");
-  title.style.cssText = "font-size:0.77rem;font-weight:300;line-height:1.2;letter-spacing:-.01em;" + (isOn ? "color:#fff" : "color:#1d1d1f"), title.textContent = br.name;
+  title.style.cssText = "font-size:0.77rem;font-weight:500;line-height:1.2;letter-spacing:-.01em;" + (isOn ? "color:#fff" : "color:#1d1d1f"), title.textContent = br.name;
   var sub = document.createElement("div");
   sub.style.cssText = "font-size:0.62rem;font-weight:500;margin-top:3px;" + (isOn ? "color:rgba(255,255,255,.65)" : "color:#999");
   var brStatus = _branchStatusData[br.id];
