@@ -23,6 +23,15 @@
   padding: 0
 }
 
+button {
+  font-family: inherit;
+  transition: transform .15s var(--ease-spring), opacity .15s ease
+}
+
+button:active {
+  transform: scale(.96)
+}
+
 :root {
   --bg: #fff;
   --surface: #fff;
@@ -32,7 +41,9 @@
   --border2: #e5e5e5;
   --red: #e53e3e;
   --nav-h: 56px;
-  --px: 8px
+  --px: 8px;
+  --ease-spring: cubic-bezier(.32,.72,0,1);
+  --ease-out: cubic-bezier(.16,1,.3,1)
 }
 
 html {
@@ -48,7 +59,7 @@ body {
   background: #f5f5f7;
   width: 100%;
   min-height: 100vh;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility
@@ -89,7 +100,7 @@ nav {
   color: #1d1d1f;
   letter-spacing: -.01em;
   text-align: left;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.78rem;
   font-weight: 600;
   max-width: 150px;
@@ -123,7 +134,7 @@ nav {
   border-radius: 22px;
   align-items: center;
   gap: 7px;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.7rem;
   font-weight: 600;
   display: flex
@@ -233,7 +244,7 @@ nav {
   background: none;
   border: none;
   color: #0071e3;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.75rem;
   font-weight: 500;
   cursor: pointer;
@@ -296,7 +307,7 @@ nav {
   border: none;
   text-align: left;
   padding: 13px 14px;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
   color: #1d1d1f;
@@ -308,7 +319,7 @@ nav {
   border: none;
   text-align: left;
   padding: 13px 14px;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
   color: #1d1d1f;
@@ -366,7 +377,7 @@ nav {
   border: none;
   text-align: left;
   padding: 14px;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.67rem;
   font-weight: 500;
   color: #6e6e73;
@@ -402,7 +413,7 @@ nav {
 .hdr-title {
   letter-spacing: -.03em;
   margin-bottom: 10px;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 1.32rem;
   font-weight: 800;
   line-height: 1.1
@@ -422,7 +433,7 @@ nav {
   border-radius: 11px;
   flex: 1;
   padding: 8px;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.69rem;
   font-weight: 500
 }
@@ -452,7 +463,7 @@ nav {
   border: none;
   border-radius: 12px;
   outline: none;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.77rem
 }
 
@@ -525,7 +536,7 @@ nav {
   border: 1.5px solid #0071e3;
   border-radius: 22px;
   flex-shrink: 0;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.69rem;
   font-weight: 600
 }
@@ -698,7 +709,7 @@ nav {
   text-transform: uppercase;
   margin-bottom: 8px;
   padding: 0;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.63rem;
   font-weight: 700
 }
@@ -1064,7 +1075,8 @@ nav {
   max-width: 500px;
   max-height: 90svh;
   display: flex;
-  transform: translateY(100%)
+  transform: translateY(100%);
+  transition: transform .38s var(--ease-spring)
 }
 
 .mov.open .mbox {
@@ -1244,7 +1256,7 @@ nav {
   color: #fff;
   border: none;
   border-radius: 9px;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.63rem;
   font-weight: 600;
   cursor: pointer
@@ -1274,7 +1286,7 @@ nav {
   color: #1d1d1f;
   letter-spacing: -.02em;
   margin-bottom: 5px;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 1.1rem;
   font-weight: 700;
   line-height: 1.2
@@ -1351,7 +1363,7 @@ nav {
   border-radius: 13px;
   flex: 1;
   padding: 13px;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.77rem;
   font-weight: 600
 }
@@ -1476,7 +1488,7 @@ nav {
   border: none;
   border-radius: 8px;
   padding: 7px 10px;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.62rem;
   font-weight: 600;
   cursor: pointer;
@@ -1510,7 +1522,7 @@ nav {
   gap: 2px;
   cursor: pointer;
   text-align: left;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   min-width: 120px
 }
 
@@ -1565,7 +1577,7 @@ nav {
   gap: 7px;
   width: 100%;
   padding: 14px;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.77rem;
   font-weight: 600;
   display: flex
@@ -1617,7 +1629,7 @@ nav {
   border-radius: 8px;
   flex: 1;
   padding: 10px;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.7rem;
   font-weight: 500
 }
@@ -1639,7 +1651,7 @@ nav {
   border-radius: 11px;
   outline: none;
   margin-bottom: 8px;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.77rem;
   display: block
 }
@@ -1676,7 +1688,7 @@ nav {
   background: #f5f5f7;
   border: 1.5px solid #e5e5e5;
   border-radius: 20px;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.67rem;
   font-weight: 500
 }
@@ -1701,7 +1713,7 @@ nav {
   border-radius: 11px;
   flex: 1;
   padding: 11px;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.7rem;
   font-weight: 500
 }
@@ -1838,7 +1850,7 @@ nav {
   width: 100%;
   margin-bottom: 8px;
   padding: 11px;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.7rem;
   font-weight: 500;
   display: flex
@@ -1885,7 +1897,7 @@ nav {
   border-radius: 9px;
   flex: 1;
   padding: 9px;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.69rem;
   font-weight: 600
 }
@@ -1914,7 +1926,7 @@ nav {
   border-radius: 11px;
   outline: none;
   margin-bottom: 10px;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.77rem;
   display: block
 }
@@ -1936,7 +1948,7 @@ nav {
   border-radius: 11px;
   width: 100%;
   padding: 13px;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   display: block
@@ -1955,7 +1967,7 @@ nav {
   width: 100%;
   margin-top: 8px;
   padding: 11px;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.69rem;
   display: block
 }
@@ -1984,7 +1996,7 @@ nav {
   border-radius: 7px;
   flex: 1;
   padding: 8px;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.67rem;
   font-weight: 500
 }
@@ -2006,7 +2018,7 @@ nav {
   border-radius: 10px;
   outline: none;
   margin-bottom: 12px;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.7rem;
   display: block
 }
@@ -2023,7 +2035,7 @@ nav {
   background: #f5f5f5;
   border: 1.5px solid #ebebeb;
   border-radius: 14px;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.72rem;
   font-weight: 600
 }
@@ -2041,7 +2053,7 @@ nav {
   border: none;
   border-radius: 8px;
   flex-shrink: 0;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.69rem;
   font-weight: 500
 }
@@ -2069,7 +2081,7 @@ nav {
   border: 1.5px solid #0000;
   border-radius: 11px;
   outline: none;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.77rem
 }
 
@@ -2082,7 +2094,7 @@ nav {
   border: none;
   border-radius: 11px;
   flex-shrink: 0;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.69rem;
   font-weight: 600
 }
@@ -2200,7 +2212,7 @@ nav {
   cursor: pointer;
   border: none;
   border-radius: 8px;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.63rem;
   font-weight: 600
 }
@@ -2247,7 +2259,7 @@ nav {
   border: 1.5px solid #e5e5e5;
   border-radius: 10px;
   padding: 10px;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.69rem;
   font-weight: 500
 }
@@ -2283,7 +2295,7 @@ nav {
   outline: none;
   flex: 1;
   padding: 10px;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.79rem
 }
 
@@ -2295,7 +2307,7 @@ nav {
   border-radius: 11px;
   width: 100%;
   padding: 12px;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.75rem;
   font-weight: 600
 }
@@ -2313,7 +2325,7 @@ nav {
   width: 100%;
   margin-top: 8px;
   padding: 11px;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.72rem
 }
 
@@ -2396,7 +2408,7 @@ nav {
   background: #f5f5f7;
   border: 1.5px solid #e5e5e5;
   border-radius: 22px;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.72rem;
   font-weight: 500
 }
@@ -2656,7 +2668,7 @@ nav {
   border-radius: 22px;
   flex-shrink: 0;
   padding: 9px 12px;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.62rem;
   font-weight: 700
 }
@@ -2777,6 +2789,17 @@ nav {
   font-size: 0.52rem;
   font-weight: 400;
   letter-spacing: .07em;
+  padding: 2px 6px;
+  border-radius: 6px;
+  flex-shrink: 0
+}
+
+.branch-list-near-badge {
+  background: #0071e3;
+  color: #fff;
+  font-size: 0.52rem;
+  font-weight: 700;
+  letter-spacing: .02em;
   padding: 2px 6px;
   border-radius: 6px;
   flex-shrink: 0
@@ -2938,7 +2961,7 @@ nav {
   color: #fff;
   padding: 9px 11px;
   border-radius: 8px;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.78rem;
   font-weight: 600;
   cursor: pointer;
@@ -3112,7 +3135,7 @@ nav {
   border: none;
   border-radius: 980px;
   padding: 6px 12px;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.62rem;
   font-weight: 700;
   pointer-events: none
@@ -3306,7 +3329,7 @@ nav {
   border: none;
   border-radius: 980px;
   padding: 12px 26px;
-  font-family: Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
   font-size: 0.78rem;
   font-weight: 700;
   cursor: pointer
@@ -3603,7 +3626,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
      </div>
     </div>
     <div style="align-items:center;gap:2px;display:flex">
-     <button onclick="openSheetModal('bookingSheet')" style="text-decoration:none;color:#fff;background:#1d1d1f;font-size:0.62rem;font-weight:700;white-space:nowrap;padding:7px 11px;border-radius:14px;display:flex;align-items:center;gap:4px;margin-right:2px;border:none;cursor:pointer;font-family:Inter,sans-serif">
+     <button onclick="openSheetModal('bookingSheet')" style="text-decoration:none;color:#fff;background:#1d1d1f;font-size:0.62rem;font-weight:700;white-space:nowrap;padding:7px 11px;border-radius:14px;display:flex;align-items:center;gap:4px;margin-right:2px;border:none;cursor:pointer;font-family:-apple-system,BlinkMacSystemFont,Inter,sans-serif">
       Бронь столика
      </button>
      <button aria-label="Поиск" class="nav-icon-btn" onclick="openSearchOv()">
@@ -3664,6 +3687,14 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
      <div class="banners-track" id="bannersTrack">
      </div>
     </div>
+   </div>
+   <div id="repeatOrderBanner" style="display:none;margin:10px var(--px)0;padding:12px 14px;background:#f6f6f6;border-radius:14px;align-items:center;gap:12px">
+    <div style="flex:1;min-width:0">
+     <div style="font-size:0.68rem;font-weight:700;color:#1d1d1f;margin-bottom:2px">Ваш обычный заказ</div>
+     <div id="repeatOrderItems" style="font-size:0.66rem;color:#6e6e73;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+    </div>
+    <button onclick="applyRepeatOrder()" style="flex-shrink:0;background:#1d1d1f;color:#fff;border:none;border-radius:10px;padding:9px 14px;font-family:-apple-system,BlinkMacSystemFont,Inter,sans-serif;font-size:0.7rem;font-weight:700;cursor:pointer">Добавить</button>
+    <button onclick="dismissRepeatOrder()" aria-label="Скрыть" style="flex-shrink:0;background:none;border:none;color:#c7c7cc;font-size:1rem;cursor:pointer;padding:0 2px">✕</button>
    </div>
    <div class="menu-content" id="menuContent">
     <div id="noBranchPlaceholder" style="text-align:center;flex-direction:column;justify-content:center;align-items:center;padding:70px 30px;display:flex">
@@ -3772,7 +3803,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
      <div class="mfoot">
       <div class="cnote" id="cnote">
       </div>
-      <button data-i18n="clear_cart" id="clearCartBtn" onclick="clearCartConfirm()" style="display:none;background:none;border:none;color:#e53e3e;font-family:Inter,sans-serif;font-size:0.63rem;font-weight:500;cursor:pointer;padding:0 0 10px;text-decoration:underline">
+      <button data-i18n="clear_cart" id="clearCartBtn" onclick="clearCartConfirm()" style="display:none;background:none;border:none;color:#e53e3e;font-family:-apple-system,BlinkMacSystemFont,Inter,sans-serif;font-size:0.63rem;font-weight:500;cursor:pointer;padding:0 0 10px;text-decoration:underline">
        Очистить корзину
       </button>
       <div class="trow">
@@ -4435,7 +4466,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
            Убрать из стопа
           </button>
          </div>
-         <button onclick="admDeleteItem()" style="color:#e53e3e;cursor:pointer;background:#e53e3e1a;border:1px solid #e53e3e40;border-radius:11px;width:100%;margin-top:12px;padding:12px;font-family:Inter,sans-serif;font-size:0.72rem;font-weight:600">
+         <button onclick="admDeleteItem()" style="color:#e53e3e;cursor:pointer;background:#e53e3e1a;border:1px solid #e53e3e40;border-radius:11px;width:100%;margin-top:12px;padding:12px;font-family:-apple-system,BlinkMacSystemFont,Inter,sans-serif;font-size:0.72rem;font-weight:600">
           Удалить блюдо
          </button>
          <div class="admerr" id="editErr" style="margin-top:8px">
@@ -4536,7 +4567,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
      </button>
      <div class="drawer-cats" id="drawerCats">
      </div>
-     <button class="drawer-admin" onclick="openSheetModal('feedbackSheet')" style="color:#0071e3;font-size:0.72rem;font-weight:600;border-top:1px solid #eee;padding-top:14px;text-decoration:none;display:block;background:none;border:none;text-align:left;cursor:pointer;font-family:Inter,sans-serif;width:100%">
+     <button class="drawer-admin" onclick="openSheetModal('feedbackSheet')" style="color:#0071e3;font-size:0.72rem;font-weight:600;border-top:1px solid #eee;padding-top:14px;text-decoration:none;display:block;background:none;border:none;text-align:left;cursor:pointer;font-family:-apple-system,BlinkMacSystemFont,Inter,sans-serif;width:100%">
       Жалобы и предложения
      </button>
      <button class="drawer-admin" data-i18n="drawer_admin" onclick="closeDrawer();openAdm()">
@@ -5835,7 +5866,7 @@ function loadBranchStatus() {
     var parsed = parseBranchHoursClient(cfg.hours);
     var statusText, isOpenNow;
     if (parsed) {
-      statusText = parsed.isOpen ? "Открыто" : ("Закрыто, откроется в " + parsed.openStr);
+      statusText = parsed.isOpen ? "Открыто" : ("Откроется в " + parsed.openStr);
       isOpenNow = parsed.isOpen;
     } else {
       statusText = cfg.hours;
@@ -5928,10 +5959,16 @@ function tagNearestBranch() {
 }
 
 function applyNearestBadge(id) {
-  document.querySelectorAll(".branch-near-badge").forEach(function(b) {
+  document.querySelectorAll(".branch-near-badge, .branch-list-near-badge").forEach(function(b) {
     b.remove()
   }), document.querySelectorAll('[id="branchCard-' + id + '"]').forEach(function(el) {
-    el.querySelector(".branch-near-badge") || el.insertAdjacentHTML("beforeend", '<div class="branch-near-badge">' + t("near_you_badge") + "</div>")
+    if (el.querySelector(".branch-near-badge, .branch-list-near-badge")) return;
+    if (el.classList.contains("branch-list-row")) {
+      var nameWrap = el.querySelector(".branch-list-name");
+      nameWrap && nameWrap.insertAdjacentHTML("beforeend", '<span class="branch-list-near-badge">' + t("near_you_badge") + "</span>");
+    } else {
+      el.insertAdjacentHTML("beforeend", '<div class="branch-near-badge">' + t("near_you_badge") + "</div>");
+    }
   })
 }
 
@@ -6656,7 +6693,7 @@ async function loadMenu() {
   let validCache = "2" === ver ? cached : null;
   if (resetPills(), validCache) {
     try {
-      menuData = JSON.parse(validCache), applyLunchSchedule(), renderCats(), renderMenu(), loadHitToday(), restoreCartFromStorage()
+      menuData = JSON.parse(validCache), applyLunchSchedule(), renderCats(), renderMenu(), loadHitToday(), restoreCartFromStorage(), checkRepeatOrder()
     } catch {}
     fetch(API + "?action=getMenu&branch=" + branch).then(r => r.json()).then(d => {
       "success" === d.status && (localStorage.setItem(key, JSON.stringify(d.categories)), localStorage.setItem(key + "_ver", "2"), patchMenuLive(d.categories))
@@ -6666,7 +6703,7 @@ async function loadMenu() {
     try {
       let d = await (await fetch(API + "?action=getMenu&branch=" + branch)).json();
       if ("success" !== d.status) throw Error();
-      menuData = d.categories, localStorage.setItem(key, JSON.stringify(menuData)), localStorage.setItem(key + "_ver", "2"), applyLunchSchedule(), renderCats(), renderMenu(), loadHitToday(), restoreCartFromStorage()
+      menuData = d.categories, localStorage.setItem(key, JSON.stringify(menuData)), localStorage.setItem(key + "_ver", "2"), applyLunchSchedule(), renderCats(), renderMenu(), loadHitToday(), restoreCartFromStorage(), checkRepeatOrder()
     } catch {
       document.getElementById("menuContent").innerHTML = '<div class="loader"><div style="font-size:1.76rem;margin-bottom:8px"></div><div class="loader-t">' + t("something_broke") + "</div></div>"
     }
@@ -7019,6 +7056,54 @@ function getQty(id) {
   return c ? c.qty : 0
 }
 let _lastAddedItemName = null;
+
+var _repeatOrderMatched = [];
+var _repeatOrderDismissedKey = null;
+
+function checkRepeatOrder() {
+  var dismissKey = "st_repeat_dismissed_" + branch;
+  if (sessionStorage.getItem(dismissKey)) return;
+  apiGet({ action: "getLastOrder", clientId: getClientId(), branch: branch }, function(d) {
+    if (!d.found || !d.items || !d.items.length) return;
+    var matched = [];
+    d.items.forEach(function(it) {
+      var found = findItemByName(it.name);
+      if (found) matched.push({ item: found, qty: it.qty });
+    });
+    if (!matched.length) return;
+    _repeatOrderMatched = matched;
+    var namesHtml = matched.map(function(m) { return m.item.name + (m.qty > 1 ? " ×" + m.qty : ""); }).join(", ");
+    var el = document.getElementById("repeatOrderItems");
+    if (el) el.textContent = namesHtml;
+    var banner = document.getElementById("repeatOrderBanner");
+    if (banner) banner.style.display = "flex";
+  }, function() {});
+}
+
+function findItemByName(name) {
+  var r;
+  var target = (name || "").toString().trim().toLowerCase();
+  Object.values(menuData).forEach(function(arr) {
+    arr.forEach(function(i) {
+      if (!r && i.name.trim().toLowerCase() === target) r = i;
+    });
+  });
+  return r;
+}
+
+function applyRepeatOrder() {
+  _repeatOrderMatched.forEach(function(m) {
+    addCart(m.item, m.qty);
+  });
+  dismissRepeatOrder();
+  showToast("Добавлено в корзину");
+}
+
+function dismissRepeatOrder() {
+  var banner = document.getElementById("repeatOrderBanner");
+  if (banner) banner.style.display = "none";
+  try { sessionStorage.setItem("st_repeat_dismissed_" + branch, "1"); } catch {}
+}
 
 function addCart(it, d) {
   let i = cart.findIndex(c => c.id === it.id);
