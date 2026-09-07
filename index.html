@@ -1435,64 +1435,11 @@ nav {
   line-height: 1.55
 }
 
-.cprog-label {
-  color: #1d1d1f;
-  margin-bottom: 7px;
-  font-size: 0.65rem;
-  font-weight: 600
-}
-
-.cprog-track {
-  background: #e8e8e8;
-  border-radius: 8px;
-  width: 100%;
-  height: 8px;
-  overflow: hidden
-}
-
-.cprog-fill {
-  background: linear-gradient(90deg, #0071e3, #34c759);
-  border-radius: 8px;
-  height: 100%
-}
-
-.cprog-done {
-  color: #16a34a;
-  font-size: 0.67rem;
-  font-weight: 700
-}
-
-.cprog-bridge {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-top: 8px;
-  background: #fff7ed;
-  border: 1px solid #fed7aa;
-  border-radius: 9px;
-  padding: 9px 10px
-}
-
-.cprog-bridge span {
-  font-size: 0.62rem;
-  color: #7c2d12;
-  line-height: 1.4;
-  flex: 1
-}
-
-.cprog-bridge-btn {
-  flex-shrink: 0;
-  background: #1d1d1f;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 7px 10px;
-  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
-  font-size: 0.62rem;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap
+.cprog-note {
+  color: #6e6e73;
+  font-size: 0.64rem;
+  line-height: 1.5;
+  margin-bottom: 7px
 }
 
 .cross-sell-label {
@@ -7205,45 +7152,8 @@ function getUpsellSuggestKeywords(catName) {
 function renderCartCrossSell() {
   var box = document.getElementById("cartCrossSell");
   if (!box) return;
-  if (!cart.length || !_lastAddedItemName) {
-    box.style.display = "none";
-    box.innerHTML = "";
-    return;
-  }
-  var lastItem = findItemByName(_lastAddedItemName);
-  var triggerCat = getCategoryOfItem(lastItem);
-  var suggestKeywords = getUpsellSuggestKeywords(triggerCat);
-  var inCartIds = {};
-  cart.forEach(function(c) {
-    inCartIds[c.id.split("__")[0]] = true;
-  });
-  var candidates = [];
-  Object.keys(menuData).forEach(function(catName) {
-    var lowerCat = catName.toLowerCase();
-    if (suggestKeywords.some(function(kw) {
-        return lowerCat.indexOf(kw) !== -1;
-      })) {
-      menuData[catName].forEach(function(it) {
-        if (!it.stopped && !it.teaser && !inCartIds[it.id] && (!lastItem || it.id !== lastItem.id)) candidates.push(it);
-      });
-    }
-  });
-  if (!candidates.length) {
-    box.style.display = "none";
-    box.innerHTML = "";
-    return;
-  }
-  candidates.sort(function(a, b) {
-    return a.price - b.price;
-  });
-  var picks = candidates.slice(0, 2);
-  var html = '<div class="cross-sell-label">Дополните заказ</div><div class="cross-sell-row">';
-  picks.forEach(function(it) {
-    html += '<button class="cross-sell-item" onclick="cartAddBridgeItem(\'' + it.id + '\')"><span class="cross-sell-name">' + it.name + '</span><span class="cross-sell-price">+ ' + it.price.toLocaleString("ru") + ' ₸</span></button>';
-  });
-  html += "</div>";
-  box.innerHTML = html;
-  box.style.display = "block";
+  box.style.display = "none";
+  box.innerHTML = "";
 }
 
 function openCart() {
@@ -7302,18 +7212,7 @@ function renderDeliveryProgress(total) {
   let box = document.getElementById("cnote");
   if (!box) return;
   if (total <= 0) return void(box.innerHTML = "");
-  if (total >= 3e3) {
-    box.innerHTML = `<div class="cprog-done">${t("delivery_unlocked")}</div>`;
-    return;
-  }
-  let pct = Math.min(100, Math.round(total / 3e3 * 100)),
-    left = 3e3 - total;
-  var bridgeHtml = "";
-  var bridgeItem = findBridgeItem(left);
-  if (bridgeItem) {
-    bridgeHtml = `<div class="cprog-bridge"><span>Добавьте <b>${bridgeItem.name}</b> за ${bridgeItem.price.toLocaleString("ru")} ₸ — доставка станет бесплатной!</span><button class="cprog-bridge-btn" onclick="cartAddBridgeItem('${bridgeItem.id}')">+ Добавить</button></div>`;
-  }
-  box.innerHTML = `<div class="cprog-label">${t("delivery_progress_left")} ${left.toLocaleString("ru")} ₸</div><div class="cprog-track"><div class="cprog-fill" style="width:${pct}%"></div></div>${bridgeHtml}`;
+  box.innerHTML = '<div class="cprog-note">Бесплатная доставка действует при заказе от 3 000 ₸ в пределах города. За городом и на удалённые адреса стоимость и возможность доставки определяются индивидуально и уточняются оператором при оформлении заказа в WhatsApp.</div>';
 }
 
 function cartAddBridgeItem(id) {
