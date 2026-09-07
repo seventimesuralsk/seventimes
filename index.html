@@ -4596,7 +4596,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
      <button id="promoPopupClose" style="position:absolute;top:10px;right:10px;z-index:2;width:30px;height:30px;border-radius:50%;border:none;background:rgba(0,0,0,.45);color:#fff;font-size:0.88rem;line-height:1;cursor:pointer;display:none;align-items:center;justify-content:center">
       ×
      </button>
-     <img id="promoPopupPhoto" src="" style="width:100%;display:none;max-height:220px;object-fit:cover;background:#f0f0f0"/>
+     <img id="promoPopupPhoto" src="" loading="lazy" style="width:100%;display:none;max-height:220px;object-fit:cover;background:#f0f0f0"/>
      <div style="padding:20px">
       <div id="promoPopupTitle" style="font-size:1.01rem;font-weight:700;color:#1d1d1f;margin-bottom:8px">
       </div>
@@ -6189,7 +6189,7 @@ function buildGenericSlidesMarkup(slides) {
     div.className = "stories-slide" + (i === 0 ? " active" : "");
     div.dataset.slide = i;
     div.style.padding = "0";
-    div.style.backgroundImage = "url('" + sl.photo + "')";
+    div.style.backgroundImage = "url('" + optimizeCloudinaryUrl(sl.photo, 1080) + "')";
     div.style.backgroundSize = "cover";
     div.style.backgroundPosition = "center";
     if (sl.btnText && sl.btnUrl) {
@@ -6601,7 +6601,7 @@ function loadDynamicBanners() {
       window._dynamicBanners[b.id] = b;
       PROMO_CARDS.push({
         id: b.id,
-        bg: b.photo ? "url('" + b.photo + "')" : "#1d1d1f",
+        bg: b.photo ? "url('" + optimizeCloudinaryUrl(b.photo, 500) + "')" : "#1d1d1f",
         label: b.label,
         title: b.title,
         cta: b.cta,
@@ -6858,8 +6858,8 @@ function buildCard(item) {
     isPopular = item.badge && "" !== item.badge.trim();
   div.className = "item-card" + (item.stopped ? " stopped" : "") + (item.teaser ? " teaser" : ""), div.dataset.id = item.id, item.synonyms && (div.dataset.synonyms = item.synonyms.toLowerCase());
   let rawPhoto = item.photo || "",
-    photoUrl = rawPhoto ? convertPhotoUrl(rawPhoto) : "",
-    img = photoUrl ? `<img src="${photoUrl}" alt="" onerror="imgErrorRetry(this,'Фото добавляется')">` : '<span class="item-photo-placeholder">' + t("photo_coming") + "</span>",
+    photoUrl = rawPhoto ? convertPhotoUrl(rawPhoto, 500) : "",
+    img = photoUrl ? `<img src="${photoUrl}" alt="" loading="lazy" decoding="async" onerror="imgErrorRetry(this,'Фото добавляется')">` : '<span class="item-photo-placeholder">' + t("photo_coming") + "</span>",
     qty = getQty(item.id),
     btype = getBadgeType(item.badge);
   return div.innerHTML = `\n <div class="item-img-wrap">\n <div class="item-img">${img}</div>\n ${item.teaser?'<div class="teaser-lbl">'+t("teaser_soon")+"</div>":isPopular?`<div class="item-badge" data-type="${btype}">${item.badge}</div>`:""}${item.teaser||-1===_hitTodayNames.indexOf(item.name.toLowerCase())?"":'<div class="item-hit-badge">Топ недели</div>'}\n </div>\n <div class="item-body">\n <div class="item-name">${item.name}</div>\n ${item.desc?`<div class="item-desc-short">${item.desc}</div>`:""}\n ${item.mods?'<div class="item-mods-hint">'+t("choose_variant_hint")+"</div>":""}${item.lunchLocked?'<div class="item-mods-hint" style="color:#e53e3e;font-weight:600">⏰ '+item.lunchScheduleText+"</div>":""}\n ${item.stopped?'<div class="stopped-lbl">'+t("sold_out")+"</div>"+(item.until&&item.until>Date.now()?'<div class="item-timer"><span class="item-timer-dot"></span><span id="timer-'+item.id+'">'+fmtTimer(item.until)+"</span></div>":""):`<div class="item-price-row">\n <div class="item-price">${item.price.toLocaleString("ru")} ₸</div>\n <div class="item-add-wrap" id="cc-${item.id}">${ctrlHtml(item.id,item.price,qty)}</div>\n </div>\n ${item.allowDelivery?item.allowSelf?"":`<div class="item-selfonly">${t("delivery_only")}</div>`:`<div class="item-selfonly">${t("pickup_only")}</div>`}`}\n </div>`, div.addEventListener("pointerdown", () => {
@@ -6920,8 +6920,8 @@ function parseMods(str) {
 function openDetail(item) {
   curItem = item, curQty = Math.max(1, getQty(item.id)), curMod = null, logStat("view", item.name);
   let el = document.getElementById("dimg");
-  var detailPhotoUrl = item.photo ? convertPhotoUrl(item.photo) : "";
-  el.innerHTML = detailPhotoUrl ? `<img src="${detailPhotoUrl}" alt="" onerror="imgErrorRetry(this,'Фото добавляется')">` : '<span class="item-photo-placeholder">' + t("photo_coming") + "</span>", document.getElementById("dname").textContent = item.name;
+  var detailPhotoUrl = item.photo ? convertPhotoUrl(item.photo, 900) : "";
+  el.innerHTML = detailPhotoUrl ? `<img src="${detailPhotoUrl}" alt="" decoding="async" onerror="imgErrorRetry(this,'Фото добавляется')">` : '<span class="item-photo-placeholder">' + t("photo_coming") + "</span>", document.getElementById("dname").textContent = item.name;
   var isCombo = /^комбо/i.test(item.name.trim()),
     comboNotice = isCombo ? '<div style="color:#e53e3e;font-weight:600;background:#e53e3e14;border-radius:9px;padding:9px 11px;margin-bottom:10px;line-height:1.5">⏱ Время приготовления: 20–25 мин.<br>В часы пик и праздники — до 90 мин, при большом количестве заказов — до 120 мин.</div>' : "";
   document.getElementById("ddesc").innerHTML = comboNotice + (item.desc || "");
@@ -7696,7 +7696,7 @@ function showPeek(item) {
   let ov = document.getElementById("peekOv");
   if (!ov) return;
   document.getElementById("peekName").textContent = item.name, document.getElementById("peekPrice").textContent = item.price ? item.price.toLocaleString("ru") + " ₸" : "";
-  let photoUrl = item.photo ? convertPhotoUrl(item.photo) : "";
+  let photoUrl = item.photo ? convertPhotoUrl(item.photo, 300) : "";
   document.getElementById("peekImg").innerHTML = photoUrl ? '<img src="' + photoUrl + '" alt="">' : '<span class="item-photo-placeholder">' + t("photo_coming") + "</span>", ov.classList.add("show"), navigator.vibrate && navigator.vibrate(8)
 }
 
@@ -8067,7 +8067,18 @@ function admOpenEdit(item) {
   }
 }
 
-function convertPhotoUrl(url) {
+function optimizeCloudinaryUrl(url, width) {
+  if (!url || url.indexOf("res.cloudinary.com") === -1) return url;
+  if (url.indexOf("f_auto") !== -1) return url;
+  var marker = "/upload/";
+  var idx = url.indexOf(marker);
+  if (idx === -1) return url;
+  var insertPos = idx + marker.length;
+  var transform = "f_auto,q_auto" + (width ? ",w_" + width : "");
+  return url.slice(0, insertPos) + transform + "/" + url.slice(insertPos);
+}
+
+function convertPhotoUrl(url, width) {
   if (!url || !url.trim()) return "";
   url = url.trim();
   var m1 = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
@@ -8077,7 +8088,7 @@ function convertPhotoUrl(url) {
   var m3 = url.match(/uc\?.*export=view.*id=([a-zA-Z0-9_-]+)/);
   if (m3) return "https://drive.google.com/thumbnail?id=" + m3[1] + "&sz=w400";
   if (/^os\.md\//i.test(url)) return "https://" + url;
-  return url
+  return optimizeCloudinaryUrl(url, width)
 }
 
 function admUpdatePhotoPreview(url) {
@@ -8721,7 +8732,7 @@ function openPromoModal(type) {
   document.getElementById("promoMTitle").textContent = title;
   var grid = document.getElementById("promoModalGrid");
   grid.innerHTML = "", items.forEach(function(item) {
-    var photoUrl = item.photo ? convertPhotoUrl(item.photo) : "",
+    var photoUrl = item.photo ? convertPhotoUrl(item.photo, 500) : "",
       card = document.createElement("div");
     card.className = "pm-card";
     var imgWrap = document.createElement("div");
