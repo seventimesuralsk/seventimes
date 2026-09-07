@@ -3779,60 +3779,46 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
      <div class="mhandle">
      </div>
      <div class="mhead">
-      <div class="mtitle" data-i18n="your_cart">
+      <div class="mtitle" id="cartMovTitle" data-i18n="your_cart">
        Твоя корзина
       </div>
-      <div style="align-items:center;gap:6px;display:flex">
-       <button aria-label="Личный кабинет" class="mx" onclick="openProfile()" title="Личный кабинет">
-        <svg fill="none" height="15" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="15">
-         <circle cx="12" cy="8" r="4">
-         </circle>
-         <path d="M4 20c0-4 4-6 8-6s8 2 8 6">
-         </path>
-        </svg>
-       </button>
-       <button aria-label="Закрыть корзину" class="mx" onclick="closeCart()">
-        ×
-       </button>
-      </div>
+      <button aria-label="Закрыть" class="mx" onclick="closeCart()">
+       ×
+      </button>
+     </div>
+     <div class="stabs" style="margin:0 20px 12px">
+      <button class="stab on" id="cartTabBtn" onclick="switchCartTab('cart')">
+       Корзина
+      </button>
+      <button class="stab" id="profileTabBtn" onclick="switchCartTab('profile')">
+       Профиль
+      </button>
      </div>
      <div class="mbody" id="cartBody">
      </div>
      <div id="cartCrossSell" style="display:none">
      </div>
-     <div class="mfoot">
-      <div class="cnote" id="cnote">
-      </div>
-      <button data-i18n="clear_cart" id="clearCartBtn" onclick="clearCartConfirm()" style="display:none;background:none;border:none;color:#e53e3e;font-family:-apple-system,BlinkMacSystemFont,Inter,sans-serif;font-size:0.63rem;font-weight:500;cursor:pointer;padding:0 0 10px;text-decoration:underline">
-       Очистить корзину
-      </button>
-      <div class="trow">
-       <div class="tlabel" data-i18n="total">
-        Итого
+     <div class="mbody" id="profileBody" style="display:none">
+     </div>
+     <div id="cartMovFoot">
+      <div class="mfoot">
+       <div class="cnote" id="cnote">
        </div>
-       <div class="tsum" id="cartTotal">
-        0 ₸
+       <button data-i18n="clear_cart" id="clearCartBtn" onclick="clearCartConfirm()" style="display:none;background:none;border:none;color:#e53e3e;font-family:-apple-system,BlinkMacSystemFont,Inter,sans-serif;font-size:0.63rem;font-weight:500;cursor:pointer;padding:0 0 10px;text-decoration:underline">
+        Очистить корзину
+       </button>
+       <div class="trow">
+        <div class="tlabel" data-i18n="total">
+         Итого
+        </div>
+        <div class="tsum" id="cartTotal">
+         0 ₸
+        </div>
        </div>
+       <button class="btn-main" data-i18n="checkout_btn" onclick="startOrder()">
+        Оформить заказ
+       </button>
       </div>
-      <button class="btn-main" data-i18n="checkout_btn" onclick="startOrder()">
-       Оформить заказ
-      </button>
-     </div>
-    </div>
-   </div>
-   <div class="mov" id="profileMov" onclick="if(event.target===this)closeMov('profileMov')">
-    <div class="mbox">
-     <div class="mhandle">
-     </div>
-     <div class="mhead">
-      <div class="mtitle" data-i18n="personal_cabinet">
-       Личный кабинет
-      </div>
-      <button aria-label="Закрыть" class="mx" onclick="closeMov('profileMov')">
-       ×
-      </button>
-     </div>
-     <div class="mbody" id="profileBody">
      </div>
     </div>
    </div>
@@ -5632,7 +5618,7 @@ function saveClientProfile(p) {
 }
 
 function startOrder() {
-  if (!cart.length) return void showToast(t("cart_empty"));
+  if (!cart.length) { closeCart(); document.getElementById("menuContent").scrollIntoView({ behavior: "smooth" }); return; }
   if (!canOrderNow(branch)) {
     let c = getOrderClosedContent(branch);
     return void showFunModal(c.emoji, c.text, c.btn)
@@ -5725,7 +5711,24 @@ function saveOrderToHistory(order) {
 }
 
 function openProfile() {
-  renderProfile(), openMov("profileMov")
+  renderProfile(), openMov("cartMov"), switchCartTab("profile")
+}
+
+function switchCartTab(tab) {
+  var cartBtn = document.getElementById("cartTabBtn"),
+    profileBtn = document.getElementById("profileTabBtn"),
+    cartBody = document.getElementById("cartBody"),
+    cartCross = document.getElementById("cartCrossSell"),
+    profileBody = document.getElementById("profileBody"),
+    foot = document.getElementById("cartMovFoot"),
+    title = document.getElementById("cartMovTitle");
+  var isProfile = "profile" === tab;
+  cartBtn.classList.toggle("on", !isProfile), profileBtn.classList.toggle("on", isProfile);
+  cartBody.style.display = isProfile ? "none" : "", profileBody.style.display = isProfile ? "" : "none";
+  isProfile ? cartCross.style.display = "none" : renderCartCrossSell();
+  foot.style.display = isProfile ? "none" : "";
+  title.textContent = isProfile ? t("personal_cabinet") : t("your_cart");
+  isProfile && renderProfile();
 }
 
 function renderProfile() {
@@ -5760,7 +5763,7 @@ function repeatOrder(idx) {
   order.itemsList.forEach(function(it) {
     let fresh = findItem(it.id);
     fresh && !fresh.stopped ? (addCart(fresh, it.qty), added++) : skipped++
-  }), updBadge(), closeMov("profileMov"), added ? (openCart(), showToast(skipped ? t("repeat_order_partial").replace("{0}", added).replace("{1}", skipped) : t("order_added_to_cart"))) : showToast(t("repeat_order_all_unavailable"))
+  }), updBadge(), added ? (openCart(), showToast(skipped ? t("repeat_order_partial").replace("{0}", added).replace("{1}", skipped) : t("order_added_to_cart"))) : showToast(t("repeat_order_all_unavailable"))
 }
 var LUNCH_IMAGES = {
   1: "https://res.cloudinary.com/i6yr0bgg/image/upload/v1784066981/%D0%B1%D0%B8%D0%B7%D0%BD%D0%B5%D1%81_1_1_1_asm12j.png",
@@ -7328,7 +7331,7 @@ function renderCartCrossSell() {
 }
 
 function openCart() {
-  renderCart(), renderCartCrossSell(), openMov("cartMov"), cart.length && logStat("cart_open", "")
+  switchCartTab("cart"), renderCart(), renderCartCrossSell(), openMov("cartMov"), cart.length && logStat("cart_open", "")
 }
 
 function closeCart() {
