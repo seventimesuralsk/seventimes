@@ -8653,11 +8653,8 @@ function renderBanners() {
     track.innerHTML = "";
     var titleEl = document.getElementById("catSectionTitle");
     titleEl && (titleEl.style.display = "block");
-    var names = Object.keys(menuData),
-      allPill = document.createElement("div");
-    allPill.className = "cat-pill-all", allPill.textContent = "Все категории", allPill.onclick = function() {
-      openSheet()
-    }, track.appendChild(allPill), names.forEach(function(cat, i) {
+    var names = Object.keys(menuData);
+    names.forEach(function(cat, i) {
       var clean = cat.replace(/[\u{1F300}-\u{1FFFF}]/gu, "").trim(),
         pill = document.createElement("div");
       pill.className = "cat-pill", pill.innerHTML = '<span class="cat-pill-name">' + clean + "</span>", pill.onclick = function() {
