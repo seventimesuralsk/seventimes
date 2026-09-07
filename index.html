@@ -3698,8 +3698,6 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
       </div>
       <div class="mod-row" id="dModRow" style="display:none">
       </div>
-      <div id="dFreqWith" style="display:none">
-      </div>
       <div class="dfooter">
        <div class="dprice" id="dprice">
        </div>
@@ -4609,8 +4607,9 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
   <div class="bk-sub">Seven Times · Самал 70/3 и Скоробогатова 65/1</div>
 
   <div class="bk-card">
-    <div class="bk-label">Выберите филиал</div>
-    <div style="display:flex;gap:8px;margin-bottom:14px">
+    <div class="bk-label">Филиал</div>
+    <div id="bk-branchReadout" style="display:none;margin-bottom:14px;padding:12px 14px;background:rgba(255,255,255,.06);border-radius:12px;font-weight:700;font-size:.82rem"></div>
+    <div id="bk-branchPicker" style="display:none;gap:8px;margin-bottom:14px">
       <button id="bk-branchBtn0" onclick="bk_selectBranch(0)" class="bk-branch-btn">Самал 70/3</button>
       <button id="bk-branchBtn1" onclick="bk_selectBranch(1)" class="bk-branch-btn">Скоробогатова 65/1</button>
     </div>
@@ -4651,21 +4650,6 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
 
     <div class="bk-label">Комментарий (необязательно)</div>
     <input id="bk-bookComment" type="text" placeholder="Возле окна, детский стул, ширма" maxlength="120" class="bk-bfield" style="margin-bottom:18px">
-
-    <div class="bk-hint" style="margin-bottom:14px">🎂 У вас день рождения? У нас есть приятная скидка для именинников — уточните у администратора при визите.</div>
-
-    <div style="background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.1);border-radius:14px;padding:16px;margin-bottom:18px">
-      <div style="font-size:.78rem;font-weight:700;margin-bottom:10px">✨ Самал 70/3 — всё для отдыха и праздника</div>
-      <div style="font-size:.72rem;color:rgba(255,255,255,.6);line-height:2">
-        🧸 Детская игровая зона<br>
-        📽️ Проектор для видео и презентаций<br>
-        🚗 Своя парковка<br>
-        🎲 Настольные игры<br>
-        🎵 Музыка по вашей просьбе на день рождения<br>
-        🏛️ 2 больших зала<br>
-        🌿 Открытая летняя терраса
-      </div>
-    </div>
 
     <label class="bk-consent-row" for="bookConsent">
       <input type="checkbox" id="bk-bookConsent" class="bk-consent-checkbox" onchange="bk_toggleSendBtn();">
@@ -4785,7 +4769,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
  </div>
 </div>
   <script>
-   const API = "https://script.google.com/macros/s/AKfycbyeJo79HV9FaMOMhXKLxCqgfaKy6CojkrwDhvu6Q7n34gcPIjz54DrQeWRblhNYJmsa/exec",
+   const API = "https://script.google.com/macros/s/AKfycbyLbslfuWS1cb1fLU62yohA2jKB7zwgRej8bhh7yxSyOOGoy7IvTNIlxJurVvY8kcJEyQ/exec",
   WA = "77760709898",
   CAT_META = {
     "Новинки": {
@@ -6625,7 +6609,7 @@ async function loadMenu() {
   let validCache = "2" === ver ? cached : null;
   if (resetPills(), validCache) {
     try {
-      menuData = JSON.parse(validCache), applyLunchSchedule(), renderCats(), renderMenu(), loadHitToday(), restoreCartFromStorage(), checkRepeatOrder()
+      menuData = JSON.parse(validCache), applyLunchSchedule(), renderCats(), renderMenu(), restoreCartFromStorage(), checkRepeatOrder()
     } catch {}
     fetch(API + "?action=getMenu&branch=" + branch).then(r => r.json()).then(d => {
       "success" === d.status && (localStorage.setItem(key, JSON.stringify(d.categories)), localStorage.setItem(key + "_ver", "2"), patchMenuLive(d.categories))
@@ -6635,7 +6619,7 @@ async function loadMenu() {
     try {
       let d = await (await fetch(API + "?action=getMenu&branch=" + branch)).json();
       if ("success" !== d.status) throw Error();
-      menuData = d.categories, localStorage.setItem(key, JSON.stringify(menuData)), localStorage.setItem(key + "_ver", "2"), applyLunchSchedule(), renderCats(), renderMenu(), loadHitToday(), restoreCartFromStorage(), checkRepeatOrder()
+      menuData = d.categories, localStorage.setItem(key, JSON.stringify(menuData)), localStorage.setItem(key + "_ver", "2"), applyLunchSchedule(), renderCats(), renderMenu(), restoreCartFromStorage(), checkRepeatOrder()
     } catch {
       document.getElementById("menuContent").innerHTML = '<div class="loader"><div style="font-size:1.76rem;margin-bottom:8px"></div><div class="loader-t">' + t("something_broke") + "</div></div>"
     }
@@ -6794,7 +6778,7 @@ function buildCard(item) {
     img = photoUrl ? `<img src="${photoUrl}" alt="" loading="lazy" decoding="async" onerror="imgErrorRetry(this,'Фото добавляется')">` : '<span class="item-photo-placeholder">' + t("photo_coming") + "</span>",
     qty = getQty(item.id),
     btype = getBadgeType(item.badge);
-  return div.innerHTML = `\n <div class="item-img-wrap">\n <div class="item-img">${img}</div>\n ${item.teaser?'<div class="teaser-lbl">'+t("teaser_soon")+"</div>":isPopular?`<div class="item-badge" data-type="${btype}">${item.badge}</div>`:""}${item.teaser||-1===_hitTodayNames.indexOf(item.name.toLowerCase())?"":'<div class="item-hit-badge">Топ недели</div>'}\n </div>\n <div class="item-body">\n <div class="item-name">${item.name}</div>\n ${item.desc?`<div class="item-desc-short">${item.desc}</div>`:""}\n ${item.mods?'<div class="item-mods-hint">'+t("choose_variant_hint")+"</div>":""}${item.lunchLocked?'<div class="item-mods-hint" style="color:#e53e3e;font-weight:600">⏰ '+item.lunchScheduleText+"</div>":""}\n ${item.stopped?'<div class="stopped-lbl">'+t("sold_out")+"</div>"+(item.until&&item.until>Date.now()?'<div class="item-timer"><span class="item-timer-dot"></span><span id="timer-'+item.id+'">'+fmtTimer(item.until)+"</span></div>":""):`<div class="item-price-row">\n <div class="item-price">${item.price.toLocaleString("ru")} ₸</div>\n <div class="item-add-wrap" id="cc-${item.id}">${ctrlHtml(item.id,item.price,qty)}</div>\n </div>\n ${item.allowDelivery?item.allowSelf?"":`<div class="item-selfonly">${t("delivery_only")}</div>`:`<div class="item-selfonly">${t("pickup_only")}</div>`}`}\n </div>`, div.addEventListener("pointerdown", () => {
+  return div.innerHTML = `\n <div class="item-img-wrap">\n <div class="item-img">${img}</div>\n ${item.teaser?'<div class="teaser-lbl">'+t("teaser_soon")+"</div>":isPopular?`<div class="item-badge" data-type="${btype}">${item.badge}</div>`:""}\n </div>\n <div class="item-body">\n <div class="item-name">${item.name}</div>\n ${item.desc?`<div class="item-desc-short">${item.desc}</div>`:""}\n ${item.mods?'<div class="item-mods-hint">'+t("choose_variant_hint")+"</div>":""}${item.lunchLocked?'<div class="item-mods-hint" style="color:#e53e3e;font-weight:600">⏰ '+item.lunchScheduleText+"</div>":""}\n ${item.stopped?'<div class="stopped-lbl">'+t("sold_out")+"</div>"+(item.until&&item.until>Date.now()?'<div class="item-timer"><span class="item-timer-dot"></span><span id="timer-'+item.id+'">'+fmtTimer(item.until)+"</span></div>":""):`<div class="item-price-row">\n <div class="item-price">${item.price.toLocaleString("ru")} ₸</div>\n <div class="item-add-wrap" id="cc-${item.id}">${ctrlHtml(item.id,item.price,qty)}</div>\n </div>\n ${item.allowDelivery?item.allowSelf?"":`<div class="item-selfonly">${t("delivery_only")}</div>`:`<div class="item-selfonly">${t("pickup_only")}</div>`}`}\n </div>`, div.addEventListener("pointerdown", () => {
     if (photoUrl) {
       var pre = new Image;
       pre.src = photoUrl
@@ -6873,7 +6857,7 @@ function openDetail(item) {
     }, modRow.appendChild(btn)
   })) : modRow.style.display = "none";
   var basePrice = curMod ? curMod.price : item.price;
-  document.getElementById("dprice").textContent = (basePrice * curQty).toLocaleString("ru") + " ₸", document.getElementById("dadd").textContent = getQty(item.id) > 0 ? t("update_cart_btn") : t("add_to_cart_btn"), openMov("detailMov"), loadFreqWith(item)
+  document.getElementById("dprice").textContent = (basePrice * curQty).toLocaleString("ru") + " ₸", document.getElementById("dadd").textContent = getQty(item.id) > 0 ? t("update_cart_btn") : t("add_to_cart_btn"), openMov("detailMov")
 }
 
 function findItemByName(name) {
@@ -6892,33 +6876,6 @@ function getCategoryOfItem(item) {
       })) return cats[i];
   }
   return "";
-}
-
-function loadFreqWith(item) {
-  let box = document.getElementById("dFreqWith");
-  box && (box.style.display = "none", box.innerHTML = "", apiGet({
-    action: "getFrequentlyBoughtWith",
-    branch: branch,
-    name: item.name
-  }, function(d) {
-    var names = d.top || [];
-    if (names.length) {
-      var found = names.map(findItemByName).filter(function(it) {
-        return it && !it.stopped && it.id !== item.id
-      });
-      if (found.length) {
-        var html = '<div class="dfreq-label">' + t("freq_bought") + '</div><div class="dfreq-row">';
-        found.slice(0, 2).forEach(function(it) {
-          html += '<button class="dfreq-item" onclick="dFreqAdd(\'' + it.id + '\')"><span class="dfreq-name">' + it.name + '</span><span class="dfreq-price">+ ' + it.price.toLocaleString("ru") + " ₸</span></button>"
-        }), html += "</div>", box.innerHTML = html, box.style.display = "block"
-      }
-    }
-  }, function() {}))
-}
-
-function dFreqAdd(id) {
-  let it = findItem(id);
-  it && (navigator.vibrate && navigator.vibrate(8), addCart(it, 1), updCC(id, it.price), updBadge(), showToast(it.name + " " + t("added_to_cart")))
 }
 
 function closeDetail() {
@@ -7564,30 +7521,6 @@ function submitOrder() {
     rows += '<div style="display:flex;justify-content:space-between;font-size:0.72rem;padding:4px 0"><span>' + c.name + " × " + c.qty + '</span><span style="font-weight:600">' + (c.price * c.qty).toLocaleString("ru") + " ₸</span></div>"
   }), rows += '<div style="display:flex;justify-content:space-between;font-size:0.84rem;font-weight:800;padding:8px 0 0;margin-top:6px;border-top:1px solid #eee"><span>' + t("total") + "</span><span>" + total.toLocaleString("ru") + " ₸</span></div>", rows += "</div>", rows += '<div style="margin-bottom:6px">', rows += '<div style="font-size:0.62rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#6e6e73;margin-bottom:6px">' + t("details_label") + "</div>", rows += row(t("branch_label"), bn), rows += row(t("order_type_label"), t("delivery" === oType ? "delivery" : "pickup")), "delivery" === oType ? (rows += row(t("address_label"), addrParts + (_addrGeoConfirmed ? "" : ' <span style="color:#e53e3e;font-weight:600">(не проверен)</span>')), rows += row(t("payment_label"), t("cash" === payType ? "cash" : "kaspi"))) : rows += row(t("pickup_in_label"), pickupVal || t("not_specified")), rows += row(t("name_label"), name), rows += row(t("phone_row_label"), phone), "delivery" === oType && (rows += row(t("cutlery_row_label"), cutlery)), allergyStr && (rows += row(t("allergy_row_label"), allergyStr)), comment && (rows += row("Комментарий", comment)), rows += "</div>", document.getElementById("confirmBody").innerHTML = rows, closeOrder(), openMov("confirmMov")
 }
-let _hitTodayNames = [];
-
-function loadHitToday() {
-  apiGet({
-    action: "getTopToday",
-    branch: branch
-  }, function(d) {
-    _hitTodayNames = (d.top || []).map(function(n) {
-      return n.toLowerCase()
-    }), refreshHitBadges()
-  }, function() {})
-}
-
-function refreshHitBadges() {
-  document.querySelectorAll(".item-card").forEach(function(card) {
-    var nameEl = card.querySelector(".item-name");
-    if (nameEl) {
-      var isHit = -1 !== _hitTodayNames.indexOf(nameEl.textContent.toLowerCase()),
-        existing = card.querySelector(".item-hit-badge"),
-        wrap = card.querySelector(".item-img-wrap");
-      isHit && !existing && wrap ? wrap.insertAdjacentHTML("beforeend", '<div class="item-hit-badge">Топ недели</div>') : !isHit && existing && existing.remove()
-    }
-  })
-}
 let _lpTimer = null,
   _lpFired = !1;
 
@@ -7863,6 +7796,29 @@ function bookBtnPressEnd() {
 function bookBtnClick() {
   if (_bookLongPressFired) { _bookLongPressFired = false; return; }
   openSheetModal("bookingSheet");
+  bk_prefillFromSite();
+}
+
+function bk_prefillFromSite() {
+  var idxByBranch = { samal: 0, skoro: 1 };
+  var bNames = ["Самал 70/3", "Скоробогатова 65/1"];
+  var readout = document.getElementById("bk-branchReadout");
+  var picker = document.getElementById("bk-branchPicker");
+  if (window.branch !== undefined && idxByBranch[branch] !== undefined) {
+    bk_selectBranch(idxByBranch[branch]);
+    if (readout) { readout.textContent = bNames[idxByBranch[branch]]; readout.style.display = "block"; }
+    if (picker) picker.style.display = "none";
+  } else {
+    if (readout) readout.style.display = "none";
+    if (picker) picker.style.display = "flex";
+  }
+  var profile = loadClientProfile && loadClientProfile();
+  if (profile) {
+    var nameEl = document.getElementById("bk-bookName");
+    if (nameEl && !nameEl.value && profile.name) nameEl.value = profile.name;
+    var phoneEl = document.getElementById("bk-bookPhone");
+    if (phoneEl && !phoneEl.value && profile.phone) { phoneEl.value = profile.phone; bk_formatBookPhone(phoneEl); }
+  }
 }
 
 function openAdm() {
@@ -8889,7 +8845,7 @@ function patchMenuLive(freshCats) {
   <script>
    /* ── Бронь столика (namespaced bk_) ── */
 
-const bk_STATS_API = "https://script.google.com/macros/s/AKfycbymVIVhah7d3aXXlMSKdt1wsEt5JyXNHqlvlLrsXgqGScvOoktSBGU5cuMpHd_C-EZF/exec";
+const bk_STATS_API = API;
 
 // ── Глобальное состояние формы брони (объявлено явно, чтобы не ловить ReferenceError,
 // если какая-то функция обратится к переменной раньше bk_initBookingForm) ──
@@ -8932,6 +8888,14 @@ function bk_saveProfile(patch){
     var merged = Object.assign({}, current, patch, { updatedAt: Date.now() });
     localStorage.setItem(bk_PROFILE_KEY, JSON.stringify(merged));
   }catch(e){}
+  // имя/телефон дублируем в общий профиль сайта — чтобы форма заказа доставки тоже их подхватила,
+  // даже если человек сначала сделал бронь, а до этого ни разу не заказывал
+  if ((patch.name || patch.phone) && typeof saveClientProfile === "function") {
+    var syncPatch = {};
+    if (patch.name) syncPatch.name = patch.name;
+    if (patch.phone) syncPatch.phone = patch.phone;
+    saveClientProfile(syncPatch);
+  }
 }
 let bk__saveFieldTimer=null;
 function bk_saveProfileFieldDebounced(key, value){
@@ -9107,11 +9071,9 @@ function bk_initBookingForm(){
   const mSel=document.getElementById('bk-bookMonth');
   if(mSel){
     mSel.innerHTML='';
-    for(var m=todayMon;m<12;m++){
-      var opt=document.createElement('option');
-      opt.value=m;opt.textContent=months[m];
-      mSel.appendChild(opt);
-    }
+    var opt=document.createElement('option');
+    opt.value=todayMon;opt.textContent=months[todayMon];
+    mSel.appendChild(opt);
     mSel.value=todayMon;
     mSel.onchange=function(){bk_updateDays();};
   }
@@ -9180,7 +9142,7 @@ function bk_isDateBlocked(m, d, branchIdx){
   });
 }
 function bk_fetchBlockedDates(){
-  fetch(bk_STATS_API+'?action=getBlockedDates&_ts='+Date.now(), {cache:'no-store'})
+  fetch(bk_STATS_API+'?action=getBookingBlockedDates&_ts='+Date.now(), {cache:'no-store'})
     .then(function(r){return r.json();})
     .then(function(d){
       if(d.status==='success' && Array.isArray(d.blockedDates)){
@@ -9217,7 +9179,7 @@ function bk_showErr(el, text){
 // ── Отправка статистики брони на бэкенд (только один раз — при успешной отправке) ──
 function bk_logBooking(fields){
   try{
-    var params = Object.assign({ action:"log" }, fields || {});
+    var params = Object.assign({ action:"logBooking" }, fields || {});
     var url = bk_STATS_API + "?" + Object.keys(params).map(function(k){return k+"="+encodeURIComponent(params[k]);}).join("&");
     fetch(url).catch(function(){});
   }catch(e){}
@@ -9459,9 +9421,9 @@ function bk_adminLogin(){
   const msg=document.getElementById('bk-adminLoginMsg');
   if(!pw){msg.textContent='Введите пароль';return;}
   msg.className='bk-admin-msg';msg.textContent='Проверяю...';
-  fetch(bk_STATS_API+'?action=getStatus&_ts='+Date.now(), {cache:'no-store'}).then(function(r){return r.json();}).then(function(d){
+  fetch(bk_STATS_API+'?action=getBookingStatus&_ts='+Date.now(), {cache:'no-store'}).then(function(r){return r.json();}).then(function(d){
     if(d.status!=='success'){msg.className='bk-admin-msg bk-err';msg.textContent='Ошибка соединения';return;}
-    return fetch(bk_STATS_API+'?action=setStatus&password='+encodeURIComponent(pw)+'&closed='+(d.closed?'1':'0')+'&message='+encodeURIComponent(d.message)+'&reopenAt='+(d.reopenAt||0)+'&_ts='+Date.now(), {cache:'no-store'})
+    return fetch(bk_STATS_API+'?action=setBookingStatus&password='+encodeURIComponent(pw)+'&closed='+(d.closed?'1':'0')+'&message='+encodeURIComponent(d.message)+'&reopenAt='+(d.reopenAt||0)+'&_ts='+Date.now(), {cache:'no-store'})
       .then(function(r2){return r2.json();}).then(function(d2){
         if(d2.status!=='success'){msg.className='bk-admin-msg bk-err';msg.textContent='Неверный пароль';return;}
         bk__adminPw=pw;
@@ -9505,7 +9467,7 @@ function bk_adminSave(){
   const saveMsg=document.getElementById('bk-adminSaveMsg');
   saveMsg.className='bk-admin-msg';saveMsg.textContent='Сохраняю...';
   const reopenAtToSend = _adminLocalClosed ? (_adminReopenAt || 0) : 0;
-  fetch(bk_STATS_API+'?action=setStatus&password='+encodeURIComponent(bk__adminPw)+'&closed='+(_adminLocalClosed?'1':'0')+'&message='+encodeURIComponent(msgInput)+'&reopenAt='+reopenAtToSend+'&_ts='+Date.now(), {cache:'no-store'})
+  fetch(bk_STATS_API+'?action=setBookingStatus&password='+encodeURIComponent(bk__adminPw)+'&closed='+(_adminLocalClosed?'1':'0')+'&message='+encodeURIComponent(msgInput)+'&reopenAt='+reopenAtToSend+'&_ts='+Date.now(), {cache:'no-store'})
     .then(function(r){return r.json();}).then(function(d){
       if(d.status==='success'){
         saveMsg.className='bk-admin-msg bk-ok';saveMsg.textContent='✅ Сохранено';
@@ -9541,7 +9503,7 @@ function bk_adminAddBlockedDate(){
   const reason=document.getElementById('bk-adminBlockReason').value.trim();
   const msgEl=document.getElementById('bk-adminBlockMsg');
   msgEl.className='bk-admin-msg';msgEl.textContent='Сохраняю...';
-  fetch(bk_STATS_API+'?action=addBlockedDate&password='+encodeURIComponent(bk__adminPw)+'&month='+month+'&day='+day+'&branch='+bk__adminBlockBranch+'&reason='+encodeURIComponent(reason)+'&_ts='+Date.now(), {cache:'no-store'})
+  fetch(bk_STATS_API+'?action=addBookingBlockedDate&password='+encodeURIComponent(bk__adminPw)+'&month='+month+'&day='+day+'&branch='+bk__adminBlockBranch+'&reason='+encodeURIComponent(reason)+'&_ts='+Date.now(), {cache:'no-store'})
     .then(function(r){return r.json();}).then(function(d){
       if(d.status==='success'){
         msgEl.className='bk-admin-msg bk-ok';msgEl.textContent='✅ Дата заблокирована';
@@ -9556,7 +9518,7 @@ function bk_adminAddBlockedDate(){
 function bk_adminRemoveBlockedDate(month, day, branch){
   const msgEl=document.getElementById('bk-adminBlockMsg');
   msgEl.className='bk-admin-msg';msgEl.textContent='Удаляю...';
-  fetch(bk_STATS_API+'?action=removeBlockedDate&password='+encodeURIComponent(bk__adminPw)+'&month='+month+'&day='+day+'&branch='+branch+'&_ts='+Date.now(), {cache:'no-store'})
+  fetch(bk_STATS_API+'?action=removeBookingBlockedDate&password='+encodeURIComponent(bk__adminPw)+'&month='+month+'&day='+day+'&branch='+branch+'&_ts='+Date.now(), {cache:'no-store'})
     .then(function(r){return r.json();}).then(function(d){
       if(d.status==='success'){
         msgEl.className='bk-admin-msg bk-ok';msgEl.textContent='✅ Разблокировано';
@@ -9572,7 +9534,7 @@ function bk_loadAdminBlockedList(){
   if(!listEl) return;
   const months=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
   const bNames=['Самал','Скоробогатова','Оба филиала'];
-  fetch(bk_STATS_API+'?action=getBlockedDates&_ts='+Date.now(), {cache:'no-store'})
+  fetch(bk_STATS_API+'?action=getBookingBlockedDates&_ts='+Date.now(), {cache:'no-store'})
     .then(function(r){return r.json();})
     .then(function(d){
       if(d.status!=='success' || !Array.isArray(d.blockedDates) || !d.blockedDates.length){
@@ -9610,7 +9572,7 @@ function bk_maybeGreetFromLocalProfile(){
 
 let bk__restaurantClosed=false, _statusPollTimer=null;
 function bk_checkRestaurantStatus(){
-  fetch(bk_STATS_API+'?action=getStatus&_ts='+Date.now(), {cache:'no-store'}).then(function(r){return r.json();}).then(function(d){
+  fetch(bk_STATS_API+'?action=getBookingStatus&_ts='+Date.now(), {cache:'no-store'}).then(function(r){return r.json();}).then(function(d){
     if(d.status==='success' && d.closed){
       bk__restaurantClosed=true;
       document.getElementById('bk-closedText').textContent = d.message || 'Бронь сейчас недоступна. Загляните позже.';
