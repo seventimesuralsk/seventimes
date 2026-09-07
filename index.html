@@ -5416,7 +5416,13 @@ function checkClientBlocked() {
   var clientId = getClientId();
   getPublicIp(function(ip) {
     apiGet({ action: "checkClient", clientId: clientId, ip: ip || "" }, function(d) {
-      if (!d || !d.found) return;
+      if (!d || !d.found) {
+        try {
+          localStorage.removeItem("st_client_profile");
+          localStorage.removeItem("st_order_history");
+        } catch (e) {}
+        return;
+      }
       if (d.blocked) {
         var scr = document.getElementById("clientBlockedScreen");
         if (scr) { scr.style.display = "flex"; document.body.style.overflow = "hidden"; }
