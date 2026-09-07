@@ -9654,25 +9654,6 @@ function fb_applyI18n() {
   fb_checkFormReady();
 }
 
-function fb_toggleLangMenu(){
-  document.getElementById('fb-langMenu').classList.toggle('fb-open');
-}
-
-function fb_setLang(lang) {
-  fb_currentLang = lang;
-  document.getElementById('fb-langBtnRu').classList.toggle('fb-on', lang === 'ru');
-  document.getElementById('fb-langBtnKz').classList.toggle('fb-on', lang === 'kz');
-  document.getElementById('fb-langMenu').classList.remove('fb-open');
-  fb_applyI18n();
-}
-
-document.addEventListener('click', function(e){
-  var menu = document.getElementById('fb-langMenu'), btn = document.getElementById('fb-hamBtn');
-  if (menu.classList.contains('fb-open') && !menu.contains(e.target) && e.target !== btn && !btn.contains(e.target)) {
-    menu.classList.remove('fb-open');
-  }
-});
-
 let fb__branchIdx = null;
 let fb__incidentDay = null;
 
