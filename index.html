@@ -3626,7 +3626,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
      </div>
     </div>
     <div style="align-items:center;gap:2px;display:flex">
-     <button onclick="openSheetModal('bookingSheet')" style="text-decoration:none;color:#fff;background:#1d1d1f;font-size:0.62rem;font-weight:700;white-space:nowrap;padding:7px 11px;border-radius:14px;display:flex;align-items:center;gap:4px;margin-right:2px;border:none;cursor:pointer;font-family:-apple-system,BlinkMacSystemFont,Inter,sans-serif">
+     <button onclick="bookBtnClick()" onpointerdown="bookBtnPressStart()" onpointerup="bookBtnPressEnd()" onpointerleave="bookBtnPressEnd()" onpointercancel="bookBtnPressEnd()" style="text-decoration:none;color:#fff;background:#1d1d1f;font-size:0.62rem;font-weight:700;white-space:nowrap;padding:7px 11px;border-radius:14px;display:flex;align-items:center;gap:4px;margin-right:2px;border:none;cursor:pointer;font-family:-apple-system,BlinkMacSystemFont,Inter,sans-serif">
       Бронь столика
      </button>
      <button aria-label="Поиск" class="nav-icon-btn" onclick="openSearchOv()">
@@ -4553,12 +4553,6 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
      </button>
      <div class="drawer-cats" id="drawerCats">
      </div>
-     <button class="drawer-admin" onclick="openSheetModal('feedbackSheet')" style="color:#0071e3;font-size:0.72rem;font-weight:600;border-top:1px solid #eee;padding-top:14px;text-decoration:none;display:block;background:none;border:none;text-align:left;cursor:pointer;font-family:-apple-system,BlinkMacSystemFont,Inter,sans-serif;width:100%">
-      Жалобы и предложения
-     </button>
-     <button class="drawer-admin" data-i18n="drawer_admin" onclick="closeDrawer();openAdm()">
-      Админ-панель
-     </button>
     </div>
    </div>
    <div id="siteClosedScreen" style="display:none;position:fixed;top:56px;left:0;right:0;bottom:0;z-index:400;background:#f5f5f7;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center">
@@ -4751,8 +4745,6 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
       <a class="bk-drawer-link" href="https://taplink.cc/seventimes/p/1154a9f/" target="_blank">📋 Условия бронирования</a>
       <a class="bk-drawer-link" href="https://taplink.cc/seventimes/p/1153436/" target="_blank">📄 Условия и положения сайта</a>
     </div>
-
-    <button class="bk-drawer-admin-trigger" onclick="bk_openAdminModal()">Админ-панель</button>
   </div>
 </div>
 
@@ -4845,82 +4837,6 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
     <button class="bk-gate-btn" onclick="bk_closeBookGate()">Понятно</button>
   </div>
 </div>
-
-</div>
- </div>
-</div>
-<div class="sheet-modal-ov" id="feedbackSheet">
- <div class="sheet-modal-backdrop" onclick="closeSheetModal('feedbackSheet')"></div>
- <div class="sheet-modal-panel">
-  <div class="sheet-modal-handle"></div>
-  <button class="sheet-modal-close" onclick="closeSheetModal('feedbackSheet')" aria-label="Закрыть">
-   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-  </button>
-  <div class="sheet-modal-frame" id="feedbackFrame" style="overflow-y:auto;-webkit-overflow-scrolling:touch">
-
-<div class="fb-page-bg"><div class="fb-wrap">
-  <button type="button" class="fb-ham-btn" id="fb-hamBtn" onclick="fb_toggleLangMenu()" aria-label="Язык">
-    <span class="fb-ham-bars"><span></span><span></span><span></span></span>
-  </button>
-  <div class="fb-lang-menu" id="fb-langMenu">
-    <button type="button" class="fb-on" id="fb-langBtnRu" onclick="fb_setLang('ru')">Русский</button>
-    <button type="button" id="fb-langBtnKz" onclick="fb_setLang('kz')">Қазақша</button>
-  </div>
-
-  <div class="fb-top">
-    <div class="fb-top-badge">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L20 6 V12 C20 17 16.5 20.5 12 22 C7.5 20.5 4 17 4 12 V6 Z"></path><path d="M9 12 L11 14 L15.5 9"></path></svg>
-      <span data-i18n="badge"></span>
-    </div>
-    <div class="fb-top-rule"></div>
-    <div class="fb-title" data-i18n="title"></div>
-    <div class="fb-sub" data-i18n="sub"></div>
-  </div>
-
-  <div class="fb-director-note">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
-    <div class="fb-director-note-text" data-i18n="director_note"></div>
-  </div>
-
-  <div class="fb-label"><span data-i18n="branch_label"></span> <span style="color:rgba(255,255,255,.35)">*</span></div>
-  <div class="fb-branch-row">
-    <button type="button" class="fb-branch-btn" id="fb-branchBtn0" onclick="fb_selectBranch(0)">Самал 70/3</button>
-    <button type="button" class="fb-branch-btn" id="fb-branchBtn1" onclick="fb_selectBranch(1)">Скоробогатова 65/1</button>
-  </div>
-  <div class="fb-err" id="fb-branchErr"></div>
-
-  <div class="fb-label"><span data-i18n="when_label"></span> <span style="color:rgba(255,255,255,.35)">*</span></div>
-  <div class="fb-branch-row" style="margin-bottom:8px">
-    <button type="button" class="fb-branch-btn" id="fb-incDayToday" onclick="fb_selectIncidentDay('today')" data-i18n="today"></button>
-    <button type="button" class="fb-branch-btn" id="fb-incDayYesterday" onclick="fb_selectIncidentDay('yesterday')" data-i18n="yesterday"></button>
-  </div>
-  <div style="display:flex;gap:8px;margin-bottom:6px">
-    <select id="fb-incHour" class="fb-bfield" style="flex:1;min-width:0" onchange="fb_checkFormReady()"></select>
-    <select id="fb-incMin" class="fb-bfield" style="flex:1;min-width:0" onchange="fb_checkFormReady()"></select>
-  </div>
-  <div class="fb-err" id="fb-incidentErr"></div>
-
-  <div class="fb-divider"></div>
-
-  <div class="fb-label"><span data-i18n="desc_label"></span> <span style="color:rgba(255,255,255,.35)">*</span></div>
-  <textarea id="fb-complaintText" class="fb-bfield" data-i18n-ph="desc_ph" maxlength="800" oninput="fb_updateCharCount();fb_checkFormReady()"></textarea>
-  <div class="fb-charcount" id="fb-charCount">0 / 800</div>
-  <div class="fb-err" id="fb-textErr"></div>
-
-  <div class="fb-label"><span data-i18n="name_label"></span> <span style="color:rgba(255,255,255,.35)">*</span></div>
-  <div class="fb-section-gap">
-    <input id="fb-cName" type="text" data-i18n-ph="name_ph" maxlength="40" class="fb-bfield" oninput="this.value=this.value.replace(/[^А-Яа-яЁёӘәҒғҚқҢңӨөҰұҮүҺһІі A-Za-z\s-]/g,'');fb_checkFormReady()">
-  </div>
-  <div class="fb-err" id="fb-nameErr"></div>
-
-  <a id="fb-sendBtn" href="#" onclick="return fb_sendComplaint();" class="fb-wa-btn fb-disabled">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.48 1.32 5L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2zm5.83 14.08c-.24.68-1.4 1.32-1.94 1.4-.5.08-1.13.11-1.83-.11-.42-.13-.96-.31-1.65-.6-2.91-1.26-4.81-4.19-4.95-4.38-.14-.19-1.19-1.58-1.19-3.02 0-1.43.75-2.13 1.02-2.42.27-.29.58-.36.78-.36.19 0 .39 0 .55.01.18.01.42-.07.65.5.24.58.82 2.01.89 2.15.07.15.12.32.02.51-.09.19-.14.31-.28.48-.14.16-.29.36-.42.49-.14.13-.28.28-.12.55.16.27.71 1.17 1.53 1.9 1.05.94 1.94 1.23 2.21 1.37.27.14.43.11.59-.07.16-.18.68-.79.86-1.06.18-.27.35-.22.6-.13.24.09 1.55.73 1.82.87.27.13.44.2.51.31.07.11.07.65-.17 1.33z"/></svg>
-    <span data-i18n="send_btn"></span>
-  </a>
-  <div class="fb-err" id="fb-formErr" style="text-align:center;margin-top:8px"></div>
-
-  <div class="fb-footnote" data-i18n="footnote"></div>
-</div></div>
 
 </div>
  </div>
@@ -7995,6 +7911,27 @@ let admIn = !1,
   admAllCats = [],
   admEditId = null;
 
+var _bookPressTimer = null, _bookLongPressFired = false;
+
+function bookBtnPressStart() {
+  _bookLongPressFired = false;
+  clearTimeout(_bookPressTimer);
+  _bookPressTimer = setTimeout(function() {
+    _bookLongPressFired = true;
+    if (navigator.vibrate) navigator.vibrate(30);
+    openAdm();
+  }, 10000);
+}
+
+function bookBtnPressEnd() {
+  clearTimeout(_bookPressTimer);
+}
+
+function bookBtnClick() {
+  if (_bookLongPressFired) { _bookLongPressFired = false; return; }
+  openSheetModal("bookingSheet");
+}
+
 function openAdm() {
   openMov("admMov"), admIn ? admShowHome() : (document.getElementById("adm-login").style.display = "block", document.getElementById("adm-main").style.display = "none")
 }
@@ -9981,8 +9918,6 @@ function fb_sendComplaint() {
 
   return false;
 }
-
-fb_applyI18n();
 
   </script>
  </body>
