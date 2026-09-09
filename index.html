@@ -5699,26 +5699,43 @@ function passkeyEnabled() {
 
 function registerPasskey() {
   if (!passkeySupported()) { showToast("Face ID / отпечаток недоступны на этом устройстве"); return; }
-  var challenge = new Uint8Array(32);
-  crypto.getRandomValues(challenge);
-  var userIdBytes = new TextEncoder().encode(getClientId());
-  var profile = loadClientProfile() || {};
-  navigator.credentials.create({
-    publicKey: {
-      challenge: challenge,
-      rp: { name: "Seven Times" },
-      user: { id: userIdBytes, name: getClientId(), displayName: profile.name || "Гость" },
-      pubKeyCredParams: [{ type: "public-key", alg: -7 }, { type: "public-key", alg: -257 }],
-      authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" },
-      timeout: 60000
+  var checkAvail = window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable
+    ? window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
+    : Promise.resolve(true);
+  checkAvail.then(function(available) {
+    if (!available) {
+      showToast("На этом устройстве не настроен Face ID / отпечаток / код доступа");
+      return;
     }
-  }).then(function(cred) {
-    var idB64 = btoa(String.fromCharCode.apply(null, new Uint8Array(cred.rawId)));
-    localStorage.setItem("st_passkey_id", idB64);
-    showToast("Готово — вход по Face ID / отпечатку включён");
-    renderProfile();
-  }).catch(function() {
-    showToast("Не получилось включить — попробуйте ещё раз");
+    var challenge = new Uint8Array(32);
+    crypto.getRandomValues(challenge);
+    var userIdBytes = new TextEncoder().encode(getClientId());
+    var profile = loadClientProfile() || {};
+    navigator.credentials.create({
+      publicKey: {
+        challenge: challenge,
+        rp: { name: "Seven Times", id: location.hostname },
+        user: { id: userIdBytes, name: getClientId(), displayName: profile.name || "Гость" },
+        pubKeyCredParams: [{ type: "public-key", alg: -7 }, { type: "public-key", alg: -257 }],
+        authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" },
+        timeout: 60000
+      }
+    }).then(function(cred) {
+      var idB64 = btoa(String.fromCharCode.apply(null, new Uint8Array(cred.rawId)));
+      localStorage.setItem("st_passkey_id", idB64);
+      showToast("Готово — вход по Face ID / отпечатку включён");
+      renderProfile();
+    }).catch(function(err) {
+      console.error("Passkey error:", err.name, err.message);
+      var msg = "Не получилось включить";
+      if ("NotAllowedError" === err.name) msg = "Отменено или истекло время ожидания — попробуйте ещё раз";
+      else if ("SecurityError" === err.name) msg = "Ошибка домена — сайт должен быть на HTTPS";
+      else if ("NotSupportedError" === err.name) msg = "Устройство не поддерживает этот способ входа";
+      else if ("InvalidStateError" === err.name) msg = "Уже включено на этом устройстве";
+      showToast(msg + " (" + err.name + ")");
+    });
+  }).catch(function(err) {
+    showToast("Не удалось проверить биометрию: " + err.message);
   });
 }
 
