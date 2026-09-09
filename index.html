@@ -278,12 +278,13 @@ nav {
   position: absolute;
   top: 0;
   right: 0;
-  bottom: 0;
   width: min(320px, 82vw);
+  max-height: calc(100vh - 90px);
   background: rgba(255, 255, 255, .86);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   box-shadow: -8px 0 32px rgba(0, 0, 0, .14);
+  border-radius: 0 0 0 20px;
   display: flex;
   flex-direction: column;
   padding: 56px 8px 24px;
@@ -4778,6 +4779,38 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
  </div>
 </div>
   <script>
+   // ── Блокировка скролла фона при открытой шторке/модалке ──
+   // Просто overflow:hidden на body не останавливает скролл на iOS Safari,
+   // если открытое окно занимает не весь экран (по краям видно фон) —
+   // палец на этом видимом фоне всё равно листает страницу насквозь.
+   // Считаем открытые окна (можно открыть несколько поверх друг друга),
+   // фон разблокируется только когда закрыто последнее.
+   var _scrollLockCount = 0, _scrollLockY = 0;
+
+   function lockBodyScroll() {
+     if (0 === _scrollLockCount) {
+       _scrollLockY = window.scrollY || window.pageYOffset || 0;
+       document.body.style.position = "fixed";
+       document.body.style.top = "-" + _scrollLockY + "px";
+       document.body.style.left = "0";
+       document.body.style.right = "0";
+       document.body.style.width = "100%";
+     }
+     _scrollLockCount++;
+   }
+
+   function unlockBodyScroll() {
+     _scrollLockCount = Math.max(0, _scrollLockCount - 1);
+     if (0 === _scrollLockCount) {
+       document.body.style.position = "";
+       document.body.style.top = "";
+       document.body.style.left = "";
+       document.body.style.right = "";
+       document.body.style.width = "";
+       window.scrollTo(0, _scrollLockY);
+     }
+   }
+
    const API = "https://script.google.com/macros/s/AKfycbyLbslfuWS1cb1fLU62yohA2jKB7zwgRej8bhh7yxSyOOGoy7IvTNIlxJurVvY8kcJEyQ/exec",
   WA = "77760709898",
   CAT_META = {
@@ -5434,7 +5467,7 @@ function checkClientBlocked() {
       }
       if (d.blocked) {
         var scr = document.getElementById("clientBlockedScreen");
-        if (scr) { scr.style.display = "flex"; document.body.style.overflow = "hidden"; }
+        if (scr) { scr.style.display = "flex"; lockBodyScroll(); }
         return;
       }
       // если админ поправил имя/номер прямо в таблице — подтягиваем исправление в браузер клиента
@@ -6198,7 +6231,7 @@ function openGenericStories(bannerId) {
   buildGenericProgress();
   _genericStoryIdx = 0;
   ov.style.display = "block";
-  document.body.style.overflow = "hidden";
+  lockBodyScroll();
   void ov.offsetWidth;
   requestAnimationFrame(function() {
     ov.classList.add("open");
@@ -6213,7 +6246,7 @@ function closeGenericStories() {
   if (!ov) return;
   clearTimeout(_genericStoryTimer);
   ov.classList.remove("open");
-  document.body.style.overflow = "";
+  unlockBodyScroll();
   setTimeout(function() {
     ov.classList.contains("open") || (ov.style.display = "none");
   }, 300);
@@ -6434,7 +6467,7 @@ function openDreamStories() {
   _dreamStoryIdx = 0;
   resetDreamWishForm();
   ov.style.display = "block";
-  document.body.style.overflow = "hidden";
+  lockBodyScroll();
   void ov.offsetWidth;
   requestAnimationFrame(function() {
     ov.classList.add("open");
@@ -6448,7 +6481,7 @@ function closeDreamStories() {
   if (!ov) return;
   clearTimeout(_dreamStoryTimer);
   ov.classList.remove("open");
-  document.body.style.overflow = "";
+  unlockBodyScroll();
   setTimeout(function() {
     ov.classList.contains("open") || (ov.style.display = "none");
   }, 300);
@@ -7764,7 +7797,7 @@ function openDrawer() {
   var ov = document.getElementById("navDrawerOv"),
     btn = document.getElementById("hamburgerBtn");
   if (!ov) return;
-  ov.style.display = "block", document.body.style.overflow = "hidden", void ov.offsetWidth, requestAnimationFrame(function() {
+  ov.style.display = "block", lockBodyScroll(), void ov.offsetWidth, requestAnimationFrame(function() {
     ov.classList.add("open"), btn && btn.classList.add("open")
   })
 }
@@ -7772,7 +7805,7 @@ function openDrawer() {
 function closeDrawer() {
   var ov = document.getElementById("navDrawerOv"),
     btn = document.getElementById("hamburgerBtn");
-  ov && (ov.classList.remove("open"), btn && btn.classList.remove("open"), document.body.style.overflow = "", setTimeout(function() {
+  ov && (ov.classList.remove("open"), btn && btn.classList.remove("open"), unlockBodyScroll(), setTimeout(function() {
     ov.classList.contains("open") || (ov.style.display = "none")
   }, 320))
 }
@@ -7785,7 +7818,7 @@ function toggleDrawer() {
 function openSheetModal(id) {
   var ov = document.getElementById(id);
   if (!ov) return;
-  ov.style.display = "block", document.body.style.overflow = "hidden", void ov.offsetWidth, requestAnimationFrame(function() {
+  ov.style.display = "block", lockBodyScroll(), void ov.offsetWidth, requestAnimationFrame(function() {
     ov.classList.add("open")
   })
 }
@@ -7793,7 +7826,7 @@ function openSheetModal(id) {
 function closeSheetModal(id) {
   var ov = document.getElementById(id);
   if (!ov) return;
-  ov.classList.remove("open"), document.body.style.overflow = "", setTimeout(function() {
+  ov.classList.remove("open"), unlockBodyScroll(), setTimeout(function() {
     ov.classList.contains("open") || (ov.style.display = "none")
   }, 380)
 }
@@ -8418,12 +8451,12 @@ function admToggleStop(id) {
 
 function openMov(id) {
   let el = document.getElementById(id);
-  el.style.display = "flex", el.classList.add("open"), document.body.style.overflow = "hidden";
+  el.style.display = "flex", el.classList.add("open"), lockBodyScroll();
 }
 
 function closeMov(id) {
   let el = document.getElementById(id);
-  el.classList.remove("open"), el.style.display = "none", document.body.style.overflow = "";
+  el.classList.remove("open"), el.style.display = "none", unlockBodyScroll();
 }
 
 function playCardSound() {}
