@@ -1004,7 +1004,13 @@ nav {
 
 .sk {
   background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%) 0 0/200% 100%;
-  border-radius: 8px
+  border-radius: 8px;
+  animation: skShimmer 1.4s ease-in-out infinite
+}
+
+@keyframes skShimmer {
+  0% { background-position: 200% 0 }
+  100% { background-position: -200% 0 }
 }
 
 .sk-sec {
@@ -3582,6 +3588,12 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
   animation-duration: .001s !important;
   animation-delay: 0s !important;
   scroll-behavior: auto !important;
+}
+
+/* Исключение — переливание "скелетона" при загрузке меню, единственное
+   место на сайте, где анимация реально нужна, а не просто украшательство */
+.sk {
+  animation-duration: 1.4s !important;
 }
 
   </style>
