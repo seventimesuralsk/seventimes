@@ -3673,20 +3673,6 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
     <div class="mbox" style="background:#fff">
      <div class="dimg" id="dimg">
      </div>
-     <button aria-label="Поделиться" class="dshare-btn" onclick="shareItem()">
-      <svg fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="16">
-       <circle cx="18" cy="5" r="3">
-       </circle>
-       <circle cx="6" cy="12" r="3">
-       </circle>
-       <circle cx="18" cy="19" r="3">
-       </circle>
-       <line x1="8.6" x2="15.4" y1="13.5" y2="17.5">
-       </line>
-       <line x1="15.4" x2="8.6" y1="6.5" y2="10.5">
-       </line>
-      </svg>
-     </button>
      <div class="dbody">
       <div class="dhandle">
       </div>
@@ -3760,7 +3746,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
          0 ₸
         </div>
        </div>
-       <button class="btn-main" data-i18n="checkout_btn" onclick="startOrder()">
+       <button class="btn-main" id="checkoutBtn" data-i18n="checkout_btn" onclick="startOrder()">
         Оформить заказ
        </button>
       </div>
@@ -5491,10 +5477,7 @@ function saveClientProfile(p) {
 
 function startOrder() {
   if (!cart.length) { closeCart(); document.getElementById("menuContent").scrollIntoView({ behavior: "smooth" }); return; }
-  if (!canOrderNow(branch)) {
-    let c = getOrderClosedContent(branch);
-    return void showFunModal(c.emoji, c.text, c.btn)
-  }
+  if (!canOrderNow(branch)) return;
   let p = loadClientProfile();
   p && p.name && p.phone ? (closeCart(), openOrder()) : (closeCart(), _afterRegisterAction = "order", showRegisterForm())
 }
@@ -6783,8 +6766,11 @@ function buildCard(item) {
     photoUrl = rawPhoto ? convertPhotoUrl(rawPhoto, 500) : "",
     img = photoUrl ? `<img src="${photoUrl}" alt="" loading="lazy" decoding="async" onerror="imgErrorRetry(this,'Фото добавляется')">` : '<span class="item-photo-placeholder">' + t("photo_coming") + "</span>",
     qty = getQty(item.id),
-    btype = getBadgeType(item.badge);
-  return div.innerHTML = `\n <div class="item-img-wrap">\n <div class="item-img">${img}</div>\n ${item.teaser?'<div class="teaser-lbl">'+t("teaser_soon")+"</div>":isPopular?`<div class="item-badge" data-type="${btype}">${item.badge}</div>`:""}\n </div>\n <div class="item-body">\n <div class="item-name">${item.name}</div>\n ${item.desc?`<div class="item-desc-short">${item.desc}</div>`:""}\n ${item.mods?'<div class="item-mods-hint">'+t("choose_variant_hint")+"</div>":""}${item.lunchLocked?'<div class="item-mods-hint" style="color:#e53e3e;font-weight:600">⏰ '+item.lunchScheduleText+"</div>":""}\n ${item.stopped?'<div class="stopped-lbl">'+t("sold_out")+"</div>"+(item.until&&item.until>Date.now()?'<div class="item-timer"><span class="item-timer-dot"></span><span id="timer-'+item.id+'">'+fmtTimer(item.until)+"</span></div>":""):`<div class="item-price-row">\n <div class="item-price">${item.price.toLocaleString("ru")} ₸</div>\n <div class="item-add-wrap" id="cc-${item.id}">${ctrlHtml(item.id,item.price,qty)}</div>\n </div>\n ${item.allowDelivery?item.allowSelf?"":`<div class="item-selfonly">${t("delivery_only")}</div>`:`<div class="item-selfonly">${t("pickup_only")}</div>`}`}\n </div>`, div.addEventListener("pointerdown", () => {
+    btype = getBadgeType(item.badge),
+    modsParsed = item.mods ? parseMods(item.mods) : [],
+    displayPrice = modsParsed.length ? Math.min.apply(null, modsParsed.map(m => m.price)) : item.price,
+    priceLabel = (modsParsed.length ? "от " : "") + displayPrice.toLocaleString("ru") + " ₸";
+  return div.innerHTML = `\n <div class="item-img-wrap">\n <div class="item-img">${img}</div>\n ${item.teaser?'<div class="teaser-lbl">'+t("teaser_soon")+"</div>":isPopular?`<div class="item-badge" data-type="${btype}">${item.badge}</div>`:""}\n </div>\n <div class="item-body">\n <div class="item-name">${item.name}</div>\n ${item.desc?`<div class="item-desc-short">${item.desc}</div>`:""}\n ${item.mods?'<div class="item-mods-hint">'+t("choose_variant_hint")+"</div>":""}${item.lunchLocked?'<div class="item-mods-hint" style="color:#e53e3e;font-weight:600">⏰ '+item.lunchScheduleText+"</div>":""}\n ${item.stopped?'<div class="stopped-lbl">'+t("sold_out")+"</div>"+(item.until&&item.until>Date.now()?'<div class="item-timer"><span class="item-timer-dot"></span><span id="timer-'+item.id+'">'+fmtTimer(item.until)+"</span></div>":""):`<div class="item-price-row">\n <div class="item-price">${priceLabel}</div>\n <div class="item-add-wrap" id="cc-${item.id}">${ctrlHtml(item.id,item.price,qty)}</div>\n </div>\n ${item.allowDelivery?item.allowSelf?"":`<div class="item-selfonly">${t("delivery_only")}</div>`:`<div class="item-selfonly">${t("pickup_only")}</div>`}`}\n </div>`, div.addEventListener("pointerdown", () => {
     if (photoUrl) {
       var pre = new Image;
       pre.src = photoUrl
@@ -7009,11 +6995,7 @@ function addCart(it, d) {
     name: it.name,
     price: it.price,
     qty: d
-  }), d > 0 && (logStat("cart_add", it.name), _lastAddedItemName = it.name), saveCartToStorage();
-  if (d > 0 && !_deliveryClosedNoticeShown && !canOrderNow(branch)) {
-    _deliveryClosedNoticeShown = true;
-    showToast("Доставку пока не принимаем, но блюдо можно добавить заранее");
-  }
+  }), d > 0 && (logStat("cart_add", it.name), _lastAddedItemName = it.name), saveCartToStorage()
 }
 
 function remCart(id) {
@@ -7166,12 +7148,15 @@ function renderCart() {
     return body.innerHTML = '<div class="cempty"><div style="font-size:2.11rem;margin-bottom:10px">' + ph.e + '</div><div style="font-weight:700;font-size:0.84rem;color:#1d1d1f;margin-bottom:4px">' + ph.t + '</div><div style="font-size:0.69rem;color:#6e6e73">' + ph.s + "</div></div>", document.getElementById("cartTotal").textContent = "0 ₸", void(document.getElementById("cnote").textContent = "")
   }
   body.innerHTML = "";
+  var checkoutBtn = document.getElementById("checkoutBtn");
   if (!canOrderNow(branch)) {
-    var closedInfo = getOrderClosedContent(branch);
     var notice = document.createElement("div");
     notice.style.cssText = "background:#fff4e5;border:1px solid #ffd699;border-radius:11px;padding:10px 12px;margin-bottom:10px;font-size:0.66rem;color:#7c4a03;line-height:1.5";
-    notice.textContent = "⏰ Доставку пока не принимаем — " + getOrderWindowText(branch) + ". Можете добавить блюда в корзину заранее.";
+    notice.textContent = "Доставка принимаем " + getOrderWindowText(branch) + ".";
     body.appendChild(notice);
+    if (checkoutBtn) { checkoutBtn.disabled = true; checkoutBtn.style.opacity = ".4"; checkoutBtn.style.cursor = "not-allowed"; }
+  } else if (checkoutBtn) {
+    checkoutBtn.disabled = false; checkoutBtn.style.opacity = ""; checkoutBtn.style.cursor = "";
   }
   cart.forEach(c => {
     let row = document.createElement("div");
@@ -7232,7 +7217,7 @@ function cartD(id, d) {
 }
 
 function clearCartConfirm() {
-  cart.length && confirm("Очистить корзину? Все добавленные блюда будут удалены.") && (cart = [], clearCartStorage(), updBadge(), renderCart())
+  cart.length && (cart = [], clearCartStorage(), updBadge(), renderCart())
 }
 
 function openOrder() {
