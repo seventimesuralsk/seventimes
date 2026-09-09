@@ -7248,7 +7248,11 @@ function cartD(id, d) {
 }
 
 function clearCartConfirm() {
-  cart.length && (cart = [], clearCartStorage(), updBadge(), renderCart())
+  if (!cart.length) return;
+  var idsToReset = cart.map(c => c.id), pricesById = {};
+  cart.forEach(c => { pricesById[c.id] = c.price });
+  cart = [], clearCartStorage(), updBadge(), renderCart();
+  idsToReset.forEach(id => updCC(id, pricesById[id]));
 }
 
 function openOrder() {
