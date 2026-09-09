@@ -278,13 +278,12 @@ nav {
   position: absolute;
   top: 0;
   right: 0;
+  bottom: 0;
   width: min(320px, 82vw);
-  max-height: calc(100vh - 90px);
   background: rgba(255, 255, 255, .86);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   box-shadow: -8px 0 32px rgba(0, 0, 0, .14);
-  border-radius: 0 0 0 20px;
   display: flex;
   flex-direction: column;
   padding: 56px 8px 24px;
@@ -307,9 +306,9 @@ nav {
   background: none;
   border: none;
   text-align: left;
-  padding: 13px 14px;
+  padding: 19px 14px;
   font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
-  font-size: 0.9rem;
+  font-size: 1.08rem;
   font-weight: 600;
   color: #1d1d1f;
   cursor: pointer
@@ -319,9 +318,9 @@ nav {
   background: none;
   border: none;
   text-align: left;
-  padding: 13px 14px;
+  padding: 19px 14px;
   font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
-  font-size: 0.9rem;
+  font-size: 1.08rem;
   font-weight: 600;
   color: #1d1d1f;
   cursor: pointer;
@@ -3576,6 +3575,15 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
 @keyframes shake{10%,90%{transform:translateX(-1px)}20%,80%{transform:translateX(2px)}30%,50%,70%{transform:translateX(-3px)}40%,60%{transform:translateX(3px)}}
 .fb-shake{animation:shake .4s cubic-bezier(.36,.07,.19,.97)}
 
+/* ── БЕЗ АНИМАЦИЙ — всё мгновенно, никаких задержек ── */
+*, *::before, *::after {
+  transition-duration: 0s !important;
+  transition-delay: 0s !important;
+  animation-duration: .001s !important;
+  animation-delay: 0s !important;
+  scroll-behavior: auto !important;
+}
+
   </style>
  </head>
  <body>
@@ -6249,7 +6257,7 @@ function closeGenericStories() {
   unlockBodyScroll();
   setTimeout(function() {
     ov.classList.contains("open") || (ov.style.display = "none");
-  }, 300);
+  }, 0);
 }
 
 var _genSwipeStartY = null, _genSwipeStartX = null, _genSwiping = false;
@@ -6295,7 +6303,7 @@ function genericSwipeEnd(e) {
       wrap.style.transform = "";
       wrap.style.borderRadius = "";
       ov.style.background = "";
-    }, 260);
+    }, 0);
   } else {
     wrap.style.transform = "";
     wrap.style.borderRadius = "";
@@ -6305,7 +6313,7 @@ function genericSwipeEnd(e) {
   setTimeout(function() {
     wrap.style.transition = "";
     ov.style.transition = "";
-  }, 260);
+  }, 0);
   _genSwipeStartY = null;
   _genSwiping = false;
 }
@@ -6484,7 +6492,7 @@ function closeDreamStories() {
   unlockBodyScroll();
   setTimeout(function() {
     ov.classList.contains("open") || (ov.style.display = "none");
-  }, 300);
+  }, 0);
 }
 
 function dreamOnlyLetters(el) {
@@ -7745,7 +7753,7 @@ function buildDrawerCats() {
           setTimeout(function() {
             scrollToSec(item.idx);
             setActivePill(item.idx);
-          }, 380);
+          }, 0);
         };
         inner.appendChild(sb);
       });
@@ -7781,7 +7789,7 @@ function buildDrawerCats() {
       setTimeout(function() {
         scrollToSec(i);
         setActivePill(i);
-      }, 380);
+      }, 0);
     };
     wrap.appendChild(b);
     if (i === novIdx) {
@@ -7807,7 +7815,7 @@ function closeDrawer() {
     btn = document.getElementById("hamburgerBtn");
   ov && (ov.classList.remove("open"), btn && btn.classList.remove("open"), unlockBodyScroll(), setTimeout(function() {
     ov.classList.contains("open") || (ov.style.display = "none")
-  }, 320))
+  }, 0))
 }
 
 function toggleDrawer() {
@@ -7828,7 +7836,7 @@ function closeSheetModal(id) {
   if (!ov) return;
   ov.classList.remove("open"), unlockBodyScroll(), setTimeout(function() {
     ov.classList.contains("open") || (ov.style.display = "none")
-  }, 380)
+  }, 0)
 }
 let admIn = !1,
   admBranch = "samal",
