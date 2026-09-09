@@ -901,6 +901,23 @@ nav {
   transform: scale(.82) !important
 }
 
+.add-btn-choose {
+  color: #fff;
+  cursor: pointer;
+  background: #1d1d1f;
+  border: none;
+  border-radius: 10px;
+  width: 100%;
+  padding: 9px 0;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700
+}
+
+.add-btn-choose:active {
+  transform: scale(.96)
+}
+
 .qty-sm {
   align-items: center;
   gap: 3px;
@@ -2720,6 +2737,12 @@ nav {
   background: #f5f5f7
 }
 
+.branch-list-row.locked {
+  cursor: not-allowed;
+  opacity: .45;
+  pointer-events: none
+}
+
 .branch-list-name {
   font-size: 0.82rem;
   font-weight: 500;
@@ -3584,7 +3607,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
        </line>
       </svg>
      </button>
-     <button aria-label="Корзина" class="nav-icon-btn" onclick="openCart()">
+     <button aria-label="Корзина" class="nav-icon-btn" id="cartNavBtn" onclick="openCart()">
       <svg fill="none" height="21" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewBox="0 0 24 24" width="21">
        <path d="M6 7h12l1 13a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L6 7z">
        </path>
@@ -5652,6 +5675,8 @@ function switchBranch(b) {
   branch = b, renderBranchCarousel(), tagNearestBranch(), updateNavBranchLabel();
   var bs = document.getElementById("branchSubtitle");
   bs && (bs.style.display = "none"), cart = [], updBadge(), loadMenu(), logStat("visit", "");
+  var cartBtn = document.getElementById("cartNavBtn");
+  cartBtn && (cartBtn.style.display = branchHasOrdering(b) ? "" : "none");
   if (!_promoPopupShown) {
     _promoPopupShown = true;
     setTimeout(checkPromoPopup, 600);
@@ -5662,6 +5687,12 @@ function showNoBranchPlaceholder() {
   document.getElementById("menuContent").innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:70px 30px;text-align:center"><div style="font-size:2.82rem;margin-bottom:14px"></div><div style="font-weight:800;font-size:0.88rem;color:#1d1d1f;margin-bottom:6px">Меню грустит без вас</div><div style="font-size:0.7rem;color:#6e6e73;line-height:1.6">Выберите ресторан выше <br>чтобы увидеть полное меню</div></div>'
 }
 var BRANCHES = [{
+  id: "abulhair",
+  emoji: "",
+  name: "Абулхаир хана 177",
+  subKey: "daily_schedule",
+  bg: "linear-gradient(145deg,#2b1a0d,#6b3a1a)"
+}, {
   id: "samal",
   emoji: "",
   name: "Самал 70/3",
@@ -5673,12 +5704,6 @@ var BRANCHES = [{
   name: "Скоробогатова 65/1",
   subKey: "daily_schedule",
   bg: "linear-gradient(145deg,#0d1a2b,#1a3a6b)"
-}, {
-  id: "abulhair",
-  emoji: "",
-  name: "Абулхаир хана 177",
-  subKey: "daily_schedule",
-  bg: "linear-gradient(145deg,#2b1a0d,#6b3a1a)"
 }];
 
 function branchDisplayName(id) {
@@ -5696,9 +5721,9 @@ function branchDisplayName(id) {
 // blocked — true значит филиал виден в списке, но недоступен для выбора;
 // при тапе гость увидит текст из reason.
 var BRANCH_STATUS_CONFIG = {
+  abulhair: { hours: "Ещё чуть чуть и мы открыты",   blocked: true, reason: "Ещё чуть-чуть и мы откроемся" },
   samal:    { hours: "11:00-01:00",       blocked: false, reason: "" },
-  skoro:    { hours: "12:00-02:00",       blocked: false, reason: "" },
-  abulhair: { hours: "Скоро откроется",   blocked: true,  reason: "Скоро откроется новый филиал" }
+  skoro:    { hours: "12:00-02:00",       blocked: false, reason: "" }
 };
 
 function parseBranchHoursClient(hoursText) {
@@ -5832,7 +5857,9 @@ function applyNearestBadge(id) {
 
 function buildBranchListRow(br, isSelected, onClickFn) {
   var row = document.createElement("div");
-  row.className = "branch-list-row" + (isSelected ? " selected" : "");
+  var brStatusForLock = _branchStatusData[br.id];
+  var isLocked = !!(brStatusForLock && brStatusForLock.blocked);
+  row.className = "branch-list-row" + (isSelected ? " selected" : "") + (isLocked ? " locked" : "");
   row.id = "branchCard-" + br.id;
 
   var nameWrap = document.createElement("div");
@@ -5863,11 +5890,11 @@ function buildBranchListRow(br, isSelected, onClickFn) {
   var chevron = document.createElement("span");
   chevron.className = "branch-list-chevron";
   chevron.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg>';
-  right.appendChild(chevron);
+  if (!isLocked) right.appendChild(chevron);
 
   row.appendChild(nameWrap);
   row.appendChild(right);
-  row.onclick = onClickFn;
+  if (!isLocked) row.onclick = onClickFn;
   return row;
 }
 
@@ -5876,7 +5903,7 @@ function renderBranchCarousel() {
   track && (track.innerHTML = "", BRANCHES.forEach(function(br) {
     var id, card = buildBranchCard(br, branch === br.id, !1, (id = br.id, function() {
       var s = _branchStatusData[id];
-      if (s && s.blocked) { showBranchBlockedModal(s.reason); return; }
+      if (s && s.blocked) { return; }
       branch !== id && switchBranch(id)
     }));
     track.appendChild(card)
@@ -5888,7 +5915,7 @@ function renderBranchModal() {
   track && (track.innerHTML = "", BRANCHES.forEach(function(br) {
     var id, row = buildBranchListRow(br, branch === br.id, (id = br.id, function() {
       var s = _branchStatusData[id];
-      if (s && s.blocked) { showBranchBlockedModal(s.reason); return; }
+      if (s && s.blocked) { return; }
       selectBranchFromModal(id)
     }));
     track.appendChild(row)
@@ -6767,10 +6794,14 @@ function buildCard(item) {
     img = photoUrl ? `<img src="${photoUrl}" alt="" loading="lazy" decoding="async" onerror="imgErrorRetry(this,'Фото добавляется')">` : '<span class="item-photo-placeholder">' + t("photo_coming") + "</span>",
     qty = getQty(item.id),
     btype = getBadgeType(item.badge),
-    modsParsed = item.mods ? parseMods(item.mods) : [],
-    displayPrice = modsParsed.length ? Math.min.apply(null, modsParsed.map(m => m.price)) : item.price,
-    priceLabel = (modsParsed.length ? "от " : "") + displayPrice.toLocaleString("ru") + " ₸";
-  return div.innerHTML = `\n <div class="item-img-wrap">\n <div class="item-img">${img}</div>\n ${item.teaser?'<div class="teaser-lbl">'+t("teaser_soon")+"</div>":isPopular?`<div class="item-badge" data-type="${btype}">${item.badge}</div>`:""}\n </div>\n <div class="item-body">\n <div class="item-name">${item.name}</div>\n ${item.desc?`<div class="item-desc-short">${item.desc}</div>`:""}\n ${item.mods?'<div class="item-mods-hint">'+t("choose_variant_hint")+"</div>":""}${item.lunchLocked?'<div class="item-mods-hint" style="color:#e53e3e;font-weight:600">⏰ '+item.lunchScheduleText+"</div>":""}\n ${item.stopped?'<div class="stopped-lbl">'+t("sold_out")+"</div>"+(item.until&&item.until>Date.now()?'<div class="item-timer"><span class="item-timer-dot"></span><span id="timer-'+item.id+'">'+fmtTimer(item.until)+"</span></div>":""):`<div class="item-price-row">\n <div class="item-price">${priceLabel}</div>\n <div class="item-add-wrap" id="cc-${item.id}">${ctrlHtml(item.id,item.price,qty)}</div>\n </div>\n ${item.allowDelivery?item.allowSelf?"":`<div class="item-selfonly">${t("delivery_only")}</div>`:`<div class="item-selfonly">${t("pickup_only")}</div>`}`}\n </div>`, div.addEventListener("pointerdown", () => {
+    hasMods = !!(item.mods && item.mods.trim()),
+    orderingAllowed = branchHasOrdering(branch),
+    priceRowHtml = !orderingAllowed
+      ? `<div class="item-price-row"><div class="item-price">${(hasMods ? Math.min.apply(null, parseMods(item.mods).map(m => m.price)) : item.price).toLocaleString("ru")} ₸${hasMods ? "" : ""}</div></div>`
+      : hasMods
+      ? `<div class="item-price-row"><button class="add-btn-choose" onclick="cAdd(event,'${item.id}',${item.price})">Выбрать →</button></div>`
+      : `<div class="item-price-row">\n <div class="item-price">${item.price.toLocaleString("ru")} ₸</div>\n <div class="item-add-wrap" id="cc-${item.id}">${ctrlHtml(item.id,item.price,qty)}</div>\n </div>`;
+  return div.innerHTML = `\n <div class="item-img-wrap">\n <div class="item-img">${img}</div>\n ${item.teaser?'<div class="teaser-lbl">'+t("teaser_soon")+"</div>":isPopular?`<div class="item-badge" data-type="${btype}">${item.badge}</div>`:""}\n </div>\n <div class="item-body">\n <div class="item-name">${item.name}</div>\n ${item.desc?`<div class="item-desc-short">${item.desc}</div>`:""}\n ${item.mods?'<div class="item-mods-hint">'+t("choose_variant_hint")+"</div>":""}${item.lunchLocked?'<div class="item-mods-hint" style="color:#e53e3e;font-weight:600">⏰ '+item.lunchScheduleText+"</div>":""}\n ${item.stopped?'<div class="stopped-lbl">'+t("sold_out")+"</div>"+(item.until&&item.until>Date.now()?'<div class="item-timer"><span class="item-timer-dot"></span><span id="timer-'+item.id+'">'+fmtTimer(item.until)+"</span></div>":""):priceRowHtml+`\n ${item.allowDelivery?item.allowSelf?"":`<div class="item-selfonly">${t("delivery_only")}</div>`:`<div class="item-selfonly">${t("pickup_only")}</div>`}`}\n </div>`, div.addEventListener("pointerdown", () => {
     if (photoUrl) {
       var pre = new Image;
       pre.src = photoUrl
@@ -7152,7 +7183,7 @@ function renderCart() {
   if (!canOrderNow(branch)) {
     var notice = document.createElement("div");
     notice.style.cssText = "background:#fff4e5;border:1px solid #ffd699;border-radius:11px;padding:10px 12px;margin-bottom:10px;font-size:0.66rem;color:#7c4a03;line-height:1.5";
-    notice.textContent = "Доставка принимаем " + getOrderWindowText(branch) + ".";
+    notice.textContent = branchHasOrdering(branch) ? "Доставка принимаем " + getOrderWindowText(branch) + "." : "Заказы через сайт здесь пока не принимаем — доступна только бронь столика.";
     body.appendChild(notice);
     if (checkoutBtn) { checkoutBtn.disabled = true; checkoutBtn.style.opacity = ".4"; checkoutBtn.style.cursor = "not-allowed"; }
   } else if (checkoutBtn) {
@@ -8432,10 +8463,11 @@ function isNewScheduleActive() {
 // ── ЧАСЫ ПРИЁМА ДОСТАВКИ ПО ФИЛИАЛАМ ──
 // Правь прямо здесь, если часы поменяются — closeH/closeM меньше openH/openM
 // означает, что закрытие идёт после полуночи (например 00:30 — это ночь).
+// Абулхаир Хана 177 специально не указан здесь — там нет ни доставки, ни самовывоза
+// через сайт вообще, только бронь столика. Если появятся — просто добавь строку.
 var DELIVERY_HOURS = {
-  samal: { openH: 11, openM: 0, closeH: 0, closeM: 30 },
-  skoro: { openH: 12, openM: 0, closeH: 1, closeM: 30 },
-  abulhair: { openH: 8, openM: 0, closeH: 0, closeM: 30 }
+  samal: { openH: 12, openM: 0, closeH: 0, closeM: 30 },
+  skoro: { openH: 12, openM: 0, closeH: 1, closeM: 30 }
 };
 
 // ── ТЕСТОВЫЙ НОМЕР — всегда считается что доставка и самовывоз открыты ──
@@ -8451,10 +8483,14 @@ function isTestPhoneActive() {
   return digits === TEST_PHONE_DIGITS || digits.slice(-10) === TEST_PHONE_DIGITS.slice(-10);
 }
 
+function branchHasOrdering(br) {
+  return !!DELIVERY_HOURS[br];
+}
+
 function canOrderNow(br) {
   if (isTestPhoneActive()) return true;
   var cfg = DELIVERY_HOURS[br];
-  if (!cfg) return true;
+  if (!cfg) return false;
   var nowMin = getKZMinutes();
   var openMin = cfg.openH * 60 + cfg.openM;
   var closeMin = cfg.closeH * 60 + cfg.closeM;
@@ -8462,7 +8498,8 @@ function canOrderNow(br) {
 }
 
 function getOrderWindowText(br) {
-  var cfg = DELIVERY_HOURS[br] || DELIVERY_HOURS.samal;
+  var cfg = DELIVERY_HOURS[br];
+  if (!cfg) return "";
   var openStr = String(cfg.openH).padStart(2, "0") + ":" + String(cfg.openM).padStart(2, "0");
   var closeStr = String(cfg.closeH).padStart(2, "0") + ":" + String(cfg.closeM).padStart(2, "0");
   return t("time_window_from_to").replace("{0}", openStr).replace("{1}", closeStr);
