@@ -5893,10 +5893,26 @@ function branchDisplayName(id) {
 // blocked — true значит филиал виден в списке, но недоступен для выбора;
 // при тапе гость увидит текст из reason.
 var BRANCH_STATUS_CONFIG = {
-  abulhair: { hours: "Ещё чуть чуть и мы открыты",   blocked: true, reason: "Ещё чуть-чуть и мы откроемся" },
+  abulhair: { hours: "11:00-01:00",       blocked: false, reason: "" },
   samal:    { hours: "11:00-01:00",       blocked: false, reason: "" },
   skoro:    { hours: "12:00-02:00",       blocked: false, reason: "" }
 };
+
+// Момент, когда открывается Абулхаир Хана 177 — 11.09.2026, 11:00 по Уральску (UTC+5).
+// До этого момента — обратный отсчёт и филиал заблокирован для выбора.
+// После — автоматически переходит на обычные часы работы выше, без единой правки в коде.
+var ABULHAIR_OPEN_AT = Date.UTC(2026, 8, 11, 6, 0, 0);
+
+function formatCountdown(ms) {
+  if (ms <= 0) return "";
+  var totalMin = Math.ceil(ms / 60000);
+  var days = Math.floor(totalMin / 1440);
+  var hours = Math.floor((totalMin % 1440) / 60);
+  var mins = totalMin % 60;
+  if (days > 0) return "Откроемся через " + days + " дн " + hours + " ч";
+  if (hours > 0) return "Откроемся через " + hours + " ч " + mins + " мин";
+  return "Откроемся через " + mins + " мин";
+}
 
 function parseBranchHoursClient(hoursText) {
   var m = (hoursText || "").toString().match(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/);
@@ -5914,10 +5930,22 @@ function parseBranchHoursClient(hoursText) {
 
 var _branchStatusData = {};
 var _branchStatusLoaded = false;
+var _countdownTimer = null;
 
 function loadBranchStatus() {
+  var stillCountingDown = false;
   Object.keys(BRANCH_STATUS_CONFIG).forEach(function(code) {
     var cfg = BRANCH_STATUS_CONFIG[code];
+    if ("abulhair" === code && Date.now() < ABULHAIR_OPEN_AT) {
+      _branchStatusData[code] = {
+        status: formatCountdown(ABULHAIR_OPEN_AT - Date.now()),
+        isOpenNow: false,
+        blocked: true,
+        reason: ""
+      };
+      stillCountingDown = true;
+      return;
+    }
     var parsed = parseBranchHoursClient(cfg.hours);
     var statusText, isOpenNow;
     if (parsed) {
@@ -5932,6 +5960,10 @@ function loadBranchStatus() {
   _branchStatusLoaded = true;
   renderBranchCarousel();
   renderBranchModal();
+  clearInterval(_countdownTimer);
+  if (stillCountingDown) {
+    _countdownTimer = setInterval(loadBranchStatus, 60000);
+  }
 }
 
 function showBranchBlockedModal(reason) {
