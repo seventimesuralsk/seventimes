@@ -1339,6 +1339,16 @@ nav {
   display: flex
 }
 
+.dfooter.no-order {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px
+}
+
+.dfooter.no-order .dprice {
+  text-align: center
+}
+
 .dprice {
   color: #1d1d1f;
   flex-shrink: 0;
@@ -3728,7 +3738,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
       </div>
       <div class="mod-row" id="dModRow" style="display:none">
       </div>
-      <div class="dfooter">
+      <div class="dfooter" id="dFooter">
        <div class="dprice" id="dprice">
        </div>
        <div id="dOrderControls">
@@ -3747,7 +3757,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
         В корзину
        </button>
        </div>
-       <div id="dNoOrderNotice" style="display:none;padding:11px 13px;background:#fff4e5;border:1px solid #ffd699;border-radius:11px;font-size:0.68rem;color:#7c4a03;line-height:1.5;text-align:center">
+       <div id="dNoOrderNotice" style="display:none;width:100%;box-sizing:border-box;padding:12px 14px;background:#fff4e5;border:1px solid #ffd699;border-radius:11px;font-size:0.7rem;color:#7c4a03;line-height:1.5;text-align:center">
         Доставка с этого адреса не действует — выберите другой ресторан
        </div>
       </div>
@@ -7105,13 +7115,15 @@ function openDetail(item) {
   })) : modRow.style.display = "none";
   var basePrice = curMod ? curMod.price : item.price;
   document.getElementById("dprice").textContent = (basePrice * curQty).toLocaleString("ru") + " ₸", document.getElementById("dadd").textContent = getQty(item.id) > 0 ? t("update_cart_btn") : t("add_to_cart_btn"), openMov("detailMov");
-  var orderCtrls = document.getElementById("dOrderControls"), noOrderNotice = document.getElementById("dNoOrderNotice");
+  var orderCtrls = document.getElementById("dOrderControls"), noOrderNotice = document.getElementById("dNoOrderNotice"), dFooter = document.getElementById("dFooter");
   if (branchHasOrdering(branch)) {
     orderCtrls.style.display = "";
     noOrderNotice.style.display = "none";
+    dFooter.classList.remove("no-order");
   } else {
     orderCtrls.style.display = "none";
     noOrderNotice.style.display = "block";
+    dFooter.classList.add("no-order");
   }
 }
 
