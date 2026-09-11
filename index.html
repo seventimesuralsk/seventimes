@@ -3731,20 +3731,25 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
       <div class="dfooter">
        <div class="dprice" id="dprice">
        </div>
-       <div class="dqty">
-        <button aria-label="Уменьшить количество" class="dqbtn" onclick="dChQty(-1)">
-         −
-        </button>
-        <div class="dqn" id="dqn">
-         1
+       <div id="dOrderControls">
+        <div class="dqty">
+         <button aria-label="Уменьшить количество" class="dqbtn" onclick="dChQty(-1)">
+          −
+         </button>
+         <div class="dqn" id="dqn">
+          1
+         </div>
+         <button aria-label="Увеличить количество" class="dqbtn" onclick="dChQty(1)">
+          +
+         </button>
         </div>
-        <button aria-label="Увеличить количество" class="dqbtn" onclick="dChQty(1)">
-         +
-        </button>
-       </div>
-       <button class="dadd" id="dadd" onclick="dAddCart()">
+        <button class="dadd" id="dadd" onclick="dAddCart()">
         В корзину
        </button>
+       </div>
+       <div id="dNoOrderNotice" style="display:none;padding:11px 13px;background:#fff4e5;border:1px solid #ffd699;border-radius:11px;font-size:0.68rem;color:#7c4a03;line-height:1.5;text-align:center">
+        Доставка с этого адреса не действует — выберите другой ресторан
+       </div>
       </div>
      </div>
     </div>
@@ -7099,7 +7104,15 @@ function openDetail(item) {
     }, modRow.appendChild(btn)
   })) : modRow.style.display = "none";
   var basePrice = curMod ? curMod.price : item.price;
-  document.getElementById("dprice").textContent = (basePrice * curQty).toLocaleString("ru") + " ₸", document.getElementById("dadd").textContent = getQty(item.id) > 0 ? t("update_cart_btn") : t("add_to_cart_btn"), openMov("detailMov")
+  document.getElementById("dprice").textContent = (basePrice * curQty).toLocaleString("ru") + " ₸", document.getElementById("dadd").textContent = getQty(item.id) > 0 ? t("update_cart_btn") : t("add_to_cart_btn"), openMov("detailMov");
+  var orderCtrls = document.getElementById("dOrderControls"), noOrderNotice = document.getElementById("dNoOrderNotice");
+  if (branchHasOrdering(branch)) {
+    orderCtrls.style.display = "";
+    noOrderNotice.style.display = "none";
+  } else {
+    orderCtrls.style.display = "none";
+    noOrderNotice.style.display = "block";
+  }
 }
 
 function findItemByName(name) {
