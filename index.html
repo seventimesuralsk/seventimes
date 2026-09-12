@@ -4490,6 +4490,11 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
        У филиалов разное меню — без выбора мы не знаем что вам показать
       </div>
      </div>
+     <div id="geoConsentBanner" style="display:none;margin:14px var(--px)0;padding:12px 13px;background:#f0f7ff;border:1px solid #cfe4ff;border-radius:12px;align-items:center;gap:10px">
+      <div style="font-size:1.1rem;flex-shrink:0">📍</div>
+      <div style="flex:1;font-size:0.66rem;color:#1d1d1f;line-height:1.5">Разрешите доступ к геолокации — если вы рядом с одним из наших ресторанов, откроем его меню сами</div>
+      <button onclick="requestGeoConsent()" style="flex-shrink:0;background:#1d1d1f;color:#fff;border:none;border-radius:8px;padding:8px 12px;font-family:-apple-system,BlinkMacSystemFont,Inter,sans-serif;font-size:0.63rem;font-weight:700;cursor:pointer;white-space:nowrap">Разрешить</button>
+     </div>
      <div style="padding:18px var(--px)28px">
       <div id="branchModalTrack" class="branch-list">
       </div>
@@ -4528,6 +4533,14 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
      </button>
      <div class="drawer-cats" id="drawerCats">
      </div>
+    </div>
+   </div>
+   <div class="mov" id="geoWelcomeMov" style="z-index:960">
+    <div class="mbox" style="align-items:center;text-align:center;padding:32px 24px 26px">
+     <div style="font-size:2.2rem;margin-bottom:12px">👋</div>
+     <div style="font-size:1.08rem;font-weight:700;margin-bottom:6px;color:#1d1d1f">Добро пожаловать в Seven Times</div>
+     <div id="geoWelcomeAddr" style="font-size:0.78rem;color:#6e6e73;margin-bottom:22px"></div>
+     <button class="btn-main" style="width:100%" onclick="closeMov('geoWelcomeMov')">Смотреть меню</button>
     </div>
    </div>
    <div id="clientBlockedScreen" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;background:#f5f5f7;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center">
@@ -6034,7 +6047,7 @@ let _nearestBranchId = null,
   _nearestBranchChecked = !1;
 
 // Радиус, в котором сайт сам выбирает филиал без единого тапа гостя (в км)
-var GEOFENCE_RADIUS_KM = 0.15;
+var GEOFENCE_RADIUS_KM = 0.5;
 
 function haversineKm(lat1, lon1, lat2, lon2) {
   var dLat = (lat2 - lat1) * Math.PI / 180,
@@ -6064,7 +6077,9 @@ function tagNearestBranch() {
       if (!s || !s.blocked) {
         switchBranch(bestId);
         closeMov("branchModalOv");
-        showToast("Вы рядом — выбрали " + branchDisplayName(bestId) + " автоматически");
+        var addrEl = document.getElementById("geoWelcomeAddr");
+        if (addrEl) addrEl.textContent = branchDisplayName(bestId);
+        openMov("geoWelcomeMov");
       }
     }
   }, function() {
@@ -6163,10 +6178,18 @@ function selectBranchFromModal(id) {
 function showBranchModal(isSwitch) {
   renderBranchModal();
   var titleEl = document.getElementById("branchModalTitle"),
-    subEl = document.getElementById("branchModalSub");
+    subEl = document.getElementById("branchModalSub"),
+    geoBanner = document.getElementById("geoConsentBanner");
   titleEl && (titleEl.textContent = isSwitch ? "Выберите филиал" : "Сначала выберите ресторан");
   subEl && (subEl.style.display = isSwitch ? "none" : "block", subEl.textContent = "У филиалов разное меню — без выбора мы не знаем что вам показать");
+  if (geoBanner) geoBanner.style.display = (!isSwitch && !_nearestBranchChecked && navigator.geolocation) ? "flex" : "none";
   openMov("branchModalOv")
+}
+
+function requestGeoConsent() {
+  var geoBanner = document.getElementById("geoConsentBanner");
+  if (geoBanner) geoBanner.style.display = "none";
+  tagNearestBranch();
 }
 var _promoSeen = {};
 var PROMO_CARDS = [{
@@ -9060,7 +9083,7 @@ function checkSiteStatus() {
   }, function() {});
 }
 window.addEventListener("load", function() {
-  checkClientBlocked(), loadBranchStatus(), applyI18n(), renderBranchCarousel(), showNoBranchPlaceholder(), showBranchModal(), updateSearchTop(), tagNearestBranch(), checkSiteStatus(), renderPromoCarousel(), loadDynamicBanners();
+  checkClientBlocked(), loadBranchStatus(), applyI18n(), renderBranchCarousel(), showNoBranchPlaceholder(), showBranchModal(), updateSearchTop(), checkSiteStatus(), renderPromoCarousel(), loadDynamicBanners();
   var _saBtn = document.getElementById("siteAdminAccessBtn");
   if (_saBtn) _saBtn.addEventListener("click", function(ev) {
     ev.preventDefault();
