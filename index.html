@@ -9239,11 +9239,11 @@ function bk_uralskH(){return bk_uralskNow().getHours();}
 // До этой даты — старый график: Самал до 23:00, Скоробогатова до 01:00.
 const bk_NEW_SCHEDULE_CUTOFF = Date.UTC(2026,7,1,-5,0,0); // 01.08.2026 00:00 по местному времени
 function bk_isNewScheduleActive(){ return Date.now() >= bk_NEW_SCHEDULE_CUTOFF; }
+// Бронь принимается с 12:00. Самал и Абулхаир Хана — до 00:00, Скоробогатова — до 01:00.
 function bk_bookingWindow(b){
-  if(bk_isNewScheduleActive()){
-    return {openH:12,closeH:26,closeLabel:'02:00',name:b===0?'Самал 70/3':'Скоробогатова 65/1'};
-  }
-  return b===0?{openH:12,closeH:23,closeLabel:'23:00',name:'Самал 70/3'}:{openH:12,closeH:25,closeLabel:'01:00',name:'Скоробогатова 65/1'};
+  if(1===b) return {openH:12,closeH:25,closeLabel:'01:00',name:'Скоробогатова 65/1'};
+  if(3===b) return {openH:12,closeH:24,closeLabel:'00:00',name:'Абулхаир Хана 177'};
+  return {openH:12,closeH:24,closeLabel:'00:00',name:'Самал 70/3'};
 }
 function bk_isBookingAllowedNow(b){const h=bk_uralskH(),w=bk_bookingWindow(b);return w.closeH>24?h>=w.openH||h<(w.closeH-24):h>=w.openH&&h<w.closeH;}
 
@@ -9539,7 +9539,7 @@ function bk_sendBooking(){
 
   bk_showErr(errEl, '');
   const mNames=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
-  const bNames=['Самал 70/3','Скоробогатова 65/1'];
+  const bNames={0:'Самал 70/3',1:'Скоробогатова 65/1',3:'Абулхаир Хана 177'};
   let msg='Здравствуйте! Хочу забронировать столик.\n\nИмя: '+guestName+
              '\nТелефон: '+phone+
              '\nФилиал: '+bNames[bk__bookBranch]+
@@ -9842,7 +9842,7 @@ function bk_loadAdminBlockedList(){
   const listEl=document.getElementById('bk-adminBlockedList');
   if(!listEl) return;
   const months=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
-  const bNames=['Самал','Скоробогатова','Оба филиала'];
+  const bNames={0:'Самал',1:'Скоробогатова',2:'Оба филиала',3:'Абулхаир Хана'};
   fetch(bk_STATS_API+'?action=getBookingBlockedDates&_ts='+Date.now(), {cache:'no-store'})
     .then(function(r){return r.json();})
     .then(function(d){
