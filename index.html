@@ -6876,6 +6876,35 @@ function applyLunchSchedule() {
 function showLunchWarning(item) {
   showFunModal("⏰", "«" + item.name + "»" + t("lunch_not_available") + "<br><br>" + t("lunch_strict_schedule") + " <strong>" + item.lunchScheduleText + "</strong><br><br>" + t("lunch_order_window"), t("got_it_btn"))
 }
+// ── Тихая фоновая докачка ВСЕХ фото меню в постоянный кэш ──
+// Запускается после того, как меню уже показано (не мешает первому экрану),
+// с небольшой задержкой и через "свободное время" браузера. Список ссылок
+// отдаётся service worker'у — именно он решает, что уже есть, а что докачать,
+// так что при повторном вызове (или на следующий день) лишнего трафика нет.
+function prefetchAllMenuImages() {
+  if (!("serviceWorker" in navigator)) return;
+  navigator.serviceWorker.ready.then(function(reg) {
+    if (!reg.active) return;
+    var urls = [];
+    Object.values(menuData).forEach(function(arr) {
+      arr.forEach(function(it) {
+        if (it.photo) urls.push(convertPhotoUrl(it.photo, 260));
+      });
+    });
+    if (!urls.length) return;
+    reg.active.postMessage({ type: "PREFETCH_IMAGES", urls: urls });
+  }).catch(function() {});
+}
+
+function schedulePrefetchImages() {
+  var run = function() { prefetchAllMenuImages(); };
+  if ("requestIdleCallback" in window) {
+    requestIdleCallback(run, { timeout: 300 });
+  } else {
+    setTimeout(run, 150);
+  }
+}
+
 async function loadMenu() {
   if (!branch) return void showNoBranchPlaceholder();
   let key = "st_menu_" + branch,
@@ -6887,6 +6916,7 @@ async function loadMenu() {
     try {
       menuData = JSON.parse(validCache), applyLunchSchedule(), renderCats(), renderMenu(), restoreCartFromStorage(), checkRepeatOrder()
     } catch {}
+    schedulePrefetchImages();
     fetch(API + "?action=getMenu&branch=" + branch).then(r => r.json()).then(d => {
       "success" === d.status && (localStorage.setItem(key, JSON.stringify(d.categories)), localStorage.setItem(key + "_ver", "2"), patchMenuLive(d.categories))
     }).catch(() => {})
@@ -6896,6 +6926,7 @@ async function loadMenu() {
       let d = await (await fetch(API + "?action=getMenu&branch=" + branch)).json();
       if ("success" !== d.status) throw Error();
       menuData = d.categories, localStorage.setItem(key, JSON.stringify(menuData)), localStorage.setItem(key + "_ver", "2"), applyLunchSchedule(), renderCats(), renderMenu(), restoreCartFromStorage(), checkRepeatOrder()
+      schedulePrefetchImages();
     } catch {
       document.getElementById("menuContent").innerHTML = '<div class="loader"><div style="font-size:1.76rem;margin-bottom:8px"></div><div class="loader-t">' + t("something_broke") + "</div></div>"
     }
@@ -9142,6 +9173,7 @@ function patchMenuLive(freshCats) {
     }
     oldIt.photo = newIt.photo, oldIt.badge = newIt.badge, oldIt.desc = newIt.desc, oldIt.mods = newIt.mods, oldIt.allergens = newIt.allergens, oldIt.allowDelivery = newIt.allowDelivery, oldIt.allowSelf = newIt.allowSelf, oldIt.until = newIt.until
   })
+  schedulePrefetchImages();
 }
   </script>
 
