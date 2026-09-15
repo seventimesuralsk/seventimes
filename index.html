@@ -5920,7 +5920,7 @@ function branchDisplayName(id) {
 // blocked — true значит филиал виден в списке, но недоступен для выбора;
 // при тапе гость увидит текст из reason.
 var BRANCH_STATUS_CONFIG = {
-  abulhair: { hours: "11:00-01:00",       blocked: false, reason: "" },
+  abulhair: { hours: "08:00-01:00",       blocked: false, reason: "" },
   samal:    { hours: "11:00-01:00",       blocked: false, reason: "" },
   skoro:    { hours: "12:00-02:00",       blocked: false, reason: "" }
 };
@@ -5952,7 +5952,11 @@ function parseBranchHoursClient(hoursText) {
   var nowMin = kzDate.getHours() * 60 + kzDate.getMinutes();
   var openMin = openH * 60 + openM, closeMin = closeH * 60 + closeM;
   var isOpen = closeMin <= openMin ? (nowMin >= openMin || nowMin < closeMin) : (nowMin >= openMin && nowMin < closeMin);
-  return { isOpen: isOpen, openStr: openStr };
+  var minutesLeft = null;
+  if (isOpen) {
+    minutesLeft = closeMin <= openMin ? (nowMin >= openMin ? closeMin + 1440 - nowMin : closeMin - nowMin) : closeMin - nowMin;
+  }
+  return { isOpen: isOpen, openStr: openStr, minutesLeft: minutesLeft };
 }
 
 var _branchStatusData = {};
@@ -5976,8 +5980,13 @@ function loadBranchStatus() {
     var parsed = parseBranchHoursClient(cfg.hours);
     var statusText, isOpenNow;
     if (parsed) {
-      statusText = parsed.isOpen ? "Открыто" : ("Откроется в " + parsed.openStr);
       isOpenNow = parsed.isOpen;
+      if (parsed.isOpen && parsed.minutesLeft !== null && parsed.minutesLeft <= 60) {
+        statusText = "Закроется через " + parsed.minutesLeft + " мин";
+        stillCountingDown = true;
+      } else {
+        statusText = parsed.isOpen ? "Открыто" : ("Откроется в " + parsed.openStr);
+      }
     } else {
       statusText = cfg.hours;
       isOpenNow = false;
@@ -7458,12 +7467,16 @@ function renderCartCrossSell() {
   box.innerHTML = "";
 }
 
+var _cartNoticeTimer = null;
 function openCart() {
-  switchCartTab("cart"), renderCart(), renderCartCrossSell(), openMov("cartMov"), cart.length && logStat("cart_open", "")
+  switchCartTab("cart"), renderCart(), renderCartCrossSell(), openMov("cartMov"), cart.length && logStat("cart_open", "");
+  clearInterval(_cartNoticeTimer);
+  _cartNoticeTimer = setInterval(renderCart, 30000);
 }
 
 function closeCart() {
-  closeMov("cartMov")
+  closeMov("cartMov");
+  clearInterval(_cartNoticeTimer);
 }
 
 function renderCart() {
@@ -7484,7 +7497,12 @@ function renderCart() {
   if (!canOrderNow(branch)) {
     var notice = document.createElement("div");
     notice.style.cssText = "background:#f5f5f5;border:1px solid #e5e5e5;border-radius:11px;padding:10px 12px;margin-bottom:10px;font-size:0.66rem;color:#1d1d1f;line-height:1.5";
-    notice.textContent = branchHasOrdering(branch) ? "Доставка принимаем " + getOrderWindowText(branch) + "." : "Заказы через сайт здесь пока не принимаем — доступна только бронь столика.";
+    var deliveryLeft = branchHasOrdering(branch) ? getDeliveryMinutesLeft(branch) : null;
+    notice.textContent = !branchHasOrdering(branch)
+      ? "Заказы через сайт здесь пока не принимаем — доступна только бронь столика."
+      : (deliveryLeft !== null && deliveryLeft <= 60)
+      ? "Успейте заказать — доставка закроется через " + deliveryLeft + " мин."
+      : "Доставка принимаем " + getOrderWindowText(branch) + ".";
     body.appendChild(notice);
     if (checkoutBtn) { checkoutBtn.disabled = true; checkoutBtn.style.opacity = ".4"; checkoutBtn.style.cursor = "not-allowed"; }
   } else if (checkoutBtn) {
@@ -8800,6 +8818,15 @@ function canOrderNow(br) {
   var openMin = cfg.openH * 60 + cfg.openM;
   var closeMin = cfg.closeH * 60 + cfg.closeM;
   return closeMin <= openMin ? nowMin >= openMin || nowMin < closeMin : nowMin >= openMin && nowMin < closeMin;
+}
+
+function getDeliveryMinutesLeft(br) {
+  var cfg = DELIVERY_HOURS[br];
+  if (!cfg || !canOrderNow(br)) return null;
+  var nowMin = getKZMinutes();
+  var openMin = cfg.openH * 60 + cfg.openM, closeMin = cfg.closeH * 60 + cfg.closeM;
+  var left = closeMin <= openMin ? (nowMin >= openMin ? closeMin + 1440 - nowMin : closeMin - nowMin) : closeMin - nowMin;
+  return left;
 }
 
 function getOrderWindowText(br) {
