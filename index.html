@@ -3020,7 +3020,7 @@ nav {
   height: 120px;
   border-radius: 11px;
   padding: 2px;
-  background: #1d1d1f;
+  background: #0071e3;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent
 }
@@ -9232,8 +9232,8 @@ document.addEventListener('keydown', function(e){
   }, 800);
 })();
 
-function bk_uralskNow(){const n=new Date();return new Date(n.getTime()+n.getTimezoneOffset()*60000+5*3600000);}
-function bk_uralskH(){return bk_uralskNow().getHours();}
+function bk_uralskNow(){return new Date(Date.now()+5*3600000);}
+function bk_uralskH(){return bk_uralskNow().getUTCHours();}
 
 // ── Новый график (12:00–02:00 для обоих филиалов) действует с 01.08.2026, Уральск/Атырау (UTC+5).
 // До этой даты — старый график: Самал до 23:00, Скоробогатова до 01:00.
@@ -9328,7 +9328,8 @@ function bk_rebuildHourOptions(branchIdx){
   if(prevVal!=='' && bookHours.indexOf(parseInt(prevVal))!==-1){
     hSel.value=prevVal;
   } else {
-    hSel.value='';
+    var nowH=bk_uralskNow().getUTCHours();
+    hSel.value = bookHours.indexOf(nowH)!==-1 ? nowH : '';
   }
   bk_clearTimeFieldError();
 }
@@ -9395,7 +9396,7 @@ function bk_initBookingForm(){
       opt3.value=String(mn).padStart(2,'0');opt3.textContent=String(mn).padStart(2,'0');
       minSel.appendChild(opt3);
     }
-    minSel.value='';
+    minSel.value=String(bk_uralskNow().getUTCMinutes()).padStart(2,'0');
   }
 
   [0,1,3].forEach(i=>{const b=document.getElementById('bk-branchBtn'+i); if(b) b.classList.remove('bk-on');});
