@@ -4670,6 +4670,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
     <div id="bk-branchPicker" style="display:none;gap:8px;margin-bottom:14px">
       <button id="bk-branchBtn0" onclick="bk_selectBranch(0)" class="bk-branch-btn">Самал 70/3</button>
       <button id="bk-branchBtn1" onclick="bk_selectBranch(1)" class="bk-branch-btn">Скоробогатова 65/1</button>
+      <button id="bk-branchBtn3" onclick="bk_selectBranch(3)" class="bk-branch-btn">Абулхаир Хана 177</button>
     </div>
 
     <div class="bk-hint" style="margin-bottom:14px" id="bk-scheduleHint">Бронь с 12:00. Самал — до 23:00, Скоробогатова — до 01:00.</div>
@@ -7049,7 +7050,7 @@ function buildCard(item) {
     isPopular = item.badge && "" !== item.badge.trim();
   div.className = "item-card" + (item.stopped ? " stopped" : "") + (item.teaser ? " teaser" : ""), div.dataset.id = item.id, item.synonyms && (div.dataset.synonyms = item.synonyms.toLowerCase());
   let rawPhoto = item.photo || "",
-    photoUrl = rawPhoto ? convertPhotoUrl(rawPhoto, 500) : "",
+    photoUrl = rawPhoto ? convertPhotoUrl(rawPhoto, 260) : "",
     img = photoUrl ? `<img src="${photoUrl}" alt="" loading="lazy" decoding="async" onerror="imgErrorRetry(this,'Фото добавляется')">` : '<span class="item-photo-placeholder">' + t("photo_coming") + "</span>",
     qty = getQty(item.id),
     btype = getBadgeType(item.badge),
@@ -7118,7 +7119,7 @@ function parseMods(str) {
 function openDetail(item) {
   curItem = item, curQty = Math.max(1, getQty(item.id)), curMod = null, logStat("view", item.name);
   let el = document.getElementById("dimg");
-  var detailPhotoUrl = item.photo ? convertPhotoUrl(item.photo, 900) : "";
+  var detailPhotoUrl = item.photo ? convertPhotoUrl(item.photo, 640) : "";
   el.innerHTML = detailPhotoUrl ? `<img src="${detailPhotoUrl}" alt="" decoding="async" onerror="imgErrorRetry(this,'Фото добавляется')">` : '<span class="item-photo-placeholder">' + t("photo_coming") + "</span>", document.getElementById("dname").textContent = item.name;
   var isCombo = /^комбо/i.test(item.name.trim()),
     comboNotice = isCombo ? '<div style="color:#e53e3e;font-weight:600;background:#e53e3e14;border-radius:9px;padding:9px 11px;margin-bottom:10px;line-height:1.5">⏱ Время приготовления: 20–25 мин.<br>В часы пик и праздники — до 90 мин, при большом количестве заказов — до 120 мин.</div>' : "";
@@ -7823,7 +7824,7 @@ function showPeek(item) {
   let ov = document.getElementById("peekOv");
   if (!ov) return;
   document.getElementById("peekName").textContent = item.name, document.getElementById("peekPrice").textContent = item.price ? item.price.toLocaleString("ru") + " ₸" : "";
-  let photoUrl = item.photo ? convertPhotoUrl(item.photo, 300) : "";
+  let photoUrl = item.photo ? convertPhotoUrl(item.photo, 180) : "";
   document.getElementById("peekImg").innerHTML = photoUrl ? '<img src="' + photoUrl + '" alt="">' : '<span class="item-photo-placeholder">' + t("photo_coming") + "</span>", ov.classList.add("show"), navigator.vibrate && navigator.vibrate(8)
 }
 
@@ -8095,8 +8096,8 @@ function bookBtnClick() {
 }
 
 function bk_prefillFromSite() {
-  var idxByBranch = { samal: 0, skoro: 1 };
-  var bNames = ["Самал 70/3", "Скоробогатова 65/1"];
+  var idxByBranch = { samal: 0, skoro: 1, abulhair: 3 };
+  var bNames = { 0: "Самал 70/3", 1: "Скоробогатова 65/1", 3: "Абулхаир Хана 177" };
   var readout = document.getElementById("bk-branchReadout");
   var picker = document.getElementById("bk-branchPicker");
   if (typeof branch !== "undefined" && branch && idxByBranch[branch] !== undefined) {
@@ -8245,7 +8246,7 @@ function optimizeCloudinaryUrl(url, width) {
   var idx = url.indexOf(marker);
   if (idx === -1) return url;
   var insertPos = idx + marker.length;
-  var transform = "f_auto,q_auto" + (width ? ",w_" + width : "");
+  var transform = "f_auto,q_auto:low" + (width ? ",w_" + width : "");
   return url.slice(0, insertPos) + transform + "/" + url.slice(insertPos);
 }
 
@@ -8923,7 +8924,7 @@ function openPromoModal(type) {
   document.getElementById("promoMTitle").textContent = title;
   var grid = document.getElementById("promoModalGrid");
   grid.innerHTML = "", items.forEach(function(item) {
-    var photoUrl = item.photo ? convertPhotoUrl(item.photo, 500) : "",
+    var photoUrl = item.photo ? convertPhotoUrl(item.photo, 260) : "",
       card = document.createElement("div");
     card.className = "pm-card";
     var imgWrap = document.createElement("div");
@@ -9292,7 +9293,7 @@ function bk_markTimeFieldError(){
 
 function bk_selectBranch(idx){
   bk__bookBranch=idx;
-  [0,1].forEach(i=>{
+  [0,1,3].forEach(i=>{
     const b=document.getElementById('bk-branchBtn'+i);
     if(b) b.classList.toggle('bk-on', i===idx);
   });
@@ -9398,7 +9399,7 @@ function bk_initBookingForm(){
     minSel.value='';
   }
 
-  [0,1].forEach(i=>{const b=document.getElementById('bk-branchBtn'+i); if(b) b.classList.remove('bk-on');});
+  [0,1,3].forEach(i=>{const b=document.getElementById('bk-branchBtn'+i); if(b) b.classList.remove('bk-on');});
   for(var gi=1;gi<=6;gi++){const gb=document.getElementById('bk-g'+gi); if(gb) gb.classList.remove('bk-on');}
 
   const nf=document.getElementById('bk-bookName'), pf=document.getElementById('bk-bookPhone'), cf=document.getElementById('bk-bookComment');
@@ -9464,6 +9465,13 @@ function bk_updateDays(setDay){
   dSel.innerHTML='';
   for(var d=start;d<=days;d++){
     if(bk_isDateBlocked(m, d, bk__bookBranch)) continue; // пропускаем закрытый день для выбранного филиала
+    // Абулхаир Хана 177 открылся не с начала месяца — дни до реального
+    // открытия для брони недоступны, дата берётся из того же места, что
+    // управляет статусом филиала на самом сайте (ABULHAIR_OPEN_AT)
+    if(3===bk__bookBranch && typeof ABULHAIR_OPEN_AT !== 'undefined'){
+      var dayEnd = Date.UTC(2026, m, d, 23, 59, 59);
+      if(dayEnd < ABULHAIR_OPEN_AT) continue;
+    }
     var opt=document.createElement('option');
     opt.value=d;opt.textContent=String(d).padStart(2,'0');
     dSel.appendChild(opt);
