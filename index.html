@@ -3038,6 +3038,10 @@ nav {
     font-size: 0.82rem !important
   }
 
+  #hamburgerBtn {
+    display: none
+  }
+
   .nav-branch-btn {
     padding: 10px 18px;
     font-size: 0.82rem
@@ -3759,7 +3763,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
     </div>
     <div class="desktop-nav" id="desktopNav">
      <button onclick="openAboutCompanyModal()">О компании</button>
-     <button onclick="HIRING_SITE_URL ? window.open(HIRING_SITE_URL,'_blank') : showToast('Скоро будет здесь')">Вакансии</button>
+     <button onclick="hr_open()">Вакансии</button>
      <button onclick="openGenericStories('banner_restaurants')">Рестораны</button>
      <button onclick="openFaqModal()">Вопросы</button>
     </div>
@@ -4672,6 +4676,19 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
      </div>
     </div>
    </div>
+   <div id="hrFormOv" style="display:none;position:fixed;inset:0;z-index:970;background:#fbfbfd;flex-direction:column">
+    <div style="position:sticky;top:0;z-index:5;background:rgba(251,251,253,.9);backdrop-filter:blur(20px);border-bottom:1px solid #e5e5e7;padding:14px var(--px);display:flex;align-items:center;gap:14px">
+     <button aria-label="Закрыть" onclick="hr_close()" style="background:none;border:none;cursor:pointer;flex-shrink:0;padding:4px">
+      <svg fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewBox="0 0 24 24" width="20"><line x1="18" x2="6" y1="6" y2="18"></line><line x1="6" x2="18" y1="6" y2="18"></line></svg>
+     </button>
+     <div style="flex:1;height:3px;background:#e5e5e7;border-radius:2px;overflow:hidden"><div id="hrProgressFill" style="height:100%;background:#7a1128;border-radius:2px;width:0%"></div></div>
+     <div id="hrProgressLabel" style="font-size:0.66rem;color:#86868b;min-width:32px;text-align:right">0%</div>
+    </div>
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:28px var(--px)120px;overflow-y:auto">
+     <div id="hrStageCard" style="width:100%;max-width:480px"></div>
+    </div>
+    <div id="hrNavbar" style="position:fixed;bottom:0;left:0;right:0;background:rgba(251,251,253,.92);backdrop-filter:blur(20px);border-top:1px solid #e5e5e7;padding:14px var(--px);padding-bottom:max(14px,env(safe-area-inset-bottom));display:flex;gap:10px"></div>
+   </div>
    <div class="mov" id="geoWelcomeMov" style="z-index:960">
     <div class="mbox" style="align-items:center;text-align:center;padding:32px 24px 26px">
      <div style="font-size:2.2rem;margin-bottom:12px">👋</div>
@@ -4997,7 +5014,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
      }
    }
 
-   const API = "https://script.google.com/macros/s/AKfycbyLbslfuWS1cb1fLU62yohA2jKB7zwgRej8bhh7yxSyOOGoy7IvTNIlxJurVvY8kcJEyQ/exec",
+   const API = "https://script.google.com/macros/s/AKfycbwWLSYWkpnkxNbHza6tE1IFPas3bEN5g8MhwvZ65JcQV1Z5S6tFztScCobfY8ArvD3Wxw/exec",
   WA = "77760709898",
   CAT_META = {
     "Новинки": {
@@ -8112,6 +8129,288 @@ function openAboutCompanyModal() {
   showFunModal("☕", "<div style='text-align:left;font-size:0.78rem;line-height:1.8;color:#1d1d1f'>Seven Times — сеть ресторанов и кофеен в Уральске. Мы начали с одного зала и открыли уже третий — Абулхаир хана 177, кроме Самал 70/3 и Скоробогатова 65/1.<br><br>Авторская кухня, свежая обжарка кофе, уютная атмосфера — и внимание к каждой мелочи, от посадки до подачи.<br><br>Спасибо, что выбираете нас.</div>", "Понятно");
 }
 
+// ══════════════════════════════════════════════════════════════════
+// ── АНКЕТА ВАКАНСИЙ — встроена прямо в сайт, отправляет в тот же
+// Google-скрипт (action=hrSubmitApplication), что и админка. ──
+// ══════════════════════════════════════════════════════════════════
+
+var HR_POSITIONS = ["Официант", "Бариста", "Повар — горячий цех", "Повар — суши/холодный цех", "Повар фастфуд / гриль", "Помощник повара", "Посудомойщик / уборщик зала"];
+
+var HR_ROLE_QUESTIONS = {
+  "Официант": { title: "Готовы ли вы предлагать гостям допродажи (десерты, напитки), не навязывая?", options: ["Да, это нормальная часть работы официанта", "Могу, если покажете как это делать правильно", "Умею предлагать, но не люблю навязывать", "Предпочитаю просто принимать заказ"] },
+  "Бариста": { title: "Работали ли вы раньше на профессиональной кофемашине?", options: ["Да, есть опыт именно бариста", "Дома варю кофе, на профессиональной технике не работал(а)", "Не работал(а), но готов(а) быстро научиться", "Совсем не разбираюсь в кофе"] },
+  "Повар — горячий цех": { title: "Есть ли у вас опыт именно в горячем цехе — плита, фритюр, гриль под потоком заказов?", options: ["Да, работал(а) именно в горячем цехе", "Работал(а) на кухне, но в основном на заготовках", "Домашняя готовка, профессионального опыта нет", "Совсем новичок на кухне"] },
+  "Повар — суши/холодный цех": { title: "Есть ли у вас опыт работы с сырой рыбой и знание санитарных норм холодного цеха?", options: ["Да, работал(а) именно суши-поваром", "Работал(а) в холодном цехе, но не с суши", "Нет опыта, но готов(а) пройти обучение", "Не работал(а) с сырыми продуктами вообще"] },
+  "Повар фастфуд / гриль": { title: "Готовы ли работать в темпе фастфуда — сборка заказа за 1–2 минуты на потоке?", options: ["Да, привычен(привычна) к такому темпу", "Справлюсь, но нужно немного втянуться", "Предпочитаю более спокойный темп работы", "Не пробовал(а), не уверен(а)"] },
+  "Помощник повара": { title: "Готовы ли вы к рутинным задачам — нарезка, заготовки, уборка рабочего места весь день?", options: ["Да, это нормальная часть работы на кухне", "Готов(а), если это шаг к позиции повара", "Хотелось бы сразу что-то более творческое", "Не задумывался(лась) об этом раньше"] },
+  "Посудомойщик / уборщик зала": { title: "Это физически тяжёлая и монотонная работа — весь день на ногах. Вы к этому готовы?", options: ["Да, меня это не пугает", "Готов(а), но рассматриваю как шаг к позиции повыше", "Хочу попробовать, но не уверен(а) насчёт постоянно", "Рассматриваю только как временный вариант"] }
+};
+var HR_DEFAULT_ROLE_Q = { title: "Расскажите, что вы уже умеете делать применительно к этой должности", options: ["Есть прямой опыт именно в этой роли", "Есть смежный опыт, но не точно такой же", "Опыта нет, но готов(а) учиться с нуля", "Пока не уверен(а), что эта роль мне подходит"] };
+
+function hr_buildRoleQuestion() {
+  var pos = hr_answers.position;
+  var src = HR_ROLE_QUESTIONS[pos] || HR_DEFAULT_ROLE_Q;
+  return { id: "roleAnswer", type: "choice", title: src.title, sub: pos ? "Специфический вопрос для роли «" + pos + "»" : "", options: src.options, required: true };
+}
+
+function hr_getQuestions() {
+  return [
+    { id: "name", type: "text", title: "Как вас зовут?", sub: "Имя и фамилия на русском или казахском языке", placeholder: "Иван Иванов", required: true },
+    { id: "phone", type: "phone", title: "Номер телефона", sub: "Для связи по вашей заявке", required: true },
+    { id: "age", type: "number", title: "Сколько вам лет?", placeholder: "Возраст", required: true, min: 16, max: 70 },
+    { id: "position", type: "choice", title: "На какую должность претендуете?", options: HR_POSITIONS, required: true },
+    hr_buildRoleQuestion(),
+    { id: "isStudent", type: "choice", title: "Вы студент(ка) или учитесь сейчас?", options: ["Да, учусь очно", "Да, учусь заочно / дистанционно", "Нет, не учусь"], required: true },
+    { id: "parallelJob", type: "choice", title: "Работаете ли вы сейчас где-то ещё параллельно?", options: ["Да, работаю в другом месте одновременно", "Нет, это будет моё единственное место работы"], required: true },
+    { id: "experience", type: "choice", title: "Есть ли у вас опыт работы в общепите?", options: ["Нет опыта", "До 1 года", "1–3 года", "Более 3 лет"], required: true },
+    { id: "prevPlace", type: "text", title: "Где вы работали до этого?", sub: "Название заведения/компании. Если это первое место работы — напишите «нет»", placeholder: "Например: кафе «Рахат»", required: true },
+    { id: "leaveReason", type: "multiChoiceOther", title: "Почему вы ушли с прошлого места работы?", sub: "Можно выбрать несколько вариантов, если подходит не одна причина", options: ["По собственному желанию", "Не устроила зарплата", "Задерживали или удерживали зарплату", "Не сошёлся характерами с коллективом", "Конфликт с руководством/администратором", "Не устроил график — переработки, нет выходных", "Заведение закрылось / сократили штат", "Уволили без объяснения причин", "Переезд / сменил(а) район", "Нашёл(нашла) более выгодное предложение", "Это моё первое место работы", "Затрудняюсь ответить", "Другое (своими словами)"], required: true },
+    { id: "schedule", type: "choice", title: "Вам будет удобно работать по графику 2/2 — сутки через двое?", options: ["Да", "Нет"], required: true, weight: { "Да": 3, "Нет": 0 } },
+    { id: "preferredBranch", type: "multiChoiceOther", title: "Где вам ближе работать?", sub: "Можно выбрать несколько вариантов", options: ["Абулхаир Хана 177 (4 мкрн)", "Скоробогатова 65/1 (центр)", "Самал 70/3 (10 мкрн)"], required: true },
+    { id: "howFound", type: "choice", title: "Откуда вы узнали о нас?", options: ["Instagram", "Объявления в пабликах", "В ресторане, увидел(а) сам(а)"], required: true },
+    { id: "whyWorkHere", type: "textarea", title: "Почему хотите работать именно у нас?", sub: "Своими словами", placeholder: "Напишите пару предложений…", required: true },
+    { id: "consent", type: "consent", title: "Последний шаг", sub: "Подтвердите согласие на обработку данных" }
+  ];
+}
+
+var hr_step = -1;
+var hr_answers = {};
+
+function hr_open() {
+  hr_step = -1;
+  hr_answers = {};
+  document.getElementById("hrFormOv").style.display = "flex";
+  lockBodyScroll();
+  hr_render();
+}
+
+function hr_close() {
+  document.getElementById("hrFormOv").style.display = "none";
+  unlockBodyScroll();
+}
+
+function hr_updateProgress() {
+  var total = hr_getQuestions().length;
+  var pct = Math.round((Math.max(hr_step, 0) / total) * 100);
+  document.getElementById("hrProgressFill").style.width = pct + "%";
+  document.getElementById("hrProgressLabel").textContent = pct + "%";
+}
+
+function hr_render() {
+  hr_updateProgress();
+  var qs = hr_getQuestions();
+  if (hr_step === -1) { hr_renderIntro(); return; }
+  if (hr_step >= qs.length) { hr_renderOutro(); return; }
+  hr_renderQuestion(qs[hr_step], qs);
+}
+
+function hr_renderIntro() {
+  document.getElementById("hrStageCard").innerHTML =
+    '<div style="color:#7a1128;font-weight:600;font-size:0.86rem;margin-bottom:10px">Анкета кандидата</div>' +
+    '<div style="font-size:1.7rem;line-height:1.2;letter-spacing:-.01em;font-weight:700;margin-bottom:14px">Добро пожаловать<br>в команду Seven Times</div>' +
+    '<div style="font-size:0.86rem;line-height:1.6;color:#6e6e73;max-width:420px">Прежде чем мы пригласим вас на собеседование, ответьте на несколько вопросов. Это займёт около 3 минут.</div>';
+  document.getElementById("hrNavbar").innerHTML = '<button onclick="hr_next()" style="flex:1;padding:14px 18px;border-radius:12px;border:none;background:#7a1128;color:#fff;font-family:inherit;font-size:0.84rem;font-weight:600;cursor:pointer">Начать анкету</button>';
+}
+
+function hr_renderOutro() {
+  var firstName = hr_answers.name ? hr_answers.name.split(" ")[0] : "";
+  document.getElementById("hrStageCard").innerHTML =
+    '<div style="width:52px;height:52px;border-radius:50%;background:#7a1128;display:flex;align-items:center;justify-content:center;margin-bottom:18px"><svg viewBox="0 0 24 24" fill="none" width="24" height="24"><path d="M20 6L9 17l-5-5" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>' +
+    '<div style="font-size:1.4rem;font-weight:700;margin-bottom:10px">Спасибо' + (firstName ? ", " + firstName : "") + '!</div>' +
+    '<div style="font-size:0.86rem;line-height:1.6;color:#6e6e73">Ваша анкета отправлена. Отдел кадров свяжется с вами в течение 1–2 рабочих дней по номеру ' + (hr_answers.phone || "") + '.</div>';
+  document.getElementById("hrNavbar").innerHTML = '<button onclick="hr_close()" style="flex:1;padding:14px 18px;border-radius:12px;border:none;background:#1d1d1f;color:#fff;font-family:inherit;font-size:0.84rem;font-weight:600;cursor:pointer">Закрыть</button>';
+}
+
+function hr_renderDuplicate() {
+  document.getElementById("hrStageCard").innerHTML =
+    '<div style="width:52px;height:52px;border-radius:50%;background:#6e6e73;display:flex;align-items:center;justify-content:center;margin-bottom:18px"><svg viewBox="0 0 24 24" fill="none" width="24" height="24"><path d="M12 8v5M12 16h.01" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg></div>' +
+    '<div style="font-size:1.3rem;font-weight:700;margin-bottom:10px">Вы уже подавали анкету</div>' +
+    '<div style="font-size:0.86rem;line-height:1.6;color:#6e6e73">С этим номером телефона заявка уже есть в системе. Повторно отправлять не нужно — отдел кадров свяжется с вами по результатам первой анкеты.</div>';
+  document.getElementById("hrNavbar").innerHTML = '<button onclick="hr_close()" style="flex:1;padding:14px 18px;border-radius:12px;border:none;background:#1d1d1f;color:#fff;font-family:inherit;font-size:0.84rem;font-weight:600;cursor:pointer">Закрыть</button>';
+}
+
+function hr_renderQuestion(q, qs) {
+  var val = hr_answers[q.id];
+  var body = "";
+
+  if (q.type === "text" || q.type === "number") {
+    body = '<input type="' + q.type + '" id="hrFld" placeholder="' + (q.placeholder || "") + '" value="' + (val || "") + '" ' + (q.min ? 'min="' + q.min + '"' : "") + ' ' + (q.max ? 'max="' + q.max + '"' : "") + ' style="width:100%;font-size:1.15rem;font-weight:500;padding:12px 0;border:none;border-bottom:2px solid #e5e5e7;background:transparent;color:#1d1d1f;outline:none;font-family:inherit">';
+  } else if (q.type === "textarea") {
+    body = '<textarea id="hrFld" placeholder="' + (q.placeholder || "") + '" style="width:100%;font-size:0.9rem;padding:13px 15px;border-radius:12px;border:1.5px solid #e5e5e7;background:#fff;outline:none;resize:vertical;min-height:110px;font-family:inherit;line-height:1.5">' + (val || "") + '</textarea>';
+  } else if (q.type === "phone") {
+    var digits = (val || "").replace(/\D/g, "").replace(/^7/, "");
+    body = '<div style="display:flex;align-items:center;gap:8px"><div style="font-size:1.15rem;font-weight:600;padding:12px 0">+7</div><input type="tel" id="hrFld" inputmode="numeric" placeholder="7XX XXX XXXX" value="' + digits + '" maxlength="10" style="flex:1;font-size:1.15rem;font-weight:500;padding:12px 0;border:none;border-bottom:2px solid #e5e5e7;background:transparent;color:#1d1d1f;outline:none;font-family:inherit"></div>';
+  } else if (q.type === "choice") {
+    body = '<div style="display:flex;flex-direction:column;gap:8px">' + q.options.map(function(o) {
+      var sel = val === o;
+      return '<div onclick="hr_selectChoice(\'' + q.id + '\',\'' + o.replace(/'/g, "\\'") + '\')" style="display:flex;align-items:center;gap:12px;padding:13px 15px;border-radius:12px;border:1.5px solid ' + (sel ? "#7a1128" : "#e5e5e7") + ';background:' + (sel ? "#7a112814" : "#fff") + ';cursor:pointer;font-size:0.86rem;line-height:1.4"><div style="width:18px;height:18px;border-radius:50%;border:2px solid ' + (sel ? "#7a1128" : "#c7c7cc") + ';background:' + (sel ? "#7a1128" : "transparent") + ';flex-shrink:0"></div><div>' + o + "</div></div>";
+    }).join("") + "</div>";
+  } else if (q.type === "multiChoiceOther") {
+    var arr = Array.isArray(val) ? val : [];
+    var isOther = arr.indexOf("Другое (своими словами)") !== -1;
+    body = '<div style="display:flex;flex-direction:column;gap:8px">' + q.options.map(function(o) {
+      var sel = arr.indexOf(o) !== -1;
+      return '<div onclick="hr_toggleMulti(\'' + q.id + '\',\'' + o.replace(/'/g, "\\'") + '\')" style="display:flex;align-items:center;gap:12px;padding:13px 15px;border-radius:12px;border:1.5px solid ' + (sel ? "#7a1128" : "#e5e5e7") + ';background:' + (sel ? "#7a112814" : "#fff") + ';cursor:pointer;font-size:0.86rem;line-height:1.4"><div style="width:18px;height:18px;border-radius:6px;border:2px solid ' + (sel ? "#7a1128" : "#c7c7cc") + ';background:' + (sel ? "#7a1128" : "transparent") + ';flex-shrink:0"></div><div>' + o + "</div></div>";
+    }).join("") + "</div>" + (isOther ? '<textarea id="hrFldOther" placeholder="Напишите свою причину…" style="margin-top:12px;width:100%;font-size:0.84rem;padding:12px 14px;border-radius:12px;border:1.5px solid #e5e5e7;background:#fff;outline:none;resize:vertical;min-height:80px;font-family:inherit">' + (hr_answers[q.id + "Other"] || "") + "</textarea>" : "");
+  } else if (q.type === "consent") {
+    body = '<div style="font-size:0.84rem;color:#6e6e73;line-height:1.6;margin-bottom:16px">Мы проверим ваши ответы и свяжемся с вами по указанному номеру телефона. Убедитесь, что данные указаны верно — вернуться и исправить их можно кнопкой «Назад».</div>' +
+      '<div style="display:flex;gap:10px;align-items:flex-start;padding-top:16px;border-top:1px solid #e5e5e7"><input type="checkbox" id="hrFld" ' + (val ? "checked" : "") + ' onchange="hr_answers.consent=this.checked" style="width:17px;height:17px;margin-top:2px;accent-color:#7a1128;flex-shrink:0"><label style="font-size:0.74rem;color:#6e6e73;line-height:1.5">Я согласен(на) на обработку персональных данных (ФИО, номер телефона, ответы анкеты) в целях рассмотрения кандидатуры на трудоустройство в Seven Times.</label></div>';
+  }
+
+  document.getElementById("hrStageCard").innerHTML =
+    '<div style="font-size:0.68rem;font-weight:600;color:#7a1128;margin-bottom:8px">Вопрос ' + (hr_step + 1) + " из " + qs.length + "</div>" +
+    '<div style="font-size:1.28rem;line-height:1.25;letter-spacing:-.01em;font-weight:700;margin-bottom:6px">' + q.title + "</div>" +
+    (q.sub ? '<div style="font-size:0.78rem;color:#6e6e73;margin-bottom:20px">' + q.sub + "</div>" : '<div style="margin-bottom:20px"></div>') +
+    body +
+    '<div id="hrFldErr" style="display:none;color:#c0392b;font-size:0.72rem;margin-top:10px">Заполните это поле, чтобы продолжить</div>';
+
+  document.getElementById("hrNavbar").innerHTML =
+    '<button onclick="hr_back()" style="flex:0 0 auto;padding:14px 18px;border-radius:12px;border:1.5px solid #e5e5e7;background:transparent;color:#1d1d1f;font-family:inherit;font-size:0.84rem;font-weight:600;cursor:pointer">Назад</button>' +
+    '<button onclick="hr_next()" style="flex:1;padding:14px 18px;border-radius:12px;border:none;background:#7a1128;color:#fff;font-family:inherit;font-size:0.84rem;font-weight:600;cursor:pointer">' + (hr_step === qs.length - 1 ? "Отправить анкету" : "Далее") + "</button>";
+
+  var fld = document.getElementById("hrFld");
+  if (fld && (q.type === "text" || q.type === "number")) {
+    fld.addEventListener("input", function(e) { hr_answers[q.id] = e.target.value; });
+    fld.addEventListener("keydown", function(e) { if (e.key === "Enter") hr_next(); });
+  }
+  if (fld && q.type === "textarea") {
+    fld.addEventListener("input", function(e) { hr_answers[q.id] = e.target.value; });
+  }
+  if (fld && q.type === "phone") {
+    fld.addEventListener("input", function(e) {
+      var d = e.target.value.replace(/\D/g, "").slice(0, 10);
+      e.target.value = d;
+      hr_answers.phone = "+7" + d;
+    });
+    fld.addEventListener("keydown", function(e) { if (e.key === "Enter") hr_next(); });
+  }
+  var fldOther = document.getElementById("hrFldOther");
+  if (fldOther) fldOther.addEventListener("input", function(e) { hr_answers[q.id + "Other"] = e.target.value; });
+}
+
+function hr_selectChoice(id, val) {
+  hr_answers[id] = val;
+  if (id === "position") hr_answers.roleAnswer = "";
+  hr_render();
+}
+
+function hr_toggleMulti(id, val) {
+  var arr = Array.isArray(hr_answers[id]) ? hr_answers[id].slice() : [];
+  var idx = arr.indexOf(val);
+  if (idx === -1) arr.push(val); else arr.splice(idx, 1);
+  hr_answers[id] = arr;
+  hr_render();
+}
+
+var HR_NAME_RE = /^[А-ЯЁӘҒҚҢӨҰҮІа-яёәғқңөұүі]+([\s-][А-ЯЁӘҒҚҢӨҰҮІа-яёәғқңөұүі]+)*$/;
+
+function hr_validateCurrent() {
+  var qs = hr_getQuestions();
+  var q = qs[hr_step];
+  if (!q.required && q.type !== "consent") return true;
+  if (q.type === "consent") return hr_answers.consent === true;
+  var v = hr_answers[q.id];
+
+  if (q.type === "multiChoiceOther") {
+    if (!Array.isArray(v) || !v.length) return false;
+    if (v.indexOf("Другое (своими словами)") !== -1) {
+      var other = hr_answers[q.id + "Other"];
+      if (!other || !String(other).trim()) return false;
+    }
+    return true;
+  }
+  if (v === undefined || v === null || !String(v).trim()) return false;
+  if (q.id === "name") {
+    var trimmed = String(v).trim();
+    if (trimmed.length < 2 || !HR_NAME_RE.test(trimmed)) return false;
+  }
+  if (q.type === "phone") {
+    var digits2 = String(v).replace(/\D/g, "").replace(/^7/, "");
+    if (digits2.length !== 10) return false;
+  }
+  if (q.type === "number") {
+    var n = Number(v);
+    if (isNaN(n) || (q.min && n < q.min) || (q.max && n > q.max)) return false;
+  }
+  return true;
+}
+
+function hr_next() {
+  var qs = hr_getQuestions();
+  if (hr_step >= 0 && hr_step < qs.length) {
+    if (!hr_validateCurrent()) {
+      var err = document.getElementById("hrFldErr");
+      if (err) err.style.display = "block";
+      return;
+    }
+  }
+  if (hr_step === qs.length - 1) { hr_submit(); return; }
+  hr_step++;
+  hr_render();
+}
+
+function hr_back() {
+  if (hr_step <= -1) return;
+  hr_step--;
+  hr_render();
+}
+
+function hr_computeScore() {
+  var qs = hr_getQuestions();
+  var weighted = qs.filter(function(q) { return q.weight; });
+  var total = 0;
+  weighted.forEach(function(q) {
+    var ans = hr_answers[q.id];
+    if (ans && q.weight[ans] !== undefined) total += q.weight[ans];
+  });
+  var max = weighted.length * 3;
+  return max ? Math.round((total / max) * 100) : 0;
+}
+
+function hr_submit() {
+  var score = hr_computeScore();
+  var ageNum = Number(hr_answers.age);
+  var ageFlag = (ageNum >= 16 && ageNum < 18) ? "Несовершеннолетний — нужно согласие родителя, ограничения по графику (ТК РК)" : "";
+  var appId = "a_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
+
+  var leaveArr = Array.isArray(hr_answers.leaveReason) ? hr_answers.leaveReason : [];
+  var preferredBranchArr = Array.isArray(hr_answers.preferredBranch) ? hr_answers.preferredBranch : [];
+  var preferredBranchStr = preferredBranchArr.join(", ");
+  var leaveReasonStr = leaveArr.filter(function(r) { return r !== "Другое (своими словами)"; })
+    .concat(leaveArr.indexOf("Другое (своими словами)") !== -1 ? ["Другое: " + (hr_answers.leaveReasonOther || "").trim()] : [])
+    .join("; ");
+
+  document.getElementById("hrNavbar").innerHTML = '<button disabled style="flex:1;padding:14px 18px;border-radius:12px;border:none;background:#d1d1d6;color:#fff;font-family:inherit;font-size:0.84rem;font-weight:600">Отправка…</button>';
+
+  apiGet({
+    action: "hrSubmitApplication",
+    id: appId,
+    name: (hr_answers.name || "").trim(),
+    phone: hr_answers.phone || "",
+    age: hr_answers.age || "",
+    ageFlag: ageFlag,
+    position: hr_answers.position || "",
+    roleAnswer: hr_answers.roleAnswer || "",
+    isStudent: hr_answers.isStudent || "",
+    parallelJob: hr_answers.parallelJob || "",
+    experience: hr_answers.experience || "",
+    prevPlace: hr_answers.prevPlace || "",
+    leaveReason: leaveReasonStr,
+    schedule: hr_answers.schedule || "",
+    preferredBranch: preferredBranchStr,
+    howFound: hr_answers.howFound || "",
+    whyWorkHere: hr_answers.whyWorkHere || "",
+    score: score
+  }, function(d) {
+    if (d && d.duplicate) { hr_renderDuplicate(); return; }
+    hr_step = hr_getQuestions().length;
+    hr_render();
+  }, function() {
+    hr_step = hr_getQuestions().length;
+    hr_render();
+  });
+}
+
 function openFaqModal() {
   showFunModal("❓", "<div style='text-align:left;font-size:0.76rem;line-height:1.8;color:#1d1d1f'><b>Как сделать заказ?</b><br>Выберите филиал, добавьте блюда в корзину и оформите заказ — он уйдёт в WhatsApp.<br><br><b>Есть доставка?</b><br>Да, в Самал 70/3 и Скоробогатова 65/1. Абулхаир хана 177 пока принимает только бронь столика.<br><br><b>Как забронировать столик?</b><br>Кнопка «Бронь столика» в шапке сайта — выберите филиал, дату, время и количество гостей.<br><br><b>Как оплатить заказ?</b><br>Способ оплаты уточняет оператор в WhatsApp при подтверждении заказа.<br><br><b>Остались вопросы?</b><br>Напишите нам в WhatsApp — ответим быстро.</div>", "Понятно");
 }
@@ -8123,11 +8422,7 @@ function buildDrawerCats() {
 
   var items = [
     { label: "О компании", action: function() { closeDrawer(); openAboutCompanyModal(); } },
-    { label: "Вакансии", action: function() {
-        closeDrawer();
-        if (HIRING_SITE_URL) { window.open(HIRING_SITE_URL, "_blank"); }
-        else { showToast("Скоро будет здесь — а пока звоните нам напрямую"); }
-      } },
+    { label: "Вакансии", action: function() { closeDrawer(); hr_open(); } },
     { label: "Рестораны", action: function() { closeDrawer(); setTimeout(function() { openGenericStories("banner_restaurants"); }, 300); } },
     { label: "Часто задаваемые вопросы", action: function() { closeDrawer(); openFaqModal(); } }
   ];
