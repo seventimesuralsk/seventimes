@@ -4684,7 +4684,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
      <div style="flex:1;height:3px;background:#e5e5e7;border-radius:2px;overflow:hidden"><div id="hrProgressFill" style="height:100%;background:#7a1128;border-radius:2px;width:0%"></div></div>
      <div id="hrProgressLabel" style="font-size:0.66rem;color:#86868b;min-width:32px;text-align:right">0%</div>
     </div>
-    <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:28px var(--px)120px;overflow-y:auto">
+    <div style="flex:1;display:flex;align-items:flex-start;justify-content:center;padding:28px var(--px)120px;overflow-y:auto">
      <div id="hrStageCard" style="width:100%;max-width:480px"></div>
     </div>
     <div id="hrNavbar" style="position:fixed;bottom:0;left:0;right:0;background:rgba(251,251,253,.92);backdrop-filter:blur(20px);border-top:1px solid #e5e5e7;padding:14px var(--px);padding-bottom:max(14px,env(safe-area-inset-bottom));display:flex;gap:10px"></div>
@@ -8157,13 +8157,13 @@ function hr_getQuestions() {
   return [
     { id: "name", type: "text", title: "Как вас зовут?", sub: "Имя и фамилия на русском или казахском языке", placeholder: "Иван Иванов", required: true },
     { id: "phone", type: "phone", title: "Номер телефона", sub: "Для связи по вашей заявке", required: true },
-    { id: "age", type: "number", title: "Сколько вам лет?", placeholder: "Возраст", required: true, min: 16, max: 70 },
+    { id: "age", type: "number", title: "Сколько вам лет?", placeholder: "Возраст", required: true, min: 18, max: 70 },
     { id: "position", type: "choice", title: "На какую должность претендуете?", options: HR_POSITIONS, required: true },
     hr_buildRoleQuestion(),
     { id: "isStudent", type: "choice", title: "Вы студент(ка) или учитесь сейчас?", options: ["Да, учусь очно", "Да, учусь заочно / дистанционно", "Нет, не учусь"], required: true },
     { id: "parallelJob", type: "choice", title: "Работаете ли вы сейчас где-то ещё параллельно?", options: ["Да, работаю в другом месте одновременно", "Нет, это будет моё единственное место работы"], required: true },
     { id: "experience", type: "choice", title: "Есть ли у вас опыт работы в общепите?", options: ["Нет опыта", "До 1 года", "1–3 года", "Более 3 лет"], required: true },
-    { id: "prevPlace", type: "text", title: "Где вы работали до этого?", sub: "Название заведения/компании. Если это первое место работы — напишите «нет»", placeholder: "Например: кафе «Рахат»", required: true },
+    { id: "prevPlace", type: "text", title: "Где вы работали до этого?", sub: "Название заведения/компании. Если это первое место работы — напишите «нет»", placeholder: "Например: Seven Times", required: true },
     { id: "leaveReason", type: "multiChoiceOther", title: "Почему вы ушли с прошлого места работы?", sub: "Можно выбрать несколько вариантов, если подходит не одна причина", options: ["По собственному желанию", "Не устроила зарплата", "Задерживали или удерживали зарплату", "Не сошёлся характерами с коллективом", "Конфликт с руководством/администратором", "Не устроил график — переработки, нет выходных", "Заведение закрылось / сократили штат", "Уволили без объяснения причин", "Переезд / сменил(а) район", "Нашёл(нашла) более выгодное предложение", "Это моё первое место работы", "Затрудняюсь ответить", "Другое (своими словами)"], required: true },
     { id: "schedule", type: "choice", title: "Вам будет удобно работать по графику 2/2 — сутки через двое?", options: ["Да", "Нет"], required: true, weight: { "Да": 3, "Нет": 0 } },
     { id: "preferredBranch", type: "multiChoiceOther", title: "Где вам ближе работать?", sub: "Можно выбрать несколько вариантов", options: ["Абулхаир Хана 177 (4 мкрн)", "Скоробогатова 65/1 (центр)", "Самал 70/3 (10 мкрн)"], required: true },
@@ -8304,9 +8304,12 @@ function hr_toggleMulti(id, val) {
 
 var HR_NAME_RE = /^[А-ЯЁӘҒҚҢӨҰҮІа-яёәғқңөұүі]+([\s-][А-ЯЁӘҒҚҢӨҰҮІа-яёәғқңөұүі]+)*$/;
 
+var hr_lastError = "Заполните это поле, чтобы продолжить";
+
 function hr_validateCurrent() {
   var qs = hr_getQuestions();
   var q = qs[hr_step];
+  hr_lastError = "Заполните это поле, чтобы продолжить";
   if (!q.required && q.type !== "consent") return true;
   if (q.type === "consent") return hr_answers.consent === true;
   var v = hr_answers[q.id];
@@ -8322,15 +8325,24 @@ function hr_validateCurrent() {
   if (v === undefined || v === null || !String(v).trim()) return false;
   if (q.id === "name") {
     var trimmed = String(v).trim();
-    if (trimmed.length < 2 || !HR_NAME_RE.test(trimmed)) return false;
+    if (trimmed.length < 2) return false;
+    if (!HR_NAME_RE.test(trimmed)) {
+      hr_lastError = "Имя нужно написать на русском или казахском языке — латиница (английские буквы) не подходит";
+      return false;
+    }
   }
   if (q.type === "phone") {
     var digits2 = String(v).replace(/\D/g, "").replace(/^7/, "");
-    if (digits2.length !== 10) return false;
+    if (digits2.length !== 10) {
+      hr_lastError = "Введите полный номер телефона — 10 цифр после +7";
+      return false;
+    }
   }
   if (q.type === "number") {
     var n = Number(v);
-    if (isNaN(n) || (q.min && n < q.min) || (q.max && n > q.max)) return false;
+    if (isNaN(n)) return false;
+    if (q.min && n < q.min) { hr_lastError = "Мы принимаем анкеты только от " + q.min + " лет"; return false; }
+    if (q.max && n > q.max) { hr_lastError = "Проверьте возраст — введено слишком много лет"; return false; }
   }
   return true;
 }
@@ -8340,7 +8352,7 @@ function hr_next() {
   if (hr_step >= 0 && hr_step < qs.length) {
     if (!hr_validateCurrent()) {
       var err = document.getElementById("hrFldErr");
-      if (err) err.style.display = "block";
+      if (err) { err.textContent = hr_lastError; err.style.display = "block"; }
       return;
     }
   }
