@@ -8253,7 +8253,10 @@ var hr_answers = {};
 function hr_open() {
   hr_step = -1;
   hr_answers = {};
-  document.getElementById("hrFormOv").style.display = "flex";
+  var ov = document.getElementById("hrFormOv");
+  var tabBar = document.getElementById("bottomTabBar");
+  ov.style.bottom = (tabBar ? tabBar.offsetHeight : 0) + "px";
+  ov.style.display = "flex";
   document.querySelectorAll(".bottom-tab-btn").forEach(function(b) {
     b.classList.toggle("active", b.getAttribute("data-tab") === "vacancy");
   });
