@@ -10627,17 +10627,17 @@ function fb_sendComplaint() {
 }
 
   </script>
-  <div id="servicesScreen" style="display:none;position:fixed;inset:0;z-index:490;background:#f5f5f7;flex-direction:column;padding-bottom:78px">
+  <div id="servicesScreen" style="display:none;position:fixed;inset:0;z-index:490;background:#fff;flex-direction:column;padding-bottom:78px">
    <div style="padding:16px var(--px)12px;font-weight:700;font-size:1.15rem;text-align:center;border-bottom:1px solid #e5e5e7;background:#fff">Сервисы</div>
    <div style="flex:1;overflow-y:auto">
-    <div id="svcProfileRow" onclick="openProfile()" style="display:flex;align-items:center;gap:12px;padding:16px var(--px);background:#fff;margin-bottom:10px;cursor:pointer">
+    <div id="svcProfileRow" onclick="openProfile()" style="display:flex;align-items:center;gap:12px;padding:16px var(--px);background:#fff;border-bottom:1px solid #e5e5e7;cursor:pointer">
      <svg width="44" height="44" viewBox="0 0 24 24" style="border-radius:50%;background:#e5e5e7;flex-shrink:0"><circle cx="12" cy="9" r="3.6" fill="#b0b0b5"/><path d="M4.5 20c1-4 4-6 7.5-6s6.5 2 7.5 6" fill="#b0b0b5"/></svg>
      <div>
       <div id="svcProfileName" style="font-size:0.88rem;font-weight:700;color:#1d1d1f">Гость</div>
       <div style="font-size:0.66rem;color:#86868b">Профиль и история заказов</div>
      </div>
     </div>
-    <div style="padding:8px var(--px)22px;display:grid;grid-template-columns:repeat(4,1fr);gap:20px 4px">
+    <div style="padding:8px var(--px)22px;display:grid;grid-template-columns:repeat(3,1fr);gap:24px 4px">
      <button onclick="switchBottomTab('home');setTimeout(function(){bookBtnClick()},250)" class="svc-tile">
       <span class="svc-icon">🍽️</span><span class="svc-label">Бронь столика</span>
      </button>
