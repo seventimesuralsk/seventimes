@@ -2910,7 +2910,7 @@ nav {
   position: relative;
   background: #f5f5f7;
   min-height: 100vh;
-  padding-bottom: 62px
+  padding-bottom: 78px
 }
 
 .bottom-tab-btn {
@@ -2929,19 +2929,16 @@ nav {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 5px;
   padding: 0
 }
 
 .svc-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: 16px;
-  background: #7a112814;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem
+  width: auto;
+  height: auto;
+  display: block;
+  font-size: 1.9rem;
+  line-height: 1
 }
 
 .svc-label {
@@ -3789,7 +3786,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
    </div>
    <nav>
     <div style="position:relative">
-     <button class="nav-branch-btn" id="navBranchBtn" onclick="openBranchSwitcher()">
+     <button class="nav-branch-btn" id="navBranchBtn" onclick="openBranchSwitcher()" onpointerdown="bookBtnPressStart()" onpointerup="bookBtnPressEnd()" onpointerleave="bookBtnPressEnd()" onpointercancel="bookBtnPressEnd()">
       <span data-i18n="choose_restaurant_short" id="navBranchLabel">
        Выбор филиала
       </span>
@@ -3808,9 +3805,6 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
      <button onclick="openFaqModal()">Вопросы</button>
     </div>
     <div style="align-items:center;gap:2px;display:flex">
-     <button class="book-table-btn" onclick="bookBtnClick()" onpointerdown="bookBtnPressStart()" onpointerup="bookBtnPressEnd()" onpointerleave="bookBtnPressEnd()" onpointercancel="bookBtnPressEnd()" style="text-decoration:none;color:#fff;background:#1d1d1f;font-size:0.62rem;font-weight:400;white-space:nowrap;padding:7px 11px;border-radius:14px;display:flex;align-items:center;gap:4px;margin-right:2px;border:none;cursor:pointer;font-family:-apple-system,BlinkMacSystemFont,Inter,sans-serif">
-      Бронь столика
-     </button>
      <button aria-label="Поиск" class="nav-icon-btn" onclick="openSearchOv()">
       <svg fill="none" height="21" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewBox="0 0 24 24" width="21">
        <circle cx="11" cy="11" r="7">
@@ -3949,19 +3943,9 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
        ×
       </button>
      </div>
-     <div class="stabs" style="margin:0 20px 12px">
-      <button class="stab on" id="cartTabBtn" onclick="switchCartTab('cart')">
-       Корзина
-      </button>
-      <button class="stab" id="profileTabBtn" onclick="switchCartTab('profile')">
-       Профиль
-      </button>
-     </div>
      <div class="mbody" id="cartBody">
      </div>
      <div id="cartCrossSell" style="display:none">
-     </div>
-     <div class="mbody" id="profileBody" style="display:none">
      </div>
      <div id="cartMovFoot">
       <div class="mfoot">
@@ -4705,6 +4689,16 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
       </svg>
      </button>
      <div class="drawer-cats" id="drawerCats">
+     </div>
+    </div>
+   </div>
+   <div id="profileModalOv" style="display:none;position:fixed;inset:0;z-index:960;background:rgba(0,0,0,.4);align-items:flex-end">
+    <div style="background:#fff;border-radius:20px 20px 0 0;width:100%;max-height:80vh;display:flex;flex-direction:column">
+     <div style="display:flex;align-items:center;justify-content:space-between;padding:18px var(--px)10px">
+      <div style="font-weight:700;font-size:1rem">Профиль</div>
+      <button aria-label="Закрыть" onclick="closeMov('profileModalOv')" style="background:none;border:none;font-size:1.4rem;color:#6e6e73;cursor:pointer;line-height:1">×</button>
+     </div>
+     <div class="mbody" id="profileBody" style="overflow-y:auto;padding:0 var(--px)20px">
      </div>
     </div>
    </div>
@@ -5657,6 +5651,21 @@ function getClientId() {
   return id || (id = "c_" + Date.now() + "_" + Math.random().toString(36).slice(2, 9), localStorage.setItem("st_client_id", id)), id
 }
 
+function shortProfileName(fullName) {
+  var parts = (fullName || "").trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return "";
+  if (parts.length === 1) return parts[0];
+  return parts[0] + " " + parts[1].charAt(0).toUpperCase() + ".";
+}
+
+function renderServicesProfileRow() {
+  var wrap = document.getElementById("svcProfileRow");
+  if (!wrap) return;
+  var profile = loadClientProfile();
+  var name = profile && profile.name ? shortProfileName(profile.name) : "Гость";
+  wrap.querySelector("#svcProfileName").textContent = name;
+}
+
 function loadClientProfile() {
   try {
     let raw = localStorage.getItem("st_client_profile");
@@ -5971,24 +5980,11 @@ function verifyPasskey(onSuccess, onFail) {
 }
 
 function openProfile() {
-  renderProfile(), openMov("cartMov"), switchCartTab("profile")
+  renderProfile(), openMov("profileModalOv")
 }
 
 function switchCartTab(tab) {
-  var cartBtn = document.getElementById("cartTabBtn"),
-    profileBtn = document.getElementById("profileTabBtn"),
-    cartBody = document.getElementById("cartBody"),
-    cartCross = document.getElementById("cartCrossSell"),
-    profileBody = document.getElementById("profileBody"),
-    foot = document.getElementById("cartMovFoot"),
-    title = document.getElementById("cartMovTitle");
-  var isProfile = "profile" === tab;
-  cartBtn.classList.toggle("on", !isProfile), profileBtn.classList.toggle("on", isProfile);
-  cartBody.style.display = isProfile ? "none" : "", profileBody.style.display = isProfile ? "" : "none";
-  isProfile ? cartCross.style.display = "none" : renderCartCrossSell();
-  foot.style.display = isProfile ? "none" : "";
-  title.textContent = isProfile ? t("personal_cabinet") : t("your_cart");
-  isProfile && renderProfile();
+  renderCart(), renderCartCrossSell();
 }
 
 function renderProfile() {
@@ -7007,6 +7003,7 @@ function closeBranchDropdown() {
 }
 
 function openBranchSwitcher() {
+  if (_bookLongPressFired) { _bookLongPressFired = false; return; }
   var dd = document.getElementById("branchDropdown");
   if (!dd) return;
   if (dd.classList.contains("open")) return void closeBranchDropdown();
@@ -7644,14 +7641,18 @@ function renderCartCrossSell() {
 
 var _cartNoticeTimer = null;
 function openCart() {
-  switchCartTab("cart"), renderCart(), renderCartCrossSell(), openMov("cartMov"), cart.length && logStat("cart_open", "");
+  renderCart(), renderCartCrossSell(), openMov("cartMov"), cart.length && logStat("cart_open", "");
   clearInterval(_cartNoticeTimer);
   _cartNoticeTimer = setInterval(renderCart, 30000);
+  var tabBar = document.getElementById("bottomTabBar");
+  if (tabBar) tabBar.style.display = "none";
 }
 
 function closeCart() {
   closeMov("cartMov");
   clearInterval(_cartNoticeTimer);
+  var tabBar = document.getElementById("bottomTabBar");
+  if (tabBar) tabBar.style.display = "flex";
 }
 
 function renderCart() {
@@ -8167,6 +8168,7 @@ function switchBottomTab(tab) {
 
   document.getElementById("servicesScreen").style.display = tab === "services" ? "flex" : "none";
   document.getElementById("newsScreen").style.display = tab === "news" ? "flex" : "none";
+  if (tab === "services") renderServicesProfileRow();
 
   document.querySelectorAll(".bottom-tab-btn").forEach(function(b) {
     b.classList.toggle("active", b.getAttribute("data-tab") === tab);
@@ -10625,28 +10627,37 @@ function fb_sendComplaint() {
 }
 
   </script>
-  <div id="servicesScreen" style="display:none;position:fixed;inset:0;z-index:490;background:#f5f5f7;flex-direction:column;padding-bottom:62px">
-   <div style="padding:16px var(--px)12px;font-weight:700;font-size:1.15rem;border-bottom:1px solid #e5e5e7;background:#fff">Сервисы</div>
-   <div style="flex:1;overflow-y:auto;padding:22px var(--px);display:grid;grid-template-columns:repeat(4,1fr);gap:18px 8px">
-    <button onclick="switchBottomTab('home');setTimeout(function(){bookBtnClick()},250)" class="svc-tile">
-     <span class="svc-icon">🍽️</span><span class="svc-label">Бронь столика</span>
-    </button>
-    <button onclick="openAboutCompanyModal()" class="svc-tile">
-     <span class="svc-icon">🏢</span><span class="svc-label">О компании</span>
-    </button>
-    <button onclick="openFaqModal()" class="svc-tile">
-     <span class="svc-icon">❓</span><span class="svc-label">Вопросы</span>
-    </button>
-    <button onclick="switchBottomTab('home');setTimeout(function(){openGenericStories('banner_restaurants')},250)" class="svc-tile">
-     <span class="svc-icon">📍</span><span class="svc-label">Рестораны</span>
-    </button>
-    <button onclick="switchBottomTab('home');setTimeout(function(){openDreamStories()},250)" class="svc-tile">
-     <span class="svc-icon">🎁</span><span class="svc-label">Проекты</span>
-    </button>
+  <div id="servicesScreen" style="display:none;position:fixed;inset:0;z-index:490;background:#f5f5f7;flex-direction:column;padding-bottom:78px">
+   <div style="padding:16px var(--px)12px;font-weight:700;font-size:1.15rem;text-align:center;border-bottom:1px solid #e5e5e7;background:#fff">Сервисы</div>
+   <div style="flex:1;overflow-y:auto">
+    <div id="svcProfileRow" onclick="openProfile()" style="display:flex;align-items:center;gap:12px;padding:16px var(--px);background:#fff;margin-bottom:10px;cursor:pointer">
+     <svg width="44" height="44" viewBox="0 0 24 24" style="border-radius:50%;background:#e5e5e7;flex-shrink:0"><circle cx="12" cy="9" r="3.6" fill="#b0b0b5"/><path d="M4.5 20c1-4 4-6 7.5-6s6.5 2 7.5 6" fill="#b0b0b5"/></svg>
+     <div>
+      <div id="svcProfileName" style="font-size:0.88rem;font-weight:700;color:#1d1d1f">Гость</div>
+      <div style="font-size:0.66rem;color:#86868b">Профиль и история заказов</div>
+     </div>
+    </div>
+    <div style="padding:8px var(--px)22px;display:grid;grid-template-columns:repeat(4,1fr);gap:20px 4px">
+     <button onclick="switchBottomTab('home');setTimeout(function(){bookBtnClick()},250)" class="svc-tile">
+      <span class="svc-icon">🍽️</span><span class="svc-label">Бронь столика</span>
+     </button>
+     <button onclick="openAboutCompanyModal()" class="svc-tile">
+      <span class="svc-icon">🏢</span><span class="svc-label">О компании</span>
+     </button>
+     <button onclick="openFaqModal()" class="svc-tile">
+      <span class="svc-icon">❓</span><span class="svc-label">Вопросы</span>
+     </button>
+     <button onclick="switchBottomTab('home');setTimeout(function(){openGenericStories('banner_restaurants')},250)" class="svc-tile">
+      <span class="svc-icon">📍</span><span class="svc-label">Рестораны</span>
+     </button>
+     <button onclick="switchBottomTab('home');setTimeout(function(){openDreamStories()},250)" class="svc-tile">
+      <span class="svc-icon">🎁</span><span class="svc-label">Проекты</span>
+     </button>
+    </div>
    </div>
   </div>
 
-  <div id="newsScreen" style="display:none;position:fixed;inset:0;z-index:490;background:#f5f5f7;flex-direction:column;padding-bottom:62px">
+  <div id="newsScreen" style="display:none;position:fixed;inset:0;z-index:490;background:#f5f5f7;flex-direction:column;padding-bottom:78px">
    <div style="padding:16px var(--px)12px;font-weight:700;font-size:1.15rem;border-bottom:1px solid #e5e5e7;background:#fff">Новости и акции</div>
    <div id="newsScreenList" style="flex:1;overflow-y:auto;padding:14px var(--px)">
     <div style="text-align:center;color:#86868b;font-size:0.8rem;padding:40px 0">Загрузка…</div>
@@ -10654,21 +10665,21 @@ function fb_sendComplaint() {
   </div>
 
   <div id="bottomTabBar" style="position:fixed;left:0;right:0;bottom:0;z-index:500;background:#fff;border-top:1px solid #e5e5e7;display:flex;padding-bottom:env(safe-area-inset-bottom)">
-   <button class="bottom-tab-btn active" data-tab="home" onclick="switchBottomTab('home')" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px 7px;background:none;border:none;cursor:pointer;font-family:inherit">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
-    <span style="font-size:0.58rem;font-weight:600">Главная</span>
+   <button class="bottom-tab-btn active" data-tab="home" onclick="switchBottomTab('home')" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 4px 10px;background:none;border:none;cursor:pointer;font-family:inherit">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
+    <span style="font-size:0.66rem;font-weight:600">Главная</span>
    </button>
-   <button class="bottom-tab-btn" data-tab="vacancy" onclick="switchBottomTab('vacancy')" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px 7px;background:none;border:none;cursor:pointer;font-family:inherit">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-    <span style="font-size:0.58rem;font-weight:600">Вакансии</span>
+   <button class="bottom-tab-btn" data-tab="vacancy" onclick="switchBottomTab('vacancy')" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 4px 10px;background:none;border:none;cursor:pointer;font-family:inherit">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+    <span style="font-size:0.66rem;font-weight:600">Вакансии</span>
    </button>
-   <button class="bottom-tab-btn" data-tab="news" onclick="switchBottomTab('news')" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px 7px;background:none;border:none;cursor:pointer;font-family:inherit;position:relative">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-    <span style="font-size:0.58rem;font-weight:600">Новости</span>
+   <button class="bottom-tab-btn" data-tab="news" onclick="switchBottomTab('news')" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 4px 10px;background:none;border:none;cursor:pointer;font-family:inherit;position:relative">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <span style="font-size:0.66rem;font-weight:600">Новости</span>
    </button>
-   <button class="bottom-tab-btn" data-tab="services" onclick="switchBottomTab('services')" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px 7px;background:none;border:none;cursor:pointer;font-family:inherit">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
-    <span style="font-size:0.58rem;font-weight:600">Сервисы</span>
+   <button class="bottom-tab-btn" data-tab="services" onclick="switchBottomTab('services')" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 4px 10px;background:none;border:none;cursor:pointer;font-family:inherit">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+    <span style="font-size:0.66rem;font-weight:600">Сервисы</span>
    </button>
   </div>
  </body>
