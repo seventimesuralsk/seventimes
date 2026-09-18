@@ -8238,7 +8238,7 @@ function hr_buildRoleQuestion() {
 function hr_buildRkeeperQuestion() {
   var pos = hr_answers.position;
   if (pos !== "Официант" && pos !== "Бариста") return null;
-  return { id: "rkeeperAnswer", type: "textarea", title: "Работали ли вы когда-нибудь с программой R-Keeper?", sub: "Своими словами — если да, расскажите где и как именно; если нет, так и напишите", placeholder: "Напишите пару предложений…", required: true };
+  return { id: "rkeeperAnswer", type: "choice", title: "Работали ли вы когда-нибудь с программой R-Keeper?", options: ["Да", "Нет"], required: true };
 }
 
 function hr_buildPsychQuestions() {
@@ -8315,7 +8315,6 @@ function hr_getQuestions() {
     { id: "experience", type: "choice", title: "Есть ли у вас опыт работы в общепите?", options: ["Нет опыта", "До 1 года", "1–3 года", "Более 3 лет"], required: true },
     { id: "prevPlace", type: "text", title: "Где вы работали до этого?", sub: "Название заведения/компании. Если это первое место работы — напишите «нет»", placeholder: "Например: Seven Times", required: true },
     { id: "leaveReason", type: "multiChoiceOther", title: "Почему вы ушли с прошлого места работы?", sub: "Можно выбрать несколько вариантов, если подходит не одна причина", options: ["По собственному желанию", "Не устроила зарплата", "Задерживали или удерживали зарплату", "Не сошёлся характерами с коллективом", "Конфликт с руководством/администратором", "Не устроил график — переработки, нет выходных", "Заведение закрылось / сократили штат", "Уволили без объяснения причин", "Переезд / сменил(а) район", "Нашёл(нашла) более выгодное предложение", "Это моё первое место работы", "Затрудняюсь ответить", "Другое (своими словами)"], required: true },
-    { id: "schedule", type: "choice", title: "Вам будет удобно работать по графику 2/2 — сутки через двое?", options: ["Да", "Нет"], required: true, weight: { "Да": 3, "Нет": 0 } },
     { id: "preferredBranch", type: "multiChoiceOther", title: "Где вам ближе работать?", sub: "Можно выбрать несколько вариантов", options: ["Абулхаир Хана 177 (4 мкрн)", "Скоробогатова 65/1 (центр)", "Самал 70/3 (10 мкрн)"], required: true },
     { id: "howFound", type: "choice", title: "Откуда вы узнали о нас?", options: ["Instagram", "Объявления в пабликах", "В ресторане, увидел(а) сам(а)"], required: true }
   );
@@ -8534,15 +8533,59 @@ function hr_back() {
 }
 
 function hr_computeScore() {
-  var qs = hr_getQuestions();
-  var weighted = qs.filter(function(q) { return q.weight; });
-  var total = 0;
-  weighted.forEach(function(q) {
-    var ans = hr_answers[q.id];
-    if (ans && q.weight[ans] !== undefined) total += q.weight[ans];
+  var points = 0, maxPoints = 0;
+
+  // R-Keeper (только официант/бариста) — да однозначно плюс, нет не критично
+  if (hr_answers.rkeeperAnswer) {
+    maxPoints += 20;
+    points += hr_answers.rkeeperAnswer === "Да" ? 20 : 12;
+  }
+
+  // Учёба — нам нужны те, кто не учится очно (максимум времени на работу)
+  maxPoints += 25;
+  if (hr_answers.isStudent === "Нет, не учусь") points += 25;
+  else if (hr_answers.isStudent === "Да, учусь заочно / дистанционно") points += 14;
+  else if (hr_answers.isStudent === "Да, учусь очно") points += 2;
+
+  // Подработка параллельно — рискуем, что устанет и попросит отгулы
+  maxPoints += 20;
+  if (hr_answers.parallelJob === "Нет, это будет моё единственное место работы") points += 20;
+  else if (hr_answers.parallelJob === "Да, работаю в другом месте одновременно") points += 2;
+
+  // Опыт — чем больше, тем лучше, но и без опыта не страшно, научим
+  maxPoints += 25;
+  if (hr_answers.experience === "Более 3 лет") points += 25;
+  else if (hr_answers.experience === "1–3 года") points += 20;
+  else if (hr_answers.experience === "До 1 года") points += 12;
+  else if (hr_answers.experience === "Нет опыта") points += 8;
+
+  // Причина ухода — конкретные тревожные флаги
+  maxPoints += 20;
+  var leave = Array.isArray(hr_answers.leaveReason) ? hr_answers.leaveReason : [];
+  var leaveScore = 16;
+  if (leave.indexOf("Не сошёлся характерами с коллективом") !== -1) leaveScore -= 12;
+  if (leave.indexOf("Конфликт с руководством/администратором") !== -1) leaveScore -= 12;
+  if (leave.indexOf("Нашёл(нашла) более выгодное предложение") !== -1) leaveScore -= 14;
+  points += Math.max(0, leaveScore);
+
+  // 5 психологических ответов — честность/конструктив против равнодушных
+  // и грубых отписок ("похуй", "не буду", "уйду" и т.п.)
+  var psychIds = ["stressAnswer", "commitmentAnswer", "punctualityAnswer", "politenessAnswer", "responsibilityAnswer"];
+  var psychPositive = ["сообщ", "исправ", "признa", "верн", "предупред", "спокойн", "постара", "справ", "найду выход", "вежлив", "профессионал", "извин", "объясн", "честно", "по правил", "доведу", "не буду экономить"];
+  var psychNegative = ["похуй", "пофиг", "плевать", "насрать", "не буду", "уйду", "ничего не сдела", "ничего не буду", "нет", "не знаю", "промолчу", "никто не узнает", "сойдёт", "наплевать", "забью", "откажу", "нагруб", "разозл", "пошлю"];
+  psychIds.forEach(function(id) {
+    var text = (hr_answers[id] || "").toString().trim().toLowerCase();
+    maxPoints += 20;
+    if (!text) { return; }
+    var s = 12;
+    if (text.length < 8) s -= 6;
+    if (text.length > 30) s += 4;
+    psychPositive.forEach(function(w) { if (text.indexOf(w) !== -1) s += 5; });
+    psychNegative.forEach(function(w) { if (text.indexOf(w) !== -1) s -= 10; });
+    points += Math.max(0, Math.min(20, s));
   });
-  var max = weighted.length * 3;
-  return max ? Math.round((total / max) * 100) : 0;
+
+  return maxPoints ? Math.round((points / maxPoints) * 100) : 0;
 }
 
 function hr_submit() {
