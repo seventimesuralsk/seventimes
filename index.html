@@ -8234,24 +8234,41 @@ function seventAiSend() {
   box.appendChild(typing);
   box.scrollTop = box.scrollHeight;
 
-  apiGet({
+  var params = {
     action: "aiAsk",
     branch: branch,
     message: text,
     history: JSON.stringify(seventAiHistory.slice(0, -1))
-  }, function(d) {
+  };
+  var url = API + "?" + Object.keys(params).map(function(k) { return k + "=" + encodeURIComponent(params[k]); }).join("&");
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", url, true);
+  xhr.timeout = 30000; // ИИ иногда отвечает дольше обычного запроса — даём 30 сек вместо стандартных 10
+  xhr.onload = function() {
     var t = document.getElementById("seventAiTyping");
     if (t) t.remove();
-    if (d && d.ok) {
-      seventAiAppendMessage("ai", d.reply);
-    } else {
-      seventAiAppendMessage("ai", "Извините, не получилось ответить" + (d && d.msg ? " (" + d.msg + ")" : "") + ". Попробуйте ещё раз чуть позже.");
+    try {
+      var d = JSON.parse(xhr.responseText);
+      if (d && d.ok) {
+        seventAiAppendMessage("ai", d.reply);
+      } else {
+        seventAiAppendMessage("ai", "Извините, не получилось ответить" + (d && d.msg ? " (" + d.msg + ")" : "") + ". Попробуйте ещё раз чуть позже.");
+      }
+    } catch (parseErr) {
+      seventAiAppendMessage("ai", "Извините, не получилось ответить (сервер вернул что-то непонятное). Попробуйте ещё раз чуть позже.");
     }
-  }, function() {
+  };
+  xhr.ontimeout = function() {
     var t = document.getElementById("seventAiTyping");
     if (t) t.remove();
-    seventAiAppendMessage("ai", "Извините, не получилось ответить. Попробуйте ещё раз чуть позже.");
-  });
+    seventAiAppendMessage("ai", "Извините, ИИ отвечает слишком долго (тайм-аут 30 сек). Попробуйте ещё раз.");
+  };
+  xhr.onerror = function() {
+    var t = document.getElementById("seventAiTyping");
+    if (t) t.remove();
+    seventAiAppendMessage("ai", "Извините, не удалось связаться с сервером. Проверьте интернет и попробуйте ещё раз.");
+  };
+  xhr.send();
 }
 
 function loadNewsFeed() {
