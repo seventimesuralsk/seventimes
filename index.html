@@ -2929,7 +2929,7 @@ nav {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
+  gap: 2px;
   padding: 0
 }
 
@@ -4701,7 +4701,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
      </div>
     </div>
    </div>
-   <div id="hrFormOv" style="display:none;position:fixed;inset:0;z-index:970;background:#fbfbfd;flex-direction:column">
+   <div id="hrFormOv" style="display:none;position:fixed;top:0;left:0;right:0;bottom:118px;z-index:490;background:#fbfbfd;flex-direction:column">
     <div style="position:sticky;top:0;z-index:5;background:rgba(251,251,253,.9);backdrop-filter:blur(20px);border-bottom:1px solid #e5e5e7;padding:14px var(--px);display:flex;align-items:center;gap:14px">
      <button aria-label="Закрыть" onclick="hr_close()" style="background:none;border:none;cursor:pointer;flex-shrink:0;padding:4px">
       <svg fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewBox="0 0 24 24" width="20"><line x1="18" x2="6" y1="6" y2="18"></line><line x1="6" x2="18" y1="6" y2="18"></line></svg>
@@ -4709,10 +4709,10 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
      <div style="flex:1;height:3px;background:#e5e5e7;border-radius:2px;overflow:hidden"><div id="hrProgressFill" style="height:100%;background:#7a1128;border-radius:2px;width:0%"></div></div>
      <div id="hrProgressLabel" style="font-size:0.66rem;color:#86868b;min-width:32px;text-align:right">0%</div>
     </div>
-    <div style="flex:1;display:flex;align-items:flex-start;justify-content:center;padding:28px var(--px)120px;overflow-y:auto">
+    <div style="flex:1;display:flex;align-items:flex-start;justify-content:center;padding:28px var(--px)20px;overflow-y:auto">
      <div id="hrStageCard" style="width:100%;max-width:480px"></div>
     </div>
-    <div id="hrNavbar" style="position:fixed;bottom:0;left:0;right:0;background:rgba(251,251,253,.92);backdrop-filter:blur(20px);border-top:1px solid #e5e5e7;padding:14px var(--px);padding-bottom:max(14px,env(safe-area-inset-bottom));display:flex;gap:10px"></div>
+    <div id="hrNavbar" style="background:rgba(251,251,253,.92);backdrop-filter:blur(20px);border-top:1px solid #e5e5e7;padding:14px var(--px);display:flex;gap:10px"></div>
    </div>
    <div class="mov" id="geoWelcomeMov" style="z-index:960">
     <div class="mbox" style="align-items:center;text-align:center;padding:32px 24px 26px">
@@ -8254,12 +8254,18 @@ function hr_open() {
   hr_step = -1;
   hr_answers = {};
   document.getElementById("hrFormOv").style.display = "flex";
+  document.querySelectorAll(".bottom-tab-btn").forEach(function(b) {
+    b.classList.toggle("active", b.getAttribute("data-tab") === "vacancy");
+  });
   lockBodyScroll();
   hr_render();
 }
 
 function hr_close() {
   document.getElementById("hrFormOv").style.display = "none";
+  document.querySelectorAll(".bottom-tab-btn").forEach(function(b) {
+    b.classList.toggle("active", b.getAttribute("data-tab") === "home");
+  });
   unlockBodyScroll();
 }
 
@@ -10657,7 +10663,7 @@ function fb_sendComplaint() {
   </div>
 
   <div id="newsScreen" style="display:none;position:fixed;inset:0;z-index:490;background:#f5f5f7;flex-direction:column;padding-bottom:78px">
-   <div style="padding:16px var(--px)12px;font-weight:700;font-size:1.15rem;border-bottom:1px solid #e5e5e7;background:#fff">Новости и акции</div>
+   <div style="padding:16px var(--px)12px;font-weight:700;font-size:1.15rem;border-bottom:1px solid #e5e5e7;background:#fff">Сообщения</div>
    <div id="newsScreenList" style="flex:1;overflow-y:auto;padding:14px var(--px)">
     <div style="text-align:center;color:#86868b;font-size:0.8rem;padding:40px 0">Загрузка…</div>
    </div>
@@ -10666,7 +10672,7 @@ function fb_sendComplaint() {
   <div id="bottomTabBar" style="position:fixed;left:0;right:0;bottom:0;z-index:500;background:#fff;border-top:1px solid #e5e5e7;display:flex;padding-bottom:env(safe-area-inset-bottom)">
    <button class="bottom-tab-btn active" data-tab="home" onclick="switchBottomTab('home')" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 4px 10px;background:none;border:none;cursor:pointer;font-family:inherit">
     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
-    <span style="font-size:0.66rem;font-weight:600">Главная</span>
+    <span style="font-size:0.66rem;font-weight:600">Меню</span>
    </button>
    <button class="bottom-tab-btn" data-tab="vacancy" onclick="switchBottomTab('vacancy')" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 4px 10px;background:none;border:none;cursor:pointer;font-family:inherit">
     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
@@ -10674,7 +10680,7 @@ function fb_sendComplaint() {
    </button>
    <button class="bottom-tab-btn" data-tab="news" onclick="switchBottomTab('news')" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 4px 10px;background:none;border:none;cursor:pointer;font-family:inherit;position:relative">
     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-    <span style="font-size:0.66rem;font-weight:600">Новости</span>
+    <span style="font-size:0.66rem;font-weight:600">Сообщения</span>
    </button>
    <button class="bottom-tab-btn" data-tab="services" onclick="switchBottomTab('services')" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 4px 10px;background:none;border:none;cursor:pointer;font-family:inherit">
     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
