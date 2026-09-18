@@ -5041,7 +5041,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
      }
    }
 
-   const API = "https://script.google.com/macros/s/AKfycbxVhQv2cizNeqONp5rJFi2_wEbw_UQ-A2wh7F9vQtl3rBQ7H0vILRVbNJVzwvv1MoALow/exec",
+   const API = "https://script.google.com/macros/s/AKfycbyJwWkpCV0nDktAZ3vPquZ6x1V28bNq08oh7PphgW3PR9xIxS0JRxQOh9ZEb6NUy5292A/exec",
   WA = "77760709898",
   CAT_META = {
     "Новинки": {
@@ -8571,14 +8571,15 @@ function hr_computeScore() {
   // 5 психологических ответов — честность/конструктив против равнодушных
   // и грубых отписок ("похуй", "не буду", "уйду" и т.п.)
   var psychIds = ["stressAnswer", "commitmentAnswer", "punctualityAnswer", "politenessAnswer", "responsibilityAnswer"];
-  var psychPositive = ["сообщ", "исправ", "признa", "верн", "предупред", "спокойн", "постара", "справ", "найду выход", "вежлив", "профессионал", "извин", "объясн", "честно", "по правил", "доведу", "не буду экономить"];
+  var psychPositive = ["сообщ", "исправ", "призна", "скаж", "верн", "предупред", "спокойн", "постара", "справ", "найду выход", "вежлив", "профессионал", "извин", "объясн", "честно", "по правил", "доведу", "не буду экономить"];
   var psychNegative = ["похуй", "пофиг", "плевать", "насрать", "не буду", "уйду", "ничего не сдела", "ничего не буду", "нет", "не знаю", "промолчу", "никто не узнает", "сойдёт", "наплевать", "забью", "откажу", "нагруб", "разозл", "пошлю"];
   psychIds.forEach(function(id) {
     var text = (hr_answers[id] || "").toString().trim().toLowerCase();
     maxPoints += 20;
     if (!text) { return; }
     var s = 12;
-    if (text.length < 8) s -= 6;
+    var hasPositive = psychPositive.some(function(w) { return text.indexOf(w) !== -1; });
+    if (text.length < 8 && !hasPositive) s -= 6;
     if (text.length > 30) s += 4;
     psychPositive.forEach(function(w) { if (text.indexOf(w) !== -1) s += 5; });
     psychNegative.forEach(function(w) { if (text.indexOf(w) !== -1) s -= 10; });
