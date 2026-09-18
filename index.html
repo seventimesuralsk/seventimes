@@ -8252,16 +8252,21 @@ function seventAiSend() {
       if (d && d.ok) {
         seventAiAppendMessage("ai", d.reply);
       } else {
-        seventAiAppendMessage("ai", "Извините, не получилось ответить" + (d && d.msg ? " (" + d.msg + ")" : "") + ". Попробуйте ещё раз чуть позже.");
+        var errMsg = (d && d.msg || "").toLowerCase();
+        if (errMsg.indexOf("high demand") !== -1 || errMsg.indexOf("overloaded") !== -1 || errMsg.indexOf("503") !== -1) {
+          seventAiAppendMessage("ai", "Сейчас много запросов по Уральску 🙌 Попробуйте написать ещё раз буквально через минуту.");
+        } else {
+          seventAiAppendMessage("ai", "Извините, сейчас не получилось ответить. Попробуйте ещё раз чуть позже.");
+        }
       }
     } catch (parseErr) {
-      seventAiAppendMessage("ai", "Извините, не получилось ответить (сервер вернул что-то непонятное). Попробуйте ещё раз чуть позже.");
+      seventAiAppendMessage("ai", "Извините, сейчас не получилось ответить. Попробуйте ещё раз чуть позже.");
     }
   };
   xhr.ontimeout = function() {
     var t = document.getElementById("seventAiTyping");
     if (t) t.remove();
-    seventAiAppendMessage("ai", "Извините, ИИ отвечает слишком долго (тайм-аут 30 сек). Попробуйте ещё раз.");
+    seventAiAppendMessage("ai", "Сейчас много запросов по Уральску 🙌 Попробуйте написать ещё раз буквально через минуту.");
   };
   xhr.onerror = function() {
     var t = document.getElementById("seventAiTyping");
