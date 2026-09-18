@@ -3099,11 +3099,11 @@ nav {
   position: absolute;
   top: calc(100% + 6px);
   left: 0;
-  background: #7a1128;
+  background: #fff;
   border-radius: 12px;
   min-width: 150px;
   padding: 6px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, .35);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
   z-index: 400;
   display: none;
   flex-direction: column;
@@ -3118,7 +3118,7 @@ nav {
   background: none;
   border: none;
   text-align: left;
-  color: #fff;
+  color: #1d1d1f;
   padding: 9px 11px;
   border-radius: 8px;
   font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
@@ -3129,11 +3129,13 @@ nav {
 }
 
 .branch-dropdown-item:active {
-  opacity: .7
+  background: #f5f5f7
 }
 
 .branch-dropdown-item.on {
-  background: #7a1128
+  background: #7a112814;
+  color: #7a1128;
+  font-weight: 700
 }
 
 .branch-dropdown-backdrop {
