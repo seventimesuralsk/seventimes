@@ -8245,7 +8245,7 @@ function seventAiSend() {
     if (d && d.ok) {
       seventAiAppendMessage("ai", d.reply);
     } else {
-      seventAiAppendMessage("ai", "Извините, не получилось ответить. Попробуйте ещё раз чуть позже.");
+      seventAiAppendMessage("ai", "Извините, не получилось ответить" + (d && d.msg ? " (" + d.msg + ")" : "") + ". Попробуйте ещё раз чуть позже.");
     }
   }, function() {
     var t = document.getElementById("seventAiTyping");
