@@ -8302,7 +8302,7 @@ function hr_renderIntro() {
   document.getElementById("hrStageCard").innerHTML =
     '<div style="color:#7a1128;font-weight:600;font-size:0.86rem;margin-bottom:10px">Анкета кандидата</div>' +
     '<div style="font-size:1.7rem;line-height:1.2;letter-spacing:-.01em;font-weight:700;margin-bottom:14px">Добро пожаловать<br>в команду Seven Times</div>' +
-    '<div style="font-size:0.86rem;line-height:1.6;color:#6e6e73;max-width:420px">Прежде чем мы пригласим вас на собеседование, ответьте на несколько вопросов. Это займёт около 3 минут.</div>';
+    '<div style="font-size:0.86rem;line-height:1.7;color:#6e6e73;max-width:420px">У нас дружный коллектив, зарплата всегда вовремя и хорошие условия работы. Мы создаём возможности роста для каждого сотрудника — наши люди и есть движущая сила ресторана.<br><br>Если хотите стать частью команды, которая развивается и дарит гостям тёплый опыт каждый день — заполните анкету. Это займёт около 3 минут.</div>';
   document.getElementById("hrNavbar").innerHTML = '<button onclick="hr_next()" style="flex:1;padding:14px 18px;border-radius:12px;border:none;background:#7a1128;color:#fff;font-family:inherit;font-size:0.84rem;font-weight:600;cursor:pointer">Начать анкету</button>';
 }
 
@@ -10690,7 +10690,8 @@ function fb_sendComplaint() {
     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
     <span style="font-size:0.66rem;font-weight:600">Меню</span>
    </button>
-   <button class="bottom-tab-btn" data-tab="vacancy" onclick="switchBottomTab('vacancy')" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 4px 10px;background:none;border:none;cursor:pointer;font-family:inherit">
+   <button class="bottom-tab-btn" data-tab="vacancy" onclick="switchBottomTab('vacancy')" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 4px 10px;background:none;border:none;cursor:pointer;font-family:inherit;position:relative">
+    <span style="position:absolute;top:6px;left:calc(50% + 6px);background:#7a1128;color:#fff;font-size:0.5rem;font-weight:700;padding:1px 4px;border-radius:6px;line-height:1.4">NEW</span>
     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
     <span style="font-size:0.66rem;font-weight:600">Вакансии</span>
    </button>
