@@ -2906,6 +2906,42 @@ nav {
   transform: translateX(-50%) translateY(0)
 }
 
+.seventai-dots {
+  display: inline-flex;
+  gap: 3px
+}
+
+.seventai-dots span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #86868b;
+  animation: seventaiDotBounce 1.2s infinite ease-in-out
+}
+
+.seventai-dots span:nth-child(2) {
+  animation-delay: .15s
+}
+
+.seventai-dots span:nth-child(3) {
+  animation-delay: .3s
+}
+
+@keyframes seventaiDotBounce {
+
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: .4
+  }
+
+  30% {
+    transform: translateY(-3px);
+    opacity: 1
+  }
+}
+
 #appShell {
   position: relative;
   background: #f5f5f7;
@@ -8193,12 +8229,31 @@ function switchBottomTab(tab) {
 // ── SEVEN AI — чат-помощник для гостей, знает реальное меню ──
 // ══════════════════════════════════════════════════════════════════
 var seventAiHistory = [];
+var seventAiLoaded = false;
+
+function seventAiSaveHistory() {
+  try { localStorage.setItem("seventAiHistory", JSON.stringify(seventAiHistory)); } catch (e) {}
+}
+
+function seventAiLoadHistory() {
+  try {
+    var saved = localStorage.getItem("seventAiHistory");
+    if (saved) seventAiHistory = JSON.parse(saved) || [];
+  } catch (e) { seventAiHistory = []; }
+}
 
 function seventAiOpen() {
   var ov = document.getElementById("seventAiOv");
   var tabBar = document.getElementById("bottomTabBar");
   ov.style.bottom = (tabBar ? tabBar.offsetHeight : 0) + "px";
   ov.style.display = "flex";
+  if (!seventAiLoaded) {
+    seventAiLoaded = true;
+    seventAiLoadHistory();
+    var box = document.getElementById("seventAiMessages");
+    seventAiHistory.forEach(function(m) { seventAiRenderBubble(m.role, m.text); });
+    box.scrollTop = box.scrollHeight;
+  }
   if (!seventAiHistory.length) {
     seventAiAppendMessage("ai", "Привет! Я SEVEN AI 👋 Помогу выбрать блюдо, отвечу на вопросы про меню, филиалы или доставку. Что вас интересует?");
   }
@@ -8208,16 +8263,37 @@ function seventAiClose() {
   document.getElementById("seventAiOv").style.display = "none";
 }
 
-function seventAiAppendMessage(role, text) {
-  seventAiHistory.push({ role: role, text: text });
+function seventAiRenderBubble(role, text) {
   var box = document.getElementById("seventAiMessages");
   var mine = role === "user";
   var bubble = document.createElement("div");
   bubble.style.cssText = "align-self:" + (mine ? "flex-end" : "flex-start") + ";max-width:82%";
   bubble.innerHTML = '<div style="padding:10px 14px;border-radius:16px;background:' + (mine ? "#7a1128" : "#f0f0f0") + ";color:" + (mine ? "#fff" : "#1d1d1f") + ';font-size:0.84rem;line-height:1.5">' + text.replace(/</g, "&lt;") + "</div>";
   box.appendChild(bubble);
+}
+
+function seventAiAppendMessage(role, text) {
+  seventAiHistory.push({ role: role, text: text });
+  seventAiSaveHistory();
+  seventAiRenderBubble(role, text);
+  var box = document.getElementById("seventAiMessages");
   box.scrollTop = box.scrollHeight;
 }
+
+var SEVENAI_TYPING_PHRASES = [
+  "SEVEN AI печатает",
+  "Читаю меню",
+  "Подбираю варианты",
+  "Сверяюсь с меню ресторана",
+  "Почти готово",
+  "SEVEN AI думает",
+  "Собираю точный ответ",
+  "Ищу для вас лучшие варианты",
+  "Секундочку",
+  "SEVEN AI даёт точный ответ",
+  "Формулирую ответ",
+  "Уже почти"
+];
 
 function seventAiSend() {
   var input = document.getElementById("seventAiInput");
@@ -8229,24 +8305,38 @@ function seventAiSend() {
   var box = document.getElementById("seventAiMessages");
   var typing = document.createElement("div");
   typing.id = "seventAiTyping";
-  typing.style.cssText = "align-self:flex-start;font-size:0.78rem;color:#86868b";
-  typing.textContent = "SEVEN AI печатает…";
+  typing.style.cssText = "align-self:flex-start;font-size:0.78rem;color:#86868b;display:flex;align-items:center;gap:6px";
+  typing.innerHTML = '<span id="seventAiTypingText">SEVEN AI печатает</span><span class="seventai-dots"><span></span><span></span><span></span></span>';
   box.appendChild(typing);
   box.scrollTop = box.scrollHeight;
+
+  var phraseIdx = 0;
+  var typingTextEl = document.getElementById("seventAiTypingText");
+  var phraseTimer = setInterval(function() {
+    phraseIdx = (phraseIdx + 1) % SEVENAI_TYPING_PHRASES.length;
+    if (typingTextEl) typingTextEl.textContent = SEVENAI_TYPING_PHRASES[phraseIdx];
+  }, 2500);
+
+  function stopTyping() {
+    clearInterval(phraseTimer);
+    var t = document.getElementById("seventAiTyping");
+    if (t) t.remove();
+  }
 
   var params = {
     action: "aiAsk",
     branch: branch,
     message: text,
-    history: JSON.stringify(seventAiHistory.slice(0, -1))
+    // ограничиваем историю последними ~12 сообщениями — переписка хранится
+    // у гостя вечно, но целиком в запрос слать нельзя (лимит длины URL)
+    history: JSON.stringify(seventAiHistory.slice(-13, -1))
   };
   var url = API + "?" + Object.keys(params).map(function(k) { return k + "=" + encodeURIComponent(params[k]); }).join("&");
   var xhr = new XMLHttpRequest();
   xhr.open("GET", url, true);
-  xhr.timeout = 30000; // ИИ иногда отвечает дольше обычного запроса — даём 30 сек вместо стандартных 10
+  xhr.timeout = 65000; // не показываем "занято" раньше минуты ожидания
   xhr.onload = function() {
-    var t = document.getElementById("seventAiTyping");
-    if (t) t.remove();
+    stopTyping();
     try {
       var d = JSON.parse(xhr.responseText);
       if (d && d.ok) {
@@ -8264,13 +8354,11 @@ function seventAiSend() {
     }
   };
   xhr.ontimeout = function() {
-    var t = document.getElementById("seventAiTyping");
-    if (t) t.remove();
+    stopTyping();
     seventAiAppendMessage("ai", "Сейчас много запросов по Уральску 🙌 Попробуйте написать ещё раз буквально через минуту.");
   };
   xhr.onerror = function() {
-    var t = document.getElementById("seventAiTyping");
-    if (t) t.remove();
+    stopTyping();
     seventAiAppendMessage("ai", "Извините, не удалось связаться с сервером. Проверьте интернет и попробуйте ещё раз.");
   };
   xhr.send();
