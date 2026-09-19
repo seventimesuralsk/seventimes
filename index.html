@@ -4328,6 +4328,9 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
         <button class="adm-nav-btn" onclick="admSection('stats')" style="grid-column:1/-1">
          Статистика
         </button>
+        <button class="adm-nav-btn" onclick="admSection('aiSettings')" style="grid-column:1/-1">
+         Настройки SEVEN AI
+        </button>
        </div>
        <div id="adm-items-sec" style="display:none">
         <div style="align-items:center;gap:8px;margin-bottom:10px;display:flex">
@@ -4498,6 +4501,25 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
          Убрать расписание, открыть сразу
         </button>
         <div class="admerr" id="admStatusErr" style="margin-top:8px">
+        </div>
+       </div>
+       <div id="adm-aiSettings-sec" style="display:none">
+        <div style="align-items:center;gap:8px;margin-bottom:14px;display:flex">
+         <button class="adm-back" onclick="admShowHome()">
+          ← Назад
+         </button>
+         <div style="color:#1d1d1f;font-size:0.79rem;font-weight:400">
+          Настройки SEVEN AI
+         </div>
+        </div>
+        <div style="font-size:0.68rem;color:#6e6e73;line-height:1.6;margin-bottom:12px">
+         Впиши сюда любые факты и правила, которые ИИ должен знать и никогда не путать — адреса, часы работы, акции, что нельзя обещать гостям и т.д. Сохранённое подключается сразу, без правки кода.
+        </div>
+        <textarea id="admAiFactsInput" rows="14" style="width:100%;font-size:0.76rem;padding:12px;border-radius:10px;border:1.5px solid #e5e5e7;font-family:inherit;resize:vertical;margin-bottom:10px" placeholder="Например:&#10;Самал 70/3 — 10 микрорайон, часы 11:00–01:00, есть доставка.&#10;Скоробогатова 65/1 — центр города, часы 12:00–02:00, есть доставка.&#10;Абулхаир Хана 177 — 4 микрорайон, часы 08:00–01:00, доставки нет, только бронь и самовывоз.&#10;Не обещай скидки, которых нет в меню."></textarea>
+        <button class="admloginbtn" onclick="admSaveAiSettings()" id="admAiSaveBtn">
+         Сохранить
+        </button>
+        <div class="admerr" id="admAiSettingsErr" style="margin-top:8px">
         </div>
        </div>
        <div id="adm-stats-sec" style="display:none">
@@ -8961,7 +8983,7 @@ function admSwitch(b) {
 }
 
 function admShowHome() {
-  ["items", "add", "cats", "stop", "edit", "stats", "status"].forEach(s => {
+  ["items", "add", "cats", "stop", "edit", "stats", "status", "aiSettings"].forEach(s => {
     let el = document.getElementById("adm-" + s + "-sec");
     el && (el.style.display = "none")
   });
@@ -8971,13 +8993,13 @@ function admShowHome() {
 
 function admSection(sec) {
   let home = document.getElementById("adm-home");
-  if (home && (home.style.display = "none"), ["items", "add", "cats", "stop", "edit", "stats", "status"].forEach(s => {
+  if (home && (home.style.display = "none"), ["items", "add", "cats", "stop", "edit", "stats", "status", "aiSettings"].forEach(s => {
       let el = document.getElementById("adm-" + s + "-sec");
       el && (el.style.display = "none")
     }), !sec) return void admShowHome();
-  document.getElementById("admTitle").textContent = "items" === sec ? "Блюда" : "add" === sec ? "Добавить блюдо" : "cats" === sec ? "Категории" : "stop" === sec ? "Стоп-лист" : "stats" === sec ? "Статистика" : "status" === sec ? "Статус сайта" : "edit" === sec ? "Редактировать" : "Панель управления";
+  document.getElementById("admTitle").textContent = "items" === sec ? "Блюда" : "add" === sec ? "Добавить блюдо" : "cats" === sec ? "Категории" : "stop" === sec ? "Стоп-лист" : "stats" === sec ? "Статистика" : "status" === sec ? "Статус сайта" : "edit" === sec ? "Редактировать" : "aiSettings" === sec ? "Настройки SEVEN AI" : "Панель управления";
   let el = document.getElementById("adm-" + sec + "-sec");
-  el && (el.style.display = "block"), "items" === sec && admLoadItems(), "add" === sec && admLoadCatsForSelect("addCat"), "cats" === sec && admLoadCats(), "stop" === sec && admLoadStop(), "stats" === sec && admLoadStats(), "status" === sec && admLoadStatus()
+  el && (el.style.display = "block"), "items" === sec && admLoadItems(), "add" === sec && admLoadCatsForSelect("addCat"), "cats" === sec && admLoadCats(), "stop" === sec && admLoadStop(), "stats" === sec && admLoadStats(), "status" === sec && admLoadStatus(), "aiSettings" === sec && admLoadAiSettings()
 }
 
 function apiGet(params, onSuccess, onError) {
@@ -9333,6 +9355,35 @@ function admLoadStop() {
   }, function() {
     document.getElementById("admStopList").innerHTML = '<div style="text-align:center;padding:20px;color:#1d1d1f;font-size:0.7rem">Ошибка</div>'
   })
+}
+
+function admLoadAiSettings() {
+  var input = document.getElementById("admAiFactsInput");
+  input.value = "Загрузка…";
+  apiGet({ action: "getAiFacts" }, function(d) {
+    input.value = d.facts || "";
+  }, function() {
+    input.value = "";
+    document.getElementById("admAiSettingsErr").textContent = "Не удалось загрузить";
+  });
+}
+
+function admSaveAiSettings() {
+  var errEl = document.getElementById("admAiSettingsErr");
+  var btn = document.getElementById("admAiSaveBtn");
+  errEl.textContent = "";
+  btn.disabled = true;
+  btn.textContent = "Сохраняем…";
+  var facts = document.getElementById("admAiFactsInput").value;
+  apiGet({ action: "setAiFacts", facts: facts }, function() {
+    btn.disabled = false;
+    btn.textContent = "Сохранить";
+    showToast("Сохранено ✓");
+  }, function() {
+    btn.disabled = false;
+    btn.textContent = "Сохранить";
+    errEl.textContent = "Не удалось сохранить";
+  });
 }
 
 function admLoadStatus() {
