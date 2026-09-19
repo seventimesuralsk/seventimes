@@ -8264,11 +8264,34 @@ function seventAiLoadHistory() {
   } catch (e) { seventAiHistory = []; }
 }
 
+// Пока идёт подключение оплаты ИИ — переписываться нельзя, только показываем
+// объяснение, что это такое. Когда всё готово — просто поменяй false на true.
+var SEVENAI_ENABLED = false;
+
 function seventAiOpen() {
   var ov = document.getElementById("seventAiOv");
   var tabBar = document.getElementById("bottomTabBar");
   ov.style.bottom = (tabBar ? tabBar.offsetHeight : 0) + "px";
   ov.style.display = "flex";
+
+  var input = document.getElementById("seventAiInput");
+  var sendBtn = document.getElementById("seventAiSendBtn");
+  if (!SEVENAI_ENABLED) {
+    input.disabled = true;
+    input.placeholder = "Пока недоступно";
+    sendBtn.disabled = true;
+    sendBtn.style.opacity = "0.4";
+    var box = document.getElementById("seventAiMessages");
+    box.innerHTML = "";
+    seventAiRenderBubble("ai", "Привет! Я SEVEN AI ✨ — умный помощник, который скоро поможет вам выбрать блюдо, подскажет часы работы филиалов, поможет с доставкой и ответит на любые вопросы про Seven Times прямо в этом чате. Мы уже почти всё настроили — совсем скоро здесь можно будет писать. Загляните чуть позже 🙌");
+    box.scrollTop = box.scrollHeight;
+    return;
+  }
+  input.disabled = false;
+  input.placeholder = "Напишите сообщение…";
+  sendBtn.disabled = false;
+  sendBtn.style.opacity = "1";
+
   if (!seventAiLoaded) {
     seventAiLoaded = true;
     seventAiLoadHistory();
@@ -8280,6 +8303,51 @@ function seventAiOpen() {
     seventAiAppendMessage("ai", "Привет! Я SEVEN AI 👋 Помогу выбрать блюдо, отвечу на вопросы про меню, филиалы или доставку. Что вас интересует?");
   }
 }
+
+// Очищает переписку только у самого гостя (localStorage браузера) — записи
+// в Google Таблице (лист SEVEN_AI_Чат) не трогает, это просто личная история.
+function seventAiClearHistory() {
+  seventAiHistory = [];
+  try { localStorage.removeItem("seventAiHistory"); } catch (e) {}
+  var box = document.getElementById("seventAiMessages");
+  if (box) box.innerHTML = "";
+  seventAiTileSwipeReset();
+  showToast("Переписка очищена");
+}
+
+// ── Свайп влево по плитке SEVEN AI — открывает кнопку "Очистить" ──
+(function() {
+  var tile, startX = 0, curX = 0, dragging = false;
+  document.addEventListener("DOMContentLoaded", seventAiInitSwipe);
+  if (document.readyState !== "loading") seventAiInitSwipe();
+  function seventAiInitSwipe() {
+    tile = document.getElementById("seventAiTile");
+    if (!tile) return;
+    tile.addEventListener("pointerdown", function(e) {
+      startX = e.clientX; curX = startX; dragging = true;
+      tile.style.transition = "none";
+    });
+    tile.addEventListener("pointermove", function(e) {
+      if (!dragging) return;
+      curX = e.clientX;
+      var dx = Math.min(0, Math.max(-78, curX - startX));
+      tile.style.transform = "translateX(" + dx + "px)";
+    });
+    function endDrag() {
+      if (!dragging) return;
+      dragging = false;
+      tile.style.transition = "transform .2s ease";
+      var dx = curX - startX;
+      tile.style.transform = dx < -35 ? "translateX(-78px)" : "translateX(0)";
+    }
+    tile.addEventListener("pointerup", endDrag);
+    tile.addEventListener("pointercancel", endDrag);
+    tile.addEventListener("pointerleave", function() { if (dragging) endDrag(); });
+  }
+  window.seventAiTileSwipeReset = function() {
+    if (tile) { tile.style.transition = "transform .2s ease"; tile.style.transform = "translateX(0)"; }
+  };
+})();
 
 function seventAiClose() {
   document.getElementById("seventAiOv").style.display = "none";
@@ -11045,14 +11113,21 @@ function fb_sendComplaint() {
   <div id="newsScreen" style="display:none;position:fixed;inset:0;z-index:490;background:#fff;flex-direction:column;padding-bottom:78px">
    <div style="padding:16px var(--px)12px;font-weight:600;font-size:1.15rem;text-align:center;background:#fff">Сообщения</div>
    <div style="flex:1;overflow-y:auto;padding:14px var(--px)">
-    <button onclick="seventAiOpen()" style="width:100%;display:flex;align-items:center;gap:12px;padding:14px;background:#fff;border:1px solid #e5e5e7;border-radius:14px;margin-bottom:14px;cursor:pointer;font-family:inherit;text-align:left">
-     <div style="width:44px;height:44px;border-radius:12px;background:#7a1128;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.1rem">✨</div>
-     <div style="flex:1;min-width:0">
-      <div style="font-size:0.84rem;font-weight:600;color:#1d1d1f">SEVEN AI</div>
-      <div style="font-size:0.68rem;color:#86868b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Спросите что-нибудь — подскажу, что выбрать</div>
+    <div id="seventAiTileWrap" style="position:relative;border-radius:14px;overflow:hidden;margin-bottom:14px">
+     <div style="position:absolute;inset:0;display:flex;justify-content:flex-end;align-items:stretch">
+      <button onclick="seventAiClearHistory()" style="width:78px;background:#7a1128;border:none;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;font-family:inherit">
+       <span style="font-size:1.2rem">🗑</span><span style="font-size:0.64rem;font-weight:600">Очистить</span>
+      </button>
      </div>
-     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c7c7cc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M9 6l6 6-6 6"/></svg>
-    </button>
+     <button onclick="seventAiOpen()" id="seventAiTile" style="position:relative;width:100%;display:flex;align-items:center;gap:12px;padding:14px;background:#fff;border:1px solid #e5e5e7;border-radius:14px;cursor:pointer;font-family:inherit;text-align:left;transition:transform .2s ease">
+      <div style="width:44px;height:44px;border-radius:12px;background:#7a1128;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.1rem">✨</div>
+      <div style="flex:1;min-width:0">
+       <div style="font-size:0.84rem;font-weight:600;color:#1d1d1f;display:flex;align-items:center;gap:6px">SEVEN AI <span style="font-size:0.6rem;font-weight:700;color:#7a1128;background:#7a112814;padding:2px 7px;border-radius:6px">СКОРО</span></div>
+       <div style="font-size:0.68rem;color:#86868b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Умный помощник по меню — уже готовим к запуску</div>
+      </div>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c7c7cc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M9 6l6 6-6 6"/></svg>
+     </button>
+    </div>
     <div id="newsScreenList">
      <div style="text-align:center;color:#86868b;font-size:0.8rem;padding:40px 0">Загрузка…</div>
     </div>
@@ -11070,7 +11145,7 @@ function fb_sendComplaint() {
    <div id="seventAiMessages" style="flex:1;overflow-y:auto;padding:16px var(--px);display:flex;flex-direction:column;gap:12px"></div>
    <div style="padding:12px var(--px);border-top:1px solid #e5e5e7;display:flex;gap:8px;background:#fbfbfd">
     <input type="text" id="seventAiInput" placeholder="Напишите сообщение…" style="flex:1;font-size:0.84rem;padding:11px 14px;border-radius:12px;border:1.5px solid #e5e5e7;outline:none;font-family:inherit" onkeydown="if(event.key==='Enter')seventAiSend()">
-    <button onclick="seventAiSend()" style="padding:11px 16px;border-radius:12px;border:none;background:#7a1128;color:#fff;cursor:pointer;font-size:0.9rem">➤</button>
+    <button onclick="seventAiSend()" id="seventAiSendBtn" style="padding:11px 16px;border-radius:12px;border:none;background:#7a1128;color:#fff;cursor:pointer;font-size:0.9rem">➤</button>
    </div>
   </div>
 
