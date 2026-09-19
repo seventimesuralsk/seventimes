@@ -8330,16 +8330,22 @@ function seventAiPinToggle() {
 }
 
 // ── Свайп по плитке SEVEN AI — влево открывает "Очистить", вправо "Закрепить" ──
-// Плитка всё время двигается ровно туда, куда идёт палец (без рывков), а при
-// отпускании плавно доводится до ближайшего положения — открыто или закрыто.
+// Плитка всё время двигается ровно туда, куда идёт палец, без рывков. Если
+// одна сторона уже открыта и гость свайпает обратно, чтобы просто закрыть —
+// жест останавливается ровно на нуле и не перескакивает сразу на другую
+// сторону (чтобы случайно не открыть не то, что гость хотел).
 (function() {
-  var tile, startX = 0, curX = 0, dragging = false, dragged = false;
+  var tile, pinBtn, clearBtn, startX = 0, curX = 0, dragging = false, dragged = false;
+  var openState = 0; // -78 (Очистить открыт), 0 (закрыто), 78 (Закрепить открыт)
+  var EASE = "transform .38s cubic-bezier(.25,.85,.3,1)";
   document.addEventListener("DOMContentLoaded", seventAiInitSwipe);
   if (document.readyState !== "loading") seventAiInitSwipe();
   function seventAiInitSwipe() {
     tile = document.getElementById("seventAiTile");
+    pinBtn = document.getElementById("seventAiPinBtn");
+    clearBtn = tile ? tile.parentElement.querySelector("[onclick='seventAiClearHistory()']") : null;
     if (!tile) return;
-    tile.style.transition = "transform .32s cubic-bezier(.22,.9,.36,1)";
+    tile.style.transition = EASE;
     tile.addEventListener("pointerdown", function(e) {
       startX = e.clientX; curX = startX; dragging = true; dragged = false;
       tile.style.transition = "none";
@@ -8347,21 +8353,38 @@ function seventAiPinToggle() {
     tile.addEventListener("pointermove", function(e) {
       if (!dragging) return;
       curX = e.clientX;
-      var raw = curX - startX;
-      if (Math.abs(raw) > 6) dragged = true;
-      // небольшое сопротивление за пределами диапазона — не резкий обрыв
+      var raw = openState + (curX - startX);
+      if (Math.abs(curX - startX) > 6) dragged = true;
+
+      // Диапазон для ЭТОГО жеста зависит от того, с какой стороны начали:
+      // если сейчас открыта одна сторона — не даём за один жест улететь на
+      // противоположную, сначала жест должен "дойти" до нуля.
+      var min = -78, max = 78;
+      if (openState > 0) min = 0;   // был открыт "Закрепить" — вниз только до 0
+      if (openState < 0) max = 0;   // был открыт "Очистить" — вверх только до 0
+
       var dx = raw;
-      if (dx > 78) dx = 78 + (dx - 78) * 0.25;
-      if (dx < -78) dx = -78 + (dx + 78) * 0.25;
+      if (dx > max) dx = max + (dx - max) * 0.25;
+      if (dx < min) dx = min + (dx - min) * 0.25;
       tile.style.transform = "translateX(" + dx + "px)";
+      seventAiFadeSides(dx);
     });
     function endDrag() {
       if (!dragging) return;
       dragging = false;
-      tile.style.transition = "transform .32s cubic-bezier(.22,.9,.36,1)";
-      var dx = curX - startX;
-      var settled = dx > 35 ? 78 : (dx < -35 ? -78 : 0);
+      tile.style.transition = EASE;
+      var dx = openState + (curX - startX);
+      var settled;
+      if (openState === 0) {
+        settled = dx > 35 ? 78 : (dx < -35 ? -78 : 0);
+      } else {
+        // закрываем, если сдвинули хоть немного в сторону нуля — не нужно
+        // тянуть весь путь целиком, чтобы просто закрыть
+        settled = Math.abs(dx) < Math.abs(openState) - 15 ? 0 : openState;
+      }
+      openState = settled;
       tile.style.transform = "translateX(" + settled + "px)";
+      seventAiFadeSides(settled);
     }
     tile.addEventListener("pointerup", endDrag);
     tile.addEventListener("pointercancel", endDrag);
@@ -8371,8 +8394,16 @@ function seventAiPinToggle() {
       if (dragged) { e.preventDefault(); e.stopPropagation(); dragged = false; }
     }, true);
   }
+  // Кнопка на стороне, куда сейчас движемся, плавно проявляется; та, что
+  // "позади" (мы её закрываем) — плавно прячется, чтобы не мешала.
+  function seventAiFadeSides(dx) {
+    if (pinBtn) pinBtn.style.opacity = Math.max(0, Math.min(1, dx / 78));
+    if (clearBtn) clearBtn.style.opacity = Math.max(0, Math.min(1, -dx / 78));
+  }
   window.seventAiTileSwipeReset = function() {
-    if (tile) { tile.style.transition = "transform .32s cubic-bezier(.22,.9,.36,1)"; tile.style.transform = "translateX(0)"; }
+    openState = 0;
+    if (tile) { tile.style.transition = EASE; tile.style.transform = "translateX(0)"; }
+    seventAiFadeSides(0);
   };
 })();
 
