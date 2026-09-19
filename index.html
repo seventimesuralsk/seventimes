@@ -5099,7 +5099,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
      }
    }
 
-   const API = "https://script.google.com/macros/s/AKfycbyyFLAQWIQsNf0-eLnqZbfZ87s0HtlIJlY-mdHJT42jZr4ZRwR0FkkiauPehjq108JO/exec",
+   const API = "https://script.google.com/macros/s/AKfycby2AqJs84ijlYFBMqZ-t4dUz4t0r6MAZ1FSG3GyMhXIRyo9EeMm-K11jccvQsz07tdFzw/exec",
   WA = "77760709898",
   CAT_META = {
     "Новинки": {
@@ -9375,15 +9375,29 @@ function admSaveAiSettings() {
   btn.disabled = true;
   btn.textContent = "Сохраняем…";
   var facts = document.getElementById("admAiFactsInput").value;
-  apiGet({ action: "setAiFacts", facts: facts }, function() {
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", API, true);
+  xhr.setRequestHeader("Content-Type", "text/plain");
+  xhr.onload = function() {
     btn.disabled = false;
     btn.textContent = "Сохранить";
-    showToast("Сохранено ✓");
-  }, function() {
+    try {
+      var d = JSON.parse(xhr.responseText);
+      if (d.status === "success") {
+        showToast("Сохранено ✓");
+      } else {
+        errEl.textContent = "Не удалось сохранить";
+      }
+    } catch (e) {
+      errEl.textContent = "Не удалось сохранить";
+    }
+  };
+  xhr.onerror = xhr.ontimeout = function() {
     btn.disabled = false;
     btn.textContent = "Сохранить";
     errEl.textContent = "Не удалось сохранить";
-  });
+  };
+  xhr.send(JSON.stringify({ action: "setAiFacts", facts: facts }));
 }
 
 function admLoadStatus() {
