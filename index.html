@@ -8276,26 +8276,26 @@ function seventAiOpen(topic) {
 
   var input = document.getElementById("seventAiInput");
   var sendBtn = document.getElementById("seventAiSendBtn");
+  var inputRow = document.getElementById("seventAiInputRow");
   var titleEl = document.getElementById("seventAiOvTitle");
   var iconEl = document.getElementById("seventAiOvIcon");
 
   // Другие плитки ("Акции и скидки", "Безопасность") открывают тот же чат,
-  // просто с другим заголовком и вступительным сообщением — текст "скоро"
-  // всегда живёт внутри чата, а не во всплывающих окнах.
+  // но это просто текстовые новости для чтения — писать там нельзя вообще,
+  // поэтому строка ввода полностью прячется, а не просто отключается.
   if (topic && topic.title) {
     titleEl.textContent = topic.title;
     iconEl.textContent = topic.emoji;
-    input.disabled = true;
-    input.placeholder = "Пока недоступно";
-    sendBtn.disabled = true;
-    sendBtn.style.opacity = "0.4";
+    inputRow.style.display = "none";
     var tBox = document.getElementById("seventAiMessages");
     tBox.innerHTML = "";
+    seventAiLastRenderedDate = null;
     seventAiRenderBubble("ai", topic.text);
     tBox.scrollTop = tBox.scrollHeight;
     return;
   }
 
+  inputRow.style.display = "flex";
   titleEl.textContent = "SEVEN AI";
   iconEl.textContent = "✨";
 
@@ -8306,6 +8306,7 @@ function seventAiOpen(topic) {
     sendBtn.style.opacity = "0.4";
     var box = document.getElementById("seventAiMessages");
     box.innerHTML = "";
+    seventAiLastRenderedDate = null;
     seventAiRenderBubble("ai", "Привет! Я SEVEN AI ✨ — умный помощник, который скоро поможет вам выбрать блюдо, подскажет часы работы филиалов, поможет с доставкой и ответит на любые вопросы про Seven Times прямо в этом чате. Мы уже почти всё настроили — совсем скоро здесь можно будет писать. Загляните чуть позже 🙌");
     box.scrollTop = box.scrollHeight;
     return;
@@ -8319,7 +8320,8 @@ function seventAiOpen(topic) {
     seventAiLoaded = true;
     seventAiLoadHistory();
     var box = document.getElementById("seventAiMessages");
-    seventAiHistory.forEach(function(m) { seventAiRenderBubble(m.role, m.text); });
+    seventAiLastRenderedDate = null;
+    seventAiHistory.forEach(function(m) { seventAiRenderBubble(m.role, m.text, m.time); });
     box.scrollTop = box.scrollHeight;
   }
   if (!seventAiHistory.length) {
@@ -8334,6 +8336,7 @@ function seventAiClearHistory() {
   try { localStorage.removeItem("seventAiHistory"); } catch (e) {}
   var box = document.getElementById("seventAiMessages");
   if (box) box.innerHTML = "";
+  seventAiLastRenderedDate = null;
   seventAiTileSwipeReset();
   showToast("Переписка очищена");
 }
@@ -8434,19 +8437,46 @@ function seventAiClose() {
   document.getElementById("seventAiOv").style.display = "none";
 }
 
-function seventAiRenderBubble(role, text) {
+var seventAiLastRenderedDate = null;
+
+function seventAiFormatDate(ts) {
+  var d = new Date(ts);
+  var dd = String(d.getDate()).padStart(2, "0");
+  var mm = String(d.getMonth() + 1).padStart(2, "0");
+  return dd + "." + mm;
+}
+
+function seventAiMaybeRenderDateDivider(ts) {
+  var dateStr = seventAiFormatDate(ts);
+  if (dateStr === seventAiLastRenderedDate) return;
+  seventAiLastRenderedDate = dateStr;
+  var box = document.getElementById("seventAiMessages");
+  var divider = document.createElement("div");
+  divider.style.cssText = "align-self:center;margin:6px 0";
+  divider.innerHTML = '<span style="background:#e9e9eb;color:#6e6e73;font-size:0.68rem;font-weight:600;padding:4px 12px;border-radius:10px">' + dateStr + '</span>';
+  box.appendChild(divider);
+}
+
+function seventAiRenderBubble(role, text, time) {
+  var ts = time || Date.now();
+  seventAiMaybeRenderDateDivider(ts);
   var box = document.getElementById("seventAiMessages");
   var mine = role === "user";
+  var timeStr = new Date(ts).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
   var bubble = document.createElement("div");
   bubble.style.cssText = "align-self:" + (mine ? "flex-end" : "flex-start") + ";max-width:82%";
-  bubble.innerHTML = '<div style="padding:10px 14px;border-radius:16px;background:' + (mine ? "#7a1128" : "#f0f0f0") + ";color:" + (mine ? "#fff" : "#1d1d1f") + ';font-size:0.84rem;line-height:1.5">' + text.replace(/</g, "&lt;") + "</div>";
+  bubble.innerHTML = '<div style="padding:8px 10px 6px 14px;border-radius:16px;background:' + (mine ? "#7a1128" : "#f0f0f0") + ";color:" + (mine ? "#fff" : "#1d1d1f") + ';font-size:0.84rem;line-height:1.5;display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap">' +
+    '<span style="flex:1;min-width:0">' + text.replace(/</g, "&lt;") + '</span>' +
+    '<span style="font-size:0.62rem;opacity:0.65;flex-shrink:0;white-space:nowrap">' + timeStr + '</span>' +
+    "</div>";
   box.appendChild(bubble);
 }
 
 function seventAiAppendMessage(role, text) {
-  seventAiHistory.push({ role: role, text: text });
+  var time = Date.now();
+  seventAiHistory.push({ role: role, text: text, time: time });
   seventAiSaveHistory();
-  seventAiRenderBubble(role, text);
+  seventAiRenderBubble(role, text, time);
   var box = document.getElementById("seventAiMessages");
   box.scrollTop = box.scrollHeight;
 }
@@ -11243,7 +11273,7 @@ function fb_sendComplaint() {
     <div id="seventAiOvTitle" style="font-weight:700;font-size:0.9rem">SEVEN AI</div>
    </div>
    <div id="seventAiMessages" style="flex:1;overflow-y:auto;padding:16px var(--px);display:flex;flex-direction:column;gap:12px"></div>
-   <div style="padding:12px var(--px);border-top:1px solid #e5e5e7;display:flex;gap:8px;background:#fbfbfd">
+   <div id="seventAiInputRow" style="padding:12px var(--px);border-top:1px solid #e5e5e7;display:flex;gap:8px;background:#fbfbfd">
     <input type="text" id="seventAiInput" placeholder="Напишите сообщение…" style="flex:1;font-size:0.84rem;padding:11px 14px;border-radius:12px;border:1.5px solid #e5e5e7;outline:none;font-family:inherit" onkeydown="if(event.key==='Enter')seventAiSend()">
     <button onclick="seventAiSend()" id="seventAiSendBtn" style="padding:11px 16px;border-radius:12px;border:none;background:#7a1128;color:#fff;cursor:pointer;font-size:0.9rem">➤</button>
    </div>
