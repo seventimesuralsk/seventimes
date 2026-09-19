@@ -8315,37 +8315,64 @@ function seventAiClearHistory() {
   showToast("Переписка очищена");
 }
 
-// ── Свайп влево по плитке SEVEN AI — открывает кнопку "Очистить" ──
+var seventAiPinned = false;
+try { seventAiPinned = localStorage.getItem("seventAiPinned") === "1"; } catch (e) {}
+
+function seventAiPinToggle() {
+  seventAiPinned = !seventAiPinned;
+  try { localStorage.setItem("seventAiPinned", seventAiPinned ? "1" : "0"); } catch (e) {}
+  var icon = document.getElementById("seventAiPinIcon");
+  var label = document.getElementById("seventAiPinLabel");
+  if (icon) icon.textContent = seventAiPinned ? "✅" : "📌";
+  if (label) label.textContent = seventAiPinned ? "Закреплено" : "Закрепить";
+  seventAiTileSwipeReset();
+  showToast(seventAiPinned ? "SEVEN AI закреплён вверху" : "Открепили");
+}
+
+// ── Свайп по плитке SEVEN AI — влево открывает "Очистить", вправо "Закрепить" ──
+// Плитка всё время двигается ровно туда, куда идёт палец (без рывков), а при
+// отпускании плавно доводится до ближайшего положения — открыто или закрыто.
 (function() {
-  var tile, startX = 0, curX = 0, dragging = false;
+  var tile, startX = 0, curX = 0, dragging = false, dragged = false;
   document.addEventListener("DOMContentLoaded", seventAiInitSwipe);
   if (document.readyState !== "loading") seventAiInitSwipe();
   function seventAiInitSwipe() {
     tile = document.getElementById("seventAiTile");
     if (!tile) return;
+    tile.style.transition = "transform .32s cubic-bezier(.22,.9,.36,1)";
     tile.addEventListener("pointerdown", function(e) {
-      startX = e.clientX; curX = startX; dragging = true;
+      startX = e.clientX; curX = startX; dragging = true; dragged = false;
       tile.style.transition = "none";
     });
     tile.addEventListener("pointermove", function(e) {
       if (!dragging) return;
       curX = e.clientX;
-      var dx = Math.min(0, Math.max(-78, curX - startX));
+      var raw = curX - startX;
+      if (Math.abs(raw) > 6) dragged = true;
+      // небольшое сопротивление за пределами диапазона — не резкий обрыв
+      var dx = raw;
+      if (dx > 78) dx = 78 + (dx - 78) * 0.25;
+      if (dx < -78) dx = -78 + (dx + 78) * 0.25;
       tile.style.transform = "translateX(" + dx + "px)";
     });
     function endDrag() {
       if (!dragging) return;
       dragging = false;
-      tile.style.transition = "transform .2s ease";
+      tile.style.transition = "transform .32s cubic-bezier(.22,.9,.36,1)";
       var dx = curX - startX;
-      tile.style.transform = dx < -35 ? "translateX(-78px)" : "translateX(0)";
+      var settled = dx > 35 ? 78 : (dx < -35 ? -78 : 0);
+      tile.style.transform = "translateX(" + settled + "px)";
     }
     tile.addEventListener("pointerup", endDrag);
     tile.addEventListener("pointercancel", endDrag);
     tile.addEventListener("pointerleave", function() { if (dragging) endDrag(); });
+    // не открывать чат, если это было перетаскивание, а не обычный тап
+    tile.addEventListener("click", function(e) {
+      if (dragged) { e.preventDefault(); e.stopPropagation(); dragged = false; }
+    }, true);
   }
   window.seventAiTileSwipeReset = function() {
-    if (tile) { tile.style.transition = "transform .2s ease"; tile.style.transform = "translateX(0)"; }
+    if (tile) { tile.style.transition = "transform .32s cubic-bezier(.22,.9,.36,1)"; tile.style.transform = "translateX(0)"; }
   };
 })();
 
@@ -11114,12 +11141,15 @@ function fb_sendComplaint() {
    <div style="padding:16px var(--px)12px;font-weight:600;font-size:1.15rem;text-align:center;background:#fff">Сообщения</div>
    <div style="flex:1;overflow-y:auto;padding:14px var(--px)">
     <div id="seventAiTileWrap" style="position:relative;border-radius:14px;overflow:hidden;margin-bottom:14px">
-     <div style="position:absolute;inset:0;display:flex;justify-content:flex-end;align-items:stretch">
+     <div style="position:absolute;inset:0;display:flex;justify-content:space-between;align-items:stretch">
+      <button onclick="seventAiPinToggle()" id="seventAiPinBtn" style="width:78px;background:#1d1d1f;border:none;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;font-family:inherit">
+       <span style="font-size:1.2rem" id="seventAiPinIcon">📌</span><span style="font-size:0.64rem;font-weight:600" id="seventAiPinLabel">Закрепить</span>
+      </button>
       <button onclick="seventAiClearHistory()" style="width:78px;background:#7a1128;border:none;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;font-family:inherit">
        <span style="font-size:1.2rem">🗑</span><span style="font-size:0.64rem;font-weight:600">Очистить</span>
       </button>
      </div>
-     <button onclick="seventAiOpen()" id="seventAiTile" style="position:relative;width:100%;display:flex;align-items:center;gap:12px;padding:14px;background:#fff;border:1px solid #e5e5e7;border-radius:14px;cursor:pointer;font-family:inherit;text-align:left;transition:transform .2s ease">
+     <button onclick="seventAiOpen()" id="seventAiTile" style="position:relative;width:100%;display:flex;align-items:center;gap:12px;padding:14px;background:#fff;border:1px solid #e5e5e7;border-radius:14px;cursor:pointer;font-family:inherit;text-align:left">
       <div style="width:44px;height:44px;border-radius:12px;background:#7a1128;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.1rem">✨</div>
       <div style="flex:1;min-width:0">
        <div style="font-size:0.84rem;font-weight:600;color:#1d1d1f;display:flex;align-items:center;gap:6px">SEVEN AI <span style="font-size:0.6rem;font-weight:700;color:#7a1128;background:#7a112814;padding:2px 7px;border-radius:6px">СКОРО</span></div>
