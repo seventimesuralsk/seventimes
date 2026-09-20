@@ -4331,6 +4331,9 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
         <button class="adm-nav-btn" onclick="admSection('aiSettings')" style="grid-column:1/-1">
          Настройки SEVEN AI
         </button>
+        <button class="adm-nav-btn" onclick="admSection('news')" style="grid-column:1/-1">
+         Сообщения (Акции / Безопасность)
+        </button>
        </div>
        <div id="adm-items-sec" style="display:none">
         <div style="align-items:center;gap:8px;margin-bottom:10px;display:flex">
@@ -4520,6 +4523,38 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
          Сохранить
         </button>
         <div class="admerr" id="admAiSettingsErr" style="margin-top:8px">
+        </div>
+       </div>
+       <div id="adm-news-sec" style="display:none">
+        <div style="align-items:center;gap:8px;margin-bottom:14px;display:flex">
+         <button class="adm-back" onclick="admShowHome()">
+          ← Назад
+         </button>
+         <div style="color:#1d1d1f;font-size:0.79rem;font-weight:400">
+          Сообщения
+         </div>
+        </div>
+        <div style="font-size:0.68rem;color:#6e6e73;line-height:1.6;margin-bottom:12px">
+         Напиши текст — он сразу появится у гостей в «Сообщениях» как новое сообщение в разделе «Акции и скидки» или «Безопасность», с автоматическими датой и временем. Ничего в коде править не нужно.
+        </div>
+        <div class="admbtabs" style="margin-bottom:10px">
+         <button class="admbtab on" id="admNewsTabPromo" onclick="admNewsSetTarget('Акции и скидки')">
+          Акции и скидки
+         </button>
+         <button class="admbtab" id="admNewsTabSafety" onclick="admNewsSetTarget('Безопасность')">
+          Безопасность
+         </button>
+        </div>
+        <textarea id="admNewsTextInput" rows="6" style="width:100%;font-size:0.76rem;padding:12px;border-radius:10px;border:1.5px solid #e5e5e7;font-family:inherit;resize:vertical;margin-bottom:10px" placeholder="Например: Сегодня скидка 15% на всю пиццу до 22:00!"></textarea>
+        <button class="admloginbtn" onclick="admSendNews()" id="admNewsSendBtn">
+         Отправить гостям
+        </button>
+        <div class="admerr" id="admNewsErr" style="margin-top:8px">
+        </div>
+        <div style="font-size:0.7rem;color:#6e6e73;margin:18px 0 8px;font-weight:600">
+         Отправленные сообщения
+        </div>
+        <div id="admNewsList">
         </div>
        </div>
        <div id="adm-stats-sec" style="display:none">
@@ -8572,7 +8607,7 @@ function _newsReadKeys() {
 }
 
 function _newsKey(n, i) {
-  return (n.title || "") + "|" + (n.date || "") + "|" + i;
+  return n.id ? ("id" + n.id) : ((n.title || "") + "|" + (n.date || "") + "|" + i);
 }
 
 function _newsIsRead(key) {
@@ -8599,6 +8634,7 @@ function _newsFormatTime(dateStr) {
         mm = String(parsed.getMinutes()).padStart(2, "0");
       return hh + ":" + mm;
     }
+    return String(parsed.getDate()).padStart(2, "0") + "." + String(parsed.getMonth() + 1).padStart(2, "0") + "." + parsed.getFullYear();
   }
   return dateStr;
 }
@@ -8644,16 +8680,12 @@ function _newsRenderList() {
 }
 
 function loadNewsFeed() {
-  var list = document.getElementById("newsScreenList");
   apiGet({ action: "getNews" }, function(d) {
-    if (!d || d.status !== "success" || !d.news || !d.news.length) {
-      _newsFeedData = [];
-      list.innerHTML = '<div style="text-align:center;color:#86868b;font-size:0.8rem;padding:40px 0">Пока новостей нет</div>';
-      return;
-    }
-    _newsFeedData = d.news;
+    _newsFeedData = (d && d.status === "success" && d.news) ? d.news : [];
     _newsRenderList();
   }, function() {
+    _newsFeedData = [];
+    var list = document.getElementById("newsScreenList");
     list.innerHTML = '<div style="text-align:center;color:#86868b;font-size:0.8rem;padding:40px 0">Не удалось загрузить</div>';
   });
 }
@@ -9235,7 +9267,7 @@ function admSwitch(b) {
 }
 
 function admShowHome() {
-  ["items", "add", "cats", "stop", "edit", "stats", "status", "aiSettings"].forEach(s => {
+  ["items", "add", "cats", "stop", "edit", "stats", "status", "aiSettings", "news"].forEach(s => {
     let el = document.getElementById("adm-" + s + "-sec");
     el && (el.style.display = "none")
   });
@@ -9245,13 +9277,13 @@ function admShowHome() {
 
 function admSection(sec) {
   let home = document.getElementById("adm-home");
-  if (home && (home.style.display = "none"), ["items", "add", "cats", "stop", "edit", "stats", "status", "aiSettings"].forEach(s => {
+  if (home && (home.style.display = "none"), ["items", "add", "cats", "stop", "edit", "stats", "status", "aiSettings", "news"].forEach(s => {
       let el = document.getElementById("adm-" + s + "-sec");
       el && (el.style.display = "none")
     }), !sec) return void admShowHome();
-  document.getElementById("admTitle").textContent = "items" === sec ? "Блюда" : "add" === sec ? "Добавить блюдо" : "cats" === sec ? "Категории" : "stop" === sec ? "Стоп-лист" : "stats" === sec ? "Статистика" : "status" === sec ? "Статус сайта" : "edit" === sec ? "Редактировать" : "aiSettings" === sec ? "Настройки SEVEN AI" : "Панель управления";
+  document.getElementById("admTitle").textContent = "items" === sec ? "Блюда" : "add" === sec ? "Добавить блюдо" : "cats" === sec ? "Категории" : "stop" === sec ? "Стоп-лист" : "stats" === sec ? "Статистика" : "status" === sec ? "Статус сайта" : "edit" === sec ? "Редактировать" : "aiSettings" === sec ? "Настройки SEVEN AI" : "news" === sec ? "Сообщения" : "Панель управления";
   let el = document.getElementById("adm-" + sec + "-sec");
-  el && (el.style.display = "block"), "items" === sec && admLoadItems(), "add" === sec && admLoadCatsForSelect("addCat"), "cats" === sec && admLoadCats(), "stop" === sec && admLoadStop(), "stats" === sec && admLoadStats(), "status" === sec && admLoadStatus(), "aiSettings" === sec && admLoadAiSettings()
+  el && (el.style.display = "block"), "items" === sec && admLoadItems(), "add" === sec && admLoadCatsForSelect("addCat"), "cats" === sec && admLoadCats(), "stop" === sec && admLoadStop(), "stats" === sec && admLoadStats(), "status" === sec && admLoadStatus(), "aiSettings" === sec && admLoadAiSettings(), "news" === sec && admLoadNewsAdmin()
 }
 
 function apiGet(params, onSuccess, onError) {
@@ -9650,6 +9682,93 @@ function admSaveAiSettings() {
     errEl.textContent = "Не удалось сохранить";
   };
   xhr.send(JSON.stringify({ action: "setAiFacts", facts: facts }));
+}
+
+var _admNewsTarget = "Акции и скидки";
+
+function admNewsSetTarget(target) {
+  _admNewsTarget = target;
+  document.getElementById("admNewsTabPromo").classList.toggle("on", target === "Акции и скидки");
+  document.getElementById("admNewsTabSafety").classList.toggle("on", target === "Безопасность");
+}
+
+function admSendNews() {
+  var errEl = document.getElementById("admNewsErr");
+  var input = document.getElementById("admNewsTextInput");
+  var btn = document.getElementById("admNewsSendBtn");
+  var text = input.value.trim();
+  errEl.textContent = "";
+  if (!text) {
+    errEl.textContent = "Напишите текст сообщения";
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = "Отправляем…";
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", API, true);
+  xhr.setRequestHeader("Content-Type", "text/plain");
+  xhr.onload = function() {
+    btn.disabled = false;
+    btn.textContent = "Отправить гостям";
+    try {
+      var d = JSON.parse(xhr.responseText);
+      if (d.status === "success") {
+        input.value = "";
+        showToast("Отправлено гостям ✓");
+        admLoadNewsAdmin();
+      } else {
+        errEl.textContent = "Не удалось отправить";
+      }
+    } catch (e) {
+      errEl.textContent = "Не удалось отправить";
+    }
+  };
+  xhr.onerror = xhr.ontimeout = function() {
+    btn.disabled = false;
+    btn.textContent = "Отправить гостям";
+    errEl.textContent = "Нет соединения";
+  };
+  xhr.send(JSON.stringify({ action: "addNews", title: _admNewsTarget, text: text.replace(/\n/g, "<br>") }));
+}
+
+function admDeleteNews(id) {
+  if (!confirm("Удалить это сообщение у всех гостей?")) return;
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", API, true);
+  xhr.setRequestHeader("Content-Type", "text/plain");
+  xhr.onload = function() {
+    admLoadNewsAdmin();
+  };
+  xhr.onerror = xhr.ontimeout = function() {
+    showToast("Не удалось удалить");
+  };
+  xhr.send(JSON.stringify({ action: "deleteNews", id: id }));
+}
+
+function admLoadNewsAdmin() {
+  var wrap = document.getElementById("admNewsList");
+  wrap.innerHTML = '<div style="text-align:center;color:#86868b;font-size:0.7rem;padding:16px 0">Загрузка…</div>';
+  apiGet({ action: "getNews" }, function(d) {
+    var list = (d && d.news) ? d.news : [];
+    if (!list.length) {
+      wrap.innerHTML = '<div style="text-align:center;color:#86868b;font-size:0.7rem;padding:16px 0">Пока ничего не отправлено</div>';
+      return;
+    }
+    wrap.innerHTML = list.map(function(n) {
+      var d2 = n.date ? new Date(n.date) : null;
+      var dateStr = (d2 && !isNaN(d2.getTime())) ? (String(d2.getDate()).padStart(2, "0") + "." + String(d2.getMonth() + 1).padStart(2, "0") + "." + d2.getFullYear() + " " + String(d2.getHours()).padStart(2, "0") + ":" + String(d2.getMinutes()).padStart(2, "0")) : (n.date || "");
+      return '<div style="background:#fff;border:1px solid #e5e5e7;border-radius:12px;padding:12px;margin-bottom:8px">' +
+        '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px">' +
+        '<div style="font-size:0.72rem;font-weight:700;color:#7a1128">' + (n.title || "") + '</div>' +
+        (n.id ? ('<button onclick="admDeleteNews(\'' + n.id + '\')" style="border:none;background:none;color:#c00;font-size:0.68rem;cursor:pointer;flex-shrink:0">Удалить</button>') : "") +
+        '</div>' +
+        '<div style="font-size:0.74rem;color:#1d1d1f;line-height:1.5;margin-bottom:6px">' + (n.text || "") + '</div>' +
+        '<div style="font-size:0.62rem;color:#86868b">' + dateStr + '</div>' +
+        '</div>';
+    }).join("");
+  }, function() {
+    wrap.innerHTML = '<div style="text-align:center;color:#86868b;font-size:0.7rem;padding:16px 0">Не удалось загрузить</div>';
+  });
 }
 
 function admLoadStatus() {
