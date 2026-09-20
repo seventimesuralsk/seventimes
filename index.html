@@ -3822,27 +3822,27 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
   <div id="appShell">
    <div class="branch-dropdown-backdrop" id="branchDropdownBackdrop" onclick="closeBranchDropdown()">
    </div>
-   <div id="breakfastPromoBar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:320;background:linear-gradient(90deg,#ff8a3d,#ff3d5a);padding:9px var(--px);align-items:center;justify-content:space-between;gap:10px;box-shadow:0 2px 10px rgba(255,61,90,.35)">
-    <div style="flex:1;min-width:0;display:flex;align-items:center;gap:10px">
-     <div style="flex:1;min-width:0">
-      <div id="bfBarTitle" style="font-weight:800;font-size:0.78rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 2px rgba(0,0,0,.15)">
-       🍳 Завтраки за 999 тг
+   <div id="breakfastPromoBar" style="display:none;flex-direction:column;gap:4px;position:fixed;top:0;left:0;right:0;z-index:320;background:linear-gradient(90deg,#ff8a3d,#ff3d5a);padding:8px var(--px);box-shadow:0 2px 10px rgba(255,61,90,.35)">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+     <div id="bfBarTitle" style="flex:1;min-width:0;font-weight:800;font-size:0.76rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 2px rgba(0,0,0,.15)">
+      🍳 Завтраки за 999 тг
+     </div>
+     <div style="text-align:center;flex-shrink:0;background:rgba(0,0,0,.18);border-radius:10px;padding:3px 8px">
+      <div id="bfBarCountdownLabel" style="font-size:0.5rem;color:#fff;opacity:.85;white-space:nowrap">
+       До старта
       </div>
-      <div id="bfBarSub" style="font-size:0.62rem;color:#fff;opacity:.92;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
-       С 21 по 25 сентября, 08:00–12:00
+      <div id="bfBarCountdown" style="font-size:0.8rem;font-weight:800;color:#fff;font-variant-numeric:tabular-nums;white-space:nowrap">
+       —
       </div>
      </div>
-     <button onclick="openBreakfastPromo()" style="background:#fff;border:none;color:#ff3d5a;font-size:0.72rem;font-weight:800;cursor:pointer;padding:7px 14px;border-radius:999px;flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,.15)">
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+     <div id="bfBarSub" style="flex:1;min-width:0;font-size:0.6rem;color:#fff;opacity:.92;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+      С 21 по 25 сентября, 08:00–12:00
+     </div>
+     <button onclick="openBreakfastPromo()" style="background:#fff;border:none;color:#ff3d5a;font-size:0.68rem;font-weight:800;cursor:pointer;padding:5px 13px;border-radius:999px;flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,.15)">
       Получить
      </button>
-    </div>
-    <div style="text-align:center;flex-shrink:0;background:rgba(0,0,0,.18);border-radius:10px;padding:4px 9px">
-     <div id="bfBarCountdownLabel" style="font-size:0.54rem;color:#fff;opacity:.85;margin-bottom:1px;white-space:nowrap">
-      До старта
-     </div>
-     <div id="bfBarCountdown" style="font-size:0.86rem;font-weight:800;color:#fff;font-variant-numeric:tabular-nums;white-space:nowrap">
-      —
-     </div>
     </div>
    </div>
    <nav>
