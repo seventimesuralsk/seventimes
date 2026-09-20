@@ -2441,7 +2441,7 @@ nav {
 
 .sticky-header {
   position: sticky;
-  top: var(--search-top, 56px);
+  top: var(--header-top, 56px);
   z-index: 200;
   background: #f5f5f7
 }
@@ -5292,8 +5292,10 @@ function updateSearchTop() {
   var nav = document.querySelector("nav"),
     bw = document.getElementById("stickyHeader"),
     navOffset = nav ? (parseInt(nav.style.top) || 0) : 0,
-    top = (nav ? nav.offsetHeight : 56) + navOffset + (bw && "none" !== bw.style.display ? bw.offsetHeight : 0);
-  document.documentElement.style.setProperty("--search-top", top + "px")
+    headerTop = (nav ? nav.offsetHeight : 56) + navOffset,
+    searchTop = headerTop + (bw && "none" !== bw.style.display ? bw.offsetHeight : 0);
+  document.documentElement.style.setProperty("--header-top", headerTop + "px");
+  document.documentElement.style.setProperty("--search-top", searchTop + "px")
 }
 
 function getMeta(cat) {
