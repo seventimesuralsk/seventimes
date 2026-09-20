@@ -3822,6 +3822,29 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
   <div id="appShell">
    <div class="branch-dropdown-backdrop" id="branchDropdownBackdrop" onclick="closeBranchDropdown()">
    </div>
+   <div id="breakfastPromoBar" style="display:none;flex-direction:column;gap:4px;position:fixed;top:0;left:0;right:0;z-index:320;background:linear-gradient(90deg,#ff8a3d,#ff3d5a);padding:8px var(--px);box-shadow:0 2px 10px rgba(255,61,90,.35)">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+     <div id="bfBarTitle" style="flex:1;min-width:0;font-weight:800;font-size:0.76rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 2px rgba(0,0,0,.15)">
+      Завтраки за 999 тг
+     </div>
+     <div style="text-align:center;flex-shrink:0;background:rgba(0,0,0,.18);border-radius:10px;padding:3px 8px">
+      <div id="bfBarCountdownLabel" style="font-size:0.5rem;color:#fff;opacity:.85;white-space:nowrap">
+       До старта
+      </div>
+      <div id="bfBarCountdown" style="font-size:0.8rem;font-weight:800;color:#fff;font-variant-numeric:tabular-nums;white-space:nowrap">
+       —
+      </div>
+     </div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+     <div id="bfBarSub" style="flex:1;min-width:0;font-size:0.6rem;color:#fff;opacity:.92;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+      С 21 по 25 сентября, 08:00–12:00
+     </div>
+     <button onclick="openBreakfastPromo()" style="background:#fff;border:none;color:#ff3d5a;font-size:0.68rem;font-weight:800;cursor:pointer;padding:5px 13px;border-radius:999px;flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,.15)">
+      Получить
+     </button>
+    </div>
+   </div>
    <nav>
     <div style="position:relative">
      <button class="nav-branch-btn" id="navBranchBtn" onclick="openBranchSwitcher()" onpointerdown="bookBtnPressStart()" onpointerup="bookBtnPressEnd()" onpointerleave="bookBtnPressEnd()" onpointercancel="bookBtnPressEnd()">
@@ -3865,26 +3888,6 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
     </div>
    </nav>
    <div id="navSpacer" style="height:56px">
-   </div>
-   <div id="breakfastPromoBar" style="display:none;position:sticky;top:56px;left:0;right:0;z-index:200;background:linear-gradient(90deg,#ff8a3d,#ff3d5a);box-shadow:0 2px 10px rgba(255,61,90,.35)">
-    <div style="display:flex;align-items:stretch">
-     <div style="flex:1;min-width:0;padding:12px 14px;display:flex;flex-direction:column;justify-content:center">
-      <div id="bfBarTitle" style="font-weight:800;font-size:0.94rem;text-transform:uppercase;line-height:1.2;color:#fff;margin-bottom:10px;text-shadow:0 1px 2px rgba(0,0,0,.15)">
-       Завтраки за 999 тг<br>уже стартовали.
-      </div>
-      <button onclick="openBreakfastPromo()" style="align-self:flex-start;background:#fff;border:none;color:#ff3d5a;font-size:0.72rem;font-weight:700;cursor:pointer;padding:8px 15px;border-radius:999px;box-shadow:0 2px 6px rgba(0,0,0,.15)">
-       Получить за 999 тг
-      </button>
-     </div>
-     <div style="width:34%;flex-shrink:0;background:rgba(0,0,0,.16);display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:3px;padding:8px 10px 8px 8px;text-align:right">
-      <div id="bfBarCountdownLabel" style="width:100%;text-align:right;font-size:0.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.02em;color:#fff;white-space:nowrap">
-       Осталось
-      </div>
-      <div id="bfBarCountdown" style="width:100%;text-align:right;font-size:1.1rem;font-weight:800;color:#fff;font-variant-numeric:tabular-nums;white-space:nowrap">
-       —
-      </div>
-     </div>
-    </div>
    </div>
    <div id="promoBannersWrap" style="background:0 0;border-bottom:none;padding:10px 0 6px;display:none">
     <div class="sec-title" style="padding:0 var(--px);margin-bottom:8px">
@@ -8029,6 +8032,7 @@ function formatPhoneInput(el) {
   let formatted = "+7";
   digits.length > 0 && (formatted += " (" + digits.slice(0, 3)), digits.length >= 3 && (formatted += ")"), digits.length > 3 && (formatted += " " + digits.slice(3, 6)), digits.length > 6 && (formatted += "-" + digits.slice(6, 8)), digits.length > 8 && (formatted += "-" + digits.slice(8, 10)), el.value = formatted
 }
+
 // ══════════════════════════════════════════════════════════════════
 // ── АКЦИЯ «ЗАВТРАКИ ЗА 999 ТГ» — с 21 по 25 сентября, кнопка активна
 // только с 08:00 до 12:00. Вне часов — предупреждение, без отправки. ──
@@ -8066,14 +8070,16 @@ function updateBreakfastPromoBar() {
   if (!bar) return;
   var now = new Date();
   var titleEl = document.getElementById("bfBarTitle");
+  var subEl = document.getElementById("bfBarSub");
   var cdEl = document.getElementById("bfBarCountdown");
   var cdLabelEl = document.getElementById("bfBarCountdownLabel");
   var nowVisible;
-  titleEl.innerHTML = "Завтраки за 999 тг<br>уже стартовали.";
 
   if (now < BREAKFAST_PROMO_START) {
     nowVisible = true;
-    cdLabelEl.textContent = "Осталось";
+    titleEl.textContent = "Завтрак за 999 тг — уже скоро";
+    subEl.textContent = "Дешевле, чем готовить дома";
+    cdLabelEl.textContent = "До старта";
     cdEl.textContent = _bfFormatCountdown(BREAKFAST_PROMO_START - now);
   } else if (now > BREAKFAST_PROMO_END) {
     nowVisible = false;
@@ -8083,23 +8089,40 @@ function updateBreakfastPromoBar() {
     var todayClose = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0);
     if (h < 8) {
       nowVisible = true;
-      cdLabelEl.textContent = "Осталось";
+      titleEl.textContent = "Сегодня: завтрак за 999 тг";
+      subEl.textContent = "Открытие в 08:00 — не проспи";
+      cdLabelEl.textContent = "До открытия";
       cdEl.textContent = _bfFormatCountdown(todayOpen - now);
     } else if (h < 12) {
       nowVisible = true;
-      cdLabelEl.textContent = "Осталось";
+      titleEl.textContent = "999 тг — весь завтрак целиком";
+      subEl.textContent = "Успей, пока действует цена";
+      cdLabelEl.textContent = "До конца";
       cdEl.textContent = _bfFormatCountdown(todayClose - now);
     } else if (_bfSameDate(now, BREAKFAST_PROMO_END)) {
       nowVisible = false;
     } else {
       nowVisible = true;
       var tomorrowOpen = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 8, 0, 0);
-      cdLabelEl.textContent = "Осталось";
+      titleEl.textContent = "На сегодня закрыли. Ждём завтра";
+      subEl.textContent = "999 тг за завтрак, снова в 08:00";
+      cdLabelEl.textContent = "До открытия";
       cdEl.textContent = _bfFormatCountdown(tomorrowOpen - now);
     }
   }
 
   bar.style.display = nowVisible ? "flex" : "none";
+  positionBreakfastPromoBar();
+}
+
+function positionBreakfastPromoBar() {
+  var bar = document.getElementById("breakfastPromoBar");
+  var navEl = document.querySelector("nav");
+  var spacer = document.getElementById("navSpacer");
+  if (!bar || !navEl) return;
+  var h = bar.style.display === "none" ? 0 : bar.offsetHeight;
+  navEl.style.top = h + "px";
+  if (spacer) spacer.style.height = (56 + h) + "px";
 }
 
 var _bfBarInterval = null;
