@@ -8285,7 +8285,7 @@ function seventAiOpen(topic) {
   // поэтому строка ввода полностью прячется, а не просто отключается.
   if (topic && topic.title) {
     titleEl.textContent = topic.title;
-    iconEl.innerHTML = '<img src="'+topic.icon+'" style="width:100%;height:100%;object-fit:cover">';
+    iconEl.innerHTML = topic.icon ? '<img src="'+topic.icon+'" style="width:100%;height:100%;object-fit:cover">' : _newsDefaultAvatar;
     inputRow.style.display = "none";
     var tBox = document.getElementById("seventAiMessages");
     tBox.innerHTML = "";
@@ -8565,21 +8565,94 @@ function seventAiSend() {
   xhr.send();
 }
 
+var _newsFeedData = [];
+
+function _newsReadKeys() {
+  try { return JSON.parse(localStorage.getItem("seventNewsRead") || "[]"); } catch (e) { return []; }
+}
+
+function _newsKey(n, i) {
+  return (n.title || "") + "|" + (n.date || "") + "|" + i;
+}
+
+function _newsIsRead(key) {
+  return _newsReadKeys().indexOf(key) !== -1;
+}
+
+function _newsMarkRead(key) {
+  var keys = _newsReadKeys();
+  if (keys.indexOf(key) === -1) {
+    keys.push(key);
+    try { localStorage.setItem("seventNewsRead", JSON.stringify(keys)); } catch (e) {}
+  }
+}
+
+function _newsFormatTime(dateStr) {
+  if (!dateStr) return "";
+  if (/^\d{1,2}:\d{2}$/.test(dateStr)) return dateStr;
+  var parsed = new Date(dateStr);
+  if (!isNaN(parsed.getTime())) {
+    var now = new Date();
+    var sameDay = parsed.getFullYear() === now.getFullYear() && parsed.getMonth() === now.getMonth() && parsed.getDate() === now.getDate();
+    if (sameDay) {
+      var hh = String(parsed.getHours()).padStart(2, "0"),
+        mm = String(parsed.getMinutes()).padStart(2, "0");
+      return hh + ":" + mm;
+    }
+  }
+  return dateStr;
+}
+
+var _newsDefaultAvatar = '<svg width="100%" height="100%" viewBox="0 0 24 24" style="background:#7a1128"><path d="M6 5h12a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H8l-3 3V6a1 1 0 0 1 1-1z" fill="none" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/><path d="M8.5 9.5h7M8.5 13h4.5" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg>';
+
+function openNewsRow(i) {
+  var n = _newsFeedData[i];
+  if (!n) return;
+  _newsMarkRead(_newsKey(n, i));
+  _newsRenderList();
+  var photoUrl = n.photo ? convertPhotoUrl(n.photo, 640) : "";
+  var bubbleHtml = (photoUrl ? '<img src="' + photoUrl + '" style="width:100%;border-radius:10px;margin-bottom:8px;display:block" loading="lazy">' : "") + (n.text || "");
+  seventAiOpen({ title: n.title || "Новость", icon: photoUrl || "", text: bubbleHtml });
+}
+
+function _newsRenderList() {
+  var list = document.getElementById("newsScreenList");
+  if (!_newsFeedData.length) {
+    list.innerHTML = '<div style="text-align:center;color:#86868b;font-size:0.8rem;padding:40px 0">Пока новостей нет</div>';
+    return;
+  }
+  list.innerHTML = _newsFeedData.map(function(n, i) {
+    var key = _newsKey(n, i);
+    var unread = !_newsIsRead(key);
+    var avatarUrl = n.photo ? convertPhotoUrl(n.photo, 120) : "";
+    var previewText = (n.text || "").replace(/<[^>]*>/g, "").trim();
+    if (previewText.length > 46) previewText = previewText.slice(0, 46) + "…";
+    return '<div onclick="openNewsRow(' + i + ')" style="display:flex;align-items:center;gap:12px;padding:12px var(--px);cursor:pointer;border-bottom:1px solid #e5e5e7">' +
+      '<div style="width:50px;height:50px;border-radius:50%;overflow:hidden;flex-shrink:0;background:#7a1128">' +
+      (avatarUrl ? '<img src="' + avatarUrl + '" style="width:100%;height:100%;object-fit:cover" loading="lazy">' : _newsDefaultAvatar) +
+      '</div>' +
+      '<div style="flex:1;min-width:0">' +
+      '<div style="font-size:0.84rem;font-weight:' + (unread ? "700" : "600") + ';color:#1d1d1f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (n.title || "") + '</div>' +
+      '<div style="font-size:0.72rem;color:' + (unread ? "#1d1d1f" : "#86868b") + ';font-weight:' + (unread ? "600" : "400") + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + previewText + '</div>' +
+      '</div>' +
+      '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">' +
+      '<div style="font-size:0.62rem;color:' + (unread ? "#25d366" : "#86868b") + '">' + _newsFormatTime(n.date) + '</div>' +
+      (unread ? '<div style="width:18px;height:18px;border-radius:50%;background:#25d366;color:#fff;font-size:0.6rem;font-weight:700;display:flex;align-items:center;justify-content:center">1</div>' : '<div style="width:18px;height:18px"></div>') +
+      '</div>' +
+      '</div>';
+  }).join("");
+}
+
 function loadNewsFeed() {
   var list = document.getElementById("newsScreenList");
   apiGet({ action: "getNews" }, function(d) {
     if (!d || d.status !== "success" || !d.news || !d.news.length) {
+      _newsFeedData = [];
       list.innerHTML = '<div style="text-align:center;color:#86868b;font-size:0.8rem;padding:40px 0">Пока новостей нет</div>';
       return;
     }
-    list.innerHTML = d.news.map(function(n) {
-      return '<div style="background:#fff;border-radius:14px;padding:16px;margin-bottom:10px">' +
-        (n.photo ? '<img src="' + convertPhotoUrl(n.photo, 500) + '" style="width:100%;border-radius:10px;margin-bottom:10px;display:block" loading="lazy">' : "") +
-        '<div style="font-weight:700;font-size:0.88rem;margin-bottom:4px">' + (n.title || "") + '</div>' +
-        (n.date ? '<div style="font-size:0.66rem;color:#86868b;margin-bottom:6px">' + n.date + '</div>' : "") +
-        '<div style="font-size:0.78rem;line-height:1.6;color:#1d1d1f">' + (n.text || "") + '</div>' +
-        '</div>';
-    }).join("");
+    _newsFeedData = d.news;
+    _newsRenderList();
   }, function() {
     list.innerHTML = '<div style="text-align:center;color:#86868b;font-size:0.8rem;padding:40px 0">Не удалось загрузить</div>';
   });
