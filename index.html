@@ -3822,6 +3822,29 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
   <div id="appShell">
    <div class="branch-dropdown-backdrop" id="branchDropdownBackdrop" onclick="closeBranchDropdown()">
    </div>
+   <div id="breakfastPromoBar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:320;background:linear-gradient(90deg,#ff8a3d,#ff3d5a);padding:9px var(--px);align-items:center;justify-content:space-between;gap:10px;box-shadow:0 2px 10px rgba(255,61,90,.35)">
+    <div style="flex:1;min-width:0;display:flex;align-items:center;gap:10px">
+     <div style="flex:1;min-width:0">
+      <div id="bfBarTitle" style="font-weight:800;font-size:0.78rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 2px rgba(0,0,0,.15)">
+       🍳 Завтраки за 999 тг
+      </div>
+      <div id="bfBarSub" style="font-size:0.62rem;color:#fff;opacity:.92;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+       С 21 по 25 сентября, 08:00–12:00
+      </div>
+     </div>
+     <button onclick="openBreakfastPromo()" style="background:#fff;border:none;color:#ff3d5a;font-size:0.72rem;font-weight:800;cursor:pointer;padding:7px 14px;border-radius:999px;flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,.15)">
+      Получить
+     </button>
+    </div>
+    <div style="text-align:center;flex-shrink:0;background:rgba(0,0,0,.18);border-radius:10px;padding:4px 9px">
+     <div id="bfBarCountdownLabel" style="font-size:0.54rem;color:#fff;opacity:.85;margin-bottom:1px;white-space:nowrap">
+      До старта
+     </div>
+     <div id="bfBarCountdown" style="font-size:0.86rem;font-weight:800;color:#fff;font-variant-numeric:tabular-nums;white-space:nowrap">
+      —
+     </div>
+    </div>
+   </div>
    <nav>
     <div style="position:relative">
      <button class="nav-branch-btn" id="navBranchBtn" onclick="openBranchSwitcher()" onpointerdown="bookBtnPressStart()" onpointerup="bookBtnPressEnd()" onpointerleave="bookBtnPressEnd()" onpointercancel="bookBtnPressEnd()">
@@ -3864,7 +3887,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
      </button>
     </div>
    </nav>
-   <div style="height:56px">
+   <div id="navSpacer" style="height:56px">
    </div>
    <div id="promoBannersWrap" style="background:0 0;border-bottom:none;padding:10px 0 6px;display:none">
     <div class="sec-title" style="padding:0 var(--px);margin-bottom:8px">
@@ -3894,13 +3917,22 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
      </div>
     </div>
    </div>
-   <div id="repeatOrderBanner" style="display:none;margin:10px var(--px)0;padding:12px 14px;background:#f6f6f6;border-radius:14px;align-items:center;gap:12px">
-    <div style="flex:1;min-width:0">
-     <div style="font-size:0.68rem;font-weight:400;color:#1d1d1f;margin-bottom:2px">Ваш обычный заказ</div>
-     <div id="repeatOrderItems" style="font-size:0.66rem;color:#6e6e73;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+   <div class="sov" id="breakfastPromoMov" style="z-index:960">
+    <div class="sbox" style="max-height:70svh">
+     <div style="text-align:center;padding:22px 20px 4px">
+      <div style="color:#1d1d1f;margin-bottom:6px;font-size:1.01rem;font-weight:400">Завтраки за 999 тг</div>
+      <div style="color:#6e6e73;font-size:0.68rem;line-height:1.5">Оставьте имя и телефон — мы вас ждём с 08:00 до 12:00, с 21 по 25 сентября.</div>
+     </div>
+     <div style="padding:16px 20px 22px">
+      <input class="oinput" id="bfPromoName" placeholder="Имя"/>
+      <div class="ferr" id="bfPromoNameErr"></div>
+      <input class="oinput" id="bfPromoPhone" maxlength="18" onfocus="if(!this.value)this.value='+7 '" oninput="formatPhoneInput(this)" placeholder="+7 (___) ___-__-__" type="tel" value="+7 "/>
+      <div class="ferr" id="bfPromoPhoneErr"></div>
+      <button class="btn-main btn-wa" onclick="submitBreakfastPromo()" id="bfPromoSubmitBtn">
+       Получить
+      </button>
+     </div>
     </div>
-    <button onclick="applyRepeatOrder()" style="flex-shrink:0;background:#7a1128;color:#fff;border:none;border-radius:10px;padding:9px 14px;font-family:-apple-system,BlinkMacSystemFont,Inter,sans-serif;font-size:0.7rem;font-weight:400;cursor:pointer">Добавить</button>
-    <button onclick="dismissRepeatOrder()" aria-label="Скрыть" style="flex-shrink:0;background:none;border:none;color:#c7c7cc;font-size:1rem;cursor:pointer;padding:0 2px">✕</button>
    </div>
    <div class="menu-content" id="menuContent">
     <div id="noBranchPlaceholder" style="text-align:center;flex-direction:column;justify-content:center;align-items:center;padding:70px 30px;display:flex">
@@ -5134,7 +5166,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
      }
    }
 
-   const API = "https://script.google.com/macros/s/AKfycbw2A_zv2cQj-An8tkSuAMzY8zanSQmAS0gHEn2V2fpFbAeESyeDf_OuuMyMSEerk9vsnw/exec",
+   const API = "https://script.google.com/macros/s/AKfycbx7A6a3TmYKhSit9LachfYECH-pHxDUWXUCX8sh-JOCUbzcYZpe-jcC4KT3m7HhSgaZVQ/exec",
   WA = "77760709898",
   CAT_META = {
     "Новинки": {
@@ -7202,7 +7234,7 @@ async function loadMenu() {
   let validCache = "2" === ver ? cached : null;
   if (resetPills(), validCache) {
     try {
-      menuData = JSON.parse(validCache), applyLunchSchedule(), renderCats(), renderMenu(), restoreCartFromStorage(), checkRepeatOrder()
+      menuData = JSON.parse(validCache), applyLunchSchedule(), renderCats(), renderMenu(), restoreCartFromStorage()
     } catch {}
     schedulePrefetchImages();
     fetch(API + "?action=getMenu&branch=" + branch).then(r => r.json()).then(d => {
@@ -7213,7 +7245,7 @@ async function loadMenu() {
     try {
       let d = await (await fetch(API + "?action=getMenu&branch=" + branch)).json();
       if ("success" !== d.status) throw Error();
-      menuData = d.categories, localStorage.setItem(key, JSON.stringify(menuData)), localStorage.setItem(key + "_ver", "2"), applyLunchSchedule(), renderCats(), renderMenu(), restoreCartFromStorage(), checkRepeatOrder()
+      menuData = d.categories, localStorage.setItem(key, JSON.stringify(menuData)), localStorage.setItem(key + "_ver", "2"), applyLunchSchedule(), renderCats(), renderMenu(), restoreCartFromStorage()
       schedulePrefetchImages();
     } catch {
       document.getElementById("menuContent").innerHTML = '<div class="loader"><div style="font-size:1.76rem;margin-bottom:8px"></div><div class="loader-t">' + t("something_broke") + "</div></div>"
@@ -7544,54 +7576,6 @@ function getQty(id) {
   return c ? c.qty : 0
 }
 let _lastAddedItemName = null;
-
-var _repeatOrderMatched = [];
-var _repeatOrderDismissedKey = null;
-
-function checkRepeatOrder() {
-  var dismissKey = "st_repeat_dismissed_" + branch;
-  if (sessionStorage.getItem(dismissKey)) return;
-  apiGet({ action: "getLastOrder", clientId: getClientId(), branch: branch }, function(d) {
-    if (!d.found || !d.items || !d.items.length) return;
-    var matched = [];
-    d.items.forEach(function(it) {
-      var found = findItemByName(it.name);
-      if (found) matched.push({ item: found, qty: it.qty });
-    });
-    if (!matched.length) return;
-    _repeatOrderMatched = matched;
-    var namesHtml = matched.map(function(m) { return m.item.name + (m.qty > 1 ? " ×" + m.qty : ""); }).join(", ");
-    var el = document.getElementById("repeatOrderItems");
-    if (el) el.textContent = namesHtml;
-    var banner = document.getElementById("repeatOrderBanner");
-    if (banner) banner.style.display = "flex";
-  }, function() {});
-}
-
-function findItemByName(name) {
-  var r;
-  var target = (name || "").toString().trim().toLowerCase();
-  Object.values(menuData).forEach(function(arr) {
-    arr.forEach(function(i) {
-      if (!r && i.name.trim().toLowerCase() === target) r = i;
-    });
-  });
-  return r;
-}
-
-function applyRepeatOrder() {
-  _repeatOrderMatched.forEach(function(m) {
-    addCart(m.item, m.qty);
-  });
-  dismissRepeatOrder();
-  showToast("Добавлено в корзину");
-}
-
-function dismissRepeatOrder() {
-  var banner = document.getElementById("repeatOrderBanner");
-  if (banner) banner.style.display = "none";
-  try { sessionStorage.setItem("st_repeat_dismissed_" + branch, "1"); } catch {}
-}
 
 var _deliveryClosedNoticeShown = false;
 
@@ -8048,6 +8032,173 @@ function formatPhoneInput(el) {
   let formatted = "+7";
   digits.length > 0 && (formatted += " (" + digits.slice(0, 3)), digits.length >= 3 && (formatted += ")"), digits.length > 3 && (formatted += " " + digits.slice(3, 6)), digits.length > 6 && (formatted += "-" + digits.slice(6, 8)), digits.length > 8 && (formatted += "-" + digits.slice(8, 10)), el.value = formatted
 }
+// ══════════════════════════════════════════════════════════════════
+// ── АКЦИЯ «ЗАВТРАКИ ЗА 999 ТГ» — с 21 по 25 сентября, кнопка активна
+// только с 08:00 до 12:00. Вне часов — предупреждение, без отправки. ──
+// ══════════════════════════════════════════════════════════════════
+var BREAKFAST_PROMO_START = new Date(2026, 8, 21, 0, 0, 0);
+var BREAKFAST_PROMO_END   = new Date(2026, 8, 25, 23, 59, 59);
+
+function breakfastPromoActiveDay() {
+  var now = new Date();
+  return now >= BREAKFAST_PROMO_START && now <= BREAKFAST_PROMO_END;
+}
+
+function breakfastPromoActiveHour() {
+  var h = new Date().getHours();
+  return h >= 8 && h < 12;
+}
+
+function _bfSameDate(a, b) {
+  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+}
+
+function _bfFormatCountdown(ms) {
+  if (ms < 0) ms = 0;
+  var totalSec = Math.floor(ms / 1000);
+  var days = Math.floor(totalSec / 86400);
+  var hours = Math.floor((totalSec % 86400) / 3600);
+  var mins = Math.floor((totalSec % 3600) / 60);
+  var secs = totalSec % 60;
+  function p2(n) { return String(n).padStart(2, "0"); }
+  return days > 0 ? (days + "д " + p2(hours) + ":" + p2(mins)) : (p2(hours) + ":" + p2(mins) + ":" + p2(secs));
+}
+
+function updateBreakfastPromoBar() {
+  var bar = document.getElementById("breakfastPromoBar");
+  if (!bar) return;
+  var now = new Date();
+  var titleEl = document.getElementById("bfBarTitle");
+  var subEl = document.getElementById("bfBarSub");
+  var cdEl = document.getElementById("bfBarCountdown");
+  var cdLabelEl = document.getElementById("bfBarCountdownLabel");
+  var wasVisible = bar.style.display !== "none";
+  var nowVisible;
+
+  if (now < BREAKFAST_PROMO_START) {
+    nowVisible = true;
+    titleEl.textContent = "Скоро: завтраки за 999 тг";
+    subEl.textContent = "С 21 по 25 сентября, 08:00–12:00";
+    cdLabelEl.textContent = "До старта";
+    cdEl.textContent = _bfFormatCountdown(BREAKFAST_PROMO_START - now);
+  } else if (now > BREAKFAST_PROMO_END) {
+    nowVisible = false;
+  } else {
+    var h = now.getHours();
+    var todayOpen = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 8, 0, 0);
+    var todayClose = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0);
+    if (h < 8) {
+      nowVisible = true;
+      titleEl.textContent = "Скоро откроется: завтраки за 999 тг";
+      subEl.textContent = "Открытие сегодня в 08:00";
+      cdLabelEl.textContent = "До открытия";
+      cdEl.textContent = _bfFormatCountdown(todayOpen - now);
+    } else if (h < 12) {
+      nowVisible = true;
+      titleEl.textContent = "Завтраки за 999 тг";
+      subEl.textContent = "Успей получить, пока действует";
+      cdLabelEl.textContent = "До конца";
+      cdEl.textContent = _bfFormatCountdown(todayClose - now);
+    } else if (_bfSameDate(now, BREAKFAST_PROMO_END)) {
+      nowVisible = false;
+    } else {
+      nowVisible = true;
+      var tomorrowOpen = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 8, 0, 0);
+      titleEl.textContent = "Скоро снова: завтраки за 999 тг";
+      subEl.textContent = "Открытие завтра в 08:00";
+      cdLabelEl.textContent = "До открытия";
+      cdEl.textContent = _bfFormatCountdown(tomorrowOpen - now);
+    }
+  }
+
+  bar.style.display = nowVisible ? "flex" : "none";
+  if (wasVisible !== nowVisible) positionBreakfastPromoBar();
+}
+
+function positionBreakfastPromoBar() {
+  var bar = document.getElementById("breakfastPromoBar");
+  var navEl = document.querySelector("nav");
+  var spacer = document.getElementById("navSpacer");
+  if (!bar || !navEl) return;
+  var h = bar.style.display === "none" ? 0 : bar.offsetHeight;
+  navEl.style.top = h + "px";
+  if (spacer) spacer.style.height = (56 + h) + "px";
+}
+
+var _bfBarInterval = null;
+function initBreakfastPromoBar() {
+  updateBreakfastPromoBar();
+  positionBreakfastPromoBar();
+  if (_bfBarInterval) clearInterval(_bfBarInterval);
+  _bfBarInterval = setInterval(updateBreakfastPromoBar, 1000);
+}
+
+function openBreakfastPromo() {
+  if (!breakfastPromoActiveDay() || !breakfastPromoActiveHour()) {
+    showFunModal("⏰", "Акция «Завтраки за 999 тг» действует только с 08:00 до 12:00, с 21 по 25 сентября. Загляните в это время — обязательно успеете 🍳", "Понятно");
+    return;
+  }
+  document.getElementById("bfPromoName").value = "";
+  document.getElementById("bfPromoPhone").value = "+7 ";
+  document.getElementById("bfPromoNameErr").textContent = "";
+  document.getElementById("bfPromoPhoneErr").textContent = "";
+  openMov("breakfastPromoMov");
+}
+
+function submitBreakfastPromo() {
+  if (!breakfastPromoActiveDay() || !breakfastPromoActiveHour()) {
+    closeMov("breakfastPromoMov");
+    showFunModal("⏰", "Акция «Завтраки за 999 тг» действует только с 08:00 до 12:00, с 21 по 25 сентября.", "Понятно");
+    return;
+  }
+  var nameEl = document.getElementById("bfPromoName");
+  var phoneEl = document.getElementById("bfPromoPhone");
+  var name = nameEl.value.trim();
+  var phone = phoneEl.value.trim();
+  var ok = true;
+  document.getElementById("bfPromoNameErr").textContent = "";
+  document.getElementById("bfPromoPhoneErr").textContent = "";
+  if (name.length < 2) {
+    document.getElementById("bfPromoNameErr").textContent = "Имя должно содержать минимум 2 буквы";
+    ok = false;
+  }
+  if (!validPhone(phone)) {
+    document.getElementById("bfPromoPhoneErr").textContent = t("err_phone");
+    ok = false;
+  }
+  if (!ok) return;
+
+  var btn = document.getElementById("bfPromoSubmitBtn");
+  btn.disabled = true;
+  btn.textContent = "Отправляем…";
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", API, true);
+  xhr.setRequestHeader("Content-Type", "text/plain");
+  xhr.onload = function() {
+    btn.disabled = false;
+    btn.textContent = "Получить";
+    try {
+      var d = JSON.parse(xhr.responseText);
+      if (d.status === "success") {
+        closeMov("breakfastPromoMov");
+        showFunModal("🍳", "Заявка принята! Ждём вас с 08:00 до 12:00 — просто назовите администратору своё имя на входе.", "Понятно");
+      } else {
+        document.getElementById("bfPromoPhoneErr").textContent = "Не удалось отправить, попробуйте ещё раз";
+      }
+    } catch (e) {
+      document.getElementById("bfPromoPhoneErr").textContent = "Не удалось отправить, попробуйте ещё раз";
+    }
+  };
+  xhr.onerror = xhr.ontimeout = function() {
+    btn.disabled = false;
+    btn.textContent = "Получить";
+    document.getElementById("bfPromoPhoneErr").textContent = "Нет соединения";
+  };
+  xhr.send(JSON.stringify({ action: "submitBreakfastPromo", name: name, phone: phone, branch: branch }));
+}
+
+document.addEventListener("DOMContentLoaded", initBreakfastPromoBar);
+
 document.addEventListener("DOMContentLoaded", () => {
   let ph = document.getElementById("ophone");
   ph && (ph.addEventListener("focus", () => {
