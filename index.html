@@ -3841,7 +3841,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
       осталось
      </div>
     </div>
-    <button onclick="openBreakfastPromo()" style="background:#fff;border:none;color:#0a84ff;font-size:0.68rem;font-weight:500;cursor:pointer;padding:7px 15px;border-radius:999px;flex-shrink:0;margin-left:6px">
+    <button id="bfBarBtn" onclick="openBreakfastPromo()" style="background:#fff;border:none;color:#0a84ff;font-size:0.68rem;font-weight:500;cursor:pointer;padding:7px 15px;border-radius:999px;flex-shrink:0;margin-left:6px">
      Получить
     </button>
    </div>
@@ -3921,7 +3921,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
     <div class="sbox" style="max-height:70svh">
      <div style="text-align:center;padding:22px 20px 4px">
       <div style="color:#1d1d1f;margin-bottom:6px;font-size:1.01rem;font-weight:400">Завтраки за 999 тг</div>
-      <div style="color:#6e6e73;font-size:0.68rem;line-height:1.5">Оставьте имя и телефон — мы вас ждём с 08:00 до 12:00, с 21 по 25 сентября.</div>
+      <div id="bfPromoModalSub" style="color:#6e6e73;font-size:0.68rem;line-height:1.5">Оставьте имя и телефон — мы вас ждём.</div>
      </div>
      <div style="padding:16px 20px 22px">
       <input class="oinput" id="bfPromoName" placeholder="Имя"/>
@@ -4366,6 +4366,9 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
         <button class="adm-nav-btn" onclick="admSection('news')" style="grid-column:1/-1">
          Сообщения (Акции / Безопасность)
         </button>
+        <button class="adm-nav-btn" onclick="admSection('banner')" style="grid-column:1/-1">
+         Баннер акции
+        </button>
        </div>
        <div id="adm-items-sec" style="display:none">
         <div style="align-items:center;gap:8px;margin-bottom:10px;display:flex">
@@ -4587,6 +4590,57 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
          Отправленные сообщения
         </div>
         <div id="admNewsList">
+        </div>
+       </div>
+       <div id="adm-banner-sec" style="display:none">
+        <div style="align-items:center;gap:8px;margin-bottom:14px;display:flex">
+         <button class="adm-back" onclick="admShowHome()">
+          ← Назад
+         </button>
+         <div style="color:#1d1d1f;font-size:0.79rem;font-weight:400">
+          Баннер акции
+         </div>
+        </div>
+        <div style="font-size:0.68rem;color:#6e6e73;line-height:1.6;margin-bottom:14px">
+         Баннер вверху сайта. Меняй даты, часы, тексты и цвет здесь — сайт обновится сам, ничего пересобирать не нужно.
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;margin-bottom:14px;font-size:0.76rem;color:#1d1d1f">
+         <input type="checkbox" id="admBannerEnabled" style="width:18px;height:18px">
+         Баннер включён
+        </label>
+        <div style="display:flex;gap:10px;margin-bottom:10px">
+         <div style="flex:1">
+          <div style="font-size:0.66rem;color:#6e6e73;margin-bottom:4px">Дата начала</div>
+          <input type="date" id="admBannerStart" class="oinput" style="margin-bottom:0">
+         </div>
+         <div style="flex:1">
+          <div style="font-size:0.66rem;color:#6e6e73;margin-bottom:4px">Дата окончания</div>
+          <input type="date" id="admBannerEnd" class="oinput" style="margin-bottom:0">
+         </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-bottom:10px">
+         <div style="flex:1">
+          <div style="font-size:0.66rem;color:#6e6e73;margin-bottom:4px">Час открытия (0–23)</div>
+          <input type="number" min="0" max="23" id="admBannerOpenHour" class="oinput" style="margin-bottom:0">
+         </div>
+         <div style="flex:1">
+          <div style="font-size:0.66rem;color:#6e6e73;margin-bottom:4px">Час закрытия (0–23)</div>
+          <input type="number" min="0" max="23" id="admBannerCloseHour" class="oinput" style="margin-bottom:0">
+         </div>
+        </div>
+        <div style="font-size:0.66rem;color:#6e6e73;margin-bottom:4px">Тексты бегущей строки — каждый с новой строки</div>
+        <textarea id="admBannerMessages" rows="4" style="width:100%;font-size:0.76rem;padding:12px;border-radius:10px;border:1.5px solid #e5e5e7;font-family:inherit;resize:vertical;margin-bottom:10px"></textarea>
+        <div style="font-size:0.66rem;color:#6e6e73;margin-bottom:4px">Текст на кнопке</div>
+        <input type="text" id="admBannerButtonText" class="oinput">
+        <div style="font-size:0.66rem;color:#6e6e73;margin-bottom:4px">Цвет фона баннера</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+         <input type="color" id="admBannerColor" oninput="document.getElementById('admBannerColorHex').value=this.value" style="width:44px;height:36px;padding:0;border:1.5px solid #e5e5e7;border-radius:8px;cursor:pointer">
+         <input type="text" id="admBannerColorHex" oninput="document.getElementById('admBannerColor').value=this.value" class="oinput" style="margin-bottom:0;flex:1" placeholder="#0a84ff">
+        </div>
+        <button class="admloginbtn" onclick="admSaveBannerSettings()" id="admBannerSaveBtn">
+         Сохранить
+        </button>
+        <div class="admerr" id="admBannerErr" style="margin-top:8px">
         </div>
        </div>
        <div id="adm-stats-sec" style="display:none">
@@ -5166,7 +5220,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
      }
    }
 
-   const API = "https://script.google.com/macros/s/AKfycbx7A6a3TmYKhSit9LachfYECH-pHxDUWXUCX8sh-JOCUbzcYZpe-jcC4KT3m7HhSgaZVQ/exec",
+   const API = "https://script.google.com/macros/s/AKfycbx7WtngYUSO3jSJRvoLGVQbcQbYr9dvP9qHGy5HHjKjKXxXYk2YzWM2GeCeLMyhy99xUQ/exec",
   WA = "77760709898",
   CAT_META = {
     "Новинки": {
@@ -8038,20 +8092,61 @@ function formatPhoneInput(el) {
 }
 
 // ══════════════════════════════════════════════════════════════════
-// ── АКЦИЯ «ЗАВТРАКИ ЗА 999 ТГ» — с 21 по 25 сентября, кнопка активна
-// только с 08:00 до 12:00. Вне часов — предупреждение, без отправки. ──
+// ── БАННЕР АКЦИИ — все параметры (даты, часы, тексты, цвет) грузятся
+// с сервера (админка → раздел «Баннер акции»). Правишь в админке —
+// код трогать больше не нужно ни разу. Если сервер недоступен или
+// настройки ещё не заданы — используются значения по умолчанию ниже. ──
 // ══════════════════════════════════════════════════════════════════
-var BREAKFAST_PROMO_START = new Date(2026, 8, 21, 0, 0, 0);
-var BREAKFAST_PROMO_END   = new Date(2026, 8, 25, 23, 59, 59);
+var _bfDefaultConfig = {
+  enabled: true,
+  startDate: "2026-09-21",
+  endDate: "2026-09-25",
+  openHour: 8,
+  closeHour: 12,
+  messages: ["Завтраки за 999 тг", "Каждый день 08:00–12:00", "С 21.09 по 25.09"],
+  buttonText: "Получить",
+  color: "#0a84ff"
+};
+var _bfConfig = _bfDefaultConfig;
+
+function _bfParseDate(str, endOfDay) {
+  var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec((str || "").trim());
+  if (!m) return null;
+  return endOfDay
+    ? new Date(+m[1], +m[2] - 1, +m[3], 23, 59, 59)
+    : new Date(+m[1], +m[2] - 1, +m[3], 0, 0, 0);
+}
+
+function loadBreakfastPromoConfig(cb) {
+  apiGet({ action: "getBannerSettings" }, function(d) {
+    if (d && d.status === "success" && d.settings) {
+      var s = d.settings;
+      _bfConfig = {
+        enabled: s.enabled !== false,
+        startDate: s.startDate || _bfDefaultConfig.startDate,
+        endDate: s.endDate || _bfDefaultConfig.endDate,
+        openHour: (s.openHour || s.openHour === 0) ? parseInt(s.openHour, 10) : _bfDefaultConfig.openHour,
+        closeHour: (s.closeHour || s.closeHour === 0) ? parseInt(s.closeHour, 10) : _bfDefaultConfig.closeHour,
+        messages: (s.messages && s.messages.toString().trim()) ? s.messages.toString().split("\n").map(function(x) { return x.trim(); }).filter(Boolean) : _bfDefaultConfig.messages,
+        buttonText: s.buttonText || _bfDefaultConfig.buttonText,
+        color: s.color || _bfDefaultConfig.color
+      };
+    }
+    cb();
+  }, function() { cb(); });
+}
 
 function breakfastPromoActiveDay() {
+  var start = _bfParseDate(_bfConfig.startDate, false);
+  var end = _bfParseDate(_bfConfig.endDate, true);
+  if (!_bfConfig.enabled || !start || !end) return false;
   var now = new Date();
-  return now >= BREAKFAST_PROMO_START && now <= BREAKFAST_PROMO_END;
+  return now >= start && now <= end;
 }
 
 function breakfastPromoActiveHour() {
   var h = new Date().getHours();
-  return h >= 8 && h < 12;
+  return h >= _bfConfig.openHour && h < _bfConfig.closeHour;
 }
 
 function _bfSameDate(a, b) {
@@ -8072,47 +8167,54 @@ function _bfFormatCountdown(ms) {
 function updateBreakfastPromoBar() {
   var bar = document.getElementById("breakfastPromoBar");
   if (!bar) return;
+  if (!_bfConfig.enabled) { bar.style.display = "none"; positionBreakfastPromoBar(); return; }
+  var start = _bfParseDate(_bfConfig.startDate, false);
+  var end = _bfParseDate(_bfConfig.endDate, true);
+  if (!start || !end) { bar.style.display = "none"; positionBreakfastPromoBar(); return; }
   var now = new Date();
   var cdEl = document.getElementById("bfBarCountdown");
   var nowVisible;
+  var openH = _bfConfig.openHour, closeH = _bfConfig.closeHour;
 
-  if (now < BREAKFAST_PROMO_START) {
+  if (now < start) {
     nowVisible = true;
-    cdEl.textContent = _bfFormatCountdown(BREAKFAST_PROMO_START - now);
-  } else if (now > BREAKFAST_PROMO_END) {
+    cdEl.textContent = _bfFormatCountdown(start - now);
+  } else if (now > end) {
     nowVisible = false;
   } else {
     var h = now.getHours();
-    var todayOpen = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 8, 0, 0);
-    var todayClose = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0);
-    if (h < 8) {
+    var todayOpen = new Date(now.getFullYear(), now.getMonth(), now.getDate(), openH, 0, 0);
+    var todayClose = new Date(now.getFullYear(), now.getMonth(), now.getDate(), closeH, 0, 0);
+    if (h < openH) {
       nowVisible = true;
       cdEl.textContent = _bfFormatCountdown(todayOpen - now);
-    } else if (h < 12) {
+    } else if (h < closeH) {
       nowVisible = true;
       cdEl.textContent = _bfFormatCountdown(todayClose - now);
-    } else if (_bfSameDate(now, BREAKFAST_PROMO_END)) {
+    } else if (_bfSameDate(now, end)) {
       nowVisible = false;
     } else {
       nowVisible = true;
-      var tomorrowOpen = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 8, 0, 0);
+      var tomorrowOpen = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, openH, 0, 0);
       cdEl.textContent = _bfFormatCountdown(tomorrowOpen - now);
     }
   }
 
   bar.style.display = nowVisible ? "flex" : "none";
+  bar.style.background = _bfConfig.color;
+  var btnEl = document.getElementById("bfBarBtn");
+  if (btnEl) { btnEl.textContent = _bfConfig.buttonText; btnEl.style.color = _bfConfig.color; }
   positionBreakfastPromoBar();
 }
 
-var _bfTickerMessages = ["Завтраки за 999 тг", "Каждый день 08:00–12:00", "С 21.09 по 25.09"];
 var _bfTickerIndex = 0;
 var _bfTickerInterval = null;
 
 function _bfApplyTicker() {
   var track = document.getElementById("bfBarTitleTrack");
   if (!track) return;
-  var nextIndex = (_bfTickerIndex + 1) % _bfTickerMessages.length;
-  var nextText = _bfTickerMessages[nextIndex];
+  var nextIndex = (_bfTickerIndex + 1) % _bfConfig.messages.length;
+  var nextText = _bfConfig.messages[nextIndex];
 
   var nextLine = document.createElement("div");
   nextLine.className = "bf-ticker-line";
@@ -8140,7 +8242,7 @@ function startBreakfastPromoTicker() {
   if (track) {
     track.style.transition = "none";
     track.style.transform = "translateY(0)";
-    track.innerHTML = '<div id="bfBarTitle" class="bf-ticker-line" style="height:17px;line-height:17px;font-weight:500;font-size:0.8rem;letter-spacing:.01em;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + _bfTickerMessages[0] + '</div>';
+    track.innerHTML = '<div id="bfBarTitle" class="bf-ticker-line" style="height:17px;line-height:17px;font-weight:500;font-size:0.8rem;letter-spacing:.01em;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + _bfConfig.messages[0] + '</div>';
   }
   _bfTickerInterval = setInterval(_bfApplyTicker, 3000);
 }
@@ -8158,28 +8260,37 @@ function positionBreakfastPromoBar() {
 
 var _bfBarInterval = null;
 function initBreakfastPromoBar() {
-  updateBreakfastPromoBar();
-  if (_bfBarInterval) clearInterval(_bfBarInterval);
-  _bfBarInterval = setInterval(updateBreakfastPromoBar, 1000);
-  startBreakfastPromoTicker();
+  loadBreakfastPromoConfig(function() {
+    updateBreakfastPromoBar();
+    if (_bfBarInterval) clearInterval(_bfBarInterval);
+    _bfBarInterval = setInterval(updateBreakfastPromoBar, 1000);
+    startBreakfastPromoTicker();
+  });
+}
+
+function _bfHoursText() {
+  function p2(n) { return String(n).padStart(2, "0"); }
+  return p2(_bfConfig.openHour) + ":00 до " + p2(_bfConfig.closeHour) + ":00";
 }
 
 function openBreakfastPromo() {
   if (!breakfastPromoActiveDay() || !breakfastPromoActiveHour()) {
-    showFunModal("⏰", "Акция «Завтраки за 999 тг» действует только с 08:00 до 12:00, с 21 по 25 сентября. Загляните в это время — обязательно успеете 🍳", "Понятно");
+    showFunModal("⏰", "Акция действует только с " + _bfHoursText() + ". Загляните в это время — обязательно успеете 🍳", "Понятно");
     return;
   }
   document.getElementById("bfPromoName").value = "";
   document.getElementById("bfPromoPhone").value = "+7 ";
   document.getElementById("bfPromoNameErr").textContent = "";
   document.getElementById("bfPromoPhoneErr").textContent = "";
+  var subEl = document.getElementById("bfPromoModalSub");
+  if (subEl) subEl.textContent = "Оставьте имя и телефон — мы вас ждём с " + _bfHoursText() + ".";
   openMov("breakfastPromoMov");
 }
 
 function submitBreakfastPromo() {
   if (!breakfastPromoActiveDay() || !breakfastPromoActiveHour()) {
     closeMov("breakfastPromoMov");
-    showFunModal("⏰", "Акция «Завтраки за 999 тг» действует только с 08:00 до 12:00, с 21 по 25 сентября.", "Понятно");
+    showFunModal("⏰", "Акция действует только с " + _bfHoursText() + ".", "Понятно");
     return;
   }
   var nameEl = document.getElementById("bfPromoName");
@@ -8212,7 +8323,7 @@ function submitBreakfastPromo() {
       var d = JSON.parse(xhr.responseText);
       if (d.status === "success") {
         closeMov("breakfastPromoMov");
-        showFunModal("🍳", "Заявка принята! Ждём вас с 08:00 до 12:00 — просто назовите администратору своё имя на входе.", "Понятно");
+        showFunModal("🍳", "Заявка принята! Ждём вас с " + _bfHoursText() + " — просто назовите администратору своё имя на входе.", "Понятно");
       } else {
         document.getElementById("bfPromoPhoneErr").textContent = "Не удалось отправить, попробуйте ещё раз";
       }
@@ -9449,7 +9560,7 @@ function admSwitch(b) {
 }
 
 function admShowHome() {
-  ["items", "add", "cats", "stop", "edit", "stats", "status", "aiSettings", "news"].forEach(s => {
+  ["items", "add", "cats", "stop", "edit", "stats", "status", "aiSettings", "news", "banner"].forEach(s => {
     let el = document.getElementById("adm-" + s + "-sec");
     el && (el.style.display = "none")
   });
@@ -9459,13 +9570,13 @@ function admShowHome() {
 
 function admSection(sec) {
   let home = document.getElementById("adm-home");
-  if (home && (home.style.display = "none"), ["items", "add", "cats", "stop", "edit", "stats", "status", "aiSettings", "news"].forEach(s => {
+  if (home && (home.style.display = "none"), ["items", "add", "cats", "stop", "edit", "stats", "status", "aiSettings", "news", "banner"].forEach(s => {
       let el = document.getElementById("adm-" + s + "-sec");
       el && (el.style.display = "none")
     }), !sec) return void admShowHome();
-  document.getElementById("admTitle").textContent = "items" === sec ? "Блюда" : "add" === sec ? "Добавить блюдо" : "cats" === sec ? "Категории" : "stop" === sec ? "Стоп-лист" : "stats" === sec ? "Статистика" : "status" === sec ? "Статус сайта" : "edit" === sec ? "Редактировать" : "aiSettings" === sec ? "Настройки SEVEN AI" : "news" === sec ? "Сообщения" : "Панель управления";
+  document.getElementById("admTitle").textContent = "items" === sec ? "Блюда" : "add" === sec ? "Добавить блюдо" : "cats" === sec ? "Категории" : "stop" === sec ? "Стоп-лист" : "stats" === sec ? "Статистика" : "status" === sec ? "Статус сайта" : "edit" === sec ? "Редактировать" : "aiSettings" === sec ? "Настройки SEVEN AI" : "news" === sec ? "Сообщения" : "banner" === sec ? "Баннер акции" : "Панель управления";
   let el = document.getElementById("adm-" + sec + "-sec");
-  el && (el.style.display = "block"), "items" === sec && admLoadItems(), "add" === sec && admLoadCatsForSelect("addCat"), "cats" === sec && admLoadCats(), "stop" === sec && admLoadStop(), "stats" === sec && admLoadStats(), "status" === sec && admLoadStatus(), "aiSettings" === sec && admLoadAiSettings(), "news" === sec && admLoadNewsAdmin()
+  el && (el.style.display = "block"), "items" === sec && admLoadItems(), "add" === sec && admLoadCatsForSelect("addCat"), "cats" === sec && admLoadCats(), "stop" === sec && admLoadStop(), "stats" === sec && admLoadStats(), "status" === sec && admLoadStatus(), "aiSettings" === sec && admLoadAiSettings(), "news" === sec && admLoadNewsAdmin(), "banner" === sec && admLoadBannerSettings()
 }
 
 function apiGet(params, onSuccess, onError) {
@@ -9951,6 +10062,72 @@ function admLoadNewsAdmin() {
   }, function() {
     wrap.innerHTML = '<div style="text-align:center;color:#86868b;font-size:0.7rem;padding:16px 0">Не удалось загрузить</div>';
   });
+}
+
+function admLoadBannerSettings() {
+  var errEl = document.getElementById("admBannerErr");
+  errEl.textContent = "";
+  apiGet({ action: "getBannerSettings" }, function(d) {
+    var s = (d && d.status === "success" && d.settings) ? d.settings : {};
+    document.getElementById("admBannerEnabled").checked = s.enabled !== false;
+    document.getElementById("admBannerStart").value = s.startDate || "2026-09-21";
+    document.getElementById("admBannerEnd").value = s.endDate || "2026-09-25";
+    document.getElementById("admBannerOpenHour").value = (s.openHour || s.openHour === 0) ? s.openHour : 8;
+    document.getElementById("admBannerCloseHour").value = (s.closeHour || s.closeHour === 0) ? s.closeHour : 12;
+    document.getElementById("admBannerMessages").value = s.messages || "Завтраки за 999 тг\nКаждый день 08:00–12:00\nС 21.09 по 25.09";
+    document.getElementById("admBannerButtonText").value = s.buttonText || "Получить";
+    var color = s.color || "#0a84ff";
+    document.getElementById("admBannerColor").value = color;
+    document.getElementById("admBannerColorHex").value = color;
+  }, function() {
+    errEl.textContent = "Не удалось загрузить текущие настройки";
+  });
+}
+
+function admSaveBannerSettings() {
+  var errEl = document.getElementById("admBannerErr");
+  var btn = document.getElementById("admBannerSaveBtn");
+  errEl.textContent = "";
+  var payload = {
+    action: "setBannerSettings",
+    enabled: document.getElementById("admBannerEnabled").checked ? "1" : "0",
+    startDate: document.getElementById("admBannerStart").value,
+    endDate: document.getElementById("admBannerEnd").value,
+    openHour: document.getElementById("admBannerOpenHour").value,
+    closeHour: document.getElementById("admBannerCloseHour").value,
+    messages: document.getElementById("admBannerMessages").value,
+    buttonText: document.getElementById("admBannerButtonText").value,
+    color: document.getElementById("admBannerColorHex").value || document.getElementById("admBannerColor").value
+  };
+  if (!payload.startDate || !payload.endDate) {
+    errEl.textContent = "Укажите даты начала и окончания";
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = "Сохраняем…";
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", API, true);
+  xhr.setRequestHeader("Content-Type", "text/plain");
+  xhr.onload = function() {
+    btn.disabled = false;
+    btn.textContent = "Сохранить";
+    try {
+      var d = JSON.parse(xhr.responseText);
+      if (d.status === "success") {
+        showToast("Сохранено ✓");
+      } else {
+        errEl.textContent = "Не удалось сохранить";
+      }
+    } catch (e) {
+      errEl.textContent = "Не удалось сохранить";
+    }
+  };
+  xhr.onerror = xhr.ontimeout = function() {
+    btn.disabled = false;
+    btn.textContent = "Сохранить";
+    errEl.textContent = "Нет соединения";
+  };
+  xhr.send(JSON.stringify(payload));
 }
 
 function admLoadStatus() {
