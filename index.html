@@ -5260,7 +5260,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
      }
    }
 
-   const API = "https://script.google.com/macros/s/AKfycbwVVMKicKRW3SN5rPSRI8f46YCjK15nan0zJ6U5Qog5yOxgMtyX30OQ6et5sljaG41Y/exec",
+   const API = "https://script.google.com/macros/s/AKfycbzRjfQ_FBYUCMYBPCoaU8TbRnjMlHkc6C-R9cqzK9bsGdDTW4r8SRG0hXtGnM8d0fwhMg/exec",
   WA = "77760709898",
   CAT_META = {
     "Новинки": {
@@ -10722,10 +10722,10 @@ function admLoadStats() {
   let body = document.getElementById("admStatsBody");
   if (!body) return;
   body.innerHTML = '<div style="text-align:center;padding:30px 0;color:#6e6e73;font-size:0.7rem">Загрузка...</div>';
-  var mainStats = null, interestCounts = null, onlineCount = 0, pending = 3;
+  var mainStats = null, interestCounts = null, onlineCount = 0, funnelSteps = null, pending = 4;
   function tryRender() {
     pending--;
-    if (pending === 0) renderAdminStats(mainStats || {}, interestCounts || {}, onlineCount);
+    if (pending === 0) renderAdminStats(mainStats || {}, interestCounts || {}, onlineCount, funnelSteps || []);
   }
   apiGet({ action: "getAdminStats" }, function(d) {
     mainStats = d; tryRender();
@@ -10741,6 +10741,11 @@ function admLoadStats() {
     onlineCount = (d && d.online) || 0; tryRender();
   }, function() {
     onlineCount = 0; tryRender();
+  });
+  apiGet({ action: "getFunnelStats" }, function(d) {
+    funnelSteps = (d && d.steps) || []; tryRender();
+  }, function() {
+    funnelSteps = []; tryRender();
   });
 }
 
@@ -10762,8 +10767,9 @@ function admStatSection(title, items, emptyTxt) {
   }) : h += '<div style="font-size:0.69rem;color:#6e6e73">' + emptyTxt + "</div>", h += "</div>"
 }
 
-function renderAdminStats(d, interestCounts, onlineCount) {
+function renderAdminStats(d, interestCounts, onlineCount, funnelSteps) {
   interestCounts = interestCounts || {};
+  funnelSteps = funnelSteps || [];
   let body = document.getElementById("admStatsBody");
   if (!body) return;
   let html = "",
@@ -10772,6 +10778,20 @@ function renderAdminStats(d, interestCounts, onlineCount) {
     skoroV = vb.skoro || 0,
     ot = d.ordersByType || {};
   html += '<div class="adm-stop-section" style="text-align:center;margin-bottom:14px;background:#25d36614;border:1px solid #25d36640"><div style="font-size:1.23rem;font-weight:800;color:#1d1d1f">🟢 ' + (onlineCount || 0) + '</div><div style="font-size:0.62rem;color:#6e6e73;margin-top:2px">Сейчас на сайте</div></div>';
+  if (funnelSteps.length) {
+    var fMax = funnelSteps[0].count || 1;
+    html += '<div class="adm-stop-section" style="margin-bottom:14px">';
+    html += '<div style="font-weight:400;color:#1d1d1f;margin-bottom:10px">Воронка</div>';
+    funnelSteps.forEach(function(s, i) {
+      var pct = fMax ? Math.round((s.count / fMax) * 100) : 0;
+      var dropFromPrev = i > 0 && funnelSteps[i - 1].count ? Math.round((1 - s.count / funnelSteps[i - 1].count) * 100) : 0;
+      html += '<div style="margin-bottom:9px">';
+      html += '<div style="display:flex;justify-content:space-between;font-size:0.68rem;color:#1d1d1f;margin-bottom:3px"><span>' + s.name + '</span><span style="font-weight:600">' + s.count + (i > 0 ? ' <span style="color:#c0392b;font-weight:400">(-' + dropFromPrev + '%)</span>' : '') + '</span></div>';
+      html += '<div style="background:#f0f0f2;border-radius:5px;height:8px;overflow:hidden"><div style="width:' + pct + '%;height:100%;background:#7a1128;border-radius:5px"></div></div>';
+      html += '</div>';
+    });
+    html += '</div>';
+  }
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">', html += '<div class="adm-stop-section" style="text-align:center;margin-bottom:0"><div style="font-size:1.23rem;font-weight:800;color:#1d1d1f">' + (d.totalVisits || 0) + '</div><div style="font-size:0.62rem;color:#6e6e73;margin-top:2px">Всего гостей</div></div>', html += '<div class="adm-stop-section" style="text-align:center;margin-bottom:0"><div style="font-size:1.23rem;font-weight:800;color:#1d1d1f">' + (d.totalOrders || 0) + '</div><div style="font-size:0.62rem;color:#6e6e73;margin-top:2px">Всего заказов</div></div>', html += "</div>", html += '<div class="adm-stop-section" style="margin-bottom:14px">', html += '<div style="font-weight:400;color:#1d1d1f;margin-bottom:8px">Коротко</div>', html += '<div style="font-size:0.69rem;color:#333;line-height:1.9">', html += "Доставка: <b>" + (ot.Доставка || 0) + "</b> · Самовывоз: <b>" + (ot.Самовывоз || 0) + "</b><br>", html += "Самал смотрели: <b>" + samalV + "</b> раз · Скоробогатова: <b>" + skoroV + "</b> раз<br>";
   let pc = d.payCounts || {},
     payKeys = Object.keys(pc);
