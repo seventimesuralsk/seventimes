@@ -1012,13 +1012,7 @@ nav {
   animation: skShimmer 1.4s ease-in-out infinite
 }
 
-@keyframes bfMarqueeScroll {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-#bfBarMarquee.bf-marquee-run {
-  animation: bfMarqueeScroll linear infinite;
-}
+
 @keyframes skShimmer {
   0% { background-position: 200% 0 }
   100% { background-position: -200% 0 }
@@ -3823,31 +3817,6 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
   animation-duration: 1.4s !important;
 }
 
-/* Плашка акции сверху: вместо бегущей строки — плавное затухание.
-   Каждый текст проявляется, держится и плавно гаснет; потом следующий.
-   Это исключение из правила «без анимаций» выше. */
-#bfBarMarquee {
-  display: block !important;
-  animation: none !important;
-  transform: none !important;
-}
-
-#bfBarTitle {
-  display: inline-block !important;
-  padding-right: 0 !important;
-  opacity: 1;
-  transition: opacity .6s ease !important;
-  transition-duration: .6s !important;
-}
-
-#bfBarTitle.bf-fade-out {
-  opacity: 0;
-}
-
-#bfBarTitleDup {
-  display: none !important;
-}
-
   </style>
  </head>
  <body>
@@ -3856,10 +3825,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
    </div>
    <div id="breakfastPromoBar" style="display:none;align-items:center;gap:12px;position:fixed;top:0;left:0;right:0;z-index:320;background:rgba(10,132,255,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.15);padding:11px 16px">
     <div style="flex:1;min-width:0;overflow:hidden;height:17px">
-     <div id="bfBarMarquee" style="display:inline-flex;white-space:nowrap;will-change:transform">
-      <span id="bfBarTitle" style="height:17px;line-height:17px;font-weight:500;font-size:0.8rem;letter-spacing:.01em;color:#fff;padding-right:48px">Завтраки за 999 тг</span>
-      <span id="bfBarTitleDup" style="height:17px;line-height:17px;font-weight:500;font-size:0.8rem;letter-spacing:.01em;color:#fff;padding-right:48px">Завтраки за 999 тг</span>
-     </div>
+     <div id="bfBarTitle" style="height:17px;line-height:17px;font-weight:500;font-size:0.8rem;letter-spacing:.01em;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity .6s ease">Завтраки за 999 тг</div>
     </div>
     <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:1px">
      <div id="bfBarCountdown" style="font-size:0.76rem;font-weight:500;color:#fff;font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:.02em">
@@ -4659,7 +4625,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
           <input type="number" min="0" max="23" id="admBannerCloseHour" class="oinput" style="margin-bottom:0">
          </div>
         </div>
-        <div style="font-size:0.66rem;color:#6e6e73;margin-bottom:4px">Текст бегущей строки — пиши как есть, разбивать не нужно</div>
+        <div style="font-size:0.66rem;color:#6e6e73;margin-bottom:4px">Тексты — каждый с новой строки, будут плавно перетекать друг в друга</div>
         <textarea id="admBannerMessages" rows="3" style="width:100%;font-size:0.76rem;padding:12px;border-radius:10px;border:1.5px solid #e5e5e7;font-family:inherit;resize:vertical;margin-bottom:10px"></textarea>
         <div style="font-size:0.66rem;color:#6e6e73;margin-bottom:4px">Текст на кнопке</div>
         <input type="text" id="admBannerButtonText" class="oinput">
@@ -4794,6 +4760,46 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
           </button>
           <button class="adm-stop-remove" id="editStopRemoveBtn" onclick="admRemoveStop()" style="display:none">
            Убрать из стопа
+          </button>
+         </div>
+         <div class="adm-stop-section">
+          <div class="adm-stop-title">
+           Временная цена
+          </div>
+          <div style="color:#6e6e73;margin-bottom:10px;font-size:0.62rem;line-height:1.5">
+           Ставишь новую цену и срок — по истечении срока цена сама вернётся к обычной. Не нужно вручную возвращать назад.
+          </div>
+          <div id="editTempPriceStatus" style="color:#6e6e73;margin-bottom:10px;font-size:0.69rem">
+          </div>
+          <div class="adm-field-label">
+           Временная цена (₸)
+          </div>
+          <input class="admi" id="editTempPriceVal" type="number" placeholder="Например: 999">
+          <div class="adm-time-grid">
+           <button class="adm-time-btn adm-tp-time-btn" onclick="admSelTempPriceTime(this,'eod')">
+            До конца дня
+           </button>
+           <button class="adm-time-btn adm-tp-time-btn" onclick="admSelTempPriceTime(this,'24h')">
+            24 часа
+           </button>
+           <button class="adm-time-btn adm-tp-time-btn" onclick="admSelTempPriceTime(this,'week')">
+            7 дней
+           </button>
+           <button class="adm-time-btn adm-tp-time-btn" onclick="admSelTempPriceTime(this,'custom')">
+            Своя дата
+           </button>
+          </div>
+          <div class="adm-custom-time" id="customTempPriceTimeRow">
+           <input class="adm-time-inp" id="customTempPriceVal" type="date"/>
+           <span style="color:#6e6e73;white-space:nowrap;font-size:0.69rem">
+            действует по эту дату
+           </span>
+          </div>
+          <button class="adm-stop-apply" onclick="admApplyTempPrice()">
+           Поставить временную цену
+          </button>
+          <button class="adm-stop-remove" id="editTempPriceRemoveBtn" onclick="admRemoveTempPrice()" style="display:none">
+           Вернуть обычную цену сейчас
           </button>
          </div>
          <button onclick="admDeleteItem()" style="color:#1d1d1f;cursor:pointer;background:#7a11281a;border:1px solid #1d1d1f40;border-radius:11px;width:100%;margin-top:12px;padding:12px;font-family:-apple-system,BlinkMacSystemFont,Inter,sans-serif;font-size:0.72rem;font-weight:400">
@@ -8134,7 +8140,7 @@ var _bfDefaultConfig = {
   endDate: "2026-09-25",
   openHour: 8,
   closeHour: 12,
-  messages: "Завтраки за 999 тг, каждый день с 08:00 до 12:00, с 21.09 по 25.09, по адресу Абулхаир Хана 177",
+  messages: ["Завтраки за 999 тг", "Каждый день 08:00–12:00", "С 21.09 по 25.09", "Абулхаир Хана 177"],
   buttonText: "Получить",
   color: "#0a84ff"
 };
@@ -8158,7 +8164,7 @@ function loadBreakfastPromoConfig(cb) {
         endDate: s.endDate || _bfDefaultConfig.endDate,
         openHour: (s.openHour || s.openHour === 0) ? parseInt(s.openHour, 10) : _bfDefaultConfig.openHour,
         closeHour: (s.closeHour || s.closeHour === 0) ? parseInt(s.closeHour, 10) : _bfDefaultConfig.closeHour,
-        messages: (s.messages && s.messages.toString().trim()) ? s.messages.toString().replace(/\r/g, "").replace(/\n{2,}/g, "\n").trim() : _bfDefaultConfig.messages,
+        messages: (s.messages && s.messages.toString().trim()) ? s.messages.toString().split("\n").map(function(x) { return x.trim(); }).filter(Boolean) : _bfDefaultConfig.messages,
         buttonText: s.buttonText || _bfDefaultConfig.buttonText,
         color: s.color || _bfDefaultConfig.color
       };
@@ -8232,112 +8238,39 @@ function updateBreakfastPromoBar() {
   }
 
   bar.style.display = nowVisible ? "flex" : "none";
-  if (nowVisible && !_bfTickerBuilt && _bfConfig.messages) startBreakfastPromoTicker();
   bar.style.background = _bfConfig.color;
   var btnEl = document.getElementById("bfBarBtn");
   if (btnEl) { btnEl.textContent = _bfConfig.buttonText; btnEl.style.color = _bfConfig.color; }
   positionBreakfastPromoBar();
 }
 
-// ── Затухание вместо бегущей строки ──
-// Длинный текст сам делится на короткие надписи (по строкам, затем по запятым),
-// чтобы каждая помещалась в плашку целиком. Надпись плавно проявляется,
-// держится и плавно гаснет, затем появляется следующая.
-var BF_FADE_MS = 600;          // длительность появления / затухания
-var BF_HOLD_BASE_MS = 2200;    // сколько держится надпись (минимум)
-var BF_HOLD_PER_CHAR_MS = 45;  // + столько за каждый символ (чтобы успеть прочитать)
-var BF_MIN_SCALE = 0.85;       // насколько можно ужать шрифт, прежде чем делить надпись пополам
-var _bfTickerTimer = null, _bfTickerBuilt = false;
+var _bfFadeIndex = 0;
+var _bfFadeInterval = null;
 
-function _bfBalancedSplit(words, k, wFn) {
-  var m = words.length;
-  function seg(i, j) { return wFn(words.slice(i, j).join(" ")); }
-  var best = [], cut = [], c, i, j;
-  for (c = 0; c <= k; c++) { best[c] = []; cut[c] = []; }
-  for (j = 1; j <= m; j++) best[1][j] = seg(0, j);
-  for (c = 2; c <= k; c++) {
-    for (j = c; j <= m; j++) {
-      var bv = Infinity, bi = c - 1;
-      for (i = c - 1; i < j; i++) {
-        var v = Math.max(best[c - 1][i], seg(i, j));
-        if (v < bv) { bv = v; bi = i; }
-      }
-      best[c][j] = bv; cut[c][j] = bi;
-    }
-  }
-  var out = [], jj = m;
-  for (c = k; c >= 2; c--) { var ii = cut[c][jj]; out.unshift(words.slice(ii, jj).join(" ")); jj = ii; }
-  out.unshift(words.slice(0, jj).join(" "));
-  return out;
-}
-
-function _bfBuildParts(raw, maxW, wFn) {
-  var parts = [];
-  String(raw || "").split(/\n+/).forEach(function(line) {
-    line = line.trim();
-    if (!line) return;
-    var merged = [];
-    line.split(/\s*,\s*/).filter(Boolean).forEach(function(ph) {
-      var last = merged.length - 1;
-      if (last >= 0 && wFn(merged[last] + ", " + ph) <= maxW) merged[last] += ", " + ph;
-      else merged.push(ph);
-    });
-    merged.forEach(function(ph) {
-      var w = wFn(ph);
-      if (w <= maxW) { parts.push({ text: ph, scale: 1 }); return; }
-      if (maxW / w >= BF_MIN_SCALE) { parts.push({ text: ph, scale: maxW / w }); return; }
-      var words = ph.split(/\s+/);
-      var k = Math.min(words.length, Math.ceil(w / maxW));
-      var pieces = k > 1 ? _bfBalancedSplit(words, k, wFn) : [ph];
-      pieces.forEach(function(piece) {
-        var pw = wFn(piece);
-        parts.push({ text: piece, scale: pw > maxW ? Math.max(0.7, maxW / pw) : 1 });
-      });
-    });
-  });
-  return parts;
+function _bfApplyFade() {
+  var titleEl = document.getElementById("bfBarTitle");
+  if (!titleEl) return;
+  var messages = _bfConfig.messages;
+  if (!messages || !messages.length) return;
+  var text = messages[_bfFadeIndex % messages.length];
+  titleEl.style.opacity = "0";
+  setTimeout(function() {
+    titleEl.textContent = text;
+    titleEl.style.opacity = "1";
+  }, 600);
 }
 
 function startBreakfastPromoTicker() {
-  var box = document.getElementById("bfBarMarquee");
-  var el = document.getElementById("bfBarTitle");
-  if (!box || !el) return;
-  clearTimeout(_bfTickerTimer);
-  _bfTickerBuilt = false;
-
-  var maxW = box.parentNode.clientWidth - 2;
-  if (maxW < 40) return; // плашка сейчас скрыта — соберём, когда появится
-
-  var meas = document.createElement("span");
-  meas.style.cssText = "position:absolute;visibility:hidden;white-space:nowrap;font-weight:500;font-size:0.8rem;letter-spacing:.01em;left:0;top:0";
-  box.parentNode.appendChild(meas);
-  function wFn(str) { meas.textContent = str; return meas.getBoundingClientRect().width; }
-  var parts = _bfBuildParts(_bfConfig.messages, maxW, wFn);
-  box.parentNode.removeChild(meas);
-  if (!parts.length) return;
-  _bfTickerBuilt = true;
-
-  // Первое появление — без «обратного» перехода
-  el.style.setProperty("transition", "none", "important");
-  el.classList.add("bf-fade-out");
-  void el.offsetWidth;
-  el.style.removeProperty("transition");
-
-  function show(i) {
-    var part = parts[i];
-    el.classList.add("bf-fade-out");
-    el.textContent = part.text;
-    el.style.fontSize = (0.8 * part.scale) + "rem";
-    void el.offsetWidth;
-    el.classList.remove("bf-fade-out");
-    if (parts.length < 2) return; // одна надпись — просто проявилась и остаётся
-    var hold = Math.min(6000, BF_HOLD_BASE_MS + part.text.length * BF_HOLD_PER_CHAR_MS);
-    _bfTickerTimer = setTimeout(function() {
-      el.classList.add("bf-fade-out");
-      _bfTickerTimer = setTimeout(function() { show((i + 1) % parts.length); }, BF_FADE_MS);
-    }, BF_FADE_MS + hold);
-  }
-  show(0);
+  var titleEl = document.getElementById("bfBarTitle");
+  if (!titleEl) return;
+  _bfFadeIndex = 0;
+  titleEl.textContent = (_bfConfig.messages && _bfConfig.messages[0]) || "";
+  titleEl.style.opacity = "1";
+  if (_bfFadeInterval) clearInterval(_bfFadeInterval);
+  _bfFadeInterval = setInterval(function() {
+    _bfFadeIndex++;
+    _bfApplyFade();
+  }, 3000);
 }
 
 function positionBreakfastPromoBar() {
@@ -8358,12 +8291,6 @@ function initBreakfastPromoBar() {
     if (_bfBarInterval) clearInterval(_bfBarInterval);
     _bfBarInterval = setInterval(updateBreakfastPromoBar, 1000);
     startBreakfastPromoTicker();
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(startBreakfastPromoTicker);
-    var _bfResizeT = null;
-    window.addEventListener("resize", function() {
-      clearTimeout(_bfResizeT);
-      _bfResizeT = setTimeout(startBreakfastPromoTicker, 250);
-    });
   });
 }
 
@@ -8422,7 +8349,10 @@ function submitBreakfastPromo() {
       var d = JSON.parse(xhr.responseText);
       if (d.status === "success") {
         closeMov("breakfastPromoMov");
-        showFunModal("🍳", "Заявка принята! Ждём вас с " + _bfHoursText() + " — просто покажите этот экран официанту.", "Понятно");
+        showFunModal("🍳", name + ", ваш завтрак за 999 тг одобрен. Покажите этот экран официанту или кассиру. Приятного аппетита!", "Понятно");
+      } else if (d.duplicate) {
+        closeMov("breakfastPromoMov");
+        showFunModal("⏰", d.msg || "Этот номер уже получал завтрак сегодня. Приходите завтра!", "Понятно");
       } else {
         document.getElementById("bfPromoPhoneErr").textContent = "Не удалось отправить, попробуйте ещё раз";
       }
@@ -9787,7 +9717,9 @@ function admRenderItems(items) {
     var nm = document.createElement("div");
     nm.className = "adm-item-name", nm.textContent = item.name;
     var mt = document.createElement("div");
-    mt.className = "adm-item-meta", mt.textContent = item.cat + " · " + item.price.toLocaleString("ru") + " ₸" + (item.badge ? " · " + item.badge : ""), info.appendChild(nm), info.appendChild(mt);
+    var isTempActive = item.tempUntil && item.tempUntil > Date.now();
+    var priceText = isTempActive ? (item.tempPrice.toLocaleString("ru") + " ₸ (было " + item.price.toLocaleString("ru") + " ₸)") : (item.price.toLocaleString("ru") + " ₸");
+    mt.className = "adm-item-meta", mt.textContent = item.cat + " · " + priceText + (item.badge ? " · " + item.badge : ""), mt.style.color = isTempActive ? "#c77729" : "", info.appendChild(nm), info.appendChild(mt);
     var right = document.createElement("div");
     right.className = "adm-item-right";
     var badge = document.createElement("span");
@@ -9812,7 +9744,12 @@ function admOpenEdit(item) {
     b.classList.remove("sel")
   }), document.getElementById("customTimeRow").classList.remove("show"), admUpdateStopStatus(item.until || 0), admUpdatePhotoPreview(item.photo), document.getElementById("editPhoto").oninput = function() {
     admUpdatePhotoPreview(this.value)
-  }
+  };
+  _selTempPriceTimeMode = null;
+  document.querySelectorAll(".adm-tp-time-btn").forEach(function(b) { b.classList.remove("sel"); });
+  document.getElementById("customTempPriceTimeRow").classList.remove("show");
+  document.getElementById("editTempPriceVal").value = item.tempPrice || "";
+  admUpdateTempPriceStatus(item.tempUntil || 0, item.tempPrice || 0);
 }
 
 function optimizeCloudinaryUrl(url, width) {
@@ -9850,7 +9787,7 @@ function admUpdatePhotoPreview(url) {
 var _selTimeMode = null;
 
 function admSelTime(btn, mode) {
-  document.querySelectorAll(".adm-time-btn").forEach(function(b) {
+  document.querySelectorAll(".adm-time-btn:not(.adm-tp-time-btn)").forEach(function(b) {
     b.classList.remove("sel")
   }), btn.classList.add("sel"), _selTimeMode = mode;
   var customRow = document.getElementById("customTimeRow");
@@ -9923,6 +9860,111 @@ function admUpdateStopStatus(until) {
       kzD = new Date(d.getTime() + 18e6);
     statusEl.innerHTML = "В стопе до <b>" + kzD.getUTCDate() + "." + (kzD.getUTCMonth() + 1).toString().padStart(2, "0") + " " + kzH + ":" + kzM + "</b>", statusEl.style.color = "#1d1d1f", removeBtn && (removeBtn.style.display = "block")
   } else statusEl.textContent = "Доступно", statusEl.style.color = "#1d1d1f", removeBtn && (removeBtn.style.display = "none")
+}
+
+var _selTempPriceTimeMode = null;
+
+function admSelTempPriceTime(btn, mode) {
+  document.querySelectorAll(".adm-tp-time-btn").forEach(function(b) {
+    b.classList.remove("sel")
+  });
+  btn.classList.add("sel");
+  _selTempPriceTimeMode = mode;
+  var customRow = document.getElementById("customTempPriceTimeRow");
+  "custom" === mode ? customRow.classList.add("show") : customRow.classList.remove("show");
+}
+
+function admGetTempPriceUntilTs() {
+  var now = new Date();
+  var kzNow = new Date(now.getTime() + 18e6);
+  if (_selTempPriceTimeMode === "eod") {
+    var endHour = "samal" === admBranch ? 0 : 2;
+    var endDate = new Date(kzNow);
+    endDate.setUTCHours(endHour - 5, 0, 0, 0);
+    if (endDate <= now) endDate.setUTCDate(endDate.getUTCDate() + 1);
+    return endDate.getTime();
+  }
+  if (_selTempPriceTimeMode === "24h") return now.getTime() + 864e5;
+  if (_selTempPriceTimeMode === "week") return now.getTime() + 6048e5;
+  if (_selTempPriceTimeMode === "custom") {
+    var val = document.getElementById("customTempPriceVal").value;
+    if (!val) return 0;
+    var parts = val.split("-");
+    var kzEnd = new Date(Date.UTC(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]), 23 - 5, 59, 59));
+    return kzEnd.getTime();
+  }
+  return 0;
+}
+
+function admApplyTempPrice() {
+  if (!admEditId) return void showToast("Выберите блюдо");
+  var priceVal = document.getElementById("editTempPriceVal").value;
+  if (!priceVal || parseInt(priceVal) <= 0) return void showToast("Укажите временную цену");
+  if (!_selTempPriceTimeMode) return void showToast("Выберите срок действия");
+  var until = admGetTempPriceUntilTs();
+  if (!until) return void showToast("Укажите дату/время");
+  var errEl = document.getElementById("editErr");
+  errEl.textContent = "Ставим временную цену...";
+  var xhr = new XMLHttpRequest();
+  var url = API + "?action=setTempPrice&branch=" + admBranch + "&id=" + encodeURIComponent(admEditId) + "&price=" + parseInt(priceVal) + "&until=" + until;
+  xhr.open("GET", url, true);
+  xhr.timeout = 8000;
+  xhr.onload = function() {
+    try {
+      var d = JSON.parse(xhr.responseText);
+      if (d.status === "success") {
+        showToast("Временная цена поставлена ✓");
+        errEl.textContent = "";
+        admUpdateTempPriceStatus(until, parseInt(priceVal));
+        localStorage.removeItem("st_menu_" + admBranch);
+      } else {
+        errEl.textContent = d.msg || "Ошибка";
+      }
+    } catch (e) {
+      errEl.textContent = "Ошибка ответа";
+    }
+  };
+  xhr.onerror = xhr.ontimeout = function() {
+    errEl.textContent = "Нет соединения";
+  };
+  xhr.send();
+}
+
+function admRemoveTempPrice() {
+  if (!admEditId) return;
+  var xhr = new XMLHttpRequest();
+  var url = API + "?action=removeTempPrice&branch=" + admBranch + "&id=" + encodeURIComponent(admEditId);
+  xhr.open("GET", url, true);
+  xhr.timeout = 8000;
+  xhr.onload = function() {
+    try {
+      if (JSON.parse(xhr.responseText).status === "success") {
+        showToast("Обычная цена возвращена ✓");
+        admUpdateTempPriceStatus(0, 0);
+        localStorage.removeItem("st_menu_" + admBranch);
+      }
+    } catch (e) {}
+  };
+  xhr.send();
+}
+
+function admUpdateTempPriceStatus(until, price) {
+  var statusEl = document.getElementById("editTempPriceStatus");
+  var removeBtn = document.getElementById("editTempPriceRemoveBtn");
+  if (!statusEl) return;
+  if (until && until > Date.now() && price) {
+    var d = new Date(until);
+    var kzH = ((d.getUTCHours() + 5) % 24).toString().padStart(2, "0");
+    var kzM = d.getUTCMinutes().toString().padStart(2, "0");
+    var kzD = new Date(d.getTime() + 18e6);
+    statusEl.innerHTML = "Сейчас: <b>" + price + " ₸</b> до <b>" + kzD.getUTCDate() + "." + (kzD.getUTCMonth() + 1).toString().padStart(2, "0") + " " + kzH + ":" + kzM + "</b>";
+    statusEl.style.color = "#1d1d1f";
+    if (removeBtn) removeBtn.style.display = "block";
+  } else {
+    statusEl.textContent = "Обычная цена, временной нет";
+    statusEl.style.color = "#1d1d1f";
+    if (removeBtn) removeBtn.style.display = "none";
+  }
 }
 
 function admSaveEdit() {
@@ -10240,7 +10282,7 @@ function admLoadBannerSettings() {
     document.getElementById("admBannerEnd").value = s.endDate || "2026-09-25";
     document.getElementById("admBannerOpenHour").value = (s.openHour || s.openHour === 0) ? s.openHour : 8;
     document.getElementById("admBannerCloseHour").value = (s.closeHour || s.closeHour === 0) ? s.closeHour : 12;
-    document.getElementById("admBannerMessages").value = s.messages || "Завтраки за 999 тг, каждый день с 08:00 до 12:00, с 21.09 по 25.09, по адресу Абулхаир Хана 177";
+    document.getElementById("admBannerMessages").value = s.messages || "Завтраки за 999 тг\nКаждый день 08:00–12:00\nС 21.09 по 25.09\nАбулхаир Хана 177";
     document.getElementById("admBannerButtonText").value = s.buttonText || "Получить";
     var color = s.color || "#0a84ff";
     document.getElementById("admBannerColor").value = color;
