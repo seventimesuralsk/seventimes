@@ -5260,7 +5260,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
      }
    }
 
-   const API = "https://script.google.com/macros/s/AKfycbyUrP4ttRwcuLpdAiF7zT4K87DhCW-S1ZBxONc9_1KdB2d_OyPxH6yJ5fagQeomdcdxxw/exec",
+   const API = "https://script.google.com/macros/s/AKfycbx0mNA_Pdr_0B3ehFT9F8Oe3S8-L0PmQEjuR_jEsjqGmLfBHDokItt_DhWP8bhGHwrwdA/exec",
   WA = "77760709898",
   CAT_META = {
     "Новинки": {
@@ -5874,6 +5874,104 @@ function getClientId() {
   return id || (id = "c_" + Date.now() + "_" + Math.random().toString(36).slice(2, 9), localStorage.setItem("st_client_id", id)), id
 }
 
+// ══════════════════════════════════════════════════════════════════
+// ── ПОЛНОЕ ОТСЛЕЖИВАНИЕ ГОСТЕЙ — устройство, источник перехода,
+// город/IP (публичный, через открытый сервис — сам браузер это
+// узнаёт про себя, сайт не может "подсмотреть" IP напрямую без
+// такого сервиса), время на сайте, время на каждом блюде, "сейчас
+// на сайте" (heartbeat). Пишет в лист "Гость_Сессии".
+// ══════════════════════════════════════════════════════════════════
+var _guestIp = "";
+var _guestCity = "";
+var _guestDevice = "";
+var _guestSource = "";
+var _sessionStartTs = Date.now();
+var _detailOpenTs = 0;
+var _detailOpenItem = "";
+
+function detectGuestDevice() {
+  var ua = navigator.userAgent || "";
+  var os = /iPhone/i.test(ua) ? "iPhone" : /iPad/i.test(ua) ? "iPad" : /Android/i.test(ua) ? "Android" : /Macintosh/i.test(ua) ? "Mac" : /Windows/i.test(ua) ? "Windows" : "Другое";
+  var browser = /CriOS|Chrome/i.test(ua) ? "Chrome" : /FBAN|FBAV/i.test(ua) ? "Facebook/Instagram-браузер" : /Instagram/i.test(ua) ? "Instagram-браузер" : /Safari/i.test(ua) ? "Safari" : /Firefox/i.test(ua) ? "Firefox" : "Другой";
+  return os + " · " + browser;
+}
+
+function detectGuestSource() {
+  var ref = (document.referrer || "").toLowerCase();
+  if (!ref) return "Прямой переход (QR-код или ссылка напрямую)";
+  if (ref.indexOf("instagram.com") !== -1) return "Instagram";
+  if (ref.indexOf("2gis") !== -1) return "2ГИС";
+  if (ref.indexOf("google.") !== -1) return "Поиск Google";
+  if (ref.indexOf("yandex.") !== -1) return "Поиск Яндекс";
+  if (ref.indexOf("whatsapp") !== -1) return "WhatsApp";
+  if (ref.indexOf("t.me") !== -1 || ref.indexOf("telegram") !== -1) return "Telegram";
+  if (ref.indexOf("facebook.com") !== -1) return "Facebook";
+  try { return "Другой сайт (" + new URL(document.referrer).hostname + ")"; } catch (e) { return "Другое"; }
+}
+
+function logGuestEvent(eventLabel, details) {
+  try {
+    var params = {
+      action: "logGuestEvent",
+      clientId: getClientId(),
+      event: eventLabel,
+      details: details || "",
+      branch: branch || "",
+      device: _guestDevice,
+      source: _guestSource,
+      city: _guestCity,
+      ip: _guestIp
+    };
+    var url = API + "?" + Object.keys(params).map(function(k) { return k + "=" + encodeURIComponent(params[k]); }).join("&");
+    fetch(url).catch(function() {});
+  } catch (e) {}
+}
+
+function initGuestTracking() {
+  _guestDevice = detectGuestDevice();
+  _guestSource = detectGuestSource();
+  _sessionStartTs = Date.now();
+
+  fetch("https://ipapi.co/json/").then(function(r) { return r.json(); }).then(function(d) {
+    _guestIp = d.ip || "";
+    _guestCity = (d.city || "") + (d.country_name ? ", " + d.country_name : "");
+    logGuestEvent("Зашёл на сайт", "");
+  }).catch(function() {
+    logGuestEvent("Зашёл на сайт", "");
+  });
+
+  if (_guestPingInterval) clearInterval(_guestPingInterval);
+  _guestPingInterval = setInterval(function() {
+    try {
+      var url = API + "?action=guestPing&clientId=" + encodeURIComponent(getClientId());
+      fetch(url).catch(function() {});
+    } catch (e) {}
+  }, 20000);
+
+  document.addEventListener("visibilitychange", function() {
+    if (document.visibilityState === "hidden") {
+      var seconds = Math.round((Date.now() - _sessionStartTs) / 1000);
+      logGuestEvent("Ушёл с сайта", seconds + " сек на сайте");
+    }
+  });
+}
+var _guestPingInterval = null;
+
+function trackDetailOpen(itemName) {
+  _detailOpenTs = Date.now();
+  _detailOpenItem = itemName;
+}
+
+function trackDetailClose() {
+  if (!_detailOpenTs || !_detailOpenItem) return;
+  var seconds = Math.round((Date.now() - _detailOpenTs) / 1000);
+  if (seconds >= 1) logGuestEvent("Смотрел блюдо (время)", _detailOpenItem + " — " + seconds + " сек");
+  _detailOpenTs = 0;
+  _detailOpenItem = "";
+}
+
+document.addEventListener("DOMContentLoaded", initGuestTracking);
+
 function shortProfileName(fullName) {
   var parts = (fullName || "").trim().split(/\s+/).filter(Boolean);
   if (!parts.length) return "";
@@ -6078,13 +6176,7 @@ const STAT_TYPE_LABELS = {
   data_edit: "Изменил данные",
   pay_select: "Выбрал оплату",
   type_switch: "Переключил доставку/самовывоз",
-  order: "Заказал",
-  tab_news: "Открыл вкладку Сообщения",
-  tab_services: "Открыл вкладку Сервисы",
-  tab_hiring: "Открыл вкладку Вакансии",
-  msg_open_ai: "Открыл сообщение SEVEN AI",
-  msg_open_promo: "Открыл сообщение Акции и скидки",
-  msg_open_safety: "Открыл сообщение Безопасность"
+  order: "Заказал"
 };
 let _statBuffer = [];
 
@@ -6112,6 +6204,17 @@ function logStat(type, details) {
     type: type,
     details: details
   }), _statBuffer.length > 200 && _statBuffer.shift())
+}
+
+// Считает вообще ВСЕХ, даже гостей, которые ни разу не оставляли имя/телефон
+// (в отличие от logStat — та копит клики в памяти браузера и шлёт только
+// после регистрации гостя, поэтому незарегистрированные клики раньше терялись).
+// Пишет в отдельный лист "Интерес_Гостей" в таблице.
+function logInterestStat(type) {
+  try {
+    var url = API + "?action=logInterestStat&type=" + encodeURIComponent(type) + "&branch=" + encodeURIComponent(branch || "");
+    fetch(url).catch(function() {});
+  } catch (e) {}
 }
 
 function flushStatBuffer() {
@@ -7584,6 +7687,7 @@ function parseMods(str) {
 
 function openDetail(item) {
   curItem = item, curQty = Math.max(1, getQty(item.id)), curMod = null, logStat("view", item.name);
+  trackDetailOpen(item.name);
   let el = document.getElementById("dimg");
   var detailPhotoUrl = item.photo ? convertPhotoUrl(item.photo, 640) : "";
   el.innerHTML = detailPhotoUrl ? `<img src="${detailPhotoUrl}" alt="" decoding="async" onerror="imgErrorRetry(this,'Фото добавляется')">` : '<span class="item-photo-placeholder">' + t("photo_coming") + "</span>", document.getElementById("dname").textContent = item.name;
@@ -7656,6 +7760,7 @@ function getCategoryOfItem(item) {
 }
 
 function closeDetail() {
+  trackDetailClose();
   closeMov("detailMov")
 }
 
@@ -8635,9 +8740,9 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 function switchBottomTab(tab) {
-  if (tab === "vacancy") { logStat("tab_hiring", ""); hr_open(); return; }
-  if (tab === "news") logStat("tab_news", "");
-  if (tab === "services") logStat("tab_services", "");
+  if (tab === "vacancy") { logInterestStat("tab_hiring"); hr_open(); return; }
+  if (tab === "news") logInterestStat("tab_news");
+  if (tab === "services") logInterestStat("tab_services");
 
   var hrOv = document.getElementById("hrFormOv");
   if (hrOv && hrOv.style.display !== "none") {
@@ -9043,7 +9148,7 @@ function openNewsRow(i) {
   _newsMarkRead(_newsKey(n, i));
   _newsRenderList();
   var statKey = n.title === "SEVEN AI" ? "msg_open_ai" : n.title === "Акции и скидки" ? "msg_open_promo" : n.title === "Безопасность" ? "msg_open_safety" : "";
-  if (statKey) logStat(statKey, "");
+  if (statKey) logInterestStat(statKey);
   var photoUrl = n.photo ? convertPhotoUrl(n.photo, 640) : "";
   var bubbleHtml = (photoUrl ? '<img src="' + photoUrl + '" style="width:100%;border-radius:10px;margin-bottom:8px;display:block" loading="lazy">' : "") + (n.text || "");
   var headerIcon = photoUrl || _newsCategoryIcons[n.title] || "";
@@ -10472,13 +10577,28 @@ function admSaveStatus() {
 
 function admLoadStats() {
   let body = document.getElementById("admStatsBody");
-  body && (body.innerHTML = '<div style="text-align:center;padding:30px 0;color:#6e6e73;font-size:0.7rem">Загрузка...</div>', apiGet({
-    action: "getAdminStats"
-  }, function(d) {
-    renderAdminStats(d)
+  if (!body) return;
+  body.innerHTML = '<div style="text-align:center;padding:30px 0;color:#6e6e73;font-size:0.7rem">Загрузка...</div>';
+  var mainStats = null, interestCounts = null, onlineCount = 0, pending = 3;
+  function tryRender() {
+    pending--;
+    if (pending === 0) renderAdminStats(mainStats || {}, interestCounts || {}, onlineCount);
+  }
+  apiGet({ action: "getAdminStats" }, function(d) {
+    mainStats = d; tryRender();
   }, function(err) {
-    body.innerHTML = '<div style="text-align:center;padding:30px 0;color:#1d1d1f;font-size:0.7rem">Ошибка: ' + err + "</div>"
-  }))
+    body.innerHTML = '<div style="text-align:center;padding:30px 0;color:#1d1d1f;font-size:0.7rem">Ошибка: ' + err + "</div>";
+  });
+  apiGet({ action: "getInterestStats" }, function(d) {
+    interestCounts = (d && d.counts) || {}; tryRender();
+  }, function() {
+    interestCounts = {}; tryRender();
+  });
+  apiGet({ action: "getOnlineGuests" }, function(d) {
+    onlineCount = (d && d.online) || 0; tryRender();
+  }, function() {
+    onlineCount = 0; tryRender();
+  });
 }
 
 function topNList(counts, n) {
@@ -10499,7 +10619,8 @@ function admStatSection(title, items, emptyTxt) {
   }) : h += '<div style="font-size:0.69rem;color:#6e6e73">' + emptyTxt + "</div>", h += "</div>"
 }
 
-function renderAdminStats(d) {
+function renderAdminStats(d, interestCounts, onlineCount) {
+  interestCounts = interestCounts || {};
   let body = document.getElementById("admStatsBody");
   if (!body) return;
   let html = "",
@@ -10507,6 +10628,7 @@ function renderAdminStats(d) {
     samalV = vb.samal || 0,
     skoroV = vb.skoro || 0,
     ot = d.ordersByType || {};
+  html += '<div class="adm-stop-section" style="text-align:center;margin-bottom:14px;background:#25d36614;border:1px solid #25d36640"><div style="font-size:1.23rem;font-weight:800;color:#1d1d1f">🟢 ' + (onlineCount || 0) + '</div><div style="font-size:0.62rem;color:#6e6e73;margin-top:2px">Сейчас на сайте</div></div>';
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">', html += '<div class="adm-stop-section" style="text-align:center;margin-bottom:0"><div style="font-size:1.23rem;font-weight:800;color:#1d1d1f">' + (d.totalVisits || 0) + '</div><div style="font-size:0.62rem;color:#6e6e73;margin-top:2px">Всего гостей</div></div>', html += '<div class="adm-stop-section" style="text-align:center;margin-bottom:0"><div style="font-size:1.23rem;font-weight:800;color:#1d1d1f">' + (d.totalOrders || 0) + '</div><div style="font-size:0.62rem;color:#6e6e73;margin-top:2px">Всего заказов</div></div>', html += "</div>", html += '<div class="adm-stop-section" style="margin-bottom:14px">', html += '<div style="font-weight:400;color:#1d1d1f;margin-bottom:8px">Коротко</div>', html += '<div style="font-size:0.69rem;color:#333;line-height:1.9">', html += "Доставка: <b>" + (ot.Доставка || 0) + "</b> · Самовывоз: <b>" + (ot.Самовывоз || 0) + "</b><br>", html += "Самал смотрели: <b>" + samalV + "</b> раз · Скоробогатова: <b>" + skoroV + "</b> раз<br>";
   let pc = d.payCounts || {},
     payKeys = Object.keys(pc);
@@ -10530,14 +10652,15 @@ function renderAdminStats(d) {
     return (decLabels[k] || k) + ": <b>" + dec[k] + "</b>"
   }).join(" · ")), html += "</div></div>";
   var sectionsInterest = [
-    { name: "Вкладка «Сообщения»", count: d.tabNewsCount || 0 },
-    { name: "Вкладка «Сервисы»", count: d.tabServicesCount || 0 },
-    { name: "Вкладка «Вакансии»", count: d.tabHiringCount || 0 },
-    { name: "Сообщение SEVEN AI", count: d.msgOpenAiCount || 0 },
-    { name: "Сообщение «Акции и скидки»", count: d.msgOpenPromoCount || 0 },
-    { name: "Сообщение «Безопасность»", count: d.msgOpenSafetyCount || 0 }
+    { name: "Вкладка «Сообщения»", count: interestCounts["Открыл вкладку Сообщения"] || 0 },
+    { name: "Вкладка «Сервисы»", count: interestCounts["Открыл вкладку Сервисы"] || 0 },
+    { name: "Вкладка «Вакансии»", count: interestCounts["Открыл вкладку Вакансии"] || 0 },
+    { name: "Сообщение SEVEN AI", count: interestCounts["Открыл сообщение SEVEN AI"] || 0 },
+    { name: "Сообщение «Акции и скидки»", count: interestCounts["Открыл сообщение Акции и скидки"] || 0 },
+    { name: "Сообщение «Безопасность»", count: interestCounts["Открыл сообщение Безопасность"] || 0 }
   ].sort(function(a, b) { return b.count - a.count; });
   html += admStatSection("Что интересно гостям (клики)", sectionsInterest, "Пока нет данных");
+  html += '<div style="font-size:0.62rem;color:#6e6e73;margin-bottom:14px;line-height:1.6">Подробный лог по каждому гостю (устройство, откуда пришёл, город, IP, сколько секунд смотрел каждое блюдо) — в Google Таблице, лист «Гость_Сессии». Тут слишком много данных, чтобы уместить в экран.</div>';
   html += admStatSection("Что чаще смотрят", topNList(d.viewCounts, 10), "Пока нет данных"), html += admStatSection("Что чаще кладут в корзину", topNList(d.cartAddCounts, 10), "Пока нет данных"), html += admStatSection("Что чаще заказывают", topNList(d.orderItemCounts, 10), "Пока нет данных"), html += admStatSection("Какие категории смотрят чаще", topNList(d.catClickCounts, 10), "Пока нет данных"), html += admStatSection("Что ищут в поиске", topNList(d.searchCounts, 10), "Пока нет данных"), html += admStatSection("↩Что кладут, а потом убирают", topNList(d.cartRemoveCounts, 10), "Пока нет данных");
   let byHour = d.ordersByHour || {},
     hourKeys = Object.keys(byHour).sort();
