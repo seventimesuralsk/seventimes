@@ -5927,6 +5927,31 @@ function logGuestEvent(eventLabel, details) {
   } catch (e) {}
 }
 
+// Для событий "человек уже уходит со страницы" — обычный fetch может
+// оборваться браузером на середине, если вкладка закрывается прямо сейчас.
+// sendBeacon специально для этого создан — гарантированно долетает.
+function logGuestEventBeacon(eventLabel, details) {
+  try {
+    var params = {
+      action: "logGuestEvent",
+      clientId: getClientId(),
+      event: eventLabel,
+      details: details || "",
+      branch: branch || "",
+      device: _guestDevice,
+      source: _guestSource,
+      city: _guestCity,
+      ip: _guestIp
+    };
+    var url = API + "?" + Object.keys(params).map(function(k) { return k + "=" + encodeURIComponent(params[k]); }).join("&");
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(url);
+    } else {
+      fetch(url).catch(function() {});
+    }
+  } catch (e) {}
+}
+
 function initGuestTracking() {
   _guestDevice = detectGuestDevice();
   _guestSource = detectGuestSource();
@@ -5958,22 +5983,27 @@ function initGuestTracking() {
     logGuestEvent("Зашёл на сайт", visitLabel);
   }
 
-  fetch("https://ipapi.co/json/").then(function(r) { return r.json(); }).then(function(d) {
-    if (!d || d.error) throw new Error("ipapi failed");
-    _guestIp = d.ip || "";
-    _guestCity = (d.city || "") + (d.country_name ? ", " + d.country_name : "");
-    finishSessionStart();
-  }).catch(function() {
-    // Основной сервис не ответил (блокировщик рекламы, лимит запросов,
-    // сбой) — пробуем запасной, чтобы IP/город не пропадали совсем.
-    fetch("https://get.geojs.io/v1/ip/geo.json").then(function(r) { return r.json(); }).then(function(d) {
+  // Отложено на 2 сек, чтобы этот запрос НЕ конкурировал за канал связи
+  // с загрузкой меню в первую, самую важную секунду — на медленном
+  // интернете меню должно открыться первым, а IP/город подождёт.
+  setTimeout(function() {
+    fetch("https://ipapi.co/json/").then(function(r) { return r.json(); }).then(function(d) {
+      if (!d || d.error) throw new Error("ipapi failed");
       _guestIp = d.ip || "";
-      _guestCity = (d.city || "") + (d.country ? ", " + d.country : "");
+      _guestCity = (d.city || "") + (d.country_name ? ", " + d.country_name : "");
       finishSessionStart();
     }).catch(function() {
-      finishSessionStart();
+      // Основной сервис не ответил (блокировщик рекламы, лимит запросов,
+      // сбой) — пробуем запасной, чтобы IP/город не пропадали совсем.
+      fetch("https://get.geojs.io/v1/ip/geo.json").then(function(r) { return r.json(); }).then(function(d) {
+        _guestIp = d.ip || "";
+        _guestCity = (d.city || "") + (d.country ? ", " + d.country : "");
+        finishSessionStart();
+      }).catch(function() {
+        finishSessionStart();
+      });
     });
-  });
+  }, 2000);
 
   if (_guestPingInterval) clearInterval(_guestPingInterval);
   _guestPingInterval = setInterval(function() {
@@ -5983,16 +6013,27 @@ function initGuestTracking() {
     } catch (e) {}
   }, 20000);
 
+  var _sessionEndLogged = false;
+  function logSessionEnd() {
+    if (_sessionEndLogged) return;
+    _sessionEndLogged = true;
+    var seconds = Math.round((Date.now() - _sessionStartTs) / 1000);
+    logGuestEventBeacon("Ушёл с сайта", seconds + " сек на сайте");
+    if (_cartOpenedNoOrder && cart.length) logGuestEventBeacon("Открыл корзину, но не заказал", cart.map(function(c) { return c.name + " x" + c.qty; }).join(", "));
+    if (!branch) logGuestEventBeacon("Ушёл, не выбрав филиал", "");
+    if (_bookOpenedNoSubmit) logGuestEventBeacon("Открыл бронь, но не дозаполнил", "шаг: " + (_bookLastStep || "начало"));
+    if (_searchOpenedNoType) logGuestEventBeacon("Открыл поиск, ничего не ввёл", "");
+    logGuestEventBeacon("Глубина просмотра меню", _maxScrollDepth + "%");
+    if (_visitedCats.size) logGuestEventBeacon("Категорий за визит", _visitedCats.size + ": " + Array.from(_visitedCats).join(", "));
+  }
+  // pagehide — ловит уход по новой ссылке/закрытие вкладки надёжнее, чем
+  // просто visibilitychange (та в основном про сворачивание/переключение).
+  window.addEventListener("pagehide", logSessionEnd);
   document.addEventListener("visibilitychange", function() {
     if (document.visibilityState === "hidden") {
-      var seconds = Math.round((Date.now() - _sessionStartTs) / 1000);
-      logGuestEvent("Ушёл с сайта", seconds + " сек на сайте");
-      if (_cartOpenedNoOrder && cart.length) logGuestEvent("Открыл корзину, но не заказал", cart.map(function(c) { return c.name + " x" + c.qty; }).join(", "));
-      if (!branch) logGuestEvent("Ушёл, не выбрав филиал", "");
-      if (_bookOpenedNoSubmit) logGuestEvent("Открыл бронь, но не дозаполнил", "шаг: " + (_bookLastStep || "начало"));
-      if (_searchOpenedNoType) logGuestEvent("Открыл поиск, ничего не ввёл", "");
-      logGuestEvent("Глубина просмотра меню", _maxScrollDepth + "%");
-      if (_visitedCats.size) logGuestEvent("Категорий за визит", _visitedCats.size + ": " + Array.from(_visitedCats).join(", "));
+      logSessionEnd();
+    } else {
+      _sessionEndLogged = false; // вернулся на вкладку — не настоящий уход, разрешаем логировать уход заново потом
     }
   });
 }
