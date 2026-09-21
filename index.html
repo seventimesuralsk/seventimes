@@ -8244,7 +8244,7 @@ function updateBreakfastPromoBar() {
 // чтобы каждая помещалась в плашку целиком. Надпись плавно проявляется,
 // держится и плавно гаснет, затем появляется следующая.
 var BF_FADE_MS = 600;          // длительность появления / затухания
-var BF_HOLD_BASE_MS = 1200;    // сколько держится надпись (минимум)
+var BF_HOLD_BASE_MS = 2200;    // сколько держится надпись (минимум)
 var BF_HOLD_PER_CHAR_MS = 45;  // + столько за каждый символ (чтобы успеть прочитать)
 var BF_MIN_SCALE = 0.85;       // насколько можно ужать шрифт, прежде чем делить надпись пополам
 var _bfTickerTimer = null, _bfTickerBuilt = false;
@@ -8374,7 +8374,7 @@ function _bfHoursText() {
 
 function openBreakfastPromo() {
   if (!breakfastPromoActiveDay() || !breakfastPromoActiveHour()) {
-    showFunModal("Акция действует только с " + _bfHoursText() + ". Загляните в это время.", "Хорошо");
+    showFunModal("⏰", "Акция действует только с " + _bfHoursText() + ". Загляните в это время — обязательно успеете 🍳", "Понятно");
     return;
   }
   document.getElementById("bfPromoName").value = "";
@@ -8422,7 +8422,7 @@ function submitBreakfastPromo() {
       var d = JSON.parse(xhr.responseText);
       if (d.status === "success") {
         closeMov("breakfastPromoMov");
-        showFunModal("Ваш завтрак за 999 тг подтвержден." "Просто покажите этот экран официанту или кассиру!" "Приятного аппетита!", "Хорошо");
+        showFunModal("🍳", "Заявка принята! Ждём вас с " + _bfHoursText() + " — просто покажите этот экран официанту.", "Понятно");
       } else {
         document.getElementById("bfPromoPhoneErr").textContent = "Не удалось отправить, попробуйте ещё раз";
       }
