@@ -3823,6 +3823,31 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
   animation-duration: 1.4s !important;
 }
 
+/* Плашка акции сверху: вместо бегущей строки — плавное затухание.
+   Каждый текст проявляется, держится и плавно гаснет; потом следующий.
+   Это исключение из правила «без анимаций» выше. */
+#bfBarMarquee {
+  display: block !important;
+  animation: none !important;
+  transform: none !important;
+}
+
+#bfBarTitle {
+  display: inline-block !important;
+  padding-right: 0 !important;
+  opacity: 1;
+  transition: opacity .6s ease !important;
+  transition-duration: .6s !important;
+}
+
+#bfBarTitle.bf-fade-out {
+  opacity: 0;
+}
+
+#bfBarTitleDup {
+  display: none !important;
+}
+
   </style>
  </head>
  <body>
@@ -3830,7 +3855,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
    <div class="branch-dropdown-backdrop" id="branchDropdownBackdrop" onclick="closeBranchDropdown()">
    </div>
    <div id="breakfastPromoBar" style="display:none;align-items:center;gap:12px;position:fixed;top:0;left:0;right:0;z-index:320;background:rgba(10,132,255,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.15);padding:11px 16px">
-    <div style="flex:1;min-width:0;overflow:hidden;height:17px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 16px,#000 calc(100% - 16px),transparent);mask-image:linear-gradient(90deg,transparent,#000 16px,#000 calc(100% - 16px),transparent)">
+    <div style="flex:1;min-width:0;overflow:hidden;height:17px">
      <div id="bfBarMarquee" style="display:inline-flex;white-space:nowrap;will-change:transform">
       <span id="bfBarTitle" style="height:17px;line-height:17px;font-weight:500;font-size:0.8rem;letter-spacing:.01em;color:#fff;padding-right:48px">Завтраки за 999 тг</span>
       <span id="bfBarTitleDup" style="height:17px;line-height:17px;font-weight:500;font-size:0.8rem;letter-spacing:.01em;color:#fff;padding-right:48px">Завтраки за 999 тг</span>
@@ -8133,7 +8158,7 @@ function loadBreakfastPromoConfig(cb) {
         endDate: s.endDate || _bfDefaultConfig.endDate,
         openHour: (s.openHour || s.openHour === 0) ? parseInt(s.openHour, 10) : _bfDefaultConfig.openHour,
         closeHour: (s.closeHour || s.closeHour === 0) ? parseInt(s.closeHour, 10) : _bfDefaultConfig.closeHour,
-        messages: (s.messages && s.messages.toString().trim()) ? s.messages.toString().replace(/\n+/g, " ").trim() : _bfDefaultConfig.messages,
+        messages: (s.messages && s.messages.toString().trim()) ? s.messages.toString().replace(/\r/g, "").replace(/\n{2,}/g, "\n").trim() : _bfDefaultConfig.messages,
         buttonText: s.buttonText || _bfDefaultConfig.buttonText,
         color: s.color || _bfDefaultConfig.color
       };
@@ -8207,36 +8232,112 @@ function updateBreakfastPromoBar() {
   }
 
   bar.style.display = nowVisible ? "flex" : "none";
+  if (nowVisible && !_bfTickerBuilt && _bfConfig.messages) startBreakfastPromoTicker();
   bar.style.background = _bfConfig.color;
   var btnEl = document.getElementById("bfBarBtn");
   if (btnEl) { btnEl.textContent = _bfConfig.buttonText; btnEl.style.color = _bfConfig.color; }
   positionBreakfastPromoBar();
 }
 
+// ── Затухание вместо бегущей строки ──
+// Длинный текст сам делится на короткие надписи (по строкам, затем по запятым),
+// чтобы каждая помещалась в плашку целиком. Надпись плавно проявляется,
+// держится и плавно гаснет, затем появляется следующая.
+var BF_FADE_MS = 600;          // длительность появления / затухания
+var BF_HOLD_BASE_MS = 2200;    // сколько держится надпись (минимум)
+var BF_HOLD_PER_CHAR_MS = 45;  // + столько за каждый символ (чтобы успеть прочитать)
+var BF_MIN_SCALE = 0.85;       // насколько можно ужать шрифт, прежде чем делить надпись пополам
+var _bfTickerTimer = null, _bfTickerBuilt = false;
+
+function _bfBalancedSplit(words, k, wFn) {
+  var m = words.length;
+  function seg(i, j) { return wFn(words.slice(i, j).join(" ")); }
+  var best = [], cut = [], c, i, j;
+  for (c = 0; c <= k; c++) { best[c] = []; cut[c] = []; }
+  for (j = 1; j <= m; j++) best[1][j] = seg(0, j);
+  for (c = 2; c <= k; c++) {
+    for (j = c; j <= m; j++) {
+      var bv = Infinity, bi = c - 1;
+      for (i = c - 1; i < j; i++) {
+        var v = Math.max(best[c - 1][i], seg(i, j));
+        if (v < bv) { bv = v; bi = i; }
+      }
+      best[c][j] = bv; cut[c][j] = bi;
+    }
+  }
+  var out = [], jj = m;
+  for (c = k; c >= 2; c--) { var ii = cut[c][jj]; out.unshift(words.slice(ii, jj).join(" ")); jj = ii; }
+  out.unshift(words.slice(0, jj).join(" "));
+  return out;
+}
+
+function _bfBuildParts(raw, maxW, wFn) {
+  var parts = [];
+  String(raw || "").split(/\n+/).forEach(function(line) {
+    line = line.trim();
+    if (!line) return;
+    var merged = [];
+    line.split(/\s*,\s*/).filter(Boolean).forEach(function(ph) {
+      var last = merged.length - 1;
+      if (last >= 0 && wFn(merged[last] + ", " + ph) <= maxW) merged[last] += ", " + ph;
+      else merged.push(ph);
+    });
+    merged.forEach(function(ph) {
+      var w = wFn(ph);
+      if (w <= maxW) { parts.push({ text: ph, scale: 1 }); return; }
+      if (maxW / w >= BF_MIN_SCALE) { parts.push({ text: ph, scale: maxW / w }); return; }
+      var words = ph.split(/\s+/);
+      var k = Math.min(words.length, Math.ceil(w / maxW));
+      var pieces = k > 1 ? _bfBalancedSplit(words, k, wFn) : [ph];
+      pieces.forEach(function(piece) {
+        var pw = wFn(piece);
+        parts.push({ text: piece, scale: pw > maxW ? Math.max(0.7, maxW / pw) : 1 });
+      });
+    });
+  });
+  return parts;
+}
+
 function startBreakfastPromoTicker() {
-  var marquee = document.getElementById("bfBarMarquee");
-  var span1 = document.getElementById("bfBarTitle");
-  var span2 = document.getElementById("bfBarTitleDup");
-  if (!marquee || !span1 || !span2) return;
+  var box = document.getElementById("bfBarMarquee");
+  var el = document.getElementById("bfBarTitle");
+  if (!box || !el) return;
+  clearTimeout(_bfTickerTimer);
+  _bfTickerBuilt = false;
 
-  var joined = _bfConfig.messages;
-  span1.textContent = joined;
-  span2.textContent = joined;
+  var maxW = box.parentNode.clientWidth - 2;
+  if (maxW < 40) return; // плашка сейчас скрыта — соберём, когда появится
 
-  // Скорость — меняй как хочешь, любое число, без ограничений снизу/сверху.
-  // Пиксели в секунду: больше = быстрее, меньше = медленнее, дробные тоже ок.
-  // Знак минус — это направление (бежит в другую сторону), а не "ещё медленнее",
-  // потому что отрицательная длительность анимации в CSS не бывает физически —
-  // браузер её просто отбрасывает, а не "инвертирует скорость".
-  var pxPerSecond = 0.4;
+  var meas = document.createElement("span");
+  meas.style.cssText = "position:absolute;visibility:hidden;white-space:nowrap;font-weight:500;font-size:0.8rem;letter-spacing:.01em;left:0;top:0";
+  box.parentNode.appendChild(meas);
+  function wFn(str) { meas.textContent = str; return meas.getBoundingClientRect().width; }
+  var parts = _bfBuildParts(_bfConfig.messages, maxW, wFn);
+  box.parentNode.removeChild(meas);
+  if (!parts.length) return;
+  _bfTickerBuilt = true;
 
-  marquee.classList.remove("bf-marquee-run");
-  void marquee.offsetWidth;
-  var textWidth = span1.offsetWidth;
-  var duration = textWidth / Math.abs(pxPerSecond);
-  marquee.style.animationDuration = duration + "s";
-  marquee.style.animationDirection = pxPerSecond < 0 ? "reverse" : "normal";
-  marquee.classList.add("bf-marquee-run");
+  // Первое появление — без «обратного» перехода
+  el.style.setProperty("transition", "none", "important");
+  el.classList.add("bf-fade-out");
+  void el.offsetWidth;
+  el.style.removeProperty("transition");
+
+  function show(i) {
+    var part = parts[i];
+    el.classList.add("bf-fade-out");
+    el.textContent = part.text;
+    el.style.fontSize = (0.8 * part.scale) + "rem";
+    void el.offsetWidth;
+    el.classList.remove("bf-fade-out");
+    if (parts.length < 2) return; // одна надпись — просто проявилась и остаётся
+    var hold = Math.min(6000, BF_HOLD_BASE_MS + part.text.length * BF_HOLD_PER_CHAR_MS);
+    _bfTickerTimer = setTimeout(function() {
+      el.classList.add("bf-fade-out");
+      _bfTickerTimer = setTimeout(function() { show((i + 1) % parts.length); }, BF_FADE_MS);
+    }, BF_FADE_MS + hold);
+  }
+  show(0);
 }
 
 function positionBreakfastPromoBar() {
@@ -8257,6 +8358,12 @@ function initBreakfastPromoBar() {
     if (_bfBarInterval) clearInterval(_bfBarInterval);
     _bfBarInterval = setInterval(updateBreakfastPromoBar, 1000);
     startBreakfastPromoTicker();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(startBreakfastPromoTicker);
+    var _bfResizeT = null;
+    window.addEventListener("resize", function() {
+      clearTimeout(_bfResizeT);
+      _bfResizeT = setTimeout(startBreakfastPromoTicker, 250);
+    });
   });
 }
 
