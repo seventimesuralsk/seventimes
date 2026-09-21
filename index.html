@@ -8109,7 +8109,7 @@ var _bfDefaultConfig = {
   endDate: "2026-09-25",
   openHour: 8,
   closeHour: 12,
-  messages: "Завтраки за 999 тг      •      Каждый день 08:00–12:00      •      С 21.09 по 25.09      •      Абулхаир Хана 177",
+  messages: "Завтраки за 999 тг, каждый день с 08:00 до 12:00, с 21.09 по 25.09, по адресу Абулхаир Хана 177",
   buttonText: "Получить",
   color: "#0a84ff"
 };
@@ -8223,15 +8223,19 @@ function startBreakfastPromoTicker() {
   span1.textContent = joined;
   span2.textContent = joined;
 
-  // Скорость подстраивается под длину текста, чтобы бегущая строка не
-  // ускорялась/замедлялась рывками при добавлении новых сообщений —
-  // едет с одной и той же визуальной скоростью всегда.
+  // Скорость — меняй как хочешь, любое число, без ограничений снизу/сверху.
+  // Пиксели в секунду: больше = быстрее, меньше = медленнее, дробные тоже ок.
+  // Знак минус — это направление (бежит в другую сторону), а не "ещё медленнее",
+  // потому что отрицательная длительность анимации в CSS не бывает физически —
+  // браузер её просто отбрасывает, а не "инвертирует скорость".
+  var pxPerSecond = -0.03;
+
   marquee.classList.remove("bf-marquee-run");
   void marquee.offsetWidth;
   var textWidth = span1.offsetWidth;
-  var pxPerSecond = 45;
-  var duration = Math.max(8, textWidth / pxPerSecond);
+  var duration = textWidth / Math.abs(pxPerSecond);
   marquee.style.animationDuration = duration + "s";
+  marquee.style.animationDirection = pxPerSecond < 0 ? "reverse" : "normal";
   marquee.classList.add("bf-marquee-run");
 }
 
@@ -10129,7 +10133,7 @@ function admLoadBannerSettings() {
     document.getElementById("admBannerEnd").value = s.endDate || "2026-09-25";
     document.getElementById("admBannerOpenHour").value = (s.openHour || s.openHour === 0) ? s.openHour : 8;
     document.getElementById("admBannerCloseHour").value = (s.closeHour || s.closeHour === 0) ? s.closeHour : 12;
-    document.getElementById("admBannerMessages").value = s.messages || "Завтраки за 999 тг      •      Каждый день 08:00–12:00      •      С 21.09 по 25.09      •      Абулхаир Хана 177";
+    document.getElementById("admBannerMessages").value = s.messages || "Завтраки за 999 тг, каждый день с 08:00 до 12:00, с 21.09 по 25.09, по адресу Абулхаир Хана 177";
     document.getElementById("admBannerButtonText").value = s.buttonText || "Получить";
     var color = s.color || "#0a84ff";
     document.getElementById("admBannerColor").value = color;
