@@ -4791,10 +4791,11 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
             Своя дата
            </button>
           </div>
-          <div class="adm-custom-time" id="customTempPriceTimeRow">
+          <div class="adm-custom-time" id="customTempPriceTimeRow" style="gap:6px">
            <input class="adm-time-inp" id="customTempPriceVal" type="date"/>
+           <input class="adm-time-inp" id="customTempPriceTimeVal" type="time" value="23:59"/>
            <span style="color:#6e6e73;white-space:nowrap;font-size:0.69rem">
-            действует по эту дату
+            действует до этой даты и времени
            </span>
           </div>
           <button class="adm-stop-apply" onclick="admApplyTempPrice()">
@@ -9924,8 +9925,10 @@ function admGetTempPriceUntilTs() {
   if (_selTempPriceTimeMode === "custom") {
     var val = document.getElementById("customTempPriceVal").value;
     if (!val) return 0;
+    var timeVal = document.getElementById("customTempPriceTimeVal").value || "23:59";
     var parts = val.split("-");
-    var kzEnd = new Date(Date.UTC(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]), 23 - 5, 59, 59));
+    var timeParts = timeVal.split(":");
+    var kzEnd = new Date(Date.UTC(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]), parseInt(timeParts[0]) - 5, parseInt(timeParts[1]), 0));
     return kzEnd.getTime();
   }
   return 0;
