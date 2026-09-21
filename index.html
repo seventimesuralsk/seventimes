@@ -5260,7 +5260,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
      }
    }
 
-   const API = "https://script.google.com/macros/s/AKfycbx0mNA_Pdr_0B3ehFT9F8Oe3S8-L0PmQEjuR_jEsjqGmLfBHDokItt_DhWP8bhGHwrwdA/exec",
+   const API = "https://script.google.com/macros/s/AKfycbwVVMKicKRW3SN5rPSRI8f46YCjK15nan0zJ6U5Qog5yOxgMtyX30OQ6et5sljaG41Y/exec",
   WA = "77760709898",
   CAT_META = {
     "Новинки": {
@@ -5932,12 +5932,47 @@ function initGuestTracking() {
   _guestSource = detectGuestSource();
   _sessionStartTs = Date.now();
 
+  var netInfo = navigator.connection || navigator.webkitConnection || navigator.mozConnection;
+  var netType = netInfo && netInfo.effectiveType ? netInfo.effectiveType : "";
+  var visitCountKey = "st_visit_count";
+  var prevVisits = parseInt(localStorage.getItem(visitCountKey) || "0", 10);
+  var isReturning = prevVisits > 0;
+  localStorage.setItem(visitCountKey, String(prevVisits + 1));
+  var lastVisitKey = "st_last_visit_ts";
+  var lastVisitTs = parseInt(localStorage.getItem(lastVisitKey) || "0", 10);
+  var daysSinceLast = lastVisitTs ? Math.round((Date.now() - lastVisitTs) / 86400000) : "";
+  localStorage.setItem(lastVisitKey, String(Date.now()));
+  var utmParams = new URLSearchParams(location.search);
+  var utmSrc = utmParams.get("utm_source") || utmParams.get("src") || "";
+  var visitLabel = (isReturning ? "Повторный визит #" + (prevVisits + 1) : "Первый визит") + (netType ? " · сеть: " + netType : "") + (daysSinceLast !== "" ? " · дней с прошлого визита: " + daysSinceLast : "") + (utmSrc ? " · UTM: " + utmSrc : "");
+
+  setTimeout(function() {
+    try {
+      var nav = performance.getEntriesByType("navigation")[0];
+      var loadMs = nav ? Math.round(nav.loadEventEnd - nav.startTime) : Math.round(performance.now());
+      logGuestEvent("Скорость загрузки страницы", loadMs + " мс");
+    } catch (e) {}
+  }, 1500);
+
+  function finishSessionStart() {
+    logGuestEvent("Зашёл на сайт", visitLabel);
+  }
+
   fetch("https://ipapi.co/json/").then(function(r) { return r.json(); }).then(function(d) {
+    if (!d || d.error) throw new Error("ipapi failed");
     _guestIp = d.ip || "";
     _guestCity = (d.city || "") + (d.country_name ? ", " + d.country_name : "");
-    logGuestEvent("Зашёл на сайт", "");
+    finishSessionStart();
   }).catch(function() {
-    logGuestEvent("Зашёл на сайт", "");
+    // Основной сервис не ответил (блокировщик рекламы, лимит запросов,
+    // сбой) — пробуем запасной, чтобы IP/город не пропадали совсем.
+    fetch("https://get.geojs.io/v1/ip/geo.json").then(function(r) { return r.json(); }).then(function(d) {
+      _guestIp = d.ip || "";
+      _guestCity = (d.city || "") + (d.country ? ", " + d.country : "");
+      finishSessionStart();
+    }).catch(function() {
+      finishSessionStart();
+    });
   });
 
   if (_guestPingInterval) clearInterval(_guestPingInterval);
@@ -5952,10 +5987,53 @@ function initGuestTracking() {
     if (document.visibilityState === "hidden") {
       var seconds = Math.round((Date.now() - _sessionStartTs) / 1000);
       logGuestEvent("Ушёл с сайта", seconds + " сек на сайте");
+      if (_cartOpenedNoOrder && cart.length) logGuestEvent("Открыл корзину, но не заказал", cart.map(function(c) { return c.name + " x" + c.qty; }).join(", "));
+      if (!branch) logGuestEvent("Ушёл, не выбрав филиал", "");
+      if (_bookOpenedNoSubmit) logGuestEvent("Открыл бронь, но не дозаполнил", "шаг: " + (_bookLastStep || "начало"));
+      if (_searchOpenedNoType) logGuestEvent("Открыл поиск, ничего не ввёл", "");
+      logGuestEvent("Глубина просмотра меню", _maxScrollDepth + "%");
+      if (_visitedCats.size) logGuestEvent("Категорий за визит", _visitedCats.size + ": " + Array.from(_visitedCats).join(", "));
     }
   });
 }
 var _guestPingInterval = null;
+var _cartOpenedNoOrder = false;
+var _bookOpenedNoSubmit = false;
+var _bookLastStep = "";
+var _searchOpenedNoType = false;
+var _hasClickedFirst = false;
+var _visitedCats = new Set();
+var _maxScrollDepth = 0;
+var _itemViewCount = {};
+var _rageClickMap = {};
+
+document.addEventListener("click", function(e) {
+  var el = e.target.closest("button, .item-card, .cat-pill, .promo-card-ring");
+  if (!el) return;
+  var key = el.id || el.className || "el";
+  var now = Date.now();
+  if (!_rageClickMap[key]) _rageClickMap[key] = [];
+  _rageClickMap[key] = _rageClickMap[key].filter(function(ts) { return now - ts < 1500; });
+  _rageClickMap[key].push(now);
+  if (_rageClickMap[key].length >= 4) {
+    logGuestEvent("Rage click (частые клики подряд)", key);
+    _rageClickMap[key] = [];
+  }
+}, true);
+
+window.addEventListener("error", function(e) {
+  try { logGuestEvent("Ошибка на сайте", (e.message || "") + " (" + (e.filename || "") + ":" + (e.lineno || "") + ")"); } catch (err) {}
+});
+
+window.addEventListener("scroll", function() {
+  var doc = document.documentElement;
+  var scrolled = doc.scrollTop || document.body.scrollTop || 0;
+  var height = (doc.scrollHeight || document.body.scrollHeight) - doc.clientHeight;
+  if (height > 0) {
+    var pct = Math.round((scrolled / height) * 100);
+    if (pct > _maxScrollDepth) _maxScrollDepth = Math.min(100, pct);
+  }
+}, { passive: true });
 
 function trackDetailOpen(itemName) {
   _detailOpenTs = Date.now();
@@ -6053,7 +6131,7 @@ function showFunModal(emoji, text, btnText) {
 }
 
 function showRegisterForm() {
-  document.getElementById("regName").value = "", document.getElementById("regPhone").value = "+7 ", document.getElementById("regNameErr").textContent = "", document.getElementById("regPhoneErr").textContent = "", document.getElementById("regAgreeTerms").checked = !1, document.getElementById("regAgreeErr").style.display = "none", openMov("registerMov")
+  document.getElementById("regName").value = "", document.getElementById("regPhone").value = "+7 ", document.getElementById("regNameErr").textContent = "", document.getElementById("regPhoneErr").textContent = "", document.getElementById("regAgreeTerms").checked = !1, document.getElementById("regAgreeErr").style.display = "none", openMov("registerMov"), logGuestEvent("Открыл форму регистрации", "");
 }
 let _afterRegisterAction = null;
 
@@ -6074,7 +6152,7 @@ function submitRegister() {
   saveClientProfile({
     name: name,
     phone: phone
-  }), closeMov("registerMov");
+  }), closeMov("registerMov"), logGuestEvent("Зарегистрировался (имя+телефон)", "");
   let clientId = getClientId();
   getPublicIp(function(ip) {
     apiGet({
@@ -6386,10 +6464,10 @@ var _promoPopupShown = false;
 
 function switchBranch(b) {
   var s = _branchStatusData[b];
-  if (s && s.blocked) return;
+  if (s && s.blocked) { logGuestEvent("Пытался выбрать закрытый филиал", b); return; }
   branch = b, renderBranchCarousel(), tagNearestBranch(), updateNavBranchLabel();
   var bs = document.getElementById("branchSubtitle");
-  bs && (bs.style.display = "none"), cart = [], updBadge(), loadMenu(), logStat("visit", "");
+  bs && (bs.style.display = "none"), cart = [], updBadge(), loadMenu(), logStat("visit", ""), logGuestEvent("Выбрал филиал", b);
   var cartBtn = document.getElementById("cartNavBtn");
   cartBtn && (cartBtn.style.display = branchHasOrdering(b) ? "" : "none");
   if (typeof startBreakfastPromoTicker === "function") startBreakfastPromoTicker();
@@ -6598,6 +6676,7 @@ function tagNearestBranch() {
     });
     _nearestBranchId = bestId;
     _nearestBranchChecked = true;
+    logGuestEvent("Геолокация", "Разрешил");
     if (bestId) applyNearestBadge(bestId);
     // geofencing: гость физически стоит у филиала (в радиусе) и ещё не выбрал
     // сам — выбираем за него, без единого тапа. Ручной выбор гостя не трогаем.
@@ -6613,6 +6692,7 @@ function tagNearestBranch() {
     }
   }, function() {
     _nearestBranchChecked = true;
+    logGuestEvent("Геолокация", "Отклонил");
   }, {
     timeout: 5e3,
     maximumAge: 6e5
@@ -6721,6 +6801,7 @@ function requestGeoConsent() {
   tagNearestBranch();
 }
 var _promoSeen = {};
+var _promoCarouselSwipeBound = false;
 var PROMO_CARDS = [{
   id: "dream",
   bg: "url('data:image/jpeg;base64,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')",
@@ -6736,11 +6817,34 @@ function renderPromoCarousel() {
   if (!wrap) return;
   wrap.innerHTML = "";
   if (dots) dots.innerHTML = "";
+  logGuestEvent("Показан баннер (карусель вверху)", PROMO_CARDS.map(function(c) { return c.title || c.id; }).join(", "));
+  if (!_promoCarouselSwipeBound && wrap) {
+    _promoCarouselSwipeBound = true;
+    var lastLogged = -1, scrollTimer = null;
+    wrap.addEventListener("scroll", function() {
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(function() {
+        var center = wrap.scrollLeft + wrap.clientWidth / 2, closest = 0, minDist = Infinity;
+        Array.prototype.forEach.call(wrap.children, function(el, i) {
+          var d = Math.abs((el.offsetLeft + el.offsetWidth / 2) - center);
+          if (d < minDist) { minDist = d; closest = i; }
+        });
+        if (closest !== lastLogged) {
+          lastLogged = closest;
+          var c = PROMO_CARDS[closest];
+          logGuestEvent("Свайпнул баннер до", c ? (c.title || c.id) : String(closest));
+        }
+      }, 300);
+    });
+  }
   PROMO_CARDS.forEach(function(card, i) {
     var ring = document.createElement("div");
     ring.className = "promo-card-ring" + (_promoSeen[card.id] ? " seen" : "");
     ring.id = "promoCard-" + card.id;
-    ring.setAttribute("onclick", card.onclick);
+    ring.onclick = function() {
+      logGuestEvent("Нажал на баннер", card.title || card.id);
+      new Function(card.onclick)();
+    };
     var btn = document.createElement("div");
     btn.className = "promo-card";
     if (card.bg.indexOf("url(") === 0) {
@@ -6973,6 +7077,7 @@ function genericStoriesPrev() {
 function openGenericStories(bannerId, startIdx) {
   var banner = (window._dynamicBanners || {})[bannerId];
   if (!banner || !banner.slides || !banner.slides.length) return;
+  logGuestEvent("Открыл сервис", "Наши рестораны");
   var ov = document.getElementById("genericStoriesOv");
   if (!ov) return;
   _promoSeen[bannerId] = true;
@@ -7207,6 +7312,7 @@ var _dreamFormSlideHTML = null;
 function openDreamStories() {
   var ov = document.getElementById("dreamStoriesOv");
   if (!ov) return;
+  logGuestEvent("Открыл сервис", "Проект Армандар орындалады");
   _promoSeen.dream = true;
   var ring = document.getElementById("promoCard-dream");
   if (ring) ring.classList.add("seen");
@@ -7688,6 +7794,10 @@ function parseMods(str) {
 function openDetail(item) {
   curItem = item, curQty = Math.max(1, getQty(item.id)), curMod = null, logStat("view", item.name);
   trackDetailOpen(item.name);
+  if (!_hasClickedFirst) { _hasClickedFirst = true; logGuestEvent("Первый клик после захода", Math.round((Date.now() - _sessionStartTs) / 1000) + " сек"); }
+  _itemViewCount[item.id] = (_itemViewCount[item.id] || 0) + 1;
+  var searchOvEl = document.getElementById("searchOv");
+  if (searchOvEl && searchOvEl.classList.contains("open")) logGuestEvent("Кликнул результат поиска", item.name);
   let el = document.getElementById("dimg");
   var detailPhotoUrl = item.photo ? convertPhotoUrl(item.photo, 640) : "";
   el.innerHTML = detailPhotoUrl ? `<img src="${detailPhotoUrl}" alt="" decoding="async" onerror="imgErrorRetry(this,'Фото добавляется')">` : '<span class="item-photo-placeholder">' + t("photo_coming") + "</span>", document.getElementById("dname").textContent = item.name;
@@ -7765,6 +7875,7 @@ function closeDetail() {
 }
 
 function dChQty(d) {
+  logGuestEvent("Кол-во в карточке " + (d > 0 ? "+" : "−"), curItem ? curItem.name : "");
   if (curItem) {
     curQty = Math.max(1, curQty + d), document.getElementById("dqn").textContent = curQty;
     var price = curMod ? curMod.price : curItem.price,
@@ -7830,7 +7941,15 @@ let _lastAddedItemName = null;
 
 var _deliveryClosedNoticeShown = false;
 
+var _lastAddCartTs = {};
 function addCart(it, d) {
+  if (d > 0) {
+    var now = Date.now();
+    if (_lastAddCartTs[it.id] && now - _lastAddCartTs[it.id] < 800) logGuestEvent("Двойной клик «в корзину»", it.name);
+    _lastAddCartTs[it.id] = now;
+    var seenCount = _itemViewCount[it.id] || 0;
+    if (seenCount >= 2) logGuestEvent("Добавил после нескольких просмотров", it.name + " (просмотрел " + seenCount + "р.)");
+  }
   let i = cart.findIndex(c => c.id === it.id);
   i >= 0 ? (cart[i].qty += d, cart[i].qty <= 0 && cart.splice(i, 1)) : d > 0 && cart.push({
     id: it.id,
@@ -7872,6 +7991,7 @@ function fuzzyMatch(haystack, needle) {
 }
 
 function filterMenu(q) {
+  if (q && q.trim()) _searchOpenedNoType = false;
   q = q.toLowerCase().trim();
   let synTerms = null;
   if (!synTerms && _synonyms.length)
@@ -7971,6 +8091,8 @@ function renderCartCrossSell() {
 var _cartNoticeTimer = null;
 function openCart() {
   renderCart(), renderCartCrossSell(), openMov("cartMov"), cart.length && logStat("cart_open", "");
+  _cartOpenedNoOrder = true;
+  logGuestEvent("Открыл корзину", cart.length + " поз.");
   clearInterval(_cartNoticeTimer);
   _cartNoticeTimer = setInterval(renderCart, 30000);
   var tabBar = document.getElementById("bottomTabBar");
@@ -8456,6 +8578,7 @@ function _bfHoursText() {
 }
 
 function openBreakfastPromo() {
+  logGuestEvent("Нажал «Получить» (завтраки)", "");
   if (!breakfastPromoActiveDay() || !breakfastPromoActiveHour()) {
     showFunModal("⏰", "Акция действует только с " + _bfHoursText() + ". Загляните в это время — обязательно успеете 🍳", "Понятно");
     return;
@@ -8664,7 +8787,10 @@ function confirmAndSendOrder() {
   if (_orderSending) return;
   _orderSending = !0;
   let a = document.createElement("a");
-  a.href = "https://wa.me/77760709898?text=" + encodeURIComponent(_pendingOrderMsg), a.target = "_blank", a.rel = "noopener noreferrer", document.body.appendChild(a), a.click(), document.body.removeChild(a), logStat("order", _pendingStatsDetails), saveOrderToHistory({
+  var _orderCountKey = "st_order_count", _prevOrderCount = parseInt(localStorage.getItem(_orderCountKey) || "0", 10);
+  localStorage.setItem(_orderCountKey, String(_prevOrderCount + 1));
+  logGuestEvent("Оформил заказ", (_prevOrderCount > 0 ? "Повторный заказ #" + (_prevOrderCount + 1) : "Первый заказ") + " · от захода до заказа: " + Math.round((Date.now() - _sessionStartTs) / 1000) + " сек");
+  a.href = "https://wa.me/77760709898?text=" + encodeURIComponent(_pendingOrderMsg), a.target = "_blank", a.rel = "noopener noreferrer", document.body.appendChild(a), a.click(), document.body.removeChild(a), logStat("order", _pendingStatsDetails), _cartOpenedNoOrder = false, saveOrderToHistory({
     orderNum: _pendingOrderNum,
     dateStr: (new Date).toLocaleDateString("ru"),
     branch: branch,
@@ -8705,6 +8831,8 @@ function closeSheet() {
 }
 
 function openSearchOv() {
+  logGuestEvent("Нажал кнопку поиска", "");
+  _searchOpenedNoType = true;
   var ov = document.getElementById("searchOv");
   ov && (ov.style.display = "block", ov.classList.add("open"), (function() {
     var inp = document.getElementById("searchInput");
@@ -9239,6 +9367,7 @@ function loadNewsFeed() {
 }
 
 function openAboutCompanyModal() {
+  logGuestEvent("Открыл сервис", "О компании");
   showFunModal("☕", "<div style='text-align:left;font-size:0.78rem;line-height:1.8;color:#1d1d1f'>Пять лет назад мы открыли двери одного зала — сегодня Seven Times это уже три ресторана в Уральске, и в каждом из них мы всё так же встречаем гостей как дома.<br><br>Нас по праву называют одной из самых популярных сетей ресторанов города — за разнообразное меню, тёплую атмосферу и внимание к каждой мелочи. У нас встречаются кухни всего мира: сочные суши и пицца, ароматный рамен, острый том-ям, домашние манты — здесь каждый находит своё любимое блюдо.<br><br>Спасибо, что выбираете нас снова и снова. Мы стараемся для вас.</div>", "Понятно");
 }
 
@@ -9359,10 +9488,13 @@ function hr_getQuestions() {
 
 var hr_step = -1;
 var hr_answers = {};
+var hr_submitted = false;
 
 function hr_open() {
   hr_step = -1;
   hr_answers = {};
+  hr_submitted = false;
+  logGuestEvent("Открыл анкету вакансий", "");
   var svc = document.getElementById("servicesScreen"), news = document.getElementById("newsScreen");
   if (svc) svc.style.display = "none";
   if (news) news.style.display = "none";
@@ -9378,6 +9510,11 @@ function hr_open() {
 }
 
 function hr_close() {
+  if (!hr_submitted && hr_step >= 0) {
+    var qs = hr_getQuestions();
+    var qLabel = qs[hr_step] ? (qs[hr_step].key || ("Вопрос " + (hr_step + 1))) : ("Вопрос " + (hr_step + 1));
+    logGuestEvent("Анкету не дозаполнил", "Остановился на: " + qLabel + " (" + (hr_step + 1) + " из " + qs.length + ")");
+  }
   document.getElementById("hrFormOv").style.display = "none";
   document.querySelectorAll(".bottom-tab-btn").forEach(function(b) {
     b.classList.toggle("active", b.getAttribute("data-tab") === "home");
@@ -9662,6 +9799,8 @@ function hr_submit() {
     score: score
   }, function(d) {
     if (d && d.duplicate) { hr_renderDuplicate(); return; }
+    hr_submitted = true;
+    logGuestEvent("Анкету заполнил до конца", hr_answers.position || "");
     hr_step = hr_getQuestions().length;
     hr_render();
   }, function() {
@@ -9671,6 +9810,7 @@ function hr_submit() {
 }
 
 function openFaqModal() {
+  logGuestEvent("Открыл сервис", "Вопросы");
   showFunModal("❓", "<div style='text-align:left;font-size:0.76rem;line-height:1.8;color:#1d1d1f'><b>Как сделать заказ?</b><br>Выберите филиал, добавьте блюда в корзину и оформите заказ — он уйдёт в WhatsApp.<br><br><b>Есть доставка?</b><br>Да, в Самал 70/3 и Скоробогатова 65/1. Абулхаир хана 177 пока принимает только бронь столика.<br><br><b>Как забронировать столик?</b><br>Кнопка «Бронь столика» в шапке сайта — выберите филиал, дату, время и количество гостей.<br><br><b>Как оплатить заказ?</b><br>Способ оплаты уточняет оператор в WhatsApp при подтверждении заказа.<br><br><b>Остались вопросы?</b><br>Напишите нам в WhatsApp — ответим быстро.</div>", "Понятно");
 }
 
@@ -9757,6 +9897,9 @@ function bookBtnPressEnd() {
 
 function bookBtnClick() {
   if (_bookLongPressFired) { _bookLongPressFired = false; return; }
+  logGuestEvent("Открыл сервис", "Бронь столика");
+  _bookOpenedNoSubmit = true;
+  _bookLastStep = "открыл форму";
   openSheetModal("bookingSheet");
   bk_prefillFromSite();
 }
@@ -10833,7 +10976,7 @@ function renderBanners() {
       pill.className = "cat-pill", pill.innerHTML = '<span class="cat-pill-name">' + clean + "</span>", pill.onclick = function() {
         track.querySelectorAll(".cat-pill").forEach(function(p) {
           p.classList.remove("on")
-        }), pill.classList.add("on"), scrollToSec(i), logStat("cat_click", clean)
+        }), pill.classList.add("on"), scrollToSec(i), logStat("cat_click", clean), _visitedCats.add(clean)
       }, track.appendChild(pill)
     })
   }
@@ -11079,6 +11222,7 @@ function checkPromoPopup() {
   btn.onclick = function() {
     if (locked || btn.disabled) return;
     ov.style.display = "none";
+    logGuestEvent("Попап: нажал кнопку", d.title || "");
     if (typeof startBreakfastPromoTicker === "function") startBreakfastPromoTicker();
     if (d.btnUrl === "dream") { openDreamStories(); return; }
     if (d.btnUrl === "restaurants") { openGenericStories("banner_restaurants", 2); return; }
@@ -11088,11 +11232,13 @@ function checkPromoPopup() {
   function closePopup() {
     if (locked) return;
     ov.style.display = "none";
+    logGuestEvent("Попап: закрыл крестиком", d.title || "");
     if (typeof startBreakfastPromoTicker === "function") startBreakfastPromoTicker();
   }
   closeBtn.onclick = closePopup;
   document.getElementById("promoPopupBackdrop").onclick = closePopup;
   ov.style.display = "flex";
+  logGuestEvent("Попап: показан", d.title || "");
 }
 
 function checkSiteStatus() {
@@ -11323,6 +11469,7 @@ function bk_markTimeFieldError(){
 }
 
 function bk_selectBranch(idx){
+  _bookLastStep = "выбрал филиал";
   bk__bookBranch=idx;
   [0,1,3].forEach(i=>{
     const b=document.getElementById('bk-branchBtn'+i);
@@ -11366,6 +11513,7 @@ function bk_rebuildHourOptions(branchIdx){
 }
 
 function bk_selectGuests(n){
+  _bookLastStep = "выбрал кол-во гостей";
   bk__bookGuests=n;
   for(var i=1;i<=6;i++){
     const b=document.getElementById('bk-g'+i);
@@ -11584,6 +11732,7 @@ function bk_sendBooking(){
   const link=document.getElementById('bk-bookWALink');
   if(link) link.href='https://wa.me/77760709898?text='+encodeURIComponent(msg);
 
+  _bookOpenedNoSubmit = false;
   bk_logBooking({
     branch: bNames[bk__bookBranch],
     name: guestName,
