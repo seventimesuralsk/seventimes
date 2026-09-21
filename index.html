@@ -8228,7 +8228,7 @@ function startBreakfastPromoTicker() {
   // Знак минус — это направление (бежит в другую сторону), а не "ещё медленнее",
   // потому что отрицательная длительность анимации в CSS не бывает физически —
   // браузер её просто отбрасывает, а не "инвертирует скорость".
-  var pxPerSecond = -0.03;
+  var pxPerSecond = 0.1;
 
   marquee.classList.remove("bf-marquee-run");
   void marquee.offsetWidth;
