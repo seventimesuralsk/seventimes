@@ -8422,7 +8422,7 @@ function submitBreakfastPromo() {
       var d = JSON.parse(xhr.responseText);
       if (d.status === "success") {
         closeMov("breakfastPromoMov");
-        showFunModal("🍳", "Заявка принята! Ждём вас с " + _bfHoursText() + " — просто назовите администратору своё имя на входе.", "Понятно");
+        showFunModal("Ваш завтрак за 999 KZT подтвержден. Просто покажите этот экран официанту или кассиру! Приятного аппетита!", "Хорошо");
       } else {
         document.getElementById("bfPromoPhoneErr").textContent = "Не удалось отправить, попробуйте ещё раз";
       }
