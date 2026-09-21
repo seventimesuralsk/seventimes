@@ -1012,8 +1012,12 @@ nav {
   animation: skShimmer 1.4s ease-in-out infinite
 }
 
-#bfBarTitleTrack {
-  transition: transform .6s cubic-bezier(.16,1,.3,1);
+@keyframes bfMarqueeScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+#bfBarMarquee.bf-marquee-run {
+  animation: bfMarqueeScroll linear infinite;
 }
 @keyframes skShimmer {
   0% { background-position: 200% 0 }
@@ -3826,11 +3830,10 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
    <div class="branch-dropdown-backdrop" id="branchDropdownBackdrop" onclick="closeBranchDropdown()">
    </div>
    <div id="breakfastPromoBar" style="display:none;align-items:center;gap:12px;position:fixed;top:0;left:0;right:0;z-index:320;background:rgba(10,132,255,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.15);padding:11px 16px">
-    <div style="flex:1;min-width:0;overflow:hidden;height:17px">
-     <div id="bfBarTitleTrack" style="display:flex;flex-direction:column">
-      <div id="bfBarTitle" class="bf-ticker-line" style="height:17px;line-height:17px;font-weight:500;font-size:0.8rem;letter-spacing:.01em;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
-       Завтраки за 999 тг
-      </div>
+    <div style="flex:1;min-width:0;overflow:hidden;height:17px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 16px,#000 calc(100% - 16px),transparent);mask-image:linear-gradient(90deg,transparent,#000 16px,#000 calc(100% - 16px),transparent)">
+     <div id="bfBarMarquee" style="display:inline-flex;white-space:nowrap;will-change:transform">
+      <span id="bfBarTitle" style="height:17px;line-height:17px;font-weight:500;font-size:0.8rem;letter-spacing:.01em;color:#fff;padding-right:48px">Завтраки за 999 тг</span>
+      <span id="bfBarTitleDup" style="height:17px;line-height:17px;font-weight:500;font-size:0.8rem;letter-spacing:.01em;color:#fff;padding-right:48px">Завтраки за 999 тг</span>
      </div>
     </div>
     <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:1px">
@@ -4631,8 +4634,8 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
           <input type="number" min="0" max="23" id="admBannerCloseHour" class="oinput" style="margin-bottom:0">
          </div>
         </div>
-        <div style="font-size:0.66rem;color:#6e6e73;margin-bottom:4px">Тексты бегущей строки — каждый с новой строки</div>
-        <textarea id="admBannerMessages" rows="4" style="width:100%;font-size:0.76rem;padding:12px;border-radius:10px;border:1.5px solid #e5e5e7;font-family:inherit;resize:vertical;margin-bottom:10px"></textarea>
+        <div style="font-size:0.66rem;color:#6e6e73;margin-bottom:4px">Текст бегущей строки — пиши как есть, разбивать не нужно</div>
+        <textarea id="admBannerMessages" rows="3" style="width:100%;font-size:0.76rem;padding:12px;border-radius:10px;border:1.5px solid #e5e5e7;font-family:inherit;resize:vertical;margin-bottom:10px"></textarea>
         <div style="font-size:0.66rem;color:#6e6e73;margin-bottom:4px">Текст на кнопке</div>
         <input type="text" id="admBannerButtonText" class="oinput">
         <div style="font-size:0.66rem;color:#6e6e73;margin-bottom:4px">Цвет фона баннера</div>
@@ -8106,7 +8109,7 @@ var _bfDefaultConfig = {
   endDate: "2026-09-25",
   openHour: 8,
   closeHour: 12,
-  messages: ["Завтраки за 999 тг", "Каждый день 08:00–12:00", "С 21.09 по 25.09", "Абулхаир Хана 177"],
+  messages: "Завтраки за 999 тг      •      Каждый день 08:00–12:00      •      С 21.09 по 25.09      •      Абулхаир Хана 177",
   buttonText: "Получить",
   color: "#0a84ff"
 };
@@ -8130,7 +8133,7 @@ function loadBreakfastPromoConfig(cb) {
         endDate: s.endDate || _bfDefaultConfig.endDate,
         openHour: (s.openHour || s.openHour === 0) ? parseInt(s.openHour, 10) : _bfDefaultConfig.openHour,
         closeHour: (s.closeHour || s.closeHour === 0) ? parseInt(s.closeHour, 10) : _bfDefaultConfig.closeHour,
-        messages: (s.messages && s.messages.toString().trim()) ? s.messages.toString().split("\n").map(function(x) { return x.trim(); }).filter(Boolean) : _bfDefaultConfig.messages,
+        messages: (s.messages && s.messages.toString().trim()) ? s.messages.toString().replace(/\n+/g, " ").trim() : _bfDefaultConfig.messages,
         buttonText: s.buttonText || _bfDefaultConfig.buttonText,
         color: s.color || _bfDefaultConfig.color
       };
@@ -8210,44 +8213,26 @@ function updateBreakfastPromoBar() {
   positionBreakfastPromoBar();
 }
 
-var _bfTickerIndex = 0;
-var _bfTickerInterval = null;
-
-function _bfApplyTicker() {
-  var track = document.getElementById("bfBarTitleTrack");
-  if (!track) return;
-  var nextIndex = (_bfTickerIndex + 1) % _bfConfig.messages.length;
-  var nextText = _bfConfig.messages[nextIndex];
-
-  var nextLine = document.createElement("div");
-  nextLine.className = "bf-ticker-line";
-  nextLine.style.cssText = "height:17px;line-height:17px;font-weight:500;font-size:0.8rem;letter-spacing:.01em;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis";
-  nextLine.textContent = nextText;
-  track.appendChild(nextLine);
-
-  void track.offsetWidth;
-  track.style.transform = "translateY(-17px)";
-
-  setTimeout(function() {
-    track.style.transition = "none";
-    track.removeChild(track.firstChild);
-    track.style.transform = "translateY(0)";
-    void track.offsetWidth;
-    track.style.transition = "transform .6s cubic-bezier(.16,1,.3,1)";
-    _bfTickerIndex = nextIndex;
-  }, 620);
-}
-
 function startBreakfastPromoTicker() {
-  _bfTickerIndex = 0;
-  if (_bfTickerInterval) clearInterval(_bfTickerInterval);
-  var track = document.getElementById("bfBarTitleTrack");
-  if (track) {
-    track.style.transition = "none";
-    track.style.transform = "translateY(0)";
-    track.innerHTML = '<div id="bfBarTitle" class="bf-ticker-line" style="height:17px;line-height:17px;font-weight:500;font-size:0.8rem;letter-spacing:.01em;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + _bfConfig.messages[0] + '</div>';
-  }
-  _bfTickerInterval = setInterval(_bfApplyTicker, 3000);
+  var marquee = document.getElementById("bfBarMarquee");
+  var span1 = document.getElementById("bfBarTitle");
+  var span2 = document.getElementById("bfBarTitleDup");
+  if (!marquee || !span1 || !span2) return;
+
+  var joined = _bfConfig.messages;
+  span1.textContent = joined;
+  span2.textContent = joined;
+
+  // Скорость подстраивается под длину текста, чтобы бегущая строка не
+  // ускорялась/замедлялась рывками при добавлении новых сообщений —
+  // едет с одной и той же визуальной скоростью всегда.
+  marquee.classList.remove("bf-marquee-run");
+  void marquee.offsetWidth;
+  var textWidth = span1.offsetWidth;
+  var pxPerSecond = 45;
+  var duration = Math.max(8, textWidth / pxPerSecond);
+  marquee.style.animationDuration = duration + "s";
+  marquee.classList.add("bf-marquee-run");
 }
 
 function positionBreakfastPromoBar() {
@@ -10144,7 +10129,7 @@ function admLoadBannerSettings() {
     document.getElementById("admBannerEnd").value = s.endDate || "2026-09-25";
     document.getElementById("admBannerOpenHour").value = (s.openHour || s.openHour === 0) ? s.openHour : 8;
     document.getElementById("admBannerCloseHour").value = (s.closeHour || s.closeHour === 0) ? s.closeHour : 12;
-    document.getElementById("admBannerMessages").value = s.messages || "Завтраки за 999 тг\nКаждый день 08:00–12:00\nС 21.09 по 25.09\nАбулхаир Хана 177";
+    document.getElementById("admBannerMessages").value = s.messages || "Завтраки за 999 тг      •      Каждый день 08:00–12:00      •      С 21.09 по 25.09      •      Абулхаир Хана 177";
     document.getElementById("admBannerButtonText").value = s.buttonText || "Получить";
     var color = s.color || "#0a84ff";
     document.getElementById("admBannerColor").value = color;
