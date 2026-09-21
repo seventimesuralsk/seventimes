@@ -8374,7 +8374,7 @@ function _bfHoursText() {
 
 function openBreakfastPromo() {
   if (!breakfastPromoActiveDay() || !breakfastPromoActiveHour()) {
-    showFunModal("⏰", "Акция действует только с " + _bfHoursText() + ". Загляните в это время — обязательно успеете 🍳", "Понятно");
+    showFunModal("⏰", "Акция действует только с " + _bfHoursText() + ". Загляните в это время.", "Понятно");
     return;
   }
   document.getElementById("bfPromoName").value = "";
