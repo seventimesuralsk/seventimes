@@ -6078,7 +6078,13 @@ const STAT_TYPE_LABELS = {
   data_edit: "Изменил данные",
   pay_select: "Выбрал оплату",
   type_switch: "Переключил доставку/самовывоз",
-  order: "Заказал"
+  order: "Заказал",
+  tab_news: "Открыл вкладку Сообщения",
+  tab_services: "Открыл вкладку Сервисы",
+  tab_hiring: "Открыл вкладку Вакансии",
+  msg_open_ai: "Открыл сообщение SEVEN AI",
+  msg_open_promo: "Открыл сообщение Акции и скидки",
+  msg_open_safety: "Открыл сообщение Безопасность"
 };
 let _statBuffer = [];
 
@@ -8629,7 +8635,9 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 function switchBottomTab(tab) {
-  if (tab === "vacancy") { hr_open(); return; }
+  if (tab === "vacancy") { logStat("tab_hiring", ""); hr_open(); return; }
+  if (tab === "news") logStat("tab_news", "");
+  if (tab === "services") logStat("tab_services", "");
 
   var hrOv = document.getElementById("hrFormOv");
   if (hrOv && hrOv.style.display !== "none") {
@@ -9034,6 +9042,8 @@ function openNewsRow(i) {
   if (!n) return;
   _newsMarkRead(_newsKey(n, i));
   _newsRenderList();
+  var statKey = n.title === "SEVEN AI" ? "msg_open_ai" : n.title === "Акции и скидки" ? "msg_open_promo" : n.title === "Безопасность" ? "msg_open_safety" : "";
+  if (statKey) logStat(statKey, "");
   var photoUrl = n.photo ? convertPhotoUrl(n.photo, 640) : "";
   var bubbleHtml = (photoUrl ? '<img src="' + photoUrl + '" style="width:100%;border-radius:10px;margin-bottom:8px;display:block" loading="lazy">' : "") + (n.text || "");
   var headerIcon = photoUrl || _newsCategoryIcons[n.title] || "";
@@ -10518,7 +10528,17 @@ function renderAdminStats(d) {
     decKeys = Object.keys(dec);
   decKeys.length && (html += "<br>Правили перед заказом: " + decKeys.map(function(k) {
     return (decLabels[k] || k) + ": <b>" + dec[k] + "</b>"
-  }).join(" · ")), html += "</div></div>", html += admStatSection("Что чаще смотрят", topNList(d.viewCounts, 10), "Пока нет данных"), html += admStatSection("Что чаще кладут в корзину", topNList(d.cartAddCounts, 10), "Пока нет данных"), html += admStatSection("Что чаще заказывают", topNList(d.orderItemCounts, 10), "Пока нет данных"), html += admStatSection("Какие категории смотрят чаще", topNList(d.catClickCounts, 10), "Пока нет данных"), html += admStatSection("Что ищут в поиске", topNList(d.searchCounts, 10), "Пока нет данных"), html += admStatSection("↩Что кладут, а потом убирают", topNList(d.cartRemoveCounts, 10), "Пока нет данных");
+  }).join(" · ")), html += "</div></div>";
+  var sectionsInterest = [
+    { name: "Вкладка «Сообщения»", count: d.tabNewsCount || 0 },
+    { name: "Вкладка «Сервисы»", count: d.tabServicesCount || 0 },
+    { name: "Вкладка «Вакансии»", count: d.tabHiringCount || 0 },
+    { name: "Сообщение SEVEN AI", count: d.msgOpenAiCount || 0 },
+    { name: "Сообщение «Акции и скидки»", count: d.msgOpenPromoCount || 0 },
+    { name: "Сообщение «Безопасность»", count: d.msgOpenSafetyCount || 0 }
+  ].sort(function(a, b) { return b.count - a.count; });
+  html += admStatSection("Что интересно гостям (клики)", sectionsInterest, "Пока нет данных");
+  html += admStatSection("Что чаще смотрят", topNList(d.viewCounts, 10), "Пока нет данных"), html += admStatSection("Что чаще кладут в корзину", topNList(d.cartAddCounts, 10), "Пока нет данных"), html += admStatSection("Что чаще заказывают", topNList(d.orderItemCounts, 10), "Пока нет данных"), html += admStatSection("Какие категории смотрят чаще", topNList(d.catClickCounts, 10), "Пока нет данных"), html += admStatSection("Что ищут в поиске", topNList(d.searchCounts, 10), "Пока нет данных"), html += admStatSection("↩Что кладут, а потом убирают", topNList(d.cartRemoveCounts, 10), "Пока нет данных");
   let byHour = d.ordersByHour || {},
     hourKeys = Object.keys(byHour).sort();
   hourKeys.length && (html += '<div class="adm-stop-section" style="margin-bottom:14px">', html += '<div style="font-weight:400;color:#1d1d1f;margin-bottom:8px">В какие часы чаще заказывают</div>', html += '<div style="font-size:0.69rem;color:#333;line-height:1.8">' + hourKeys.map(function(h) {
