@@ -3825,7 +3825,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
    </div>
    <div id="breakfastPromoBar" style="display:none;align-items:center;gap:12px;position:fixed;top:0;left:0;right:0;z-index:320;background:rgba(10,132,255,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.15);padding:11px 16px">
     <div style="flex:1;min-width:0;overflow:hidden;height:17px">
-     <div id="bfBarTitle" style="height:17px;line-height:17px;font-weight:500;font-size:0.8rem;letter-spacing:.01em;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity .6s ease">Завтраки за 999 тг</div>
+     <div id="bfBarTitle" style="height:17px;line-height:17px;font-weight:500;font-size:0.8rem;letter-spacing:.01em;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity .1s ease">Завтраки за 999 тг</div>
     </div>
     <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:1px">
      <div id="bfBarCountdown" style="font-size:0.76rem;font-weight:500;color:#fff;font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:.02em">
@@ -3971,6 +3971,8 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
       </div>
       <div class="dfooter" id="dFooter">
        <div class="dprice" id="dprice">
+       </div>
+       <div id="dTempPriceTimer" style="display:none;font-size:0.62rem;color:#c77729;margin-top:-6px;margin-bottom:6px">
        </div>
        <div id="dOrderControls" style="display:flex;align-items:center;gap:10px;flex:1">
         <div class="dqty">
@@ -4767,7 +4769,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
            Временная цена
           </div>
           <div style="color:#6e6e73;margin-bottom:10px;font-size:0.62rem;line-height:1.5">
-           Ставишь новую цену и срок — по истечении срока цена сама вернётся к обычной. Не нужно вручную возвращать назад.
+           Ставишь новую цену и срок — сразу для всех филиалов. По истечении срока цена сама вернётся к обычной, вручную ничего возвращать не нужно.
           </div>
           <div id="editTempPriceStatus" style="color:#6e6e73;margin-bottom:10px;font-size:0.69rem">
           </div>
@@ -5257,7 +5259,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
      }
    }
 
-   const API = "https://script.google.com/macros/s/AKfycbwG3dUG7y3yI-w-Hemrq_VyYCp5XaGci8-4wNfMkuM-12cZ1yESZlVCBBoq0LyFNwQWjg/exec",
+   const API = "https://script.google.com/macros/s/AKfycbyks7DSiNnYictPonVvlXeuYDJEr1x-bn7pccI_RgoW82SH1JhqojvZpvCiET0J72F0rg/exec",
   WA = "77760709898",
   CAT_META = {
     "Новинки": {
@@ -7491,6 +7493,17 @@ function imgErrorRetry(el, fallbackText) {
   }
 }
 
+function fmtTempPriceUntil(until) {
+  var d = new Date(until + 18e6);
+  var now = new Date(Date.now() + 18e6);
+  var hh = String(d.getUTCHours()).padStart(2, "0");
+  var mm = String(d.getUTCMinutes()).padStart(2, "0");
+  if (d.getUTCFullYear() === now.getUTCFullYear() && d.getUTCMonth() === now.getUTCMonth() && d.getUTCDate() === now.getUTCDate()) {
+    return "до " + hh + ":" + mm;
+  }
+  return "до " + String(d.getUTCDate()).padStart(2, "0") + "." + String(d.getUTCMonth() + 1).padStart(2, "0") + " " + hh + ":" + mm;
+}
+
 function buildCard(item) {
   let div = document.createElement("div"),
     isPopular = item.badge && "" !== item.badge.trim();
@@ -7501,10 +7514,13 @@ function buildCard(item) {
     qty = getQty(item.id),
     btype = getBadgeType(item.badge),
     hasMods = !!(item.mods && item.mods.trim()),
+    hasTempPrice = item.originalPrice && item.tempUntil && item.tempUntil > Date.now(),
+    tempPriceLineHtml = hasTempPrice ? `<span style="text-decoration:line-through;color:#86868b;font-size:0.72em;margin-right:5px">${item.originalPrice.toLocaleString("ru")} ₸</span>` : "",
+    tempPriceUntilHtml = hasTempPrice ? `<div style="font-size:0.58rem;color:#c77729;margin-top:1px">${fmtTempPriceUntil(item.tempUntil)}</div>` : "",
     priceRowHtml = hasMods
       ? `<div class="item-price-row"><button class="add-btn-choose" onclick="cAdd(event,'${item.id}',${item.price})">Выбрать →</button></div>`
-      : `<div class="item-price-row">\n <div class="item-price">${item.price.toLocaleString("ru")} ₸</div>\n <div class="item-add-wrap" id="cc-${item.id}">${ctrlHtml(item.id,item.price,qty)}</div>\n </div>`;
-  return div.innerHTML = `\n <div class="item-img-wrap">\n <div class="item-img">${img}</div>\n ${item.teaser?'<div class="teaser-lbl">'+t("teaser_soon")+"</div>":isPopular?`<div class="item-badge" data-type="${btype}">${item.badge}</div>`:""}\n </div>\n <div class="item-body">\n <div class="item-name">${item.name}</div>\n ${item.desc?`<div class="item-desc-short">${item.desc}</div>`:""}\n ${item.mods?'<div class="item-mods-hint">'+t("choose_variant_hint")+"</div>":""}${item.lunchLocked?'<div class="item-mods-hint" style="color:#1d1d1f;font-weight:400">⏰ '+item.lunchScheduleText+"</div>":""}\n ${item.stopped?'<div class="stopped-lbl">'+t("sold_out")+"</div>"+(item.until&&item.until>Date.now()?'<div class="item-timer"><span class="item-timer-dot"></span><span id="timer-'+item.id+'">'+fmtTimer(item.until)+"</span></div>":""):priceRowHtml+`\n ${item.allowDelivery?item.allowSelf?"":`<div class="item-selfonly">${t("delivery_only")}</div>`:`<div class="item-selfonly">${t("pickup_only")}</div>`}`}\n </div>`, div.addEventListener("pointerdown", () => {
+      : `<div class="item-price-row">\n <div><div class="item-price">${tempPriceLineHtml}${item.price.toLocaleString("ru")} ₸</div>${tempPriceUntilHtml}</div>\n <div class="item-add-wrap" id="cc-${item.id}">${ctrlHtml(item.id,item.price,qty)}</div>\n </div>`;
+  return div.innerHTML = `\n <div class="item-img-wrap">\n <div class="item-img">${img}</div>\n ${item.teaser?'<div class="teaser-lbl">'+t("teaser_soon")+"</div>":isPopular?`<div class="item-badge" data-type="${btype}">${item.badge}</div>`:""}\n ${hasTempPrice?'<div style="position:absolute;top:8px;left:8px;background:#c77729;color:#fff;font-size:0.58rem;font-weight:600;padding:3px 7px;border-radius:20px;display:flex;align-items:center;gap:3px;z-index:2"><span>⏱</span><span id="tptimer-'+item.id+'">'+fmtTimerPlain(item.tempUntil)+'</span></div>':""}\n </div>\n <div class="item-body">\n <div class="item-name">${item.name}</div>\n ${item.desc?`<div class="item-desc-short">${item.desc}</div>`:""}\n ${item.mods?'<div class="item-mods-hint">'+t("choose_variant_hint")+"</div>":""}${item.lunchLocked?'<div class="item-mods-hint" style="color:#1d1d1f;font-weight:400">⏰ '+item.lunchScheduleText+"</div>":""}\n ${item.stopped?'<div class="stopped-lbl">'+t("sold_out")+"</div>"+(item.until&&item.until>Date.now()?'<div class="item-timer"><span class="item-timer-dot"></span><span id="timer-'+item.id+'">'+fmtTimer(item.until)+"</span></div>":""):priceRowHtml+`\n ${item.allowDelivery?item.allowSelf?"":`<div class="item-selfonly">${t("delivery_only")}</div>`:`<div class="item-selfonly">${t("pickup_only")}</div>`}`}\n </div>`, div.addEventListener("pointerdown", () => {
     if (photoUrl) {
       var pre = new Image;
       pre.src = photoUrl
@@ -7583,7 +7599,26 @@ function openDetail(item) {
     }, modRow.appendChild(btn)
   })) : modRow.style.display = "none";
   var basePrice = curMod ? curMod.price : item.price;
-  document.getElementById("dprice").textContent = (basePrice * curQty).toLocaleString("ru") + " ₸", document.getElementById("dadd").textContent = getQty(item.id) > 0 ? t("update_cart_btn") : t("add_to_cart_btn"), openMov("detailMov");
+  document.getElementById("dprice").textContent = (basePrice * curQty).toLocaleString("ru") + " ₸", document.getElementById("dadd").textContent = getQty(item.id) > 0 ? t("update_cart_btn") : t("add_to_cart_btn");
+  var dTpEl = document.getElementById("dTempPriceTimer");
+  if (item.tempUntil && item.tempUntil > Date.now()) {
+    dTpEl.style.display = "block";
+    dTpEl.id = "dTempPriceTimer";
+    dTpEl.dataset.itemId = item.id;
+    dTpEl.textContent = "⏱ Цена действует ещё " + fmtTimerPlain(item.tempUntil);
+  } else {
+    dTpEl.style.display = "none";
+    dTpEl.textContent = "";
+  }
+  openMov("detailMov");
+}
+
+function fmtTimerPlain(until) {
+  var diff = Math.max(0, Math.floor((until - Date.now()) / 1e3)),
+    h = Math.floor(diff / 3600),
+    m = Math.floor(diff % 3600 / 60),
+    s = diff % 60;
+  return h > 0 ? h + "ч " + m.toString().padStart(2, "0") + "м" : m > 0 ? m + "м " + s.toString().padStart(2, "0") + "с" : s + "с";
 }
 
 function findItemByName(name) {
@@ -8257,7 +8292,7 @@ function _bfApplyFade() {
   setTimeout(function() {
     titleEl.textContent = text;
     titleEl.style.opacity = "1";
-  }, 600);
+  }, 100);
 }
 
 function startBreakfastPromoTicker() {
@@ -8270,7 +8305,7 @@ function startBreakfastPromoTicker() {
   _bfFadeInterval = setInterval(function() {
     _bfFadeIndex++;
     _bfApplyFade();
-  }, 3000);
+  }, 2500);
 }
 
 function positionBreakfastPromoBar() {
@@ -10531,7 +10566,21 @@ function startTimers() {
           item.id === id && (until = item.until || 0)
         })
       }), until && (until <= Date.now() ? (clearInterval(window._timerInterval), localStorage.removeItem("st_menu_" + branch), loadMenu()) : el.textContent = fmtTimer(until))
-    })
+    });
+    document.querySelectorAll('[id^="tptimer-"]').forEach(function(el) {
+      var id = el.id.replace("tptimer-", ""),
+        until = 0;
+      Object.values(menuData).forEach(function(arr) {
+        arr.forEach(function(item) {
+          item.id === id && (until = item.tempUntil || 0)
+        })
+      }), until && (until <= Date.now() ? (clearInterval(window._timerInterval), localStorage.removeItem("st_menu_" + branch), loadMenu()) : el.textContent = fmtTimerPlain(until))
+    });
+    var dTpEl = document.getElementById("dTempPriceTimer");
+    if (dTpEl && dTpEl.style.display !== "none" && dTpEl.dataset.itemId && curItem && curItem.id === dTpEl.dataset.itemId) {
+      var dUntil = curItem.tempUntil || 0;
+      dUntil && (dUntil <= Date.now() ? (dTpEl.style.display = "none", dTpEl.textContent = "") : dTpEl.textContent = "⏱ Цена действует ещё " + fmtTimerPlain(dUntil))
+    }
   }, 1e3)
 }
 
