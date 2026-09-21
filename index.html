@@ -5260,7 +5260,7 @@ textarea.fb-bfield{resize:none;min-height:112px;line-height:1.6;font-family:inhe
      }
    }
 
-   const API = "https://script.google.com/macros/s/AKfycbxPO6HDlaJTzgzrpt2u1bNID9IXYp_7LW2sEZJJTZo82sx_kMshf61SVayNFi4kMQKRYA/exec",
+   const API = "https://script.google.com/macros/s/AKfycbxBgUQaWNEnvDnaZNwo38VEHU877JbbrL2xBUKBgXODMt8o5gLhr3JFd7mIpsbRYqNk9Q/exec",
   WA = "77760709898",
   CAT_META = {
     "Новинки": {
@@ -6008,7 +6008,7 @@ function initGuestTracking() {
   if (_guestPingInterval) clearInterval(_guestPingInterval);
   _guestPingInterval = setInterval(function() {
     try {
-      var url = API + "?action=guestPing&clientId=" + encodeURIComponent(getClientId());
+      var url = API + "?action=guestPing&clientId=" + encodeURIComponent(getClientId()) + "&branch=" + encodeURIComponent(branch || "");
       fetch(url).catch(function() {});
     } catch (e) {}
   }, 20000);
