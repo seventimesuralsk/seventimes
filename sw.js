@@ -7,7 +7,7 @@
 //    просто добавляются в него по мере просмотра, старые остаются лежать вечно
 //    (пока сам браузер гостя не решит почистить место на диске).
 
-const APP_CACHE = "seventimes-app-v2";
+const APP_CACHE = "seventimes-app-v3";
 const IMAGE_CACHE = "seventimes-images"; // без номера версии — стабильное имя навсегда
 
 const APP_SHELL = [
@@ -47,21 +47,39 @@ self.addEventListener("fetch", function (event) {
     return;
   }
 
-  // Сама страница сайта — "сеть, а если сети нет — кэш"
+  // Сама страница сайта — "сеть, а если сеть тупит дольше 3 сек или её нет — кэш".
+  // Свежая версия всё равно докачается в фоне и сохранится на следующий заход.
   if (req.mode === "navigate") {
-    event.respondWith(
-      fetch(req)
-        .then(function (res) {
-          var resClone = res.clone();
-          caches.open(APP_CACHE).then(function (cache) { cache.put(req, resClone); });
-          return res;
-        })
-        .catch(function () {
-          return caches.match(req, { cacheName: APP_CACHE }).then(function (cached) {
-            return cached || caches.match("./index.html", { cacheName: APP_CACHE });
-          });
-        })
-    );
+    var network = fetch(req).then(function (res) {
+      if (res && res.ok) {
+        var resClone = res.clone();
+        caches.open(APP_CACHE).then(function (cache) { cache.put(req, resClone); });
+      }
+      return res;
+    });
+    event.waitUntil(network.catch(function () {}));
+    var fromCache = function () {
+      return caches.match(req, { cacheName: APP_CACHE }).then(function (cached) {
+        return cached || caches.match("./index.html", { cacheName: APP_CACHE });
+      });
+    };
+    event.respondWith(new Promise(function (resolve) {
+      var done = false;
+      var finish = function (res) { if (!done && res) { done = true; resolve(res); } };
+      var timer = setTimeout(function () {
+        fromCache().then(finish);
+      }, 3000);
+      network.then(function (res) {
+        clearTimeout(timer);
+        finish(res);
+      }).catch(function () {
+        clearTimeout(timer);
+        fromCache().then(function (cached) {
+          if (cached) finish(cached);
+          else network.then(finish, function () { finish(Response.error()); });
+        });
+      });
+    }));
     return;
   }
 
@@ -72,8 +90,10 @@ self.addEventListener("fetch", function (event) {
       caches.match(req, { cacheName: IMAGE_CACHE }).then(function (cached) {
         if (cached) return cached;
         return fetch(req).then(function (res) {
-          var resClone = res.clone();
-          caches.open(IMAGE_CACHE).then(function (cache) { cache.put(req, resClone); });
+          if (res && (res.ok || res.type === "opaque")) {
+            var resClone = res.clone();
+            caches.open(IMAGE_CACHE).then(function (cache) { cache.put(req, resClone); });
+          }
           return res;
         }).catch(function () {
           return cached;
@@ -89,8 +109,10 @@ self.addEventListener("fetch", function (event) {
       caches.match(req, { cacheName: APP_CACHE }).then(function (cached) {
         if (cached) return cached;
         return fetch(req).then(function (res) {
-          var resClone = res.clone();
-          caches.open(APP_CACHE).then(function (cache) { cache.put(req, resClone); });
+          if (res && (res.ok || res.type === "opaque")) {
+            var resClone = res.clone();
+            caches.open(APP_CACHE).then(function (cache) { cache.put(req, resClone); });
+          }
           return res;
         }).catch(function () {
           return cached;
@@ -106,18 +128,22 @@ self.addEventListener("fetch", function (event) {
 self.addEventListener("message", function (event) {
   if (!event.data || event.data.type !== "PREFETCH_IMAGES") return;
   var urls = event.data.urls || [];
+  // Качаем максимум по 3 фото одновременно, чтобы фоновая докачка не забивала
+  // канал и не тормозила фото, которые гость видит на экране прямо сейчас.
   event.waitUntil(
     caches.open(IMAGE_CACHE).then(function (cache) {
-      return Promise.all(
-        urls.map(function (url) {
-          return cache.match(url).then(function (already) {
-            if (already) return; // уже есть — не качаем повторно
-            return fetch(url).then(function (res) {
-              if (res && res.ok) return cache.put(url, res);
-            }).catch(function () {});
+      var i = 0;
+      function next() {
+        if (i >= urls.length) return Promise.resolve();
+        var url = urls[i++];
+        return cache.match(url).then(function (already) {
+          if (already) return; // уже есть — не качаем повторно
+          return fetch(url).then(function (res) {
+            if (res && res.ok) return cache.put(url, res);
           });
-        })
-      );
+        }).catch(function () {}).then(next);
+      }
+      return Promise.all([next(), next(), next()]);
     })
   );
 });
