@@ -519,15 +519,18 @@
          Seven Times
         </div>
        </div>
-       <input class="admi" id="admcode" onkeydown="if(event.key==='Enter')admLogin()" placeholder="КОД УПРАВЛЯЮЩЕГО" type="password"/>
-       <div class="admerr" id="admerr">
-       </div>
-       <button class="admloginbtn" id="admLoginBtn" onclick="admLogin()">
-        Войти →
-       </button>
-       <button class="admclosebtn" onclick="closeAdm()">
-        Закрыть
-       </button>
+       <form id="admLoginForm" autocomplete="on" onsubmit="event.preventDefault();admLogin();return false">
+        <input autocomplete="username" name="username" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" tabindex="-1" type="text" value="Seven Times Admin"/>
+        <input autocomplete="current-password" class="admi" id="admcode" inputmode="numeric" maxlength="12" name="admin-code" oninput="this.value=this.value.replace(/\D/g,'')" pattern="[0-9]*" placeholder="КОД УПРАВЛЯЮЩЕГО" type="password"/>
+        <div class="admerr" id="admerr">
+        </div>
+        <button class="admloginbtn" id="admLoginBtn" type="submit">
+         Войти →
+        </button>
+        <button class="admclosebtn" onclick="closeAdm()" type="button">
+         Закрыть
+        </button>
+       </form>
       </div>
       <div id="adm-main" style="display:none">
        <div class="admbtabs" style="margin-bottom:16px">
