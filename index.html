@@ -9425,111 +9425,22 @@ function openAboutCompanyModal() {
 
 var HR_POSITIONS = ["Официант", "Бариста", "Повар — горячий цех", "Повар — суши/холодный цех", "Повар фастфуд / гриль", "Тех персонал", "Курьер"];
 
-var HR_ROLE_QUESTIONS = {
-  "Официант": { title: "Готовы ли вы предлагать гостям допродажи (десерты, напитки), не навязывая?", options: ["Да, это нормальная часть работы официанта", "Могу, если покажете как это делать правильно", "Умею предлагать, но не люблю навязывать", "Предпочитаю просто принимать заказ"] },
-  "Бариста": { title: "Работали ли вы раньше на профессиональной кофемашине?", options: ["Да, есть опыт именно бариста", "Дома варю кофе, на профессиональной технике не работал(а)", "Не работал(а), но готов(а) быстро научиться", "Совсем не разбираюсь в кофе"] },
-  "Повар — горячий цех": { title: "Есть ли у вас опыт именно в горячем цехе — плита, фритюр, гриль под потоком заказов?", options: ["Да, работал(а) именно в горячем цехе", "Работал(а) на кухне, но в основном на заготовках", "Домашняя готовка, профессионального опыта нет", "Совсем новичок на кухне"] },
-  "Повар — суши/холодный цех": { title: "Есть ли у вас опыт работы с сырой рыбой и знание санитарных норм холодного цеха?", options: ["Да, работал(а) именно суши-поваром", "Работал(а) в холодном цехе, но не с суши", "Нет опыта, но готов(а) пройти обучение", "Не работал(а) с сырыми продуктами вообще"] },
-  "Повар фастфуд / гриль": { title: "Готовы ли работать в темпе фастфуда — сборка заказа за 1–2 минуты на потоке?", options: ["Да, привычен(привычна) к такому темпу", "Справлюсь, но нужно немного втянуться", "Предпочитаю более спокойный темп работы", "Не пробовал(а), не уверен(а)"] },
-  "Тех персонал": { title: "Эта роль — уборка зала, мытьё посуды, помощь на кухне и в зале. Готовы ли вы к такой физической и не всегда творческой работе весь день на ногах?", options: ["Да, меня это не пугает", "Готов(а), но рассматриваю как шаг к позиции повыше", "Хочу попробовать, но не уверен(а) насчёт постоянно", "Рассматриваю только как временный вариант"] },
-  "Курьер": { title: "Есть ли у вас личный транспорт (авто, велосипед, самокат) и хорошее знание города для доставки заказов?", options: ["Да, есть транспорт и хорошо знаю город", "Транспорт есть, но город знаю не очень", "Транспорта нет, готов(а) обсудить варианты", "Нет ни транспорта, ни знания города"] }
-};
-var HR_DEFAULT_ROLE_Q = { title: "Расскажите, что вы уже умеете делать применительно к этой должности", options: ["Есть прямой опыт именно в этой роли", "Есть смежный опыт, но не точно такой же", "Опыта нет, но готов(а) учиться с нуля", "Пока не уверен(а), что эта роль мне подходит"] };
-
-function hr_buildRoleQuestion() {
-  var pos = hr_answers.position;
-  var src = HR_ROLE_QUESTIONS[pos] || HR_DEFAULT_ROLE_Q;
-  return { id: "roleAnswer", type: "choice", title: src.title, sub: pos ? "Специфический вопрос для роли «" + pos + "»" : "", options: src.options, required: true };
-}
-
-function hr_buildRkeeperQuestion() {
-  var pos = hr_answers.position;
-  if (pos !== "Официант" && pos !== "Бариста") return null;
-  return { id: "rkeeperAnswer", type: "choice", title: "Работали ли вы когда-нибудь с программой R-Keeper?", options: ["Да", "Нет"], required: true };
-}
-
-function hr_buildPsychQuestions() {
-  var byRole = {
-    "Официант": [
-      { id: "stressAnswer", title: "Вы уронили поднос с заказом, но никто в зале этого не заметил — гость всё равно скоро спросит, где его блюдо. Ваши действия?" },
-      { id: "commitmentAnswer", title: "Вечер, касса не сходится на небольшую сумму, объяснить нечем, а до конца смены десять минут. Ваши действия?" },
-      { id: "punctualityAnswer", title: "Кухня явно не успевает, но администратора рядом нет, а гость уже спрашивает, где заказ. Ваши действия?" },
-      { id: "politenessAnswer", title: "Гость нахамил вам прилюдно при других гостях, а через пять минут как ни в чём не бывало просит принести десерт без очереди. Ваши действия?" },
-      { id: "responsibilityAnswer", title: "Вы забыли передать пожелание гостя на кухню, блюдо уже готовят неправильно, а гость пока ничего не заметил. Ваши действия?" }
-    ],
-    "Бариста": [
-      { id: "stressAnswer", title: "Кофемашина сломалась в разгар потока, а следующий клиент уже нервно поглядывает на часы. Ваши действия?" },
-      { id: "commitmentAnswer", title: "Молоко нужного вида закончилось, но похожее есть — можно тихо заменить и никто, скорее всего, не заметит. Ваши действия?" },
-      { id: "punctualityAnswer", title: "Очередь растёт, и вы понимаете, что можно немного сократить время приготовления, не соблюдая рецепт полностью. Ваши действия?" },
-      { id: "politenessAnswer", title: "Клиент грубо жалуется на вкус напитка, хотя вы точно всё сделали по рецепту. Ваши действия?" },
-      { id: "responsibilityAnswer", title: "Клиент уверяет, что заказывал двойную порцию, хотя вы помните — одну, а чек уже выброшен. Ваши действия?" }
-    ],
-    "Повар — горячий цех": [
-      { id: "stressAnswer", title: "Погасла плита, заказ горит по времени, а рядом никого из руководства. Ваши действия?" },
-      { id: "commitmentAnswer", title: "Заказов скопилось много, и вы понимаете, что можно немного сократить процесс готовки — гость вряд ли заметит. Ваши действия?" },
-      { id: "punctualityAnswer", title: "Закончился ключевой ингредиент, но есть похожий заменитель — можно тихо использовать его и не говорить администратору. Ваши действия?" },
-      { id: "politenessAnswer", title: "Официант кричит на вас при всей кухне, что блюдо готовится слишком долго, хотя вы всё делаете правильно. Ваши действия?" },
-      { id: "responsibilityAnswer", title: "Вы заметили, что коллега занизил время готовки в отчёте, и вас об этом никто не спрашивал. Ваши действия?" }
-    ],
-    "Повар — суши/холодный цех": [
-      { id: "stressAnswer", title: "Сломался нож в разгар потока заказов, а запасного под рукой нет. Ваши действия?" },
-      { id: "commitmentAnswer", title: "Официант торопит — гость жалуется, что суши отдаёте медленно, и вы понимаете, что можно срезать пару шагов приготовления. Ваши действия?" },
-      { id: "punctualityAnswer", title: "Заказов много, а нужных заготовок не хватает — есть похожая рыба, которую можно тихо пустить вместо нужной. Ваши действия?" },
-      { id: "politenessAnswer", title: "Гость жалуется, что суши не понравились, и требует деньги обратно, хотя вы уверены — всё было свежее. Ваши действия?" },
-      { id: "responsibilityAnswer", title: "Вы заметили, что рыба на грани свежести, а её уже собираются пустить в работу, и никто пока не спросил вашего мнения. Ваши действия?" }
-    ],
-    "Повар фастфуд / гриль": [
-      { id: "stressAnswer", title: "Погас гриль в разгар потока заказов, а очередь на кассе продолжает расти. Ваши действия?" },
-      { id: "commitmentAnswer", title: "Очередь растёт быстрее, чем вы успеваете собирать заказы, и вы понимаете, что можно немного упростить сборку. Ваши действия?" },
-      { id: "punctualityAnswer", title: "Закончились булочки нужного вида, но есть похожие — можно тихо заменить, гость вряд ли обратит внимание. Ваши действия?" },
-      { id: "politenessAnswer", title: "Гость на кассе грубо жалуется, что заказ собрали неправильно, хотя вы уверены — всё верно. Ваши действия?" },
-      { id: "responsibilityAnswer", title: "Гость утверждает, что ему не доложили ингредиент, хотя вы точно помните обратное, а чек уже не проверить. Ваши действия?" }
-    ],
-    "Тех персонал": [
-      { id: "stressAnswer", title: "Что-то разлилось в зале в самый разгар работы, а рядом никого из старших нет. Ваши действия?" },
-      { id: "commitmentAnswer", title: "Нужно убрать несколько столов одновременно, гости ждут, и вы понимаете, что можно убрать быстрее, но не так тщательно. Ваши действия?" },
-      { id: "punctualityAnswer", title: "Закончились чистящие средства, но есть похожие под рукой без нужной маркировки. Ваши действия?" },
-      { id: "politenessAnswer", title: "Коллега грубо делает замечание по поводу вашей работы прилюдно, хотя вы всё сделали правильно. Ваши действия?" },
-      { id: "responsibilityAnswer", title: "Вы заметили, что коллега не убрал за собой, но отчитался, что всё сделано, а проверять никто не будет. Ваши действия?" }
-    ],
-    "Курьер": [
-      { id: "stressAnswer", title: "Кассир вас торопит и повышает голос при других сотрудниках. Ваши действия?" },
-      { id: "commitmentAnswer", title: "Смена почти закончилась, но пришёл ещё один заказ на дальний адрес, и его вполне можно передать другому курьеру. Ваши действия?" },
-      { id: "punctualityAnswer", title: "Вы застряли в пробке, заказ точно задержится, а до этого можно было поехать другой дорогой. Ваши действия?" },
-      { id: "politenessAnswer", title: "Клиент не выходит и не берёт трубку уже десять минут, а заказ остывает у вас в руках. Ваши действия?" },
-      { id: "responsibilityAnswer", title: "Вы уже отъехали от клиента и поняли, что отдали не весь заказ, а возвращаться совсем не хочется. Ваши действия?" }
-    ]
-  };
-  var src = byRole[hr_answers.position] || byRole["Официант"];
-  return src.map(function(q) {
-    return { id: q.id, type: "textarea", title: q.title, sub: "Своими словами", placeholder: "Напишите пару предложений…", required: true };
-  });
-}
-
+// Психологические вопросы и вопросы, специфичные для роли (включая
+// R-Keeper), убраны полностью — анкета оставлена короткой, только
+// практическая информация о кандидате.
 function hr_getQuestions() {
   var qs = [
+    { id: "position", type: "choice", title: "На какую должность претендуете?", options: HR_POSITIONS, required: true },
     { id: "name", type: "text", title: "Как вас зовут?", sub: "Имя и фамилия на русском или казахском языке", placeholder: "Иван Иванов", required: true },
     { id: "phone", type: "phone", title: "Номер телефона", sub: "Для связи по вашей заявке", required: true },
     { id: "age", type: "number", title: "Сколько вам лет?", placeholder: "Возраст", required: true, min: 18, max: 70 },
-    { id: "position", type: "choice", title: "На какую должность претендуете?", options: HR_POSITIONS, required: true },
-    hr_buildRoleQuestion()
-  ];
-  var rkeeperQ = hr_buildRkeeperQuestion();
-  if (rkeeperQ) qs.push(rkeeperQ);
-  qs.push(
-    { id: "isStudent", type: "choice", title: "Вы студент(ка) или учитесь сейчас?", options: ["Да, учусь очно", "Да, учусь заочно / дистанционно", "Нет, не учусь"], required: true },
-    { id: "parallelJob", type: "choice", title: "Работаете ли вы сейчас где-то ещё параллельно?", options: ["Да, работаю в другом месте одновременно", "Нет, это будет моё единственное место работы"], required: true },
-    { id: "experience", type: "choice", title: "Есть ли у вас опыт работы в общепите?", options: ["Нет опыта", "До 1 года", "1–3 года", "Более 3 лет"], required: true },
-    { id: "prevPlace", type: "text", title: "Где вы работали до этого?", sub: "Название заведения/компании. Если это первое место работы — напишите «нет»", placeholder: "Например: Seven Times", required: true },
+    { id: "experience", type: "text", title: "Опыт работы в общепите", sub: "С какого года по какой год, где именно. Если опыта нет — напишите «нет опыта»", placeholder: "Например: 2022–2024, Seven Times", required: true },
     { id: "leaveReason", type: "multiChoiceOther", title: "Почему вы ушли с прошлого места работы?", sub: "Можно выбрать несколько вариантов, если подходит не одна причина", options: ["По собственному желанию", "Не устроила зарплата", "Задерживали или удерживали зарплату", "Не сошёлся характерами с коллективом", "Конфликт с руководством/администратором", "Не устроил график — переработки, нет выходных", "Заведение закрылось / сократили штат", "Уволили без объяснения причин", "Переезд / сменил(а) район", "Нашёл(нашла) более выгодное предложение", "Это моё первое место работы", "Затрудняюсь ответить", "Другое (своими словами)"], required: true },
-    { id: "preferredBranch", type: "multiChoiceOther", title: "Где вам ближе работать?", sub: "Можно выбрать несколько вариантов", options: ["Абулхаир Хана 177 (4 мкрн)", "Скоробогатова 65/1 (центр)", "Самал 70/3 (10 мкрн)"], required: true },
-    { id: "howFound", type: "choice", title: "Откуда вы узнали о нас?", options: ["Instagram", "Объявления в пабликах", "В ресторане, увидел(а) сам(а)"], required: true }
-  );
-  qs = qs.concat(hr_buildPsychQuestions());
-  qs.push(
+    { id: "preferredBranch", type: "multiChoiceOther", title: "Где вам удобно работать?", sub: "Можно выбрать несколько вариантов", options: ["Абулхаир Хана 177 (4 мкрн)", "Скоробогатова 65/1 (центр)", "Самал 70/3 (10 мкрн)"], required: true },
+    { id: "howFound", type: "choice", title: "Откуда вы узнали о нас?", options: ["Instagram", "Объявления в пабликах", "В ресторане, увидел(а) сам(а)"], required: true },
     { id: "whyWorkHere", type: "textarea", title: "Почему хотите работать именно у нас?", sub: "Своими словами", placeholder: "Напишите пару предложений…", required: true },
     { id: "consent", type: "consent", title: "Последний шаг", sub: "Подтвердите согласие на обработку данных" }
-  );
+  ];
   return qs;
 }
 
@@ -9670,7 +9581,6 @@ function hr_renderQuestion(q, qs) {
 
 function hr_selectChoice(id, val) {
   hr_answers[id] = val;
-  if (id === "position") { hr_answers.roleAnswer = ""; hr_answers.rkeeperAnswer = ""; }
   hr_render();
 }
 
@@ -9747,65 +9657,7 @@ function hr_back() {
   hr_render();
 }
 
-function hr_computeScore() {
-  var points = 0, maxPoints = 0;
-
-  // R-Keeper (только официант/бариста) — да однозначно плюс, нет не критично
-  if (hr_answers.rkeeperAnswer) {
-    maxPoints += 20;
-    points += hr_answers.rkeeperAnswer === "Да" ? 20 : 12;
-  }
-
-  // Учёба — нам нужны те, кто не учится очно (максимум времени на работу)
-  maxPoints += 25;
-  if (hr_answers.isStudent === "Нет, не учусь") points += 25;
-  else if (hr_answers.isStudent === "Да, учусь заочно / дистанционно") points += 14;
-  else if (hr_answers.isStudent === "Да, учусь очно") points += 2;
-
-  // Подработка параллельно — рискуем, что устанет и попросит отгулы
-  maxPoints += 20;
-  if (hr_answers.parallelJob === "Нет, это будет моё единственное место работы") points += 20;
-  else if (hr_answers.parallelJob === "Да, работаю в другом месте одновременно") points += 2;
-
-  // Опыт — чем больше, тем лучше, но и без опыта не страшно, научим
-  maxPoints += 25;
-  if (hr_answers.experience === "Более 3 лет") points += 25;
-  else if (hr_answers.experience === "1–3 года") points += 20;
-  else if (hr_answers.experience === "До 1 года") points += 12;
-  else if (hr_answers.experience === "Нет опыта") points += 8;
-
-  // Причина ухода — конкретные тревожные флаги
-  maxPoints += 20;
-  var leave = Array.isArray(hr_answers.leaveReason) ? hr_answers.leaveReason : [];
-  var leaveScore = 16;
-  if (leave.indexOf("Не сошёлся характерами с коллективом") !== -1) leaveScore -= 12;
-  if (leave.indexOf("Конфликт с руководством/администратором") !== -1) leaveScore -= 12;
-  if (leave.indexOf("Нашёл(нашла) более выгодное предложение") !== -1) leaveScore -= 14;
-  points += Math.max(0, leaveScore);
-
-  // 5 психологических ответов — честность/конструктив против равнодушных
-  // и грубых отписок ("похуй", "не буду", "уйду" и т.п.)
-  var psychIds = ["stressAnswer", "commitmentAnswer", "punctualityAnswer", "politenessAnswer", "responsibilityAnswer"];
-  var psychPositive = ["сообщ", "исправ", "призна", "скаж", "верн", "предупред", "спокойн", "постара", "справ", "найду выход", "вежлив", "профессионал", "извин", "объясн", "честно", "по правил", "доведу", "не буду экономить"];
-  var psychNegative = ["похуй", "пофиг", "плевать", "насрать", "не буду", "уйду", "ничего не сдела", "ничего не буду", "нет", "не знаю", "промолчу", "никто не узнает", "сойдёт", "наплевать", "забью", "откажу", "нагруб", "разозл", "пошлю"];
-  psychIds.forEach(function(id) {
-    var text = (hr_answers[id] || "").toString().trim().toLowerCase();
-    maxPoints += 20;
-    if (!text) { return; }
-    var s = 12;
-    var hasPositive = psychPositive.some(function(w) { return text.indexOf(w) !== -1; });
-    if (text.length < 8 && !hasPositive) s -= 6;
-    if (text.length > 30) s += 4;
-    psychPositive.forEach(function(w) { if (text.indexOf(w) !== -1) s += 5; });
-    psychNegative.forEach(function(w) { if (text.indexOf(w) !== -1) s -= 10; });
-    points += Math.max(0, Math.min(20, s));
-  });
-
-  return maxPoints ? Math.round((points / maxPoints) * 100) : 0;
-}
-
 function hr_submit() {
-  var score = hr_computeScore();
   var ageNum = Number(hr_answers.age);
   var ageFlag = (ageNum >= 16 && ageNum < 18) ? "Несовершеннолетний — нужно согласие родителя, ограничения по графику (ТК РК)" : "";
   var appId = "a_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
@@ -9827,23 +9679,11 @@ function hr_submit() {
     age: hr_answers.age || "",
     ageFlag: ageFlag,
     position: hr_answers.position || "",
-    roleAnswer: hr_answers.roleAnswer || "",
-    isStudent: hr_answers.isStudent || "",
-    parallelJob: hr_answers.parallelJob || "",
     experience: hr_answers.experience || "",
-    prevPlace: hr_answers.prevPlace || "",
     leaveReason: leaveReasonStr,
-    schedule: hr_answers.schedule || "",
     preferredBranch: preferredBranchStr,
     howFound: hr_answers.howFound || "",
-    whyWorkHere: hr_answers.whyWorkHere || "",
-    rkeeperAnswer: hr_answers.rkeeperAnswer || "",
-    stressAnswer: hr_answers.stressAnswer || "",
-    commitmentAnswer: hr_answers.commitmentAnswer || "",
-    punctualityAnswer: hr_answers.punctualityAnswer || "",
-    politenessAnswer: hr_answers.politenessAnswer || "",
-    responsibilityAnswer: hr_answers.responsibilityAnswer || "",
-    score: score
+    whyWorkHere: hr_answers.whyWorkHere || ""
   }, function(d) {
     if (d && d.duplicate) { hr_renderDuplicate(); return; }
     hr_submitted = true;
