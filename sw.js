@@ -7,7 +7,7 @@
 //    просто добавляются в него по мере просмотра, старые остаются лежать вечно
 //    (пока сам браузер гостя не решит почистить место на диске).
 
-const APP_CACHE = "seventimes-app-v3";
+const APP_CACHE = "seventimes-app-v4";
 const IMAGE_CACHE = "seventimes-images"; // без номера версии — стабильное имя навсегда
 
 const APP_SHELL = [
@@ -51,7 +51,7 @@ self.addEventListener("fetch", function (event) {
   // Свежая версия всё равно докачается в фоне и сохранится на следующий заход.
   if (req.mode === "navigate") {
     var network = fetch(req).then(function (res) {
-      if (res && res.ok) {
+      if (res && res.ok && !res.redirected) {
         var resClone = res.clone();
         caches.open(APP_CACHE).then(function (cache) { cache.put(req, resClone); });
       }
@@ -89,8 +89,17 @@ self.addEventListener("fetch", function (event) {
     event.respondWith(
       caches.match(req, { cacheName: IMAGE_CACHE }).then(function (cached) {
         if (cached) return cached;
-        return fetch(req).then(function (res) {
-          if (res && (res.ok || res.type === "opaque")) {
+        // Фото Cloudinary берём CORS-запросом: такой ответ можно проверить на
+        // ошибку и он не раздувает лимит хранилища (непрозрачный ответ Chrome
+        // считает за несколько мегабайт — при сотнях фото браузер мог стереть
+        // всё хранилище сайта, включая корзину). Не вышло — обычный запрос.
+        var isCloudinary = req.url.indexOf("https://res.cloudinary.com/") === 0;
+        var net = isCloudinary
+          ? fetch(req.url, { mode: "cors", credentials: "omit" }).catch(function () { return fetch(req); })
+          : fetch(req);
+        return net.then(function (res) {
+          // кэшируем только точно успешные ответы; непрозрачный — только не для Cloudinary
+          if (res && (res.ok || (res.type === "opaque" && !isCloudinary))) {
             var resClone = res.clone();
             caches.open(IMAGE_CACHE).then(function (cache) { cache.put(req, resClone); });
           }
