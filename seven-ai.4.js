@@ -11,10 +11,11 @@
  * Жёсткие правила: только факты ниже и живое меню сайта. Номер менеджера и
  * WhatsApp до заказа не даёт НИКОГДА — связь с менеджером только через
  * оформленный заказ или бронь (они сами уходят менеджеру в WhatsApp).
- * Способы оплаты не называет. Акции не выдумывает — отправляет в «Сообщения».
+ * Оплату доставки спрашивает как форма сайта: наличные или Kaspi перевод.
+ * Акции не выдумывает — отправляет в «Сообщения».
  *
  * Свои ответы — в админке ("Настройки SEVEN AI"): строка "слова = ответ".
- * После правки этого файла поменяйте цифру в имени (seven-ai.4.js) и в
+ * После правки этого файла поменяйте цифру в имени (seven-ai.5.js) и в
  * index.html — иначе у гостей останется старая версия из кэша.
  */
 (function (root) {
@@ -516,7 +517,7 @@
       kz: ["Өзі алып кету үш филиалда да бар. Сайт арқылы — Самал 70/3 және Скоробогатова 65/1, ал Абулхаир Хана 177-де тапсырыс орнында беріледі. Осы жерде рәсімдей аламын."],
       en: ["Pickup works at all three branches. Online pickup orders come from Samal 70/3 and Skorobogatova 65/1; at Abulhair Khan 177 you order on site. I can set it up right here."]
     },
-    payment: { ru: ["Про оплату договоритесь с менеджером — он напишет, как только оформите заказ. Я в деньгах не разбираюсь, я по еде.", "Способ оплаты уточнит менеджер при подтверждении заказа. Моя зона ответственности — чтобы было вкусно."], kz: ["Төлем тәсілін менеджер тапсырысты растағанда айтады. Мен тамақ жағындамын."], en: ["Payment is sorted out with the manager when they confirm your order. I'm the food guy, not the money guy."] },
+    payment: { ru: ["Доставку можно оплатить наличными или Kaspi переводом — выберете, когда буду оформлять заказ. Детали подтвердит менеджер.", "Наличные или Kaspi перевод — как вам удобнее. Спрошу на оформлении, а менеджер подтвердит."], kz: ["Жеткізуді қолма-қол немесе Kaspi аударымымен төлеуге болады — тапсырыс рәсімдегенде таңдайсыз."], en: ["Delivery can be paid in cash or by Kaspi transfer — you'll choose when I place the order. The manager confirms the details."] },
     bookingRules: {
       ru: ["Все условия брони — по кнопке ниже. Если коротко: столик держим 20 минут, а предоплата 2 000 ₸ не возвращается при неявке. Забронировать могу прямо здесь."],
       kz: ["Брондау шарттары — төмендегі батырмада. Қысқаша: үстелді 20 минут ұстаймыз, келмей қалсаңыз 2 000 ₸ алдын ала төлем қайтарылмайды. Брондауды осы жерде жасай аламын."],
@@ -838,9 +839,16 @@
     return null;
   }
 
+  function payFrom(raw) {
+    var s = soft(raw);
+    if (/налич|наличк|кэш|кеш\b|cash|колма|колма-кол/.test(s)) return "cash";
+    if (/kaspi|каспи|перевод|переведу|transfer|аударым|аударма/.test(s)) return "kaspi";
+    return null;
+  }
+  function payLabel(p, lang) { return p === "cash" ? L(lang, "Наличные", "Қолма-қол", "Cash") : L(lang, "Kaspi перевод", "Kaspi аударым", "Kaspi transfer"); }
   // ── ЗАКАЗ ──
   function orderStart(ctx, st, R, init) {
-    st.flow = { t: "order", step: null, d: { mode: init.mode || null, branch: null, pending: init.items || [], cutlery: 1 } };
+    st.flow = { t: "order", step: null, d: { mode: init.mode || null, branch: null, pending: init.items || [], cutlery: 1, pay: init.pay || null } };
     if (init.branch && ORDER_BR.indexOf(init.branch) >= 0) st.flow.d.branch = init.branch;
     if (init.lead) R.say(init.lead);
     orderNext(ctx, st, R);
@@ -910,6 +918,12 @@
         R.act(chip(L(lang, "Частный дом", "Жеке үй", "Private house"), L(lang, "частный дом", "жеке үй", "private house")));
         return;
       }
+      if (!d.pay) {
+        f.step = "pay";
+        R.say(L(lang, pick("pay", ["Как будете платить: наличными или Kaspi переводом?", "Оплата — наличными курьеру или Kaspi переводом?"]), "Қалай төлейсіз: қолма-қол ма, әлде Kaspi аударымы ма?", "How will you pay: cash or Kaspi transfer?"));
+        R.act(chip(payLabel("cash", lang), L(lang, "наличные", "қолма-қол", "cash"))).act(chip(payLabel("kaspi", lang), L(lang, "kaspi перевод", "kaspi аударым", "kaspi transfer")));
+        return;
+      }
     } else if (!d.pickup) {
       f.step = "pickup";
       R.say(L(lang, "Через сколько заберёте?", "Қанша уақыттан кейін алып кетесіз?", "When will you pick it up?"));
@@ -933,14 +947,14 @@
     lines.push(L(lang, "Филиал: ", "Филиал: ", "Branch: ") + bname(d.branch, lang));
     lines.push(d.mode === "delivery" ? L(lang, "Доставка: ", "Жеткізу: ", "Delivery to: ") + addrStr(d, lang) : L(lang, "Самовывоз через: ", "Алып кету: ", "Pickup in: ") + d.pickup);
     lines.push(L(lang, "Имя: ", "Аты: ", "Name: ") + d.name, L(lang, "Телефон: ", "Телефон: ", "Phone: ") + d.phone);
-    if (d.mode === "delivery") lines.push(L(lang, "Приборов: ", "Құрал: ", "Cutlery: ") + d.cutlery);
+    if (d.mode === "delivery") lines.push(L(lang, "Оплата: ", "Төлем: ", "Payment: ") + payLabel(d.pay, lang), L(lang, "Приборов: ", "Құрал: ", "Cutlery: ") + d.cutlery);
     if (d.note) lines.push(L(lang, "Пожелания: ", "Тілек: ", "Notes: ") + d.note);
-    lines.push("", L(lang, "Есть пожелания или аллергия — напишите, добавлю. Если всё верно — жмите «Отправить заказ»: откроется WhatsApp с готовым текстом, менеджер подтвердит детали и оплату. Отправляя заказ, вы принимаете условия и положения.",
+    lines.push("", L(lang, "Есть пожелания или аллергия — напишите, добавлю. Если всё верно — жмите «Отправить заказ»: откроется WhatsApp с готовым текстом, менеджер подтвердит детали. Отправляя заказ, вы принимаете условия и положения.",
       "Тілек немесе аллергия болса — жазыңыз. Бәрі дұрыс болса — «Тапсырысты жіберу» басыңыз: WhatsApp дайын мәтінмен ашылады, менеджер растайды. Жіберу арқылы шарттармен келісесіз.",
       "Any wishes or allergies — just type them. If everything's right, tap «Send order»: WhatsApp opens with the text ready, and the manager confirms the details and payment. By sending, you accept the terms and conditions."));
     if (d.mode === "delivery" && S.total() < FACTS.freeDeliveryFrom) lines.push(L(lang, "До бесплатной доставки не хватает " + fmt(FACTS.freeDeliveryFrom - S.total()) + ".", "Тегін жеткізуге " + fmt(FACTS.freeDeliveryFrom - S.total()) + " жетпейді.", fmt(FACTS.freeDeliveryFrom - S.total()) + " short of free delivery."));
     R.say(lines.join("\n"));
-    d.final = { mode: d.mode, branch: d.branch, name: d.name, phone: d.phone, street: d.street || "", house: d.house || "", flat: d.flat || "", entrance: d.entrance || "", floor: d.floor || "", pickup: d.pickup || "", note: d.note || "", cutlery: d.cutlery || 1 };
+    d.final = { mode: d.mode, pay: d.mode === "delivery" ? d.pay : "", branch: d.branch, name: d.name, phone: d.phone, street: d.street || "", house: d.house || "", flat: d.flat || "", entrance: d.entrance || "", floor: d.floor || "", pickup: d.pickup || "", note: d.note || "", cutlery: d.cutlery || 1 };
     R.act({ a: "order:send", label: L(lang, "Отправить заказ", "Тапсырысты жіберу", "Send order") }).act({ a: "link:order", label: L(lang, "Условия", "Шарттар", "Terms") })
       .act(chip(L(lang, "Изменить", "Өзгерту", "Change"), L(lang, "изменить", "өзгерту", "change"))).act(chip(L(lang, "Отменить", "Бас тарту", "Cancel"), L(lang, "отмена", "бас тарту", "cancel")));
   }
@@ -1062,6 +1076,16 @@
         else if (!(am.privateHouse || isNo(I, tk) || /^(дом|частный|нет|no|skip|пропуст)/.test(sn))) return false;
         d.addrDone = true; return go();
       }
+      case "pay": {
+        var pv = payFrom(raw);
+        if (!pv) {
+          if (U.strong && !(I.payment >= 0.8)) return false;
+          R.say(L(lang, "Через сайт принимаем наличные или Kaspi перевод. Что выбираете?", "Сайт арқылы — қолма-қол немесе Kaspi аударым. Қайсысы?", "Online orders take cash or Kaspi transfer. Which one?"));
+          R.act(chip(payLabel("cash", lang), L(lang, "наличные", "қолма-қол", "cash"))).act(chip(payLabel("kaspi", lang), L(lang, "kaspi перевод", "kaspi аударым", "kaspi transfer")));
+          return true;
+        }
+        d.pay = pv; return go();
+      }
       case "pickup": {
         var s = soft(raw), mm = s.match(/(\d{1,3})\s*(?:мин|min|m\b)?/), mins = null;
         if (/полчаса|half an hour|жарты сагат/.test(s)) mins = 30;
@@ -1090,6 +1114,8 @@
         d.phone = p2; return go();
       }
       case "confirm": {
+        var pv2 = d.mode === "delivery" ? payFrom(raw) : null;
+        if (pv2 && pv2 !== d.pay && !/(^|\s)(без|no)\s/.test(soft(raw))) { d.pay = pv2; R.say(L(lang, "Оплата: " + payLabel(pv2, lang) + ".", "Төлем: " + payLabel(pv2, lang) + ".", "Payment: " + payLabel(pv2, lang) + ".")); return go(); }
         var cut = soft(raw).match(/(\d{1,2})\s*(?:прибор|cutlery|курал)|прибор\w*\s*(\d{1,2})/);
         if (cut) { d.cutlery = +(cut[1] || cut[2]); R.say(L(lang, "Приборов: " + d.cutlery + ".", "Құрал: " + d.cutlery + ".", "Cutlery: " + d.cutlery + ".")); return go(); }
         if (isYes(I, tk) || /отправ|send|жибер/.test(soft(raw))) { R.say(L(lang, "Жмите кнопку «Отправить заказ» — WhatsApp откроется сам, с готовым текстом.", "«Тапсырысты жіберу» батырмасын басыңыз — WhatsApp өзі ашылады.", "Tap «Send order» — WhatsApp will open with the text ready.")); return go(); }
@@ -1251,12 +1277,14 @@
       if (/состав|корзин|блюд|items|cart|себет/.test(s)) { d.itemsOk = false; f.step = null; orderNext(ctx, st, R); return true; }
       if (/адрес|address|мекенжай/.test(s)) { d.street = d.house = d.flat = d.entrance = d.floor = ""; d.addrDone = false; d.addrAsked = true; orderNext(ctx, st, R); return true; }
       if (/имя|телефон|номер|name|phone|аты/.test(s)) { d.name = d.phone = ""; d.idAsked = true; orderNext(ctx, st, R); return true; }
+      if (/оплат|pay|толем|төлем/.test(s)) { d.pay = null; orderNext(ctx, st, R); return true; }
       if (/способ|доставк|самовывоз|delivery|pickup/.test(s)) { d.mode = null; d.pickup = ""; d.addrDone = false; orderNext(ctx, st, R); return true; }
       if (/филиал|branch/.test(s)) { d.branch = null; orderNext(ctx, st, R); return true; }
       R.say(L(lang, "Что меняем?", "Нені өзгертеміз?", "What should I change?"));
       R.act(chip(L(lang, "Состав заказа", "Тапсырыс құрамы", "Items"), L(lang, "изменить состав", "құрамын өзгерту", "change items")))
         .act(chip(d.mode === "self" ? L(lang, "Способ получения", "Алу тәсілі", "Delivery/pickup") : L(lang, "Адрес", "Мекенжай", "Address"), d.mode === "self" ? L(lang, "изменить способ", "тәсілін өзгерту", "change delivery") : L(lang, "изменить адрес", "мекенжайды өзгерту", "change address")))
         .act(chip(L(lang, "Имя и телефон", "Аты мен телефоны", "Name and phone"), L(lang, "изменить имя", "атын өзгерту", "change name")));
+      if (d.mode === "delivery") R.act(chip(L(lang, "Оплату", "Төлемді", "Payment"), L(lang, "изменить оплату", "төлемді өзгерту", "change payment")));
       return true;
     }
     if (/дат|день|date|кун|кун/.test(s)) { d.date = null; d.slot = null; bookNext(ctx, st, R); return true; }
@@ -1418,13 +1446,13 @@
       var md = modeFrom(I, tokens);
       if (st.offer && (Date.now() - (st.offer.ts || 0) < 30 * 60e3) && (md || (isYes(I, tokens) && tokens.length <= 3))) {
         var items0 = st.offer.items; st.offer = null;
-        orderStart(ctx, st, R, { mode: md, items: items0 });
+        orderStart(ctx, st, R, { mode: md, items: items0, pay: payFrom(raw) });
         return out("order");
       }
       var wantBook = has("booking", 1) && !has("bookingRules") && !has("orderStart", 1);
       var wantDish = !wantBook && dishes.length && hasWant(tokens) && !has("price") && !has("compose") && !has("weight") && !has("allergy");
       if (has("orderStart") || has("orderHow") || wantDish) {
-        var init = { mode: md, branch: branch, items: [] };
+        var init = { mode: md, branch: branch, items: [], pay: payFrom(raw) };
         if (dishes.length) {
           var pi = parseItems(raw, idx);
           pi.items.forEach(function (x) { init.items.push({ name: x.r.it.name, qty: x.qty, hint: x.hint, hintText: raw }); });
@@ -1500,7 +1528,7 @@
       }
       if (has("wifi")) { R.say(t("wifi", lang)); used.push("wifi"); }
       if (has("outlets")) { R.say(t("outlets", lang)); used.push("outlets"); }
-      if (has("payment")) { R.say(t("payment", lang)); used.push("payment"); }
+      if (has("payment")) { R.say(t("payment", lang)); used.push("payment"); if (S) R.act(askOrder(lang)); }
       if (has("vacancy") && !has("hours")) { R.say(t("vacancy", lang)); R.act(act("vacancy", lang)); used.push("vacancy"); }
       if (has("about")) { R.say(t("about", lang)); used.push("about"); }
       if (has("cuisine") && !dishes.length) { R.say(t("cuisine", lang)); R.act(act("menu", lang)); used.push("cuisine"); }
