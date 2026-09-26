@@ -15,7 +15,7 @@
  * Акции не выдумывает — отправляет в «Сообщения».
  *
  * Свои ответы — в админке ("Настройки SEVEN AI"): строка "слова = ответ".
- * После правки этого файла поменяйте цифру в имени (seven-ai.5.js) и в
+ * После правки этого файла поменяйте цифру в имени (seven-ai.6.js) и в
  * index.html — иначе у гостей останется старая версия из кэша.
  */
 (function (root) {
@@ -221,7 +221,10 @@
     compliment: ["молодец", "красав", "=умница", "=умный", "=крутой", "=классный", "лучший бот", "good bot", "=smart", "=awesome", "=жарайсын"],
     cancel: ["=отмена", "=отмени", "=отменить", "=стоп", "=передумал", "=передумала", "=отбой", "не надо", "=cancel", "=stop", "бас тарт", "керек емес"],
     done: ["=оформляем", "=оформляй", "=оформи", "=все", "это все", "=хватит", "=готово", "=достаточно", "=done", "=checkout", "thats all", "=болды", "=жетеди", "больше ничего", "ничего больше", "=дальше", "=далее"],
-    change: ["=изменить", "=поменять", "=исправить", "=изменить", "=change", "=edit", "озгерт"]
+    change: ["=изменить", "=поменять", "=исправить", "=изменить", "=change", "=edit", "озгерт"],
+    open: ["=открой", "=откройте", "=открыть", "=открывай", "=open", "=ашыныз", "=ашшы", "ашып бер"],
+    repeat: ["повтори", "повторить", "как обычно", "то же самое", "как в прошлый раз", "прошлый заказ", "=repeat", "same as last", "as usual", "кайтала"],
+    lunch: ["бизнес ланч", "=ланч", "=ланчи", "=lunch", "business lunch"]
   };
   var RUDE = ["хуй", "хуе", "охрен", "охуе", "ахуе", "=нафиг", "=офигели", "пизд", "ебан", "ебат", "ебал", "ебу", "бля", "=сука", "=суки", "мудак", "мудил", "долбоеб", "дебил", "идиот", "=тупой", "=тупая", "=тупые", "говно", "дерьм", "херн", "=нахер", "=чмо", "=урод", "заеб", "акымак", "=сасык", "бесит", "задолбал", "=fuck", "fucking", "=shit", "=stupid", "=idiot", "=dumb", "=bitch", "=asshole"];
   var KZ_WORDS = ["салем", "салеметсиз", "рахмет", "ракмет", "канша", "турады", "кайда", "бар", "жок", "ма", "ме", "ба", "бе", "па", "пе", "керек", "маган", "сиз", "сизде", "сен", "тапсырыс", "жеткизу", "устел", "брондау", "ашык", "жабык", "бала", "балалар", "туган", "кун", "жумыс", "уакыт", "сагат", "мазир", "тагам", "кандай", "калай", "иа", "ия", "жаксы", "тусиндим", "кашан", "нешеге", "дейин", "мекенжай", "толем", "бага", "баасы", "жениллик", "айтыныз", "бериниз", "кенес", "не", "осы", "мен", "биз", "сиздер", "кайырлы", "курамы", "ащы", "арзан", "еттен", "етсиз", "ишу", "жеу", "алып", "кету", "осында", "бугин", "ертен", "азир", "атым", "адам", "екеу", "уш", "торт", "бес", "ким", "неше"];
@@ -328,14 +331,32 @@
     // «филадельфию» → «Ролл Филадельфия»: главное слово названия совпало — этого достаточно
     return longHit ? Math.max(sc, 0.7) : sc;
   }
+  function expandToks(tokens) {
+    var out = [];
+    tokens.forEach(function (t) { var m = t.match(/^([а-яa-z]{2,})(\d{1,3})$/) || t.match(/^(\d{1,3})([а-яa-z]{2,})$/); if (m) out.push(m[1], m[2]); else out.push(t); });
+    return out;
+  }
+  var UNIT_RX = /^(см|cm|мл|ml|л|l|г|гр|g|шт|штук|штуки|кг|kg|мин|минут|min|человек|чел|гостей|гостя|персон|адам|people|pax|раз|х|x)$/;
+  // номер в названии: «комбо 5», «ланч №2» (число сразу после слова и без единиц измерения)
+  function nameNums(tokens) {
+    var t = expandToks(tokens), out = [];
+    for (var i = 1; i < t.length; i++) if (/^\d{1,3}$/.test(t[i]) && /[a-zа-я]/.test(t[i - 1]) && !UNIT_RX.test(t[i + 1] || "") && !/^(на|в|к|через|за|до|от|по|at|for|in|x|х)$/.test(t[i - 1]) && !STOP[t[i - 1]] && WANT.indexOf(t[i - 1]) < 0) out.push(t[i]);
+    return out;
+  }
+  function dishNums(r) { return r.nums || (r.nums = expandToks(toks(baseNorm(r.it.name))).filter(function (x) { return /^\d{1,3}$/.test(x); })); }
   function findDishesScored(tokens, idx) {
-    var q = tokens.filter(function (t) { return t.length >= 3 && !STOP[t]; });
+    var q = expandToks(tokens).filter(function (t) { return t.length >= 3 && !STOP[t]; });
     if (!q.length) return [];
-    var res = [];
+    var qn = nameNums(tokens), res = [];
     idx.forEach(function (r) {
       if (!r.tokens.length) return;
       var score = nameScore(q, r.tokens);
       r.syn.forEach(function (w) { score = Math.max(score, nameScore(q, w)); });
+      if (score >= 0.5 && qn.length) {
+        var dn = dishNums(r);
+        if (dn.some(function (n) { return qn.indexOf(n) >= 0; })) score += 0.6;
+        else if (dn.length) score -= 0.6;
+      }
       if (score >= 0.5) res.push({ r: r, score: score });
     });
     res.sort(function (a, b) { return b.score - a.score || (b.r.current ? 1 : 0) - (a.r.current ? 1 : 0); });
@@ -369,6 +390,28 @@
     }).filter(function (x) { return x.n; });
     var top = Math.max.apply(null, hits.map(function (x) { return x.n; }).concat([0]));
     return hits.filter(function (x) { return x.n === top; }).map(function (x) { return x.r; }).slice(0, 6);
+  }
+  // «пеперонни» → «Пепперони?» — когда не узнали, но очень похоже
+  function didYouMean(tokens, list) {
+    var q = expandToks(tokens).filter(function (t) { return t.length >= 4 && !STOP[t] && !KNOWN[t] && !/^\d+$/.test(t); });
+    if (!q.length) return [];
+    var best = [];
+    list.forEach(function (r) {
+      var s = 9, words = [].concat.apply(r.tokens, r.syn);
+      words.forEach(function (dt) {
+        if (dt.length < 4) return;
+        q.forEach(function (qt) {
+          if (qt[0] !== dt[0]) return;
+          var lim = Math.min(3, Math.max(1, Math.floor(Math.min(qt.length, dt.length) / 3)));
+          var d = dist(qt, dt, lim);
+          if (d <= lim && d < s) s = d;
+        });
+      });
+      if (s < 9) best.push({ r: r, s: s });
+    });
+    best.sort(function (a, b) { return a.s - b.s; });
+    var seen = {};
+    return best.filter(function (x) { if (seen[x.r.it.name]) return false; seen[x.r.it.name] = 1; return true; }).slice(0, 2).map(function (x) { return x.r; });
   }
   function findCategory(tokens, idx) {
     var found = null;
@@ -405,7 +448,7 @@
     return {
       id: String(it.id || ""), name: it.name, price: priceText(it, lang, !!parseMods(it.mods).length && true),
       sizes: parseMods(it.mods).map(function (m) { return m.label + " — " + fmt(m.price); }).join(" · "),
-      desc: String(it.desc || "").trim().slice(0, 220), photo: String(it.photo || ""), badge: String(it.badge || ""),
+      desc: String(it.desc || "").trim().slice(0, 220), photo: String(it.photo || ""), badge: String(it.badge || ""), b: r.branch, cur: !!r.current,
       off: it.stopped ? L(lang, "Закончилось", "Таусылды", "Sold out") : it.teaser ? L(lang, "Скоро", "Жақында", "Soon") : ""
     };
   }
@@ -775,19 +818,26 @@
     var segs = low.split(/[,;+\n]|\s(?:и|плюс|еще|ещё|and|plus|тагы|тағы|жане|және|с ним|к нему)\s/);
     var res = { items: [], unknown: [], ambiguous: [] };
     segs.forEach(function (seg) {
-      var tk = toks(baseNorm(seg));
+      var tk = expandToks(toks(baseNorm(seg)));
       if (!tk.length) return;
-      var qty = 1, hint = null, rest = [];
+      var qty = null, hint = null, rest = [], digits = [];
       for (var i = 0; i < tk.length; i++) {
         var w = tk[i], nx = tk[i + 1] || "";
         if (/^\d{1,3}$/.test(w) && /^(см|cm|мл|ml|л|l|г|гр|g)$/.test(nx)) { hint = w; i++; continue; }
-        if (/^\d{1,2}$/.test(w) && +w >= 1 && +w <= 50) { qty = +w; if (/^(шт|штук|штуки|x|х|pcs|порц|порции|порций)$/.test(nx)) i++; continue; }
+        if (/^\d{1,2}$/.test(w) && /^(шт|штук|штуки|x|х|pcs|порц|порции|порций)$/.test(nx)) { qty = +w; i++; continue; }
         if (/^[xх]\d{1,2}$/.test(w)) { qty = +w.slice(1); continue; }
         if (NUMW[w] && i + 1 < tk.length) { qty = NUMW[w]; continue; }
         if (/^(маленк|мал|small|кичи|киши|болш|big|large|улкен|средн|medium|орта)/.test(w)) { hint = w; continue; }
+        if (/^\d{1,3}$/.test(w)) digits.push(w);
         rest.push(w);
       }
       var sc = findDishesScored(rest, bidx);
+      // «2 комбо 5»: 5 — номер в названии, 2 — количество
+      if (sc.length) {
+        var dn = dishNums(sc[0].r), nn = nameNums(rest);
+        digits.forEach(function (v) { if (qty === null && !(dn.indexOf(v) >= 0 && nn.indexOf(v) >= 0) && +v >= 1 && +v <= 50) qty = +v; });
+      }
+      qty = qty || 1;
       if (!sc.length) {
         var meaningful = rest.filter(function (t) { return t.length >= 3 && !STOP[t] && !KNOWN[t] && !stemKnown(t) && WANT.indexOf(t) < 0 && !/^\d+$/.test(t); });
         if (meaningful.length) res.unknown.push({ text: seg.trim(), tokens: rest });
@@ -863,7 +913,7 @@
     }
     if (!d.branch) {
       var cb = S.branch();
-      if (ORDER_BR.indexOf(cb) >= 0) d.branch = cb;
+      if (ORDER_BR.indexOf(cb) >= 0 && !d.forceBranch) d.branch = cb;
       else {
         f.step = "branch";
         R.say(cb === "abulhair" ? L(lang, "Абулхаир Хана 177 принимает заказы только на месте, а через сайт — Самал 70/3 и Скоробогатова 65/1. Откуда оформляем?", "Абулхаир Хана 177 тек орнында тапсырыс қабылдайды, сайт арқылы — Самал 70/3 және Скоробогатова 65/1. Қайсысынан?", "Abulhair Khan 177 takes orders on site only; online orders go through Samal 70/3 or Skorobogatova 65/1. Which one?")
@@ -875,12 +925,26 @@
     if (S.branch() !== d.branch) S.switchBranch(d.branch);
     if (!S.canOrder(d.branch)) {
       var win = orderWindowText(d.branch, lang, ctx.deliveryHours);
+      var other = ORDER_BR.filter(function (b) { return b !== d.branch && S.canOrder(b); })[0];
+      if (other) {
+        R.say(L(lang, FACTS.branches[d.branch].name + " уже не принимает заказы (приём " + win + "), зато " + FACTS.branches[other].name + " ещё работает — " + orderWindowText(other, lang, ctx.deliveryHours) + ". Оформим оттуда?",
+          FACTS.branches[d.branch].name + " тапсырыс қабылдамайды (" + win + "), бірақ " + FACTS.branches[other].name + " әлі қабылдайды — " + orderWindowText(other, lang, ctx.deliveryHours) + ". Сол жерден рәсімдейміз бе?",
+          bname(d.branch, lang) + " isn't taking orders now (" + win + "), but " + bname(other, lang) + " still is — " + orderWindowText(other, lang, ctx.deliveryHours) + ". Order from there?"));
+        f.step = "branch"; d.branch = null; d.forceBranch = true;
+        R.act(chip(bname(other, lang), FACTS.branches[other].name)).act(askBook(lang));
+        return;
+      }
       R.say(L(lang, "Эх, заказы сейчас не принимаем — " + FACTS.branches[d.branch].name + " принимает их " + win + ". Могу забронировать столик или показать меню, чтобы выбрать заранее.",
         "Қазір тапсырыс қабылдамаймыз — " + FACTS.branches[d.branch].name + " " + win + " қабылдайды. Үстел брондап немесе мәзірді көрсете аламын.",
         "We're not taking orders right now — " + bname(d.branch, lang) + " accepts them " + win + ". I can book you a table or show the menu so you can pick in advance."));
       R.act(askBook(lang)).act(act("menu", lang));
       st.flow = null;
       return;
+    }
+    if (!d.warned) {
+      d.warned = true;
+      var left = minutesLeft(d.branch, ctx);
+      if (left !== null && left <= 60) R.say(L(lang, "Успевайте: заказы в " + FACTS.branches[d.branch].name + " принимаем ещё " + left + " мин.", "Асығыңыз: " + FACTS.branches[d.branch].name + " тапсырысты тағы " + left + " минут қабылдайды.", "Hurry: " + bname(d.branch, lang) + " takes orders for another " + left + " min."));
     }
     if (d.pending && d.pending.length) { addPending(ctx, st, R); if (!st.flow || f.step === "size" || f.step === "pick") return; }
     var cart = S.cart();
@@ -958,6 +1022,13 @@
     R.act({ a: "order:send", label: L(lang, "Отправить заказ", "Тапсырысты жіберу", "Send order") }).act({ a: "link:order", label: L(lang, "Условия", "Шарттар", "Terms") })
       .act(chip(L(lang, "Изменить", "Өзгерту", "Change"), L(lang, "изменить", "өзгерту", "change"))).act(chip(L(lang, "Отменить", "Бас тарту", "Cancel"), L(lang, "отмена", "бас тарту", "cancel")));
   }
+  function minutesLeft(b, ctx) {
+    var d = ctx.deliveryHours && ctx.deliveryHours[b];
+    if (!d) return null;
+    var now = uralskMinutes(ctx.now), o = d.openH * 60 + d.openM, c = d.closeH * 60 + d.closeM, left;
+    if (c <= o) left = now >= o ? c + 1440 - now : c - now; else left = c - now;
+    return left > 0 && left <= 1440 ? left : null;
+  }
   function findRecById(ctx, b, id) {
     var base = String(id).split("__")[0];
     var idx = branchMenuIndex(ctx, b);
@@ -992,6 +1063,7 @@
       }
       var entry = mod ? { id: it.id + "__" + mod.label, name: it.name + " (" + mod.label + ")", price: mod.price } : { id: it.id, name: it.name, price: it.price };
       S.add(entry, p.qty || 1, it);
+      d.lastAdded = { name: it.name, hint: mod ? mod.label : null };
       added.push((p.qty || 1) + "× " + entry.name);
       d.pending.shift();
     }
@@ -1028,6 +1100,11 @@
       case "items": {
         var cart = S.cart();
         if (cart.length && ((I.done || 0) >= 1 || (I.no || 0) >= 1 || /^(все|всё|нет|no|done|болды|жок|хватит|оформляем|оформляй|оформи|дальше)$/.test(baseNorm(raw)))) { d.itemsOk = true; return go(); }
+        var sr = soft(raw), sizeWord = (sr.match(/(болш\S*|больш\S*|маленьк\S*|маленк\S*|средн\S*|large|small|big|medium|улкен|киши|\d{2}\s*см)/) || [])[1];
+        if (d.lastAdded && /^(еще|такую же|такой же|то же|same|one more|another|тагы бир|тагы)/.test(sr)) {
+          d.pending.push(sizeWord ? { name: d.lastAdded.name, qty: 1, hint: sizeWord, hintText: raw } : { name: d.lastAdded.name, qty: 1, hint: d.lastAdded.hint, hintText: d.lastAdded.hint || "" });
+          return go();
+        }
         var rm = soft(raw).match(/^(?:убери|удали|убрать|удалить|remove|алып таста)\s+(.+)/);
         if (rm && cart.length) {
           var q = toks(baseNorm(rm[1])), hit = cart.filter(function (e) { return nameScore(q, toks(baseNorm(e.name)).filter(function (x) { return x.length >= 3; })) >= 0.5; })[0];
@@ -1409,7 +1486,7 @@
       if (st.flow) st.flow.prompt = { text: R.parts[R.parts.length - 1] || "", acts: R.acts.slice() };
       var main = used.filter(function (x) { return ["greet", "thanks", "ok", "bye", "dish", "category", "menu"].indexOf(x) < 0; })[0];
       if (main) st.lastIntent = main;
-      return { text: R.parts.join("\n\n"), acts: R.acts.slice(0, 6), cards: R.cards.slice(0, 6), intent: intent || used.join(","), lang: lang, known: known !== false };
+      return { text: R.parts.join("\n\n"), acts: R.acts.slice(0, 6), cards: R.cards.slice(0, 10), auto: R.auto || null, intent: intent || used.join(","), lang: lang, known: known !== false };
     }
     if (!raw) { R.say(t("clarify", lang)); clarifyChips(lang).forEach(function (c) { R.act(c); }); return out("clarify", false); }
 
@@ -1440,6 +1517,9 @@
     var branch = findBranch(tokens) || findBranch(U.alt);
     var dishes = findDishes(U.dishTokens, idx);
     var cat = findCategory(U.dishTokens, idx);
+    var pron = tokens.some(function (w) { return /^(она|он|оно|они|ее|его|их|эта|этот|это|эту|такая|такой|такую|такие|it|this|that|they|them|ол|мына|осы|сол)$/.test(w); });
+    if (!dishes.length && !cat && pron && st.lastOne) { var lo = idx.filter(function (r) { return String(r.it.id) === String(st.lastOne); })[0]; if (lo) dishes = [lo]; }
+    if (dishes.length > 1 && cat && cat.items.length && !nameNums(U.dishTokens).length && dishes.every(function (d) { return cat.items.indexOf(d) >= 0; })) dishes = [];
 
     // ── старт оформления ──
     if (S && !has("orderStatus") && !has("complaint", 1)) {
@@ -1448,6 +1528,17 @@
         var items0 = st.offer.items; st.offer = null;
         orderStart(ctx, st, R, { mode: md, items: items0, pay: payFrom(raw) });
         return out("order");
+      }
+      if (has("repeat", 1) || (has("repeat") && tokens.length <= 4)) {
+        var gl = ctx.guest && ctx.guest.last;
+        if (gl && gl.items && gl.items.length) {
+          var its = gl.items.map(function (x) { var m = String(x.name).match(/^(.*?)\s*\(([^)]+)\)\s*$/); return m ? { name: m[1], qty: x.qty || 1, hint: m[2], hintText: m[2] } : { name: x.name, qty: x.qty || 1 }; });
+          var lst = gl.items.map(function (x) { return x.name + " ×" + (x.qty || 1); }).join(", ");
+          orderStart(ctx, st, R, { mode: md, branch: ORDER_BR.indexOf(gl.branch) >= 0 ? gl.branch : null, items: its, pay: payFrom(raw), lead: L(lang, "Повторяем прошлый заказ: " + lst + ".", "Өткен тапсырысты қайталаймыз: " + lst + ".", "Repeating your last order: " + lst + ".") });
+          return out("order");
+        }
+        R.say(L(lang, "Прошлых заказов с этого телефона не вижу. Что закажем?", "Бұл телефоннан бұрынғы тапсырыс көрінбейді. Не тапсырыс береміз?", "I don't see previous orders from this phone. What shall we order?"));
+        R.act(askOrder(lang)); used.push("repeat"); return out("repeat");
       }
       var wantBook = has("booking", 1) && !has("bookingRules") && !has("orderStart", 1);
       var wantDish = !wantBook && dishes.length && hasWant(tokens) && !has("price") && !has("compose") && !has("weight") && !has("allergy");
@@ -1471,7 +1562,7 @@
     function finishQA() {
       if (!used.length) qa();
       var qaText = R.parts.join("\n\n");
-      var known = !!R.parts.length && used.indexOf("unknown") < 0 && used.indexOf("clarify") < 0;
+      var known = !!R.parts.length && used.indexOf("unknown") < 0 && used.indexOf("clarify") < 0 && used.indexOf("didyoumean") < 0;
       // если шло оформление, а гость спросил про другое — отвечаем и напоминаем
       if (st.flow && S) {
         var pr = st.flow.prompt;
@@ -1499,6 +1590,12 @@
       var math = mathAnswer(raw);
       if (math) { R.say(math.r === null ? L(lang, "На ноль не делю — я же не калькулятор-самоубийца. А вот пиццу на всех поделю.", "Нөлге бөлмеймін. Бірақ пиццаны бәріне бөлемін.", "I don't divide by zero. Pizza, however, I'll split for everyone.") : math.a + " " + math.op + " " + math.b + " = " + math.r + L(lang, ". Считаю быстро, но пиццу доставляют ещё быстрее.", ".", ". I count fast, but pizza arrives even faster.")); used.push("math"); return; }
 
+      // ── «открой меню / корзину» — открываем только когда просят ──
+      if (has("open", 1) && !dishes.length && !cat && S) {
+        if (/корзин|cart|себет/.test(U.norm)) { R.say(L(lang, "Открываю корзину.", "Себетті ашамын.", "Opening your cart.")); R.auto = { a: "cart" }; used.push("open"); return; }
+        if (has("menu") || /меню|мазир|menu/.test(U.norm)) { R.say(L(lang, "Открываю меню.", "Мәзірді ашамын.", "Opening the menu.")); R.auto = { a: "menu" }; used.push("open"); return; }
+      }
+
       // ── Нурлан, SMM, сайт ──
       if (has("smm")) { R.say(t("smm", lang)); used.push("smm"); return; }
       if (has("nurlan") && (has("contacts") || /номер|телефон|phone|number|нөмір|номир|контакт|связ/.test(soft(raw)))) { R.say(t("nurlanPhone", lang)); used.push("nurlan"); return; }
@@ -1507,7 +1604,14 @@
       if (has("nurlan")) { R.say(t("nurlan", lang)); used.push("nurlan"); return; }
 
       // ── темы ──
-      if (has("greet") && Object.keys(I).filter(function (k) { return I[k] >= 0.8; }).length === 1 && !dishes.length && !cat) { R.say(t("greet", lang)); used.push("greet"); R.act(askOrder(lang)).act(askBook(lang)).act(act("menu", lang)); }
+      if (has("greet") && Object.keys(I).filter(function (k) { return I[k] >= 0.8; }).length === 1 && !dishes.length && !cat) {
+        var gn = ctx.guest && ctx.guest.name, glast = ctx.guest && ctx.guest.last && ctx.guest.last.items && ctx.guest.last.items.length;
+        if (gn) R.say(L(lang, pick("gr2", ["О, " + gn + ", с возвращением! Что сегодня — как обычно или что-то новенькое?", gn + ", привет! Соскучились? Давайте накормлю."]), gn + ", қайта келгеніңізге қуаныштымыз! Бүгін не аламыз?", "Hey " + gn + ", welcome back! The usual, or something new?"));
+        else R.say(t("greet", lang));
+        used.push("greet");
+        if (glast && S) R.act(chip(L(lang, "Повторить прошлый заказ", "Өткен тапсырысты қайталау", "Repeat last order"), L(lang, "повтори прошлый заказ", "өткен тапсырысты қайтала", "repeat my last order")));
+        R.act(askOrder(lang)).act(askBook(lang)).act(act("menu", lang));
+      }
       if (has("hours")) { R.say(hoursText(branch, lang, ctx.now)); used.push("hours"); }
       if (has("delivery") || has("deliveryPrice") || has("deliveryTime")) {
         var dtx = deliveryText(branch, lang, ctx.deliveryHours || root.DELIVERY_HOURS || null);
@@ -1519,7 +1623,12 @@
       if ((has("orderHow") || has("orderStart")) && !S && !has("orderStatus")) { R.say(L(lang, "Всё просто: 1) в меню выберите филиал, 2) добавьте блюда кнопкой «+», 3) откройте корзину и нажмите «Оформить заказ». Заказ уйдёт менеджеру в WhatsApp — там он подтвердит детали и оплату.", "Оңай: 1) мәзірде филиалды таңдаңыз, 2) тағамдарды «+» батырмасымен қосыңыз, 3) себетті ашып «Оформить заказ» басыңыз. Тапсырыс менеджерге WhatsApp арқылы барады.", "Easy: 1) pick a branch in the menu, 2) add dishes with «+», 3) open the cart and tap «Оформить заказ». The order goes to the manager on WhatsApp.")); R.act(act("menu", lang)).act(act("cart", lang)); used.push("orderHow"); }
       if (has("bookingRules")) { R.say(t("bookingRules", lang)); R.act({ a: "link:book", label: L(lang, "Условия брони", "Брондау шарттары", "Booking terms") }); if (S) R.act(askBook(lang)); used.push("bookingRules"); }
       if (has("birthday")) { R.say(t("birthday", lang)); used.push("birthday"); if (S) R.act(askBook(lang)); }
-      else if (has("promos")) { R.say(t("promos", lang)); R.act(act("news", lang)); used.push("promos"); }
+      else if (has("promos")) {
+        var np = (ctx.news || []).filter(function (n) { return /акци|скидк|промо|%|бонус|подар|sale|discount|жениллик|жеңілдік/i.test((n.title || "") + " " + (n.text || "")); }).slice(0, 2);
+        if (np.length) R.say(L(lang, "Из свежего в «Сообщениях»:", "«Сообщения» бөлімінен:", "Fresh from «Сообщения»:") + "\n" + np.map(function (n) { var tx = String(n.text || "").replace(/\s+/g, " ").trim(); return "• " + (n.title ? n.title + ": " : "") + (tx.length > 160 ? tx.slice(0, 160) + "…" : tx); }).join("\n") + L(lang, "\nИз постоянного — около 10% в день рождения.", "\nТұрақтысы — туған күнге шамамен 10%.", "\nPermanent: about 10% off on your birthday."));
+        else R.say(t("promos", lang));
+        R.act(act("news", lang)); used.push("promos");
+      }
       if (has("kids") && !cat) {
         if (branch === "samal") R.say(L(lang, "Да, в Самал 70/3 есть детская игровая зона — дети играют, вы спокойно едите.", "Иә, Самал 70/3 филиалында балалар ойын аймағы бар.", "Yes, Samal 70/3 has a kids' play area."));
         else if (branch) R.say(L(lang, "В филиале " + FACTS.branches[branch].name + " детской зоны нет — она есть только в Самал 70/3 (10 микрорайон).", FACTS.branches[branch].name + " филиалында балалар аймағы жоқ — ол тек Самал 70/3-те.", bname(branch, lang) + " doesn't have a kids' area — only Samal 70/3 does."));
@@ -1575,7 +1684,12 @@
       }
       if (dishes.length) {
         var ds = dishes;
-        if (has("compose") || has("weight")) {
+        if (has("spicy") && ds.length <= 3 && !byIng && !has("compose") && !has("weight")) {
+          R.say(ds.map(function (r) {
+            return /остр|ащы|чили|халапен|spicy|перч/i.test(r.it.name + " " + (r.it.desc || "") + " " + (r.it.badge || "")) ? L(lang, "«" + r.it.name + "» — острое. Для смелых.", "«" + r.it.name + "» — ащы.", "«" + r.it.name + "» is spicy.") : L(lang, "«" + r.it.name + "» в меню острым не отмечено.", "«" + r.it.name + "» мәзірде ащы деп белгіленбеген.", "«" + r.it.name + "» isn't marked as spicy.");
+          }).join("\n"));
+          R.card(card(ds[0], lang));
+        } else if (has("compose") || has("weight")) {
           R.say(ds.slice(0, 3).map(function (r) {
             var desc = String(r.it.desc || "").trim();
             if (has("weight")) {
@@ -1595,7 +1709,8 @@
             R.say(one.it.teaser ? L(lang, "«" + one.it.name + "» — скоро появится. Следите за меню!", one.it.name + " — жақында шығады.", one.it.name + " is coming soon.") : L(lang, "«" + one.it.name + "» на сегодня разобрали — быстрее нас. Вот что может зайти вместо:", one.it.name + " бүгін таусылды. Орнына мыналар:", one.it.name + " is sold out today. Maybe one of these instead:"));
             pickPopular(live.filter(function (r) { return r.catKey === one.catKey && r !== one; }), 3).forEach(function (r) { R.card(card(r, lang)); });
           } else {
-            R.say(dishLine(one, lang, multi, false) + L(lang, pick("dl", ["", ". Хороший выбор.", ". Одобряю."]), "", ""));
+            if (has("open", 1) && one.current) { R.say(L(lang, "Открываю «" + one.it.name + "».", "«" + one.it.name + "» ашамын.", "Opening «" + one.it.name + "».")); R.auto = { a: "dish:" + one.it.id }; }
+            else R.say(dishLine(one, lang, multi, false) + L(lang, pick("dl", ["", ". Хороший выбор.", ". Одобряю."]), "", ""));
             R.card(card(one, lang));
             if (S && one.current) R.act(chip(L(lang, "Заказать", "Тапсырыс беру", "Order it"), L(lang, "хочу заказать ", "тапсырыс беремін ", "I want to order ") + one.it.name));
           }
@@ -1604,19 +1719,36 @@
           ds.slice(0, 6).forEach(function (r) { R.card(card(r, lang)); });
         }
         st.lastDishIds = ds.map(function (r) { return r.it.id; });
+        st.lastOne = ds.length === 1 ? ds[0].it.id : null;
         used.push("dish");
       } else if (cat) {
         var items = cat.items.filter(function (r) { return !r.it.stopped && !r.it.teaser && (!ctx.branch || r.branches.indexOf(ctx.branch) >= 0 || !r.current && !idx.some(function (x) { return x.current; })); });
         if (!items.length) items = cat.items.filter(function (r) { return !r.it.stopped && !r.it.teaser; });
         if (!idx.length) R.say(L(lang, "Выберите, пожалуйста, филиал — тогда покажу точное меню и цены.", "Мәзірді көру үшін алдымен филиалды таңдаңыз.", "Pick a branch first and I'll show the exact menu and prices."));
         else if (!items.length) R.say(L(lang, "Этого сейчас нет в меню или закончилось — могу подсказать другое.", "Бұл қазір мәзірде жоқ немесе таусылды.", "That's not on the menu right now or it's sold out."));
+        else if (items.length === 1) {
+          var o1 = items[0];
+          if (has("open", 1) && o1.current) { R.say(L(lang, "Открываю «" + o1.it.name + "».", "«" + o1.it.name + "» ашамын.", "Opening «" + o1.it.name + "».")); R.auto = { a: "dish:" + o1.it.id }; }
+          else R.say(dishLine(o1, lang, !ctx.branch, false));
+          R.card(card(o1, lang));
+          if (S && o1.current) R.act(chip(L(lang, "Заказать", "Тапсырыс беру", "Order it"), L(lang, "хочу заказать ", "тапсырыс беремін ", "I want to order ") + o1.it.name));
+          st.lastDishIds = [o1.it.id]; st.lastOne = o1.it.id;
+        }
         else {
           if (has("cheap")) items.sort(function (a, b) { return a.it.price - b.it.price; });
           var nm = cat.name || "";
-          R.say(L(lang, pick("cat", ["Из раздела «" + nm + "» — листайте:", "«" + nm + "» — вот что есть:", "В разделе «" + nm + "»:"]), "«" + nm + "»:", "From «" + nm + "»:") + (items.length > 6 ? L(lang, " (и ещё " + (items.length - 6) + " в меню)", " (мәзірде тағы " + (items.length - 6) + ")", " (+" + (items.length - 6) + " more on the menu)") : ""));
-          items.slice(0, 6).forEach(function (r) { R.card(card(r, lang)); });
+          R.say(L(lang, pick("cat", ["Из раздела «" + nm + "» — листайте:", "«" + nm + "» — вот что есть:", "В разделе «" + nm + "»:"]), "«" + nm + "»:", "From «" + nm + "»:") + (items.length > 10 ? L(lang, " (и ещё " + (items.length - 10) + " в меню)", " (мәзірде тағы " + (items.length - 10) + ")", " (+" + (items.length - 10) + " more on the menu)") : ""));
+          items.slice(0, 10).forEach(function (r) { R.card(card(r, lang)); });
+          if (cat.key === "ланч") {
+            var lav = items.filter(function (r) { return r.it.lunchLocked === false; }), lsc = items.filter(function (r) { return r.it.lunchScheduleText; }).map(function (r) { return r.it.name + " — " + r.it.lunchScheduleText; });
+            R.say(lav.length ? L(lang, "Сейчас доступен: " + lav.map(function (r) { return "«" + r.it.name + "»"; }).join(", ") + " — до 15:00. Успевайте.", "Қазір бар: " + lav.map(function (r) { return "«" + r.it.name + "»"; }).join(", ") + " — 15:00-ге дейін.", "Available now: " + lav.map(function (r) { return "«" + r.it.name + "»"; }).join(", ") + " — until 15:00.")
+              : L(lang, "Бизнес-ланчи — с 12:00 до 15:00" + (lsc.length ? ": " + lsc.join("; ") : "") + ".", "Бизнес-ланч — 12:00-ден 15:00-ге дейін" + (lsc.length ? ": " + lsc.join("; ") : "") + ".", "Business lunches run 12:00–15:00" + (lsc.length ? ": " + lsc.join("; ") : "") + "."));
+          }
+          if (cat.key === "завтрак" && uralskMinutes(ctx.now) < 11 * 60) R.say(L(lang, "С утра открыт только Абулхаир Хана 177 — с 08:00. Самал — с 11:00, Скоробогатова — с 12:00.", "Таңертең тек Абулхаир Хана 177 ашық — 08:00-ден.", "In the morning only Abulhair Khan 177 is open — from 08:00."));
+          if (S && idx.some(function (x) { return x.current; })) R.act({ a: "cat:" + nm, label: L(lang, "Весь раздел в меню", "Бүкіл бөлім мәзірде", "Whole section in the menu") });
           if (cat.key === "десерт" && /торт|cake/.test(U.norm) && !has("cakes")) R.say(t("cakes", lang));
-          st.lastDishIds = items.slice(0, 6).map(function (r) { return r.it.id; });
+          st.lastDishIds = items.slice(0, 10).map(function (r) { return r.it.id; });
+          st.lastOne = items.length === 1 ? items[0].it.id : null;
           if (S && hasWant(tokens)) R.act(askOrder(lang));
         }
         R.act(act("menu", lang)); used.push("category");
@@ -1638,6 +1770,8 @@
         } else if (has("recommend")) {
           var hits = pickPopular(live.slice().sort(function () { return Math.random() - 0.5; }), 4);
           R.say(L(lang, pick("rec", ["Гости часто берут:", "Советую — проверено гостями:", "Из любимого у гостей:"]), "Көп алатындары:", "Guests love these:"));
+          var lnow = live.filter(function (r) { return r.it.lunchLocked === false; });
+          if (lnow.length) R.say(L(lang, "Кстати, сейчас бизнес-ланч: «" + lnow[0].it.name + "» — до 15:00.", "Айтпақшы, қазір бизнес-ланч: «" + lnow[0].it.name + "».", "By the way, business lunch is on now: «" + lnow[0].it.name + "»."));
           hits.forEach(function (r) { R.card(card(r, lang)); });
           st.lastDishIds = hits.map(function (r) { return r.it.id; });
         } else if (has("price") && !has("menu")) {
@@ -1677,6 +1811,14 @@
         else if (has("greet")) { R.say(t("greet", lang)); used.push("greet"); }
         else if (branch) { R.say(branchCard(branch, lang)); used.push("address"); }
         else if (has("ok") || has("yes") || has("no")) { R.say(t("ok", lang)); used.push("ok"); }
+      }
+      if (!R.parts.length && !rude) {
+        var dym = didYouMean(U.dishTokens.concat(U.alt), liveOnly(idx).filter(function (r) { return !ctx.branch || r.branches.indexOf(ctx.branch) >= 0; }));
+        if (dym.length) {
+          R.say(L(lang, "Может, вы про " + dym.map(function (r) { return "«" + r.it.name + "»"; }).join(" или ") + "?", "Мүмкін, " + dym.map(function (r) { return "«" + r.it.name + "»"; }).join(" немесе ") + "?", "Did you mean " + dym.map(function (r) { return "«" + r.it.name + "»"; }).join(" or ") + "?"));
+          dym.forEach(function (r) { R.act(chip(r.it.name, r.it.name)); });
+          used.push("didyoumean"); return;
+        }
       }
       if (!R.parts.length) {
         if (rude) { R.say(t("rudeOnly", lang)); clarifyChips(lang).slice(0, 3).forEach(function (c) { R.act(c); }); used.push("rude"); return; }
@@ -1741,3 +1883,443 @@
   root.SevenLocalAI = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);
+
+/*
+ * ── Окно чата SEVEN AI (только в браузере) ──
+ * Живёт в этом же файле, чтобы главная страница не таскала лишний код:
+ * index.html держит только оболочку (окно, историю, кнопки), всё остальное
+ * подгружается вместе с движком, когда гость открывает «Сообщения».
+ * Карточка блюда в переписке открывает шторку блюда поверх чата.
+ * Сами по себе ничего не открываем — только по тапу или по «открой …».
+ */
+(function () {
+  if (typeof window === "undefined" || !window.document || !window.SevenLocalAI || window._saiSend) return;
+  var W = window, D = document, AI = W.SevenLocalAI;
+  function el(id) { return D.getElementById(id); }
+  function safe(f, dflt) { try { return f(); } catch (e) { return dflt; } }
+  function scrollEnd() { var m = el("seventAiMessages"); if (m) m.scrollTop = m.scrollHeight; }
+  function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+  function ne(s) { return typeof noEmoji === "function" ? noEmoji(String(s || "")) : String(s || ""); }
+  function ev(name, det) { safe(function () { logGuestEvent(name, det || ""); }); }
+  function toast(t) { safe(function () { showToast(t); }); }
+  function curBranch() { return typeof branch !== "undefined" && branch ? branch : null; }
+  function menuNow() { return typeof menuData !== "undefined" && menuData ? menuData : {}; }
+  function chatVisible() { var o = el("seventAiOv"), t = el("seventAiOvTitle"); return !!(o && o.style.display !== "none" && t && t.textContent === "SEVEN AI"); }
+
+  // ── стили чата
+  var css =
+    ".sai-chips{display:flex;flex-shrink:0;flex-wrap:wrap;gap:8px;align-self:flex-start;max-width:100%;margin-top:-4px}" +
+    ".sai-chip{font:inherit;font-size:0.78rem;line-height:1.25;padding:8px 13px;border-radius:999px;border:1px solid #e3cdd3;background:#fff;color:#7a1128;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .12s,background .12s;text-align:left}" +
+    ".sai-chip:active{transform:scale(.96);background:#f7eef0}" +
+    ".sai-cards{display:flex;flex-shrink:0;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;align-self:stretch;margin:-4px calc(-1*var(--px)) 0;padding:2px var(--px) 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}" +
+    ".sai-cards::-webkit-scrollbar{display:none}" +
+    ".sai-card{flex:0 0 58%;max-width:230px;scroll-snap-align:start;background:#fff;border:1px solid #ececef;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .12s}" +
+    ".sai-card:active{transform:scale(.97)}" +
+    ".sai-cards.one .sai-card{flex-basis:84%;max-width:320px}" +
+    ".sai-card img,.sai-card-ph{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#f2f2f4}" +
+    ".sai-card-b{padding:9px 12px 11px}" +
+    ".sai-card-n{font-size:0.8rem;font-weight:600;color:#1d1d1f;line-height:1.3}" +
+    ".sai-card-p{font-size:0.76rem;font-weight:600;color:#7a1128;margin-top:3px}" +
+    ".sai-card-s{font-size:0.66rem;color:#6e6e73;margin-top:2px}" +
+    ".sai-card-d{font-size:0.68rem;color:#6e6e73;line-height:1.4;margin-top:5px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}" +
+    ".sai-cards.one .sai-card-d{-webkit-line-clamp:6}" +
+    ".sai-mic{flex-shrink:0;width:44px;border-radius:12px;border:1.5px solid #e5e5e7;background:none;color:#7a1128;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;-webkit-tap-highlight-color:transparent}" +
+    ".sai-mic.on{background:#7a1128;border-color:#7a1128;color:#fff;animation:saiPulse 1.2s infinite}" +
+    "@keyframes saiPulse{0%,100%{box-shadow:0 0 0 0 rgba(122,17,40,.35)}50%{box-shadow:0 0 0 7px rgba(122,17,40,0)}}" +
+    "@media (prefers-color-scheme:dark){" +
+    ".sai-chip{background:#1c1c1e;border-color:#48343a;color:#ef6b83}.sai-chip:active{background:#2c2c2e}" +
+    ".sai-card{background:#1c1c1e;border-color:#38383a}.sai-card-n{color:#f5f5f7}.sai-card-p{color:#ef6b83}" +
+    ".sai-card-s,.sai-card-d{color:#a1a1a6}.sai-card img,.sai-card-ph{background:#2c2c2e}" +
+    ".sai-mic{border-color:#38383a;color:#ef6b83}.sai-mic.on{background:#7a1128;border-color:#7a1128;color:#fff}}";
+  if (!el("saiStyle")) { var stl = D.createElement("style"); stl.id = "saiStyle"; stl.textContent = css; D.head.appendChild(stl); }
+
+  // ── состояние разговора (переживает перезагрузку вкладки)
+  W._saiState = {};
+  safe(function () { var s = JSON.parse(sessionStorage.getItem("sai_state") || "null"); if (s && typeof s === "object") W._saiState = s; });
+  function save() { safe(function () { sessionStorage.setItem("sai_state", JSON.stringify(W._saiState)); }); }
+  W._saiSaveState = save;
+  W._saiReset = function () { W._saiState = {}; save(); };
+  W._aiBusy = false;
+  var termsOpened = false, lastBookMsg = "";
+
+  // ── факты от админа («ИИ факты» в таблице)
+  var facts = "", factsTs = 0;
+  safe(function () { var f = localStorage.getItem("st_ai_facts"); if (f !== null) facts = f; });
+  function loadFacts() {
+    if (Date.now() - factsTs < 6e5) return;
+    factsTs = Date.now();
+    safe(function () {
+      apiGet({ action: "getAiFacts" }, function (e) { facts = String(e && e.facts || ""); safe(function () { localStorage.setItem("st_ai_facts", facts); }); }, function () { factsTs = 0; });
+    });
+  }
+
+  // ── меню всех филиалов (текущий — живой, остальные — из кэша)
+  var menuCache = null;
+  function menus() {
+    var m;
+    if (menuCache && Date.now() - menuCache.t < 6e4) m = menuCache.m;
+    else {
+      m = {};
+      safe(function () {
+        (BRANCHES || []).forEach(function (b) {
+          safe(function () {
+            var k = "st_menu_" + b.id, raw = localStorage.getItem(k);
+            if (raw && localStorage.getItem(k + "_ver") === "2") m[b.id] = cleanMenu(JSON.parse(raw));
+          });
+        });
+      });
+      menuCache = { t: Date.now(), m: m };
+    }
+    var out = {};
+    for (var k in m) out[k] = m[k];
+    var md = menuNow();
+    if (curBranch() && Object.keys(md).length) out[curBranch()] = md;
+    return out;
+  }
+
+  // ── что знаем о госте: имя и прошлый заказ (для «как обычно»)
+  function guest() {
+    var g = {};
+    safe(function () { var p = loadClientProfile() || {}; if (p.name) g.name = String(p.name).trim().split(/\s+/)[0]; });
+    safe(function () {
+      var h = JSON.parse(localStorage.getItem("st_order_history") || "[]"), o = h && h[0];
+      if (o && o.itemsList && o.itemsList.length) g.last = { branch: o.branch, items: o.itemsList.map(function (x) { return { name: x.name, qty: x.qty || 1 }; }) };
+    });
+    return g;
+  }
+  // ── свежие акции из «Сообщений»
+  function news() {
+    var out = [];
+    safe(function () {
+      (typeof _newsFeedData !== "undefined" && _newsFeedData || []).forEach(function (n) {
+        if (n && n.title !== "SEVEN AI") out.push({ title: String(n.title || ""), text: String(n.text || "").replace(/<[^>]*>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim() });
+      });
+    });
+    return out.slice(0, 20);
+  }
+
+  // ── мост к сайту: корзина, профиль, брони
+  var site = {
+    branch: function () { return curBranch(); },
+    switchBranch: function (b) { if (branch !== b) switchBranch(b); },
+    cart: function () { return cart.map(function (e) { return { id: e.id, name: e.name, price: e.price, qty: e.qty }; }); },
+    total: function () { return cartTotal(); },
+    add: function (it, q, mod) { addCart({ id: String(it.id), name: it.name, price: it.price }, q || 1); updBadge(); safe(function () { if (mod) updCC(mod.id, mod.price); }); },
+    remove: function (id) { cart = cart.filter(function (e) { return e.id !== id; }); saveCartToStorage(); updBadge(); },
+    canOrder: function (b) { return canOrderNow(b); },
+    profile: function () { return loadClientProfile() || {}; },
+    bkProfile: function () { return safe(function () { return bk_loadProfile() || {}; }, {}); },
+    bkAllowedNow: function (b) { return bk_isBookingAllowedNow(b); },
+    bkBlocked: function (m, d, b) { return bk_isDateBlocked(m, d, b); },
+    bkClosed: function () { return typeof bk__restaurantClosed !== "undefined" && !!bk__restaurantClosed; },
+    openAt: function (b) { return b === "abulhair" && typeof ABULHAIR_OPEN_AT !== "undefined" ? ABULHAIR_OPEN_AT : 0; }
+  };
+  W._saiSite = site;
+  function ctx() {
+    return { menus: menus(), branch: curBranch(), now: Date.now(), custom: AI.parseCustom(facts), state: W._saiState, deliveryHours: typeof DELIVERY_HOURS !== "undefined" ? DELIVERY_HOURS : null, site: site, guest: guest(), news: news() };
+  }
+  W._saiCtx = ctx;
+
+  // ── кнопки-подсказки под ответом
+  W._saiChips = function (acts) {
+    var box = el("seventAiMessages");
+    if (!box) return;
+    box.querySelectorAll(".sai-chips").forEach(function (x) { x.remove(); });
+    if (!acts || !acts.length) return;
+    var row = D.createElement("div");
+    row.className = "sai-chips";
+    acts.forEach(function (c) {
+      if (!c || !c.a || c.a === "wa") return;
+      var b = D.createElement("button");
+      b.type = "button"; b.className = "sai-chip"; b.textContent = ne(c.label);
+      b.onclick = function () { seventAiAct(c.a, c.label); };
+      row.appendChild(b);
+    });
+    box.appendChild(row);
+  };
+
+  // ── карточки блюд: тап открывает шторку блюда
+  function findById(id) {
+    var f = null, md = menuNow();
+    Object.keys(md).forEach(function (k) { (md[k] || []).forEach(function (x) { if (!f && String(x.id) === String(id)) f = x; }); });
+    return f;
+  }
+  function openCard(c) {
+    var b = curBranch();
+    if (c.b && b && c.b !== b) { toast("Это блюдо из филиала " + safe(function () { return branchDisplayName(c.b); }, c.b) + " — переключите филиал в меню"); return; }
+    var it = findById(c.id);
+    if (!it) { toast(b ? "«" + ne(c.name || "Это блюдо") + "» сейчас нет в меню" : "Сначала выберите филиал в меню"); return; }
+    ev("SEVEN AI: открыл блюдо", it.name);
+    openDetail(it);
+  }
+  W._saiOpenCard = openCard;
+  W._saiCards = function (list) {
+    var box = el("seventAiMessages");
+    if (!box || !list || !list.length) return;
+    var row = D.createElement("div");
+    row.className = "sai-cards" + (list.length === 1 ? " one" : "");
+    list.forEach(function (c) {
+      var d = D.createElement("div");
+      d.className = "sai-card"; d.setAttribute("role", "button"); d.tabIndex = 0;
+      var src = c.photo ? safe(function () { return convertPhotoUrl(c.photo, list.length === 1 ? 640 : 400); }, "") : "";
+      d.innerHTML = (src ? '<img loading="lazy" decoding="async" alt="" src="' + esc(src) + '" onerror="this.style.visibility=\'hidden\'">' : '<div class="sai-card-ph"></div>') +
+        '<div class="sai-card-b"><div class="sai-card-n">' + esc(ne(c.name)) + '</div><div class="sai-card-p">' + esc(c.off || c.price) + "</div>" +
+        (c.sizes && !c.off ? '<div class="sai-card-s">' + esc(c.sizes) + "</div>" : "") +
+        (c.desc ? '<div class="sai-card-d">' + esc(ne(c.desc)) + "</div>" : "") + "</div>";
+      d.onclick = function () { openCard(c); };
+      d.onkeydown = function (e) { if (e.key === "Enter") openCard(c); };
+      row.appendChild(d);
+    });
+    box.appendChild(row);
+  };
+
+  function typing(on) {
+    var old = el("seventAiTyping");
+    if (old) old.remove();
+    if (!on) return;
+    var box = el("seventAiMessages"), t = D.createElement("div");
+    t.id = "seventAiTyping";
+    t.style.cssText = "align-self:flex-start;font-size:0.78rem;color:#86868b;display:flex;align-items:center;gap:6px";
+    t.innerHTML = '<span id="seventAiTypingText">SEVEN AI печатает</span><span class="seventai-dots"><span></span><span></span><span></span></span>';
+    box.appendChild(t); scrollEnd();
+  }
+  W._saiTyping = typing;
+  function say(r) { seventAiAppendMessage("ai", r.text, r.acts, r.cards); save(); }
+  W._saiSay = say;
+
+  // ── вопросы и ответы — в таблицу SEVEN_AI
+  function log(q, r) {
+    safe(function () {
+      var a = String(r.text || "") + (r.cards && r.cards.length ? "\n[карточки: " + r.cards.map(function (c) { return c.name + " — " + (c.off || c.price); }).join("; ") + "]" : "");
+      fetch(API, { method: "POST", keepalive: true, body: JSON.stringify({
+        action: "logAiChat", q: String(q).slice(0, 500), a: a.slice(0, 1500), known: r.known ? 1 : 0, intent: r.intent || "", branch: curBranch() || "", clientId: getClientId(),
+        device: typeof _guestDevice !== "undefined" ? _guestDevice : "", source: typeof _guestSource !== "undefined" ? _guestSource : "",
+        city: typeof _guestCity !== "undefined" ? _guestCity : "", ip: typeof _guestIp !== "undefined" ? _guestIp : ""
+      }) }).catch(function () {});
+    });
+  }
+
+  // ── платный ИИ на сервере (выключен флагом SEVENAI_ENABLED)
+  var PHRASES = ["SEVEN AI печатает", "Читаю меню", "Подбираю варианты", "Сверяюсь с меню ресторана", "Почти готово", "SEVEN AI думает", "Собираю точный ответ", "Ищу для вас лучшие варианты", "Секундочку", "Формулирую ответ", "Уже почти"];
+  function server(t) {
+    W._aiBusy = true; typing(true);
+    var i = 0, tt = el("seventAiTypingText"), timer = setInterval(function () { i = (i + 1) % PHRASES.length; if (tt) tt.textContent = PHRASES[i]; }, 2500);
+    function done() { W._aiBusy = false; clearInterval(timer); typing(false); }
+    var body = { action: "aiAsk", branch: curBranch() || "", message: t, clientId: getClientId(), history: seventAiHistory.slice(-13, -1).map(function (e) { return { role: e.role, text: String(e.text || "").slice(0, 1500) }; }) };
+    var x = new XMLHttpRequest();
+    x.open("POST", API, true); x.timeout = 65e3;
+    x.onload = function () {
+      done();
+      var e = safe(function () { return JSON.parse(x.responseText); }, null);
+      if (e && e.ok) return seventAiAppendMessage("ai", e.reply);
+      var m = String(e && e.msg || "").toLowerCase();
+      if (m === "rate_limit") seventAiAppendMessage("ai", "Вы пишете слишком часто. Подождите минуту и напишите ещё раз.");
+      else if (/high demand|overloaded|rate limit|503/.test(m)) seventAiAppendMessage("ai", "Сейчас много запросов по Уральску. Попробуйте написать ещё раз буквально через минуту.");
+      else seventAiAppendMessage("ai", "Сейчас не получилось ответить — попробуйте ещё раз чуть позже.");
+    };
+    x.ontimeout = function () { done(); seventAiAppendMessage("ai", "Сейчас много запросов по Уральску. Попробуйте написать ещё раз буквально через минуту."); };
+    x.onerror = function () { done(); seventAiAppendMessage("ai", "Не удалось связаться с сервером — проверьте интернет и попробуйте ещё раз."); };
+    x.send(JSON.stringify(body));
+  }
+  W._seventAiServer = server;
+
+  // ── «открой …»: выполняем только то, что гость попросил сам
+  function doAuto(a) {
+    a = String(a && a.a || "");
+    if (!a) return;
+    setTimeout(function () {
+      if (!chatVisible()) return;
+      if (a.indexOf("dish:") === 0) openCard({ id: a.slice(5) });
+      else if (a === "menu") { seventAiClose(); switchBottomTab("home"); }
+      else if (a === "cart") { seventAiClose(); switchBottomTab("home"); openCart(); }
+    }, 450);
+  }
+
+  W._saiSend = function () {
+    var inp = el("seventAiInput");
+    if (!inp || W._aiBusy) return;
+    var t = inp.value.trim().slice(0, 500);
+    if (!t) return;
+    if (!W.seventAiLoaded && W._saiOpenRender) W._saiOpenRender();
+    W._aiBusy = true; inp.value = "";
+    seventAiAppendMessage("user", t);
+    typing(true);
+    var t0 = Date.now(), r = null;
+    try { r = AI.reply(t, ctx()); save(); } catch (e) { r = null; }
+    if (r && !r.known && W.SEVENAI_ENABLED) { typing(false); return server(t); }
+    if (!r) { W._aiBusy = false; typing(false); seventAiAppendMessage("ai", "Что-то я задумался — напишите ещё раз."); return; }
+    if (r.lang) W._saiLang = r.lang;
+    log(t, r);
+    var wait = Math.max(0, Math.min(1100, 380 + 2 * r.text.length) - (Date.now() - t0));
+    setTimeout(function () {
+      W._aiBusy = false; typing(false);
+      seventAiAppendMessage("ai", r.text, r.acts, r.cards);
+      if (r.auto) doAuto(r.auto);
+    }, wait);
+  };
+
+  // ── отправка заказа, собранного в чате
+  function sendOrder() {
+    var f = W._saiState.flow;
+    if (!f || f.t !== "order" || !f.d || !f.d.final) return seventAiAppendMessage("ai", "Этот заказ уже неактуален — давайте соберём заново.", [{ a: "ask:Хочу оформить доставку", label: "Оформить заказ" }]);
+    var o = f.d.final;
+    if (!cart.length) return seventAiAppendMessage("ai", "Корзина пустая — сначала добавим блюда. Что везём?");
+    if (branch !== o.branch) return seventAiAppendMessage("ai", "Филиал поменялся — давайте проверим заказ ещё раз.", [{ a: "ask:Хочу оформить доставку", label: "Оформить заказ" }]);
+    if (!canOrderNow(branch) && !isTestPhoneActive()) return seventAiAppendMessage("ai", "Заказы сейчас не принимаем — принимаем " + getOrderWindowText(branch) + ". Могу забронировать столик.", [{ a: "ask:Хочу забронировать столик", label: "Забронировать столик" }]);
+    var dlv = o.mode === "delivery", prof = loadClientProfile() || {}, isNew = !(prof.name && prof.phone);
+    oType = dlv ? "delivery" : "self";
+    cutlery = o.cutlery || 1;
+    if (dlv) payType = o.pay === "cash" ? "cash" : "kaspi";
+    var num = genOrderNumber();
+    _pendingOrderNum = num;
+    saveClientProfile({ name: o.name, phone: o.phone });
+    if (dlv) { saveClientProfile({ street: o.street, house: o.house, entrance: o.entrance, flat: o.flat, floor: o.floor }); _addrRemember(o.street, o.house); }
+    if (isNew) {
+      ev("Зарегистрировался (имя+телефон)", "через SEVEN AI");
+      var cid = getClientId();
+      getPublicIp(function (ip) { apiGet({ action: "registerClient", name: o.name, phone: o.phone, ip: ip || "", clientId: cid, device: getDeviceLabel() }, function () {}, function () {}); });
+      flushStatBuffer();
+    }
+    var allergy = /аллерг|allerg/i.test(o.note) ? o.note : "", bn = branchDisplayName(branch), total = cartTotal(), m = "";
+    if (allergy) m += "АЛЛЕРГИИ КЛИЕНТА: " + allergy + "\n\n";
+    m += dlv ? "Здравствуйте, хочу заказать доставку из филиала: " + bn + "\n\n" : "Здравствуйте, хочу заказать самовывоз из филиала: " + bn + "\n\n";
+    m += "Состав заказа:\n";
+    cart.forEach(function (e) { m += e.name + " x" + e.qty + " - " + (e.price * e.qty).toLocaleString("ru") + " тенге\n"; });
+    m += "\nИтого: " + total.toLocaleString("ru") + " тенге\n\n";
+    if (dlv) {
+      var ad = "ул. " + o.street + ", дом " + o.house;
+      if (o.entrance) ad += ", подъезд " + o.entrance;
+      if (o.flat) ad += ", кв. " + o.flat;
+      if (o.floor) ad += ", этаж " + o.floor;
+      m += "Адрес доставки: " + ad + "\n";
+      m += "Оплата: " + (o.pay === "cash" ? "Наличные" : "Kaspi перевод") + "\n";
+    } else m += "Заберу через: " + (o.pickup || "не указано") + "\n";
+    m += "Имя: " + o.name + "\n";
+    m += "Телефон: " + o.phone + "\n";
+    if (dlv) m += "Приборов: " + cutlery + "\n";
+    if (o.note && !allergy) m += "Пожелания: " + o.note + "\n";
+    m += "(оформлено через SEVEN AI)\n";
+    _pendingOrderMsg = m;
+    var where = dlv ? "ул. " + o.street + ", д. " + o.house + (o.entrance ? ", под. " + o.entrance : "") + (o.flat ? ", кв. " + o.flat : "") : "Самовывоз, " + (o.pickup || "время не указано");
+    _pendingStatsDetails = "Заказ:" + num + " | Тип:" + (dlv ? "Доставка" : "Самовывоз") + " | Адрес:" + where + " | Сумма:" + total + " | Аллергии:" + (allergy || "нет") + " | Товары:" + cart.map(function (e) { return e.name + " x" + e.qty; }).join(", ") + " | Через SEVEN AI";
+    confirmAndSendOrder();
+    say(AI.afterSend("order", { num: num }, { state: W._saiState }));
+  }
+
+  // ── отправка брони, собранной в чате
+  function openWa(text) {
+    var a = D.createElement("a");
+    a.href = "https://wa.me/77760709898?text=" + encodeURIComponent(text); a.target = "_blank"; a.rel = "noopener noreferrer";
+    D.body.appendChild(a); a.click(); a.remove();
+  }
+  function sendBooking() {
+    var f = W._saiState.flow;
+    if (!f || f.t !== "book" || !f.d || !f.d.final) return seventAiAppendMessage("ai", "Эта бронь уже неактуальна — давайте оформим заново.", [{ a: "ask:Хочу забронировать столик", label: "Забронировать столик" }]);
+    var b = f.d.final, p2 = function (n) { return String(n).padStart(2, "0"); };
+    if (site.bkClosed()) return seventAiAppendMessage("ai", "Ресторан сейчас временно закрыт, бронь недоступна.");
+    if (!bk_isBookingAllowedNow(b.bookId)) return seventAiAppendMessage("ai", "Заявки на бронь сейчас не принимаем — с 12:00. Загляните попозже.");
+    if (bk_isDateBlocked(b.m, b.d, b.bookId)) return seventAiAppendMessage("ai", "В этот день ресторан не работает — выберите другую дату.", [{ a: "ask:изменить дату", label: "Изменить дату" }]);
+    if (Date.UTC(b.y, b.m, b.d, b.h - 5, b.mi) - Date.now() < 36e5) return seventAiAppendMessage("ai", "Бронь — минимум за час до визита. Давайте выберем время попозже.", [{ a: "ask:изменить время", label: "Изменить время" }]);
+    var guests = b.guests >= 6 ? "6 и более" : b.guests,
+      comment = b.comment + (b.guestsExact > 6 ? (b.comment ? "; " : "") + "гостей: " + b.guestsExact : ""),
+      MON = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
+    var m = "Здравствуйте! Хочу забронировать столик.\n\nИмя: " + b.name + "\nТелефон: " + b.phone + "\nФилиал: " + b.branchName +
+      "\nДата: " + p2(b.d) + " " + MON[b.m] + " " + b.y + "\nВремя: " + p2(b.h) + ":" + p2(b.mi) + "\nГостей: " + guests + (comment ? "\nКомментарий: " + comment : "") +
+      "\n\nГость ознакомлен и согласен с Условиями бронирования (удержание столика 20 мин, предоплата 2000 тг невозвратна при неявке/недозвоне).\n(оформлено через SEVEN AI)";
+    lastBookMsg = m;
+    bk_logBooking({ branch: b.branchName, name: b.name, phone: b.phone, comment: comment, guests: guests, bookDate: p2(b.d) + "." + p2(b.m + 1) + "." + b.y, bookTime: p2(b.h) + ":" + p2(b.mi), consent: "да", termsClick: termsOpened ? "да" : "нет" });
+    bk_saveProfile({ name: b.name, phone: b.phone, comment: b.comment, branch: b.bookId, guests: Math.min(b.guests, 6), lastBookingAt: Date.now() });
+    if (typeof _bookOpenedNoSubmit !== "undefined") _bookOpenedNoSubmit = false;
+    ev("Бронь через SEVEN AI", b.branchName + ", " + p2(b.d) + "." + p2(b.m + 1) + " " + p2(b.h) + ":" + p2(b.mi) + ", гостей: " + guests);
+    openWa(m);
+    say(AI.afterSend("book", {}, { state: W._saiState }));
+  }
+
+  // ── кнопки под сообщениями
+  W._saiAct = function (a, label) {
+    a = String(a || "");
+    if (a.indexOf("ask:") === 0) { var inp = el("seventAiInput"); inp.value = a.slice(4); return seventAiSend(); }
+    if (a === "wa") return;
+    ev("SEVEN AI: кнопка", String(label || a));
+    if (a === "order:send") return sendOrder();
+    if (a === "book:send") return sendBooking();
+    if (a === "link:order") return void W.open("https://taplink.cc/seventimes/p/1153436/", "_blank", "noopener");
+    if (a === "link:book") { termsOpened = true; return void W.open("https://taplink.cc/seventimes/p/1154a9f/", "_blank", "noopener"); }
+    if (a === "retrywa") return retryOpenWhatsapp();
+    if (a === "retrybook") { if (lastBookMsg) openWa(lastBookMsg); return; }
+    if (a.indexOf("dish:") === 0) return openCard({ id: a.slice(5) });
+    if (a.indexOf("cat:") === 0) {
+      var i = Object.keys(menuNow()).indexOf(a.slice(4));
+      seventAiClose(); switchBottomTab("home");
+      if (i >= 0) setTimeout(function () { scrollToSec(i); }, 80);
+      return;
+    }
+    seventAiClose();
+    if (a === "menu") switchBottomTab("home");
+    else if (a === "book") bookBtnClick();
+    else if (a === "news") switchBottomTab("news");
+    else if (a === "vacancy") switchBottomTab("vacancy");
+    else if (a === "cart") { switchBottomTab("home"); openCart(); }
+  };
+
+  // ── кнопка «Спросить SEVEN AI» в шторке блюда
+  W._saiFromDish = function (it) { say(AI.fromDish(it.id, ctx())); scrollEnd(); };
+
+  W._saiWelcome = function () {
+    if (W._saiNoWelcome) { W._saiNoWelcome = false; return; }
+    var g = guest(), acts = [];
+    if (g.last && g.last.items.length) acts.push({ a: "ask:повтори прошлый заказ", label: "Повторить прошлый заказ" });
+    acts.push({ a: "ask:Хочу оформить доставку", label: "Оформить доставку" }, { a: "ask:Хочу забронировать столик", label: "Забронировать столик" }, { a: "ask:Что есть в меню", label: "Что есть в меню" }, { a: "ask:До скольки работаете?", label: "Часы работы" });
+    seventAiAppendMessage("ai", (g.name ? "Привет, " + g.name + "! " : "Привет! ") + "Я SEVEN AI — помощник Seven Times. Не просто отвечаю: оформлю доставку и забронирую столик прямо здесь. Пишите как удобно — по-русски, қазақша или in English, можно с ошибками" + (SR ? " или голосом." : "."), acts);
+  };
+
+  // ── голосовой ввод: микрофон спрашиваем только по тапу
+  var SR = W.SpeechRecognition || W.webkitSpeechRecognition, rec = null, recOn = false;
+  function micState(on) {
+    recOn = on;
+    var b = el("saiMic"), inp = el("seventAiInput");
+    if (b) { b.classList.toggle("on", on); b.setAttribute("aria-label", on ? "Остановить запись" : "Сказать голосом"); }
+    if (inp && !inp.disabled) inp.placeholder = on ? "Говорите…" : "Спросите что угодно…";
+  }
+  function toggleMic() {
+    var inp = el("seventAiInput");
+    if (recOn) { safe(function () { rec.stop(); }); return; }
+    if (!inp || inp.disabled || W._aiBusy) return;
+    rec = safe(function () { return new SR(); }, null);
+    if (!rec) return toast("Голосовой ввод на этом телефоне недоступен");
+    var l = W._saiLang;
+    rec.lang = l === "kz" ? "kk-KZ" : l === "en" ? "en-US" : "ru-RU";
+    rec.interimResults = true; rec.maxAlternatives = 1; rec.continuous = false;
+    var base = inp.value.trim(), fin = "", err = "";
+    rec.onresult = function (e) {
+      var tmp = "";
+      for (var i = e.resultIndex; i < e.results.length; i++) { var s = e.results[i][0].transcript; if (e.results[i].isFinal) fin += s; else tmp += s; }
+      inp.value = ((base ? base + " " : "") + (fin + tmp).trim()).slice(0, 500);
+    };
+    rec.onerror = function (e) { err = e && e.error || "error"; };
+    rec.onend = function () {
+      micState(false);
+      if (err === "not-allowed" || err === "service-not-allowed") toast("Разрешите доступ к микрофону в настройках браузера");
+      else if (err === "no-speech") toast("Не расслышал — скажите ещё раз");
+      else if (err && err !== "aborted") toast("Голосовой ввод сейчас недоступен");
+      if (fin.trim() && inp.value.trim() && chatVisible()) seventAiSend();
+    };
+    try { rec.start(); micState(true); ev("SEVEN AI: голосовой ввод"); } catch (e) { micState(false); }
+  }
+  function setupMic() {
+    var row = el("seventAiInputRow"), send = el("seventAiSendBtn"), b = el("saiMic");
+    if (!SR || !row || !send) return;
+    if (!b) {
+      b = D.createElement("button");
+      b.type = "button"; b.id = "saiMic"; b.className = "sai-mic"; b.setAttribute("aria-label", "Сказать голосом");
+      b.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>';
+      b.onclick = toggleMic;
+      row.insertBefore(b, send);
+    }
+    b.style.display = "";
+  }
+  var closeChat = W.seventAiClose;
+  W.seventAiClose = function () { if (recOn) safe(function () { rec.abort(); }); return closeChat.apply(this, arguments); };
+
+  W._saiOnOpen = function () { loadFacts(); setupMic(); };
+})();
