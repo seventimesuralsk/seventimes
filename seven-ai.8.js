@@ -2106,7 +2106,7 @@
 
   // ── вопросы и ответы — в таблицу SEVEN_AI
   // голосовое (если есть) уходит вместе с вопросом — файлом в Google Диск
-  function log(q, r, audio) {
+  function log(q, r, audio, by) {
     safe(function () {
       var a = String(r.text || "") + (r.cards && r.cards.length ? "\n[карточки: " + r.cards.map(function (c) { return c.name + " — " + (c.off || c.price); }).join("; ") + "]" : "");
       var body = {
@@ -2114,6 +2114,7 @@
         device: typeof _guestDevice !== "undefined" ? _guestDevice : "", source: typeof _guestSource !== "undefined" ? _guestSource : "",
         city: typeof _guestCity !== "undefined" ? _guestCity : "", ip: typeof _guestIp !== "undefined" ? _guestIp : ""
       };
+      if (by) body.by = by;
       if (!audio || !audio.blob) return void fetch(API, { method: "POST", keepalive: true, body: JSON.stringify(body) }).catch(function () {});
       var fr = new FileReader();
       fr.onload = function () {
@@ -2125,26 +2126,30 @@
   }
   W._saiLogVoiceOnly = function (audio) { log("[голосовое без расшифровки]", { text: "", known: 0, intent: "voice" }, audio); };
 
-  // ── платный ИИ на сервере (выключен флагом SEVENAI_ENABLED)
-  var PHRASES = ["SEVEN AI печатает", "Читаю меню", "Подбираю варианты", "Сверяюсь с меню ресторана", "Почти готово", "SEVEN AI думает", "Собираю точный ответ", "Ищу для вас лучшие варианты", "Секундочку", "Формулирую ответ", "Уже почти"];
-  function server(t) {
+  // ── «голова»: то, чего не понял свой движок, спрашиваем у ИИ на сервере
+  // (Gemini → Groq → Mistral, бесплатные уровни). Если все ИИ недоступны,
+  // лимит или нет сети — гость молча получает ответ своего движка.
+  var PHRASES = ["SEVEN AI печатает", "Думаю", "Секундочку", "SEVEN AI думает", "Формулирую", "Почти готово"];
+  var AI_NAMES = { gemini: "Gemini", groq: "Groq", mistral: "Mistral" };
+  function server(t, local, audio) {
     W._aiBusy = true; typing(true);
-    var i = 0, tt = el("seventAiTypingText"), timer = setInterval(function () { i = (i + 1) % PHRASES.length; if (tt) tt.textContent = PHRASES[i]; }, 2500);
-    function done() { W._aiBusy = false; clearInterval(timer); typing(false); }
+    var i = 0, tt = el("seventAiTypingText"), timer = setInterval(function () { i = (i + 1) % PHRASES.length; if (tt) tt.textContent = PHRASES[i]; }, 2200), fin = false;
+    function done(e) {
+      if (fin) return; fin = true;
+      W._aiBusy = false; clearInterval(timer); typing(false);
+      if (e && e.ok && e.reply) {
+        seventAiAppendMessage("ai", e.reply);
+        log(t, { text: e.reply, known: 1, intent: "ai" }, audio, AI_NAMES[e.provider] || "ИИ");
+      } else {
+        seventAiAppendMessage("ai", local.text, local.acts, local.cards);
+        log(t, local, audio);
+      }
+    }
     var body = { action: "aiAsk", branch: curBranch() || "", message: t, clientId: getClientId(), history: seventAiHistory.slice(-13, -1).map(function (e) { return { role: e.role, text: String(e.text || "").slice(0, 1500) }; }) };
     var x = new XMLHttpRequest();
-    x.open("POST", API, true); x.timeout = 65e3;
-    x.onload = function () {
-      done();
-      var e = safe(function () { return JSON.parse(x.responseText); }, null);
-      if (e && e.ok) return seventAiAppendMessage("ai", e.reply);
-      var m = String(e && e.msg || "").toLowerCase();
-      if (m === "rate_limit") seventAiAppendMessage("ai", "Вы пишете слишком часто. Подождите минуту и напишите ещё раз.");
-      else if (/high demand|overloaded|rate limit|503/.test(m)) seventAiAppendMessage("ai", "Сейчас много запросов по Уральску. Попробуйте написать ещё раз буквально через минуту.");
-      else seventAiAppendMessage("ai", "Сейчас не получилось ответить — попробуйте ещё раз чуть позже.");
-    };
-    x.ontimeout = function () { done(); seventAiAppendMessage("ai", "Сейчас много запросов по Уральску. Попробуйте написать ещё раз буквально через минуту."); };
-    x.onerror = function () { done(); seventAiAppendMessage("ai", "Не удалось связаться с сервером — проверьте интернет и попробуйте ещё раз."); };
+    x.open("POST", API, true); x.timeout = 20e3;
+    x.onload = function () { done(safe(function () { return JSON.parse(x.responseText); }, null)); };
+    x.ontimeout = x.onerror = function () { done(null); };
     x.send(JSON.stringify(body));
   }
   W._seventAiServer = server;
@@ -2172,7 +2177,7 @@
     typing(true);
     var t0 = Date.now(), r = null;
     try { r = AI.reply(t, ctx()); save(); } catch (e) { r = null; }
-    if (r && !r.known && W.SEVENAI_ENABLED) { typing(false); return server(t); }
+    if (r && !r.known && !(r.cards && r.cards.length) && W.SEVENAI_ENABLED) { typing(false); if (r.lang) W._saiLang = r.lang; return server(t, r, audio); }
     if (!r) { W._aiBusy = false; typing(false); seventAiAppendMessage("ai", "Что-то я задумался — напишите ещё раз."); return; }
     if (r.lang) W._saiLang = r.lang;
     log(t, r, audio);
