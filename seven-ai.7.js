@@ -1933,16 +1933,15 @@
     "@keyframes saiBlink{50%{opacity:.25}}" +
     ".sai-rec-t{font-size:0.8rem;font-variant-numeric:tabular-nums;color:#1d1d1f;flex-shrink:0;min-width:30px}" +
     ".sai-rec-w{flex:1;min-width:0;height:30px;display:flex;align-items:center;gap:3px;overflow:hidden}" +
-    ".sai-rec-w i{flex:1;max-width:4px;min-width:2px;height:100%;border-radius:2px;background:#7a1128;transform:scaleY(.18);animation:saiWave .7s ease-in-out infinite alternate}" +
-    ".sai-rec.loud .sai-rec-w i{animation-duration:.28s}" +
-    "@keyframes saiWave{from{transform:scaleY(.15)}to{transform:scaleY(.95)}}" +
+    ".sai-rec-w i{flex:1;max-width:4px;min-width:2px;height:100%;border-radius:2px;background:#7a1128;transform:scaleY(.08);transition:transform .09s linear;will-change:transform}" +
     ".sai-vpill{flex-basis:100%;display:flex;align-items:center;gap:9px;padding:2px 0 4px}" +
     ".sai-vmic{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0}.sai-vmic svg{width:16px;height:16px}" +
     ".sai-vw{flex:1;min-width:90px;height:24px;display:flex;align-items:center;gap:2px}" +
-    ".sai-vw i{flex:1;max-width:3px;border-radius:2px;background:currentColor;opacity:.9}" +
+    ".sai-vw i{flex:1;max-width:3px;border-radius:2px;background:currentColor;opacity:.9}.sai-vpill.playing .sai-vw i{opacity:.4}.sai-vpill.playing .sai-vw i.on{opacity:1}" +
+    ".sai-vmic.play{background:#fff;color:#7a1128;cursor:pointer}" +
     ".sai-vd{font-size:0.7rem;opacity:.85;font-variant-numeric:tabular-nums;flex-shrink:0}" +
     ".sai-vtxt{font-size:0.76rem;opacity:.82;font-style:italic}" +
-    "@media (prefers-reduced-motion:reduce){.sai-rec-w i,.sai-rec-dot{animation:none}.sai-rec-w i{transform:scaleY(.5)}}" +
+    "@media (prefers-reduced-motion:reduce){.sai-rec-dot{animation:none}}" +
     "@media (prefers-color-scheme:dark){" +
     ".sai-chip{background:#1c1c1e;border-color:#48343a;color:#ef6b83}.sai-chip:active{background:#2c2c2e}" +
     ".sai-card{background:#1c1c1e;border-color:#38383a}.sai-card-n{color:#f5f5f7}.sai-card-p{color:#ef6b83}" +
@@ -2106,16 +2105,25 @@
   W._saiSay = say;
 
   // ── вопросы и ответы — в таблицу SEVEN_AI
-  function log(q, r) {
+  // голосовое (если есть) уходит вместе с вопросом — файлом в Google Диск
+  function log(q, r, audio) {
     safe(function () {
       var a = String(r.text || "") + (r.cards && r.cards.length ? "\n[карточки: " + r.cards.map(function (c) { return c.name + " — " + (c.off || c.price); }).join("; ") + "]" : "");
-      fetch(API, { method: "POST", keepalive: true, body: JSON.stringify({
+      var body = {
         action: "logAiChat", q: String(q).slice(0, 500), a: a.slice(0, 1500), known: r.known ? 1 : 0, intent: r.intent || "", branch: curBranch() || "", clientId: getClientId(),
         device: typeof _guestDevice !== "undefined" ? _guestDevice : "", source: typeof _guestSource !== "undefined" ? _guestSource : "",
         city: typeof _guestCity !== "undefined" ? _guestCity : "", ip: typeof _guestIp !== "undefined" ? _guestIp : ""
-      }) }).catch(function () {});
+      };
+      if (!audio || !audio.blob) return void fetch(API, { method: "POST", keepalive: true, body: JSON.stringify(body) }).catch(function () {});
+      var fr = new FileReader();
+      fr.onload = function () {
+        body.audio = String(fr.result || "").split(",")[1] || ""; body.mime = audio.mime; body.dur = audio.dur;
+        fetch(API, { method: "POST", body: JSON.stringify(body) }).catch(function () {});
+      };
+      fr.readAsDataURL(audio.blob);
     });
   }
+  W._saiLogVoiceOnly = function (audio) { log("[голосовое без расшифровки]", { text: "", known: 0, intent: "voice" }, audio); };
 
   // ── платный ИИ на сервере (выключен флагом SEVENAI_ENABLED)
   var PHRASES = ["SEVEN AI печатает", "Читаю меню", "Подбираю варианты", "Сверяюсь с меню ресторана", "Почти готово", "SEVEN AI думает", "Собираю точный ответ", "Ищу для вас лучшие варианты", "Секундочку", "Формулирую ответ", "Уже почти"];
@@ -2153,7 +2161,7 @@
     }, 450);
   }
 
-  W._saiSend = function (voice) {
+  W._saiSend = function (voice, audio) {
     var inp = el("seventAiInput");
     if (!inp || W._aiBusy) return;
     var t = inp.value.trim().slice(0, 500);
@@ -2167,7 +2175,7 @@
     if (r && !r.known && W.SEVENAI_ENABLED) { typing(false); return server(t); }
     if (!r) { W._aiBusy = false; typing(false); seventAiAppendMessage("ai", "Что-то я задумался — напишите ещё раз."); return; }
     if (r.lang) W._saiLang = r.lang;
-    log(t, r);
+    log(t, r, audio);
     var wait = Math.max(0, Math.min(1100, 380 + 2 * r.text.length) - (Date.now() - t0));
     setTimeout(function () {
       W._aiBusy = false; typing(false);
@@ -2291,42 +2299,95 @@
     seventAiAppendMessage("ai", (g.name ? "Привет, " + g.name + "! " : "Привет! ") + "Я SEVEN AI — помощник Seven Times. Не просто отвечаю: оформлю доставку и забронирую столик прямо здесь. Пишите как удобно — по-русски, қазақша или in English, можно с ошибками" + (SR ? " или голосом." : "."), acts);
   };
 
-  // ── голосовые сообщения: тап по микрофону → запись с волной и таймером →
-  // в чат уходит «голосовое» с расшифровкой, SEVEN AI отвечает на текст.
-  // Микрофон браузер спрашивает только по тапу. Звук не храним — только текст.
-  var SR = W.SpeechRecognition || W.webkitSpeechRecognition, rec = null, recOn = false, vs = null;
-  var NB = 28, MIC = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>';
+  // ── голосовые сообщения, как в мессенджерах ──
+  // Тап по микрофону: браузер слушает (бесплатное распознавание речи) и
+  // параллельно пишет звук. Волна живая — от громкости голоса, плавная.
+  // В чат уходит «голосовое» с расшифровкой, SEVEN AI отвечает на текст,
+  // а сам звук уходит файлом в Google Диск (ссылка «Слушать» в листе SEVEN_AI).
+  // Если телефон не даёт писать звук и слушать одновременно — дальше только
+  // распознаём (запоминаем это на телефоне), чтобы бот всегда понимал гостя.
+  var SR = W.SpeechRecognition || W.webkitSpeechRecognition, recOn = false, vs = null, NB = 28, LIVE = 34;
+  var MIC = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>';
+  var PLAY = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12-7.5a1 1 0 0 0 0-1.72l-12-7.5A1 1 0 0 0 7 4.5z"/></svg>';
+  var PAUSE = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4.5" height="16" rx="1.2"/><rect x="13.5" y="4" width="4.5" height="16" rx="1.2"/></svg>';
   function dur(s) { s = Math.max(1, Math.round(s)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
-  function barsHtml(list) { return list.map(function (h) { return '<i style="height:' + Math.round(18 + h * 82) + '%"></i>'; }).join(""); }
-  // волна в пузыре: где гость говорил — высокие столбики, в паузах — низкие
-  function waveOf(hits, total) {
-    var out = [], seed = hits.length * 7 + Math.round(total);
+  function lsGet(k) { return safe(function () { return localStorage.getItem(k); }, null); }
+  function lsSet(k, v) { safe(function () { localStorage.setItem(k, v); }); }
+
+  // звук своих голосовых храним на телефоне гостя (IndexedDB), чтобы можно было переслушать
+  var idbP = null;
+  function idb() {
+    if (!idbP) idbP = new Promise(function (ok, no) {
+      var rq = W.indexedDB.open("sai_voice", 1);
+      rq.onupgradeneeded = function () { rq.result.createObjectStore("v"); };
+      rq.onsuccess = function () { ok(rq.result); }; rq.onerror = function () { no(rq.error); };
+    });
+    return idbP;
+  }
+  function idbPut(id, blob) { return safe(function () { return idb().then(function (db) { db.transaction("v", "readwrite").objectStore("v").put(blob, id); }); }) || Promise.resolve(); }
+  function idbGet(id) { return safe(function () { return idb().then(function (db) { return new Promise(function (ok) { var q = db.transaction("v").objectStore("v").get(id); q.onsuccess = function () { ok(q.result || null); }; q.onerror = function () { ok(null); }; }); }); }) || Promise.resolve(null); }
+  function idbClear() { safe(function () { idb().then(function (db) { db.transaction("v", "readwrite").objectStore("v").clear(); }); }); }
+  var resetChat = W._saiReset;
+  W._saiReset = function () { idbClear(); return resetChat.apply(this, arguments); };
+
+  // волна для пузыря: сжимаем записанную громкость до 28 столбиков
+  function squeeze(levels) {
+    var out = [];
+    if (!levels.length) levels = [0.3];
+    var mx = Math.max.apply(null, levels) || 1;
     for (var i = 0; i < NB; i++) {
-      var a = i / NB * total, b = (i + 1) / NB * total, near = hits.some(function (t) { return t >= a - 0.6 && t <= b + 0.6; });
-      seed = (seed * 9301 + 49297) % 233280;
-      var r = seed / 233280;
-      out.push(Math.round((near ? 0.45 + r * 0.55 : 0.05 + r * 0.25) * 100) / 100);
+      var a = Math.floor(i * levels.length / NB), b = Math.max(a + 1, Math.floor((i + 1) * levels.length / NB)), m = 0;
+      for (var j = a; j < b && j < levels.length; j++) m = Math.max(m, levels[j]);
+      out.push(Math.round(Math.min(1, Math.max(0.04, m / mx)) * 100) / 100);
     }
     return out;
   }
+  function barsHtml(list) { return list.map(function (h) { return '<i style="height:' + Math.round(14 + h * 86) + '%"></i>'; }).join(""); }
+  var player = null;
   W._saiVoiceDecor = function (bubble, v) {
     var box = bubble.firstChild, txt = box && box.firstChild;
     if (!box) return;
     var pill = D.createElement("div");
     pill.className = "sai-vpill";
-    pill.innerHTML = '<span class="sai-vmic">' + MIC + '</span><span class="sai-vw">' + barsHtml(v.bars || waveOf([0], 2)) + '</span><span class="sai-vd">' + dur(v.dur || 1) + "</span>";
+    pill.innerHTML = '<span class="sai-vmic">' + MIC + '</span><span class="sai-vw">' + barsHtml(v.bars || squeeze([])) + '</span><span class="sai-vd">' + dur(v.dur || 1) + "</span>";
     box.insertBefore(pill, box.firstChild);
     if (txt) txt.classList.add("sai-vtxt");
+    if (!v.id || !v.a) return;
+    idbGet(v.id).then(function (blob) {
+      if (!blob) return;
+      var btn = pill.querySelector(".sai-vmic");
+      btn.innerHTML = PLAY; btn.classList.add("play"); btn.setAttribute("role", "button"); btn.setAttribute("aria-label", "Прослушать");
+      btn.onclick = function () { playVoice(pill, blob, v.dur); };
+    });
   };
+  function playVoice(pill, blob, secs) {
+    if (player && player.pill === pill) { if (player.au.paused) player.au.play(); else player.au.pause(); return; }
+    if (player) { player.au.pause(); player.stop(); }
+    var url = URL.createObjectURL(blob), au = new Audio(url), btn = pill.querySelector(".sai-vmic"), bars = pill.querySelectorAll(".sai-vw i"), dEl = pill.querySelector(".sai-vd"), raf = 0;
+    function paint() {
+      var p = au.duration && isFinite(au.duration) ? au.currentTime / au.duration : 0;
+      for (var i = 0; i < bars.length; i++) bars[i].classList.toggle("on", i / bars.length < p);
+      dEl.textContent = dur(Math.max(1, (au.duration && isFinite(au.duration) ? au.duration : secs) - au.currentTime));
+      if (!au.paused) raf = requestAnimationFrame(paint);
+    }
+    function stop() { cancelAnimationFrame(raf); btn.innerHTML = PLAY; pill.classList.remove("playing"); for (var i = 0; i < bars.length; i++) bars[i].classList.remove("on"); dEl.textContent = dur(secs); }
+    au.onplay = function () { btn.innerHTML = PAUSE; pill.classList.add("playing"); paint(); };
+    au.onpause = function () { btn.innerHTML = PLAY; cancelAnimationFrame(raf); };
+    au.onended = function () { stop(); URL.revokeObjectURL(url); player = null; };
+    player = { pill: pill, au: au, stop: stop };
+    au.play().catch(function () { toast("Не получилось воспроизвести"); });
+  }
+
+  // панель записи: крестик, красная точка, таймер, живая волна, «отправить»
   function recBar(on) {
     var row = el("seventAiInputRow"), bar = el("saiRecBar");
-    if (!row) return;
+    if (!row) return null;
     if (on && !bar) {
       bar = D.createElement("div");
       bar.id = "saiRecBar"; bar.className = "sai-rec";
-      var live = []; for (var i = 0; i < 22; i++) live.push('<i style="animation-delay:' + (i * 83 % 700) + 'ms"></i>');
+      var live = ""; for (var i = 0; i < LIVE; i++) live += "<i></i>";
       bar.innerHTML = '<button type="button" class="sai-rec-x" aria-label="Отменить запись"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>' +
-        '<span class="sai-rec-dot"></span><span class="sai-rec-t">0:00</span><span class="sai-rec-w">' + live.join("") + '</span>' +
+        '<span class="sai-rec-dot"></span><span class="sai-rec-t">0:00</span><span class="sai-rec-w">' + live + "</span>" +
         '<button type="button" class="sai-rec-go" aria-label="Отправить голосовое"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>';
       bar.querySelector(".sai-rec-x").onclick = function () { stopRec(true); };
       bar.querySelector(".sai-rec-go").onclick = function () { stopRec(false); };
@@ -2334,49 +2395,116 @@
     }
     if (bar) bar.style.display = on ? "flex" : "none";
     row.style.display = on ? "none" : "flex";
+    return bar;
+  }
+  // плавная волна: громкость сглаживаем, столбики едут справа налево
+  function animate(s) {
+    var bar = el("saiRecBar"), bars = bar ? bar.querySelectorAll(".sai-rec-w i") : [], tEl = bar && bar.querySelector(".sai-rec-t"), hist = [], lastPush = 0, buf = null;
+    for (var i = 0; i < LIVE; i++) hist.push(0.06);
+    function frame(ts) {
+      if (!s.alive) return;
+      var lvl;
+      if (s.an) {
+        if (!buf) buf = new Uint8Array(s.an.fftSize);
+        s.an.getByteTimeDomainData(buf);
+        var sum = 0; for (var k = 0; k < buf.length; k++) { var x = (buf[k] - 128) / 128; sum += x * x; }
+        lvl = Math.min(1, Math.sqrt(sum / buf.length) * 4.2);
+        s.peak = Math.max(s.peak, lvl);
+      } else {
+        // без доступа к звуку — по событиям распознавания: говорит / молчит
+        var tgt = s.speaking ? 0.42 + 0.3 * Math.sin(ts / 170) * Math.sin(ts / 97) + (ts - s.lastRes < 300 ? 0.25 : 0) : 0.05;
+        lvl = Math.max(0.04, tgt);
+      }
+      s.lv = s.lv + (lvl - s.lv) * (lvl > s.lv ? 0.35 : 0.12);
+      if (ts - lastPush > 70) {
+        lastPush = ts; hist.push(s.lv); hist.shift(); s.levels.push(s.lv);
+        for (var j = 0; j < bars.length; j++) bars[j].style.transform = "scaleY(" + Math.max(0.08, Math.min(1, hist[j] * 1.15)).toFixed(3) + ")";
+      }
+      var f = Math.floor((Date.now() - s.t0) / 1000);
+      if (tEl) tEl.textContent = Math.floor(f / 60) + ":" + String(f % 60).padStart(2, "0");
+      if (f >= 60) stopRec(false);
+      s.raf = requestAnimationFrame(frame);
+    }
+    s.raf = requestAnimationFrame(frame);
   }
   function stopRec(cancel) {
-    if (!recOn || !vs) return;
-    vs.cancel = !!cancel;
-    safe(function () { cancel ? rec.abort() : rec.stop(); });
+    var s = vs;
+    if (!recOn || !s || s.stopping) return;
+    s.stopping = true; s.cancel = !!cancel;
+    safe(function () { cancel ? s.rec.abort() : s.rec.stop(); });
+    safe(function () { if (s.mr && s.mr.state !== "inactive") s.mr.stop(); });
+  }
+  function release(s) {
+    s.alive = false; cancelAnimationFrame(s.raf);
+    safe(function () { s.stream && s.stream.getTracks().forEach(function (t) { t.stop(); }); });
+    safe(function () { s.ac && s.ac.close(); });
+  }
+  function finish(s) {
+    if (s.done) return;
+    s.done = true; clearTimeout(s.guard); release(s);
+    micState(false); recBar(false); vs = null;
+    var text = (s.fin || s.tmp).replace(/\s+/g, " ").trim().slice(0, 500), secs = Math.max(1, Math.round((Date.now() - s.t0) / 1000));
+    var blob = s.chunks.length ? new Blob(s.chunks, { type: s.mime || "audio/webm" }) : null;
+    if (s.cancel) return;
+    if (s.err === "not-allowed" || s.err === "service-not-allowed") return toast("Разрешите доступ к микрофону в настройках браузера");
+    if (!text) {
+      // звук был, а текста нет — похоже, телефон не умеет слушать и писать разом
+      if (s.mr && s.peak > 0.2) { var fl = (+lsGet("sai_vfail") || 0) + 1; lsSet("sai_vfail", String(fl)); if (fl >= 2) lsSet("sai_vmode", "text"); }
+      if (blob && s.peak > 0.12) W._saiLogVoiceOnly({ blob: blob, mime: s.mime, dur: secs });
+      return toast(s.err && s.err !== "no-speech" && s.err !== "aborted" ? "Голосовые сейчас недоступны — напишите текстом" : "Не расслышал — скажите ещё раз");
+    }
+    if (!chatVisible()) return;
+    lsSet("sai_vfail", "0");
+    var id = "v" + Date.now(), meta = { id: id, dur: secs, bars: squeeze(s.levels) };
+    if (blob) { meta.a = 1; idbPut(id, blob); }
+    el("seventAiInput").value = text;
+    W._saiSend(meta, blob ? { blob: blob, mime: s.mime, dur: secs } : null);
   }
   function toggleMic() {
     var inp = el("seventAiInput");
     if (recOn) return stopRec(false);
     if (!inp || inp.disabled || W._aiBusy) return;
-    rec = safe(function () { return new SR(); }, null);
+    if (player) { player.au.pause(); }
+    var rec = safe(function () { return new SR(); }, null);
     if (!rec) return toast("Голосовые на этом телефоне недоступны — напишите текстом");
-    var l = W._saiLang;
+    var l = W._saiLang, s = { rec: rec, t0: Date.now(), fin: "", tmp: "", err: "", chunks: [], levels: [], lv: 0.05, peak: 0, lastRes: 0, alive: true, speaking: false };
+    vs = s;
     rec.lang = l === "kz" ? "kk-KZ" : l === "en" ? "en-US" : "ru-RU";
     rec.interimResults = true; rec.maxAlternatives = 1; rec.continuous = false;
-    vs = { t0: Date.now(), fin: "", tmp: "", err: "", hits: [], cancel: false };
-    var s = vs;
     rec.onresult = function (e) {
       var tmp = "";
       for (var i = e.resultIndex; i < e.results.length; i++) { var x = e.results[i][0].transcript; if (e.results[i].isFinal) s.fin += x; else tmp += x; }
-      s.tmp = tmp; s.hits.push((Date.now() - s.t0) / 1000);
-      var bar = el("saiRecBar");
-      if (bar) { bar.classList.add("loud"); clearTimeout(s.lt); s.lt = setTimeout(function () { bar.classList.remove("loud"); }, 350); }
+      s.tmp = tmp; s.lastRes = performance.now(); s.speaking = true;
     };
+    rec.onspeechstart = rec.onsoundstart = function () { s.speaking = true; };
+    rec.onspeechend = rec.onsoundend = function () { s.speaking = false; };
     rec.onerror = function (e) { s.err = e && e.error || "error"; };
     rec.onend = function () {
-      clearInterval(s.timer); micState(false); recBar(false);
-      var text = (s.fin || s.tmp).replace(/\s+/g, " ").trim().slice(0, 500), secs = (Date.now() - s.t0) / 1000;
-      if (s.cancel) return;
-      if (s.err === "not-allowed" || s.err === "service-not-allowed") return toast("Разрешите доступ к микрофону в настройках браузера");
-      if (!text) return toast(s.err && s.err !== "no-speech" && s.err !== "aborted" ? "Голосовые сейчас недоступны — напишите текстом" : "Не расслышал — скажите ещё раз");
-      if (!chatVisible()) return;
-      inp.value = text;
-      W._saiSend({ dur: Math.max(1, Math.round(secs)), bars: waveOf(s.hits.length ? s.hits : [secs / 2], secs) });
+      s.recEnded = true;
+      if (!s.mr || s.mr.state === "inactive") return finish(s);
+      safe(function () { s.mr.stop(); });
+      s.guard = setTimeout(function () { finish(s); }, 1500);
     };
-    try { rec.start(); } catch (e) { return toast("Голосовые сейчас недоступны — напишите текстом"); }
-    micState(true); recBar(true); ev("SEVEN AI: голосовое");
-    var tEl = el("saiRecBar").querySelector(".sai-rec-t");
-    s.timer = setInterval(function () {
-      var sec = (Date.now() - s.t0) / 1000;
-      var f = Math.floor(sec); if (tEl) tEl.textContent = Math.floor(f / 60) + ":" + String(f % 60).padStart(2, "0");
-      if (sec > 60) stopRec(false);
-    }, 250);
+    // звук пишем, если телефон это тянет (и гость не на старом «только текст»)
+    var canRec = W.MediaRecorder && navigator.mediaDevices && navigator.mediaDevices.getUserMedia && lsGet("sai_vmode") !== "text";
+    if (canRec) {
+      safe(function () { var AC = W.AudioContext || W.webkitAudioContext; s.ac = new AC(); });
+      navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }).then(function (stream) {
+        s.stream = stream;
+        if (!s.alive) return release(s);
+        safe(function () { var an = s.ac.createAnalyser(); an.fftSize = 1024; an.smoothingTimeConstant = 0.6; s.ac.createMediaStreamSource(stream).connect(an); s.an = an; if (s.ac.state === "suspended") s.ac.resume(); });
+        var types = ["audio/webm;codecs=opus", "audio/mp4", "audio/webm", "audio/ogg;codecs=opus"], mt = "";
+        for (var i = 0; i < types.length; i++) if (safe(function () { return MediaRecorder.isTypeSupported(types[i]); }, false)) { mt = types[i]; break; }
+        var mr = safe(function () { return new MediaRecorder(stream, mt ? { mimeType: mt, audioBitsPerSecond: 24000 } : { audioBitsPerSecond: 24000 }); }, null);
+        if (!mr) return;
+        s.mr = mr; s.mime = (mr.mimeType || mt || "audio/webm").split(";")[0];
+        mr.ondataavailable = function (e) { if (e.data && e.data.size) s.chunks.push(e.data); };
+        mr.onstop = function () { if (s.recEnded || s.stopping) finish(s); };
+        mr.start(250);
+      }, function () { safe(function () { s.ac && s.ac.close(); }); s.ac = null; });
+    }
+    try { rec.start(); } catch (e) { release(s); vs = null; return toast("Голосовые сейчас недоступны — напишите текстом"); }
+    micState(true); recBar(true); animate(s); ev("SEVEN AI: голосовое");
   }
   function micState(on) {
     recOn = on;
@@ -2396,7 +2524,7 @@
     b.style.display = "";
   }
   var closeChat = W.seventAiClose;
-  W.seventAiClose = function () { if (recOn) stopRec(true); return closeChat.apply(this, arguments); };
+  W.seventAiClose = function () { if (recOn) stopRec(true); if (player) player.au.pause(); return closeChat.apply(this, arguments); };
 
   W._saiOnOpen = function () { loadFacts(); setupMic(); };
 })();
