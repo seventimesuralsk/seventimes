@@ -2304,7 +2304,8 @@
     if (audio && audio.blob && typeof FileReader !== "undefined") {
       var fr = new FileReader();
       fr.onload = function () {
-        var b64 = String(fr.result || "").split(",")[1] || "";
+        // тип файла бывает с кодеками через запятую (video/mp4;codecs=avc1…,mp4a…) — берём всё после «base64,»
+        var du = String(fr.result || ""), bi = du.indexOf(";base64,"), b64 = bi >= 0 ? du.slice(bi + 8) : "";
         if (audio.video) { body.video = b64; body.vmime = audio.mime; body.vdur = audio.dur; }
         else { body.audio = b64; body.mime = audio.mime; body.dur = audio.dur; }
         go();
@@ -3051,7 +3052,7 @@
   function camReview(s) {
     s.review = true; cancelAnimationFrame(s.raf);
     camTracksOff(s); // камера гаснет сразу
-    s.blob = new Blob(s.chunks, { type: s.mime });
+    s.blob = new Blob(s.chunks, { type: s.mime.split(";")[0] });
     if (s.sendAfter) return camSend(s);
     s.ov.classList.add("review");
     s.tEl.classList.remove("rec"); s.tEl.textContent = mmss(s.dur);
