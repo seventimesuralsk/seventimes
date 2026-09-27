@@ -306,7 +306,6 @@
           if (seen[key]) { if (seen[key].branches.indexOf(b) < 0) seen[key].branches.push(b); return; }
           var tk = toks(baseNorm(it.name)).filter(function (t) { return t.length >= 3 && !STOP[t]; });
           var syn = String(it.synonyms || "").split(/[,;]+/).map(function (x) { return toks(baseNorm(x)).filter(function (t) { return t.length >= 3 && !STOP[t]; }); }).filter(function (x) { return x.length; });
-          if (!String(it.desc || "").trim()) { var kc = kbComp(it, cat); if (kc) it = Object.assign({}, it, { desc: kc, kbDesc: true }); }
           var dt = toks(baseNorm(it.desc || "")).filter(function (t) { return t.length >= 3 && !STOP[t]; }).map(stemRu);
           var rec = { it: it, cat: cat, catKey: catKey(cat), tokens: tk, syn: syn, descStems: dt, branch: b, branches: [b], current: b === current };
           seen[key] = rec; list.push(rec);
@@ -316,66 +315,6 @@
     return list;
   }
 
-  // ── файл знаний seven-ai-kb.md: состав блюд (А7) и кривые названия (А9) ──
-  // Сайт подгружает файл и отдаёт сюда текстом. Если в таблице меню у блюда
-  // нет описания — берём состав из файла; «шаурма» → «донер», «пипирони» → «пепперони».
-  var KB = { comp: [], alias: [] };
-  function kbSection(text, from, to) {
-    var a = text.search(from); if (a < 0) return "";
-    var rest = text.slice(a + 3), b = rest.search(to);
-    return b < 0 ? rest : rest.slice(0, b);
-  }
-  function parseKb(text) {
-    text = String(text || "").replace(/\r\n/g, "\n");
-    var out = { comp: [], alias: [] }, cat = "";
-    kbSection(text, /^## А7\./m, /^## /m).split("\n").forEach(function (ln) {
-      var l = ln.trim();
-      if (!l) return;
-      if (!/^-/.test(l)) { if (/^[A-ZА-ЯЁ0-9 ,.()—\-]{4,}/.test(l)) cat = l; return; }
-      var m = l.match(/^-\s+(.+?)\s+—\s+[\d\s]+\s*(?:₸|тг)?\s*\(([^)]{6,})\)/);
-      if (!m) return;
-      var comp = m[2].trim();
-      if (/уточн/i.test(comp) || /^[\d.,\s]+(мл|л|г|гр|шт)\b/i.test(comp)) return;
-      // «Цезарь с курицей / с креветками» → два названия
-      var parts = m[1].replace(/\s+\d+\s*шт.*$/i, "").split("/"), base = parts[0].trim();
-      parts.forEach(function (pt, pi) {
-        pt = pt.trim();
-        var full = pi && /^с\s/i.test(pt) ? base.replace(/\s+с\s+.*$/i, "") + " " + pt : pt;
-        var nm = baseNorm(full);
-        if (nm.length >= 3) out.comp.push({ cat: baseNorm(cat), norm: nm, name: full, comp: comp });
-      });
-    });
-    kbSection(text, /^## А9\./m, /^#{1,2} /m).split("\n").forEach(function (ln) {
-      var m = ln.trim().match(/^-\s+([^:«»]{2,40}):\s+(.+)$/);
-      if (!m) return;
-      var canon = baseNorm(m[1]);
-      if (!canon) return;
-      m[2].replace(/\([^)]*\)/g, " ").split(/[,;]/).forEach(function (a) {
-        var n = baseNorm(a);
-        if (!n || n === canon || canon.indexOf(n) >= 0) return;
-        if (/[a-z]/.test(n) ? n.length < 5 : n.length < 4) return;
-        out.alias.push({ a: n, c: canon });
-      });
-    });
-    return out;
-  }
-  function setKb(text) { KB = parseKb(text); return KB.comp.length + KB.alias.length; }
-  function kbCatOk(e, cat) {
-    var c = baseNorm(cat), ec = e.cat.replace(/японск\S* кухн\S*/, "роллы суши");
-    return c.split(" ").some(function (w) { return w.length >= 4 && ec.indexOf(w.slice(0, 4)) >= 0; });
-  }
-  function kbComp(it, cat) {
-    if (!KB.comp.length) return "";
-    var n = baseNorm(it.name), best = null;
-    KB.comp.forEach(function (e) {
-      var exact = e.norm === n, inside = !exact && (" " + n + " ").indexOf(" " + e.norm + " ") >= 0;
-      if (!exact && !inside) return;
-      var sc = (exact ? 100 : e.norm.length) + (kbCatOk(e, cat) ? 50 : 0);
-      if (inside && e.norm.indexOf(" ") < 0 && !kbCatOk(e, cat)) return; // «Цезарь» пиццы ≠ салат «Цезарь с курицей»
-      if (!best || sc > best.sc) best = { sc: sc, e: e };
-    });
-    return best ? best.e.comp : "";
-  }
   function nameScore(q, words) {
     var matched = 0, strong = false, first = false, longHit = false;
     words.forEach(function (dt, di) {
@@ -1538,7 +1477,6 @@
    * ctx.site — мост к сайту (корзина, филиал, профиль, проверки брони). Без него
    * оформление в чате выключено, работают только ответы.
    */
-  // «шаурма» → добавляем «донер»: только если само слово блюдом из меню не является
   // слово — это название раздела? («бургеры» → бургер, «пиццу» → пицц)
   function catWord(w, k) {
     if (w.indexOf(k) === 0) return true;
@@ -1554,23 +1492,11 @@
       return /^\d+$/.test(w) || names.some(function (n) { return n === w || (n.length >= 5 && w.length >= 5 && stemEq(stemRu(n), stemRu(w))); }) || KNOWN[w];
     });
   }
-  function kbExpand(raw, idx) {
-    var nr = " " + baseNorm(raw) + " ", add = [];
-    KB.alias.forEach(function (x) {
-      // латиницу не трогаем: её движок и так понимает через транслит, а русская добавка сбила бы язык ответа
-      if (/[a-z]/.test(x.a) || add.length >= 3 || nr.indexOf(" " + x.a + " ") < 0 || nr.indexOf(" " + x.c) >= 0 || add.indexOf(x.c) >= 0) return;
-      var at = toks(x.a);
-      if (idx.some(function (r) { return nameScore(at, r.tokens) >= 0.7; })) return;
-      add.push(x.c);
-    });
-    return add.length ? raw + " " + add.join(" ") : raw;
-  }
   function reply(text, ctx) {
     ctx = ctx || {};
     var st = ctx.state || (ctx.state = {});
     var raw = String(text || "").trim().slice(0, 500);
     var idx = menuIndex(ctx.menus || {}, ctx.branch);
-    if (!st.flow && KB.alias.length && raw) raw = kbExpand(raw, idx);
     var U = understand(raw, idx), tokens = U.tokens, I = U.intents;
     var lang = detectLang(raw, tokens, st);
     st.lang = lang;
@@ -1999,7 +1925,7 @@
     BLOCK.forEach(addWord);
   })();
 
-  var api = { reply: reply, setKb: setKb, _kb: function () { return KB; }, fromDish: fromDish, afterSend: afterSend, parseCustom: parseCustom, FACTS: FACTS, _intents: function (x) { return scoreIntents(toks(baseNorm(x))); }, _parse: { phone: parsePhone, name: parseName, address: parseAddress, date: parseDate, time: parseTime, guests: parseGuests } };
+  var api = { reply: reply, fromDish: fromDish, afterSend: afterSend, parseCustom: parseCustom, FACTS: FACTS, _intents: function (x) { return scoreIntents(toks(baseNorm(x))); }, _parse: { phone: parsePhone, name: parseName, address: parseAddress, date: parseDate, time: parseTime, guests: parseGuests } };
   root.SevenLocalAI = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);
@@ -2078,18 +2004,6 @@
   W._saiReset = function () { W._saiState = {}; save(); };
   W._aiBusy = false;
   var termsOpened = false, lastBookMsg = "";
-
-  // ── файл знаний рядом с движком (seven-ai-kb.md): состав блюд и кривые названия
-  var kbLoaded = false;
-  function loadKb() {
-    if (kbLoaded || !AI.setKb) return;
-    kbLoaded = true;
-    safe(function () {
-      fetch("seven-ai-kb.md").then(function (r) { return r.ok ? r.text() : ""; }).then(function (t) {
-        if (t) safe(function () { AI.setKb(t); }); else kbLoaded = false;
-      }).catch(function () { kbLoaded = false; });
-    });
-  }
 
   // ── факты от админа («ИИ факты» в таблице)
   var facts = "", factsTs = 0;
@@ -2258,11 +2172,9 @@
   }
   W._saiLogVoiceOnly = function (audio) { log("[голосовое без расшифровки]", { text: "", known: 0, intent: "voice" }, audio); };
 
-  // ── «голова»: то, чего не понял свой движок, спрашиваем у ИИ на сервере
-  // (Gemini → Groq → Mistral, бесплатные уровни). Если все ИИ недоступны,
-  // лимит или нет сети — гость молча получает ответ своего движка.
-  var PHRASES = ["SEVEN AI печатает", "Думаю", "Секундочку", "SEVEN AI думает", "Формулирую", "Почти готово"];
-  var AI_NAMES = { gemini: "Gemini", groq: "Groq", mistral: "Mistral" };
+  // ── вопросы гостей отвечает администратор: вопрос уходит ему в Telegram,
+  // его ответ приходит сюда как обычное сообщение SEVEN AI. Внешних ИИ нет.
+  var PHRASES = ["SEVEN AI печатает"];
   function guestName() { return safe(function () { var p = loadClientProfile() || {}; return String(p.name || "").trim(); }, ""); }
   function xhrJson(method, url, body, timeoutMs, cb) {
     var x = new XMLHttpRequest();
@@ -2271,29 +2183,21 @@
     x.ontimeout = x.onerror = function () { cb(null); };
     x.send(body ? JSON.stringify(body) : null);
   }
-  function server(t, local, audio, noJivo) {
+  function server(t, local, audio) {
+    var t0 = Date.now();
     W._aiBusy = true; typing(true);
-    var i = 0, tt = el("seventAiTypingText"), timer = setInterval(function () { i = (i + 1) % PHRASES.length; if (tt) tt.textContent = PHRASES[i]; }, 2200), fin = false;
-    function showLocal() { seventAiAppendMessage("ai", local.text, local.acts, local.cards); log(t, local, audio); }
-    function done(e) {
-      if (fin) return; fin = true;
-      clearInterval(timer);
-      if (e && e.ok && e.reply) {
-        W._aiBusy = false; typing(false);
-        seventAiAppendMessage("ai", e.reply);
-        log(t, { text: e.reply, known: 1, intent: e.handoff ? "ai+admin" : "ai" }, audio, AI_NAMES[e.provider] || "ИИ");
-        if (e.operator) opStart(t, null, e.now);
-      } else if (e && e.operator) {
-        // ИИ не справился, вопрос ушёл администратору: ждём его ответ, гость видит «печатает»
-        opStart(t, function () { showLocal(); }, e.now);
-      } else {
-        W._aiBusy = false; typing(false);
-        showLocal();
-      }
-    }
+    function showLocal(logIt) { seventAiAppendMessage("ai", local.text, local.acts, local.cards); if (logIt) log(t, local, audio); }
     var body = { action: "aiAsk", branch: curBranch() || "", message: t, clientId: getClientId(), name: guestName(), history: seventAiHistory.slice(-13, -1).map(function (e) { return { role: e.role, text: String(e.text || "").slice(0, 1500) }; }) };
-    if (noJivo) body.nojivo = 1;
-    xhrJson("POST", API, body, 20e3, done);
+    xhrJson("POST", API, body, 20e3, function (e) {
+      if (e && e.operator) {
+        // вопрос у администратора: гость видит «печатает»; молчит — через 2 минуты отвечает движок
+        log(t, { text: "(передано администратору)", known: 1, intent: "operator" }, audio, "Передано");
+        opStart(t, function () { showLocal(false); }, e.now);
+      } else {
+        // администратор не подключён — отвечает сам чат, с живой паузой «печатает»
+        setTimeout(function () { W._aiBusy = false; typing(false); showLocal(true); }, Math.max(0, Math.min(1100, 380 + 2 * String(local.text).length) - (Date.now() - t0)));
+      }
+    });
   }
   W._seventAiServer = server;
 
@@ -2313,7 +2217,7 @@
   // ── живой администратор (Jivo) внутри этого же чата ──
   // Гостю ничего не объявляем: ответ администратора приходит как обычное
   // сообщение SEVEN AI. Сессия живёт 15 минут после последней активности.
-  var OP_KEY = "sai_op", OP_WAIT = 60e3, OP_TTL = 15 * 60e3, opTimer = 0, opWaitTimer = 0, opWaiting = null;
+  var OP_KEY = "sai_op", OP_WAIT = 120e3, OP_TTL = 15 * 60e3, opTimer = 0, opWaitTimer = 0, opWaiting = null;
   function opGet() { return safe(function () { return JSON.parse(localStorage.getItem(OP_KEY) || "null"); }, null) || { since: 0, until: 0, human: 0, seen: [] }; }
   function opSet(o) { safe(function () { localStorage.setItem(OP_KEY, JSON.stringify(o)); }); }
   function opActive() { var o = opGet(); return o.until > Date.now(); }
@@ -2378,15 +2282,19 @@
     var t0 = Date.now(), r = null;
     try { r = AI.reply(t, ctx()); save(); } catch (e) { r = null; }
     if (r && r.lang) W._saiLang = r.lang;
-    var useful = r && r.known && ((r.cards && r.cards.length) || W._saiState.flow || r.auto);
-    // с гостем сейчас говорит администратор
-    if (r && opHuman() && !useful) {
-      opForward(t);
-      opStart(t, function () { if (W.SEVENAI_ENABLED && !r.known) server(t, r, audio, true); else { seventAiAppendMessage("ai", r.text, r.acts, r.cards); log(t, r, audio); } });
-      return;
+    // сам чат делает только действия: оформление заказа/брони и «открой …». Остальное отвечает администратор.
+    var action = r && (W._saiState.flow || r.auto || /^(order|book)/.test(r.intent || ""));
+    if (r && !action && W.SEVENAI_ENABLED) {
+      if (opActive()) {
+        opForward(t);
+        opStart(t, function () { seventAiAppendMessage("ai", r.text, r.acts, r.cards); });
+        log(t, { text: "(передано администратору)", known: 1, intent: "operator" }, audio, "Передано");
+        return;
+      }
+      typing(false);
+      return server(t, r, audio);
     }
-    if (r && opHuman() && useful) opForward(t, "SEVEN AI ответила сама: " + String(r.text).replace(/\s+/g, " ").slice(0, 200));
-    if (r && !r.known && !(r.cards && r.cards.length) && W.SEVENAI_ENABLED) { typing(false); return server(t, r, audio); }
+    if (r && action && opHuman()) opForward(t, "гость оформляет в чате сам: " + String(r.text).replace(/\s+/g, " ").slice(0, 160));
     if (!r) { W._aiBusy = false; typing(false); seventAiAppendMessage("ai", "Что-то я задумалась — напишите ещё раз."); return; }
     log(t, r, audio);
     var wait = Math.max(0, Math.min(1100, 380 + 2 * r.text.length) - (Date.now() - t0));
@@ -2739,5 +2647,5 @@
   var closeChat = W.seventAiClose;
   W.seventAiClose = function () { if (recOn) stopRec(true); if (player) player.au.pause(); return closeChat.apply(this, arguments); };
 
-  W._saiOnOpen = function () { loadFacts(); setupMic(); loadKb(); if (opActive()) opSchedule(300); };
+  W._saiOnOpen = function () { loadFacts(); setupMic(); if (opActive()) opSchedule(300); };
 })();
