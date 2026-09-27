@@ -1969,8 +1969,35 @@
     ".sai-card-s{font-size:0.66rem;color:#6e6e73;margin-top:2px}" +
     ".sai-card-d{font-size:0.68rem;color:#6e6e73;line-height:1.4;margin-top:5px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}" +
     ".sai-cards.one .sai-card-d{-webkit-line-clamp:6}" +
-    ".sai-mic{flex-shrink:0;width:44px;border-radius:12px;border:1.5px solid #e5e5e7;background:none;color:#7a1128;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;-webkit-tap-highlight-color:transparent}" +
-    ".sai-mic.on{background:#7a1128;border-color:#7a1128;color:#fff;animation:saiPulse 1.2s infinite}" +
+    ".sai-mic{flex-shrink:0;width:44px;height:44px;border-radius:50%;border:none;background:#7a1128;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;align-self:center;-webkit-tap-highlight-color:transparent;transition:transform .12s}.sai-mic:active{transform:scale(.92)}" +
+    ".sai-mic.on{animation:saiPulse 1.2s infinite}" +
+    "#seventAiSendBtn.sai-send{flex-shrink:0;width:44px;height:44px;padding:0!important;border-radius:50%!important;display:flex;align-items:center;justify-content:center;align-self:center;transition:transform .12s}#seventAiSendBtn.sai-send:active{transform:scale(.92)}" +
+    ".sai-camb{flex-shrink:0;width:40px;height:44px;border:none;background:none;color:#7a1128;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;align-self:center;-webkit-tap-highlight-color:transparent}" +
+    // кружочек: запись на весь экран, фон размыт
+    ".sai-cam-ov{position:fixed;inset:0;z-index:100000;background:rgba(20,20,22,.55);-webkit-backdrop-filter:blur(22px) saturate(1.2);backdrop-filter:blur(22px) saturate(1.2);opacity:0;transition:opacity .18s;display:flex;flex-direction:column;align-items:center;color:#fff;touch-action:none;user-select:none;-webkit-user-select:none}" +
+    ".sai-cam-ov.show{opacity:1}" +
+    ".sai-cam-ov button{border:none;background:none;color:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;-webkit-tap-highlight-color:transparent}" +
+    ".sai-cam-x{position:absolute;left:14px;top:calc(12px + env(safe-area-inset-top));width:44px;height:44px}" +
+    ".sai-cam-t{position:absolute;left:50%;transform:translateX(-50%);top:calc(20px + env(safe-area-inset-top));font-size:1.05rem;font-variant-numeric:tabular-nums;padding:3px 8px;border-radius:6px}" +
+    ".sai-cam-t.rec{background:#ff3b5c}" +
+    ".sai-cam-c{position:relative;margin:auto;width:min(86vw,54vh,420px);aspect-ratio:1;border-radius:50%}" +
+    ".sai-cam-c canvas,.sai-cam-c video{position:absolute;inset:6px;width:calc(100% - 12px);height:calc(100% - 12px);border-radius:50%;object-fit:cover;background:#000}" +
+    ".sai-cam-ring{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}.sai-cam-ring circle{fill:none;stroke-width:1.6}.sai-cam-ring .bg{stroke:rgba(255,255,255,.18)}.sai-cam-ring .fg{stroke:#fff;stroke-linecap:round;transition:stroke-dashoffset .25s linear}" +
+    ".sai-cam-pl{position:absolute;left:50%;top:50%;width:84px;height:84px;margin:-42px 0 0 -42px;border-radius:50%;background:rgba(255,255,255,.85)!important;color:#333!important}" +
+    ".sai-cam-flip{position:absolute;left:16px;bottom:calc(96px + env(safe-area-inset-bottom));width:52px;height:52px;border-radius:50%;background:rgba(0,0,0,.35)!important}" +
+    ".sai-cam-bar{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;padding:12px 20px calc(14px + env(safe-area-inset-bottom));background:rgba(0,0,0,.35)}" +
+    ".sai-cam-bar button{width:52px;height:52px}" +
+    ".sai-cam-stop{border:2.5px solid #ff3b5c!important;border-radius:50%}.sai-cam-stop i{width:18px;height:18px;border-radius:4px;background:#ff3b5c}" +
+    ".sai-cam-go{border-radius:50%;background:#7a1128!important}" +
+    ".sai-cam-ov.review .sai-cam-stop,.sai-cam-ov.review .sai-cam-flip{visibility:hidden}" +
+    // кружочек в переписке
+    ".sai-vnbox{background:transparent!important;padding:0!important;color:#86868b!important;flex-direction:column;align-items:flex-end!important;gap:2px!important}" +
+    ".sai-msg[style*='flex-start'] .sai-vnbox{align-items:flex-start!important}" +
+    ".sai-vn{position:relative;width:200px;height:200px;border-radius:50%;overflow:hidden;background:#2c2c2e;cursor:pointer}" +
+    ".sai-vn img,.sai-vn video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}" +
+    ".sai-vn-pl{position:absolute;left:50%;top:50%;width:48px;height:48px;margin:-24px 0 0 -24px;border-radius:50%;background:rgba(0,0,0,.45);color:#fff;display:flex;align-items:center;justify-content:center}" +
+    ".sai-vn.playing .sai-vn-pl{display:none}" +
+    ".sai-vn-d{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);font-size:.66rem;color:#fff;background:rgba(0,0,0,.45);padding:1px 7px;border-radius:9px}" +
     "@keyframes saiPulse{0%,100%{box-shadow:0 0 0 0 rgba(122,17,40,.35)}50%{box-shadow:0 0 0 7px rgba(122,17,40,0)}}" +
     ".sai-rec{flex-shrink:0;align-items:center;gap:10px;padding:12px var(--px);border-top:1px solid #e5e5e7;background:#fbfbfd;min-height:68px;box-sizing:border-box}" +
     ".sai-rec button{flex-shrink:0;width:44px;height:44px;border-radius:12px;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent}" +
@@ -2019,7 +2046,7 @@
     ".sai-rx{background:#2c2c2e;border-color:#38383a}.sai-rbar,.sai-mmenu{background:#2c2c2e}.sai-mmenu button{color:#f5f5f7;border-bottom-color:#38383a}.sai-mmenu button:active{background:#3a3a3c}.sai-rbar button.on{background:#48484a}" +
     ".sai-replybar,.sai-edit{background:#111113;border-top-color:#38383a}.sai-rq span{color:#a1a1a6}.sai-rq{border-left-color:#ef6b83}.sai-rq b{color:#ef6b83}.sai-edit-row input{background:#1c1c1e;border-color:#38383a;color:#f5f5f7}" +
     ".sai-msg[style*='flex-start'] .sai-q{background:rgba(255,255,255,.06);border-left-color:#ef6b83}.sai-msg[style*='flex-start'] .sai-q b{color:#ef6b83}" +
-    ".sai-mic{border-color:#38383a;color:#ef6b83}.sai-mic.on{background:#7a1128;border-color:#7a1128;color:#fff}}";
+    ".sai-camb{color:#ef6b83}}";
   if (!el("saiStyle")) { var stl = D.createElement("style"); stl.id = "saiStyle"; stl.textContent = css; D.head.appendChild(stl); }
 
   // ── состояние разговора (переживает перезагрузку вкладки)
@@ -2259,13 +2286,14 @@
       else body.text = "(в ответ на «" + String(mine.reply.text).slice(0, 80) + "») " + t;
     }
     function go() {
-      xhrJson("POST", API, body, 25e3, function (e) {
+      xhrJson("POST", API, body, audio && audio.video ? 180e3 : 25e3, function (e) {
         if (e && (e.operator || (!fresh && e.ok))) {
           typing(false);
           var mm = msgBy(tm, "user");
           if (mm && e.tgId) { mm.tgId = e.tgId; seventAiSaveHistory(); }
           setTicks(2, tm);
-          log(t, { text: "(передано администратору)", known: 1, intent: "operator" }, audio, "Передано");
+          // кружочки в Google Диск не сохраняем — только голосовые
+          log(t, { text: "(передано администратору)", known: 1, intent: "operator" }, audio && !audio.video ? audio : null, "Передано");
           opStart(t, function () {
             // «оператор отошёл» — один раз и всё (не чаще раза в 6 часов)
             var last = 0;
@@ -2280,7 +2308,12 @@
     }
     if (audio && audio.blob && typeof FileReader !== "undefined") {
       var fr = new FileReader();
-      fr.onload = function () { body.audio = String(fr.result || "").split(",")[1] || ""; body.mime = audio.mime; body.dur = audio.dur; go(); };
+      fr.onload = function () {
+        var b64 = String(fr.result || "").split(",")[1] || "";
+        if (audio.video) { body.video = b64; body.vmime = audio.mime; body.vdur = audio.dur; }
+        else { body.audio = b64; body.mime = audio.mime; body.dur = audio.dur; }
+        go();
+      };
       fr.onerror = go;
       fr.readAsDataURL(audio.blob);
     } else go();
@@ -2302,6 +2335,7 @@
 
   // ════ сообщения как в мессенджере: реакции, «Ответить», «Изменить» ════
   var HOLD_MS = 1500, REACTS = ["👍", "❤️", "😂", "😮", "😢", "🙏", "👏"], replyTo = null;
+  function mediaLabel(m) { return m.voice ? (m.voice.kind === "vn" ? "Видеосообщение" : "Голосовое сообщение") : String(m.text).slice(0, 200); }
   function msgBy(time, role) { time = Number(time); return seventAiHistory.filter(function (x) { return x.time === time && (!role || x.role === role); })[0] || null; }
   function bubbleOf(time) { return D.querySelector('#seventAiMessages [data-mt="' + time + '"]'); }
   function textSpan(bubble) { var box = bubble && bubble.firstChild; if (!box) return null; var sp = box.querySelectorAll(":scope > span"); return sp.length ? sp[0] : null; }
@@ -2427,7 +2461,7 @@
   function closeReply() { replyTo = null; var rb = el("saiReplyBar"); if (rb) rb.remove(); }
   function startReply(m) {
     closeReply();
-    replyTo = { mt: m.time, who: m.role === "user" ? "Вы" : "SEVEN AI", text: m.voice ? "Голосовое сообщение" : String(m.text).slice(0, 200) };
+    replyTo = { mt: m.time, who: m.role === "user" ? "Вы" : "SEVEN AI", text: mediaLabel(m) };
     var row = el("seventAiInputRow");
     if (!row) return;
     var rb = D.createElement("div");
@@ -2492,13 +2526,20 @@
         if (f) f();
       }, W._saiOpWaitMs || OP_WAIT);
     }
-    opSchedule(3000);
+    opSchedule(200);
   }
   function opSchedule(ms) { clearTimeout(opTimer); if (opActive()) opTimer = setTimeout(opPoll, ms); }
+  // «живой» разговор: чат открыт и гость тут — сервер держит запрос, пока ты не ответишь
+  // (ответ из Telegram прилетает сразу, без интервалов опроса)
+  function opLive(o) { return chatVisible() && D.visibilityState !== "hidden" && Date.now() - Math.max(o.human || 0, o.asked || 0) < 10 * 60e3; }
+  var opBusy = false;
   function opPoll() {
     var o = opGet();
-    if (!(o.until > Date.now())) return;
-    xhrJson("GET", API + "?action=jivoPoll&clientId=" + encodeURIComponent(getClientId()) + "&since=" + (o.since || 0), null, 15e3, function (e) {
+    if (!(o.until > Date.now()) || opBusy) return;
+    var live = opLive(o);
+    opBusy = true;
+    xhrJson("GET", API + "?action=jivoPoll&clientId=" + encodeURIComponent(getClientId()) + "&since=" + (o.since || 0) + "&rs=" + (o.readSeen || 0) + (live ? "&wait=20" : ""), null, live ? 40e3 : 15e3, function (e) {
+      opBusy = false;
       var o2 = opGet(), got = 0;
       ((e && e.msgs) || []).forEach(function (m) {
         if (m && m.kind === "react") {
@@ -2521,7 +2562,7 @@
         if (nm && nm.role === "ai") {
           nm.opId = m.id;
           var qm = m.q ? msgBy(m.q, "user") : null;
-          if (qm) nm.reply = { mt: qm.time, who: "Вы", text: qm.voice ? "Голосовое сообщение" : String(qm.text).slice(0, 200) };
+          if (qm) nm.reply = { mt: qm.time, who: "Вы", text: mediaLabel(qm) };
           seventAiSaveHistory(); refreshMsg(nm);
         }
         o2.unseen = (o2.unseen || []).concat([m.id]).slice(-20);
@@ -2531,9 +2572,11 @@
       if (e && e.read && e.read > (o2.readSeen || 0)) { o2.readSeen = e.read; setTicks(3, 0, 2); }
       opSet(o2);
       ackSeen();
-      // пока ждём — часто, потом — реже
+      // чат открыт — сразу следующий «длинный» запрос; закрыт — реже
       var fresh = Math.max(o2.human || 0, o2.asked || 0);
-      opSchedule(opWaiting || got || Date.now() - (o2.asked || 0) < 90e3 ? 3000 : Date.now() - fresh < 180e3 ? 5000 : 20000);
+      if (!e) opSchedule(4000);
+      else if (opLive(o2)) opSchedule(120);
+      else opSchedule(Date.now() - fresh < 180e3 ? 5000 : 20000);
     });
   }
   // гость реально увидел ответ (чат открыт, страница перед глазами) → администратору 👀 в Telegram
@@ -2543,12 +2586,12 @@
     var ids = o.unseen.slice(); o.unseen = []; opSet(o);
     xhrJson("GET", API + "?action=opSeen&clientId=" + encodeURIComponent(getClientId()) + "&ids=" + encodeURIComponent(ids.join(",")), null, 15e3, function () {});
   }
-  D.addEventListener("visibilitychange", function () { if (D.visibilityState === "visible") setTimeout(ackSeen, 400); });
+  D.addEventListener("visibilitychange", function () { if (D.visibilityState === "visible") { setTimeout(ackSeen, 400); if (opActive() && chatVisible()) opSchedule(100); } });
   // гость пишет, пока с ним администратор: сообщение — сразу ему
   function opForward(t, note) {
     xhrJson("POST", API, { action: "jivoSend", clientId: getClientId(), name: guestName(), text: t + (note ? "\n— " + note : "") }, 15e3, function () {});
     var o = opGet(); o.until = Date.now() + OP_TTL; o.q = t; o.asked = Date.now(); opSet(o);
-    opSchedule(3000);
+    opSchedule(200);
   }
 
   W._saiSend = function (voice, audio) {
@@ -2557,7 +2600,7 @@
     var t = inp.value.trim().slice(0, 500);
     if (!t) return;
     if (!W.seventAiLoaded && W._saiOpenRender) W._saiOpenRender();
-    W._aiBusy = true; inp.value = "";
+    W._aiBusy = true; inp.value = ""; syncRow();
     seventAiAppendMessage("user", t, null, null, voice && voice.dur ? voice : null);
     // бот сам ничего не отвечает: всё — администратору в Telegram
     W._aiBusy = false;
@@ -2676,7 +2719,7 @@
   // «Спросить SEVEN AI» в карточке блюда: бот не отвечает, просто подставляем блюдо в поле ввода
   W._saiFromDish = function (it) {
     var inp = el("seventAiInput");
-    if (inp) { inp.value = "«" + it.name + "» — "; safe(function () { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }); }
+    if (inp) { inp.value = "«" + it.name + "» — "; syncRow(); safe(function () { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }); }
   };
 
   // короткое приветствие на казахском и русском — единственное, что бот пишет сам (кроме «оператор отошёл»)
@@ -2835,13 +2878,11 @@
     if (s.cancel) return;
     if (s.err === "not-allowed" || s.err === "service-not-allowed") return toast("Разрешите доступ к микрофону в настройках браузера");
     if (!text) {
-      // звук был, а текста нет — похоже, телефон не умеет слушать и писать разом
-      if (s.mr && s.peak > 0.2) { var fl = (+lsGet("sai_vfail") || 0) + 1; lsSet("sai_vfail", String(fl)); if (fl >= 2) lsSet("sai_vmode", "text"); }
-      if (blob && s.peak > 0.12) W._saiLogVoiceOnly({ blob: blob, mime: s.mime, dur: secs });
-      return toast(s.err && s.err !== "no-speech" && s.err !== "aborted" ? "Голосовые сейчас недоступны — напишите текстом" : "Не расслышала — скажите ещё раз");
+      // расшифровки нет (телефон не умеет слушать и писать разом) — отправляем само голосовое
+      if (blob && (s.peak > 0.12 || !s.rec)) text = "Голосовое сообщение (без расшифровки)";
+      else return toast(s.err && s.err !== "no-speech" && s.err !== "aborted" ? "Голосовые сейчас недоступны — напишите текстом" : "Не расслышала — скажите ещё раз");
     }
     if (!chatVisible()) return;
-    lsSet("sai_vfail", "0");
     var id = "v" + Date.now(), meta = { id: id, dur: secs, bars: squeeze(s.levels) };
     if (blob) { meta.a = 1; idbPut(id, blob); }
     el("seventAiInput").value = text;
@@ -2852,10 +2893,12 @@
     if (recOn) return stopRec(false);
     if (!inp || inp.disabled || W._aiBusy) return;
     if (player) { player.au.pause(); }
-    var rec = safe(function () { return new SR(); }, null);
-    if (!rec) return toast("Голосовые на этом телефоне недоступны — напишите текстом");
+    var canRec = !!(W.MediaRecorder && navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+    var rec = SR ? safe(function () { return new SR(); }, null) : null;
+    if (!rec && !canRec) return toast("Голосовые на этом телефоне недоступны — напишите текстом");
     var l = W._saiLang, s = { rec: rec, t0: Date.now(), fin: "", tmp: "", err: "", chunks: [], levels: [], lv: 0.05, peak: 0, lastRes: 0, alive: true, speaking: false };
     vs = s;
+    if (rec) {
     rec.lang = l === "kz" ? "kk-KZ" : l === "en" ? "en-US" : "ru-RU";
     rec.interimResults = true; rec.maxAlternatives = 1; rec.continuous = false;
     rec.onresult = function (e) {
@@ -2872,8 +2915,8 @@
       safe(function () { s.mr.stop(); });
       s.guard = setTimeout(function () { finish(s); }, 1500);
     };
-    // звук пишем, если телефон это тянет (и гость не на старом «только текст»)
-    var canRec = W.MediaRecorder && navigator.mediaDevices && navigator.mediaDevices.getUserMedia && lsGet("sai_vmode") !== "text";
+    }
+    // звук пишем всегда, когда телефон это умеет — голосовое уйдёт тебе в бот
     if (canRec) {
       safe(function () { var AC = W.AudioContext || W.webkitAudioContext; s.ac = new AC(); });
       navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }).then(function (stream) {
@@ -2888,9 +2931,13 @@
         mr.ondataavailable = function (e) { if (e.data && e.data.size) s.chunks.push(e.data); };
         mr.onstop = function () { if (s.recEnded || s.stopping) finish(s); };
         mr.start(250);
-      }, function () { safe(function () { s.ac && s.ac.close(); }); s.ac = null; });
+      }, function () {
+        safe(function () { s.ac && s.ac.close(); }); s.ac = null;
+        // без распознавания и без микрофона записывать нечего
+        if (!rec) { s.err = "not-allowed"; finish(s); }
+      });
     }
-    try { rec.start(); } catch (e) { release(s); vs = null; return toast("Голосовые сейчас недоступны — напишите текстом"); }
+    if (rec) { try { rec.start(); } catch (e) { rec = s.rec = null; if (!canRec) { release(s); vs = null; return toast("Голосовые сейчас недоступны — напишите текстом"); } } }
     micState(true); recBar(true); animate(s); ev("SEVEN AI: голосовое");
   }
   function micState(on) {
@@ -2898,9 +2945,32 @@
     var b = el("saiMic");
     if (b) b.classList.toggle("on", on);
   }
+  // ── строка ввода как в WhatsApp: пустое поле — камера и микрофон, есть текст — «отправить»
+  var CAM = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5A2 2 0 0 1 5.5 6.5h2l1.4-2h6.2l1.4 2h2a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.6"/></svg>';
+  var SEND = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3.4 20.4 21 12 3.4 3.6l-.02 6.53L15 12 3.38 13.87z"/></svg>';
+  function micOk() { return !!(SR || (W.MediaRecorder && navigator.mediaDevices && navigator.mediaDevices.getUserMedia)); }
+  function camOk() { return !!(W.MediaRecorder && navigator.mediaDevices && navigator.mediaDevices.getUserMedia && W.HTMLCanvasElement && HTMLCanvasElement.prototype.captureStream); }
+  function syncRow() {
+    var inp = el("seventAiInput"), send = el("seventAiSendBtn"), mic = el("saiMic"), cam = el("saiCamBtn");
+    if (!inp || !send) return;
+    var live = chatVisible() && !inp.disabled, has = !!inp.value.trim();
+    var m = live && !has && !!mic && micOk(), c = live && !has && !!cam && camOk();
+    send.style.display = !live || has || !(m || c) ? "" : "none";
+    if (mic) mic.style.display = m ? "" : "none";
+    if (cam) cam.style.display = c ? "" : "none";
+  }
+  W._saiSyncRow = syncRow;
   function setupMic() {
-    var row = el("seventAiInputRow"), send = el("seventAiSendBtn"), b = el("saiMic");
-    if (!SR || !row || !send) return;
+    var row = el("seventAiInputRow"), send = el("seventAiSendBtn"), inp = el("seventAiInput"), b = el("saiMic"), c = el("saiCamBtn");
+    if (!row || !send) return;
+    if (!send.classList.contains("sai-send")) { send.classList.add("sai-send"); send.innerHTML = SEND; send.setAttribute("aria-label", "Отправить"); }
+    if (!c) {
+      c = D.createElement("button");
+      c.type = "button"; c.id = "saiCamBtn"; c.className = "sai-camb"; c.setAttribute("aria-label", "Записать кружочек");
+      c.innerHTML = CAM;
+      c.onclick = openCam;
+      row.insertBefore(c, send);
+    }
     if (!b) {
       b = D.createElement("button");
       b.type = "button"; b.id = "saiMic"; b.className = "sai-mic"; b.setAttribute("aria-label", "Записать голосовое");
@@ -2908,13 +2978,209 @@
       b.onclick = toggleMic;
       row.insertBefore(b, send);
     }
-    b.style.display = "";
+    if (inp && !inp._saiRow) { inp._saiRow = true; inp.addEventListener("input", syncRow); }
+    syncRow();
   }
+  // чат новостей открывается в том же окне — там кнопок записи нет
+  var openChat = W.seventAiOpen;
+  if (openChat) W.seventAiOpen = function () { var r = openChat.apply(this, arguments); syncRow(); return r; };
+
+  // ── кружочки (видеосообщения), как в Telegram/WhatsApp ──
+  // Камера на весь экран, фон размыт: сверху ✕ и таймер, по центру круг,
+  // слева «сменить камеру», снизу корзина / стоп / отправить. После стопа
+  // можно посмотреть свою запись. Уходит тебе в бот круглым видео, в Google Диск — нет.
+  var VN_MAX = 60, VN_SIZE = 480, cam = null;
+  var XI = '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+  var FLIP = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5A2 2 0 0 1 5.5 6.5h2l1.4-2h6.2l1.4 2h2a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/><path d="M9 12.5a3 3 0 0 1 5.2-2l.8.8M15 14a3 3 0 0 1-5.2 1.5l-.8-.8"/><path d="M15 9.5v1.8h-1.8M9 16.5v-1.8h1.8"/></svg>';
+  var TRASH = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9.5 7V4.5h5V7M6.5 7l1 13h9l1-13M10 11v6M14 11v6"/></svg>';
+  var BIGPLAY = '<svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+  function vnMime() {
+    var t = ["video/mp4;codecs=avc1.42E01E,mp4a.40.2", "video/mp4;codecs=avc1,mp4a", "video/mp4", "video/webm;codecs=vp8,opus", "video/webm;codecs=vp9,opus", "video/webm"];
+    for (var i = 0; i < t.length; i++) if (safe(function () { return MediaRecorder.isTypeSupported(t[i]); }, false)) return t[i];
+    return "";
+  }
+  function mmss(sec) { sec = Math.max(0, Math.floor(sec)); return String(Math.floor(sec / 60)).padStart(2, "0") + ":" + String(sec % 60).padStart(2, "0"); }
+  function camVideo(s) {
+    return navigator.mediaDevices.getUserMedia({ video: { facingMode: s.facing, width: { ideal: 720 }, height: { ideal: 720 } }, audio: false }).then(function (vs2) {
+      if (!s.alive) { vs2.getTracks().forEach(function (t) { t.stop(); }); return; }
+      if (s.vstream) s.vstream.getTracks().forEach(function (t) { t.stop(); });
+      s.vstream = vs2; s.src.srcObject = vs2;
+      return s.src.play().catch(function () {});
+    });
+  }
+  function camDraw(s) {
+    if (!s.alive || s.review) return;
+    var v = s.src, g = s.g;
+    if (v.videoWidth) {
+      var w = v.videoWidth, h = v.videoHeight, m = Math.min(w, h);
+      g.save();
+      if (s.facing === "user") { g.translate(VN_SIZE, 0); g.scale(-1, 1); } // как в зеркале — как видит себя гость
+      g.drawImage(v, (w - m) / 2, (h - m) / 2, m, m, 0, 0, VN_SIZE, VN_SIZE);
+      g.restore();
+    }
+    s.raf = requestAnimationFrame(function () { camDraw(s); });
+  }
+  function camTick(s) {
+    if (!s.alive || s.review) return;
+    var sec = (Date.now() - s.t0) / 1000;
+    s.tEl.textContent = mmss(sec);
+    s.ring.style.strokeDashoffset = String(s.len * (1 - Math.min(1, sec / VN_MAX)));
+    if (sec >= VN_MAX) return camStop(s);
+    s.timer = setTimeout(function () { camTick(s); }, 250);
+  }
+  function camTracksOff(s) {
+    safe(function () { s.vstream && s.vstream.getTracks().forEach(function (t) { t.stop(); }); });
+    safe(function () { s.astream && s.astream.getTracks().forEach(function (t) { t.stop(); }); });
+    safe(function () { s.cs && s.cs.getTracks().forEach(function (t) { t.stop(); }); });
+  }
+  function closeCam() {
+    var s = cam;
+    if (!s) return;
+    cam = null; s.alive = false; s.sendAfter = false;
+    cancelAnimationFrame(s.raf); clearTimeout(s.timer);
+    safe(function () { if (s.mr && s.mr.state !== "inactive") { s.mr.onstop = null; s.mr.stop(); } });
+    camTracksOff(s);
+    safe(function () { s.play.pause(); });
+    if (s.url) safe(function () { URL.revokeObjectURL(s.url); });
+    s.ov.classList.remove("show");
+    setTimeout(function () { s.ov.remove(); }, 180);
+  }
+  function camStop(s) {
+    if (!s.mr || s.mr.state === "inactive" || s.stopping) return;
+    s.stopping = true; clearTimeout(s.timer);
+    s.dur = Math.max(1, Math.round((Date.now() - s.t0) / 1000));
+    // обложка для переписки (маленькая, хранится в истории)
+    safe(function () { var pc = D.createElement("canvas"); pc.width = pc.height = 160; pc.getContext("2d").drawImage(s.canvas, 0, 0, 160, 160); s.poster = pc.toDataURL("image/jpeg", 0.6); });
+    s.mr.stop();
+  }
+  function camReview(s) {
+    s.review = true; cancelAnimationFrame(s.raf);
+    camTracksOff(s); // камера гаснет сразу
+    s.blob = new Blob(s.chunks, { type: s.mime });
+    if (s.sendAfter) return camSend(s);
+    s.ov.classList.add("review");
+    s.tEl.classList.remove("rec"); s.tEl.textContent = mmss(s.dur);
+    s.url = URL.createObjectURL(s.blob);
+    s.play.src = s.url; s.play.style.display = "block"; s.canvas.style.display = "none";
+    if (s.poster) s.play.poster = s.poster;
+    s.pl.style.display = "flex";
+    s.ring.style.strokeDashoffset = String(s.len);
+  }
+  function camSend(s) {
+    if (!s.blob || !s.blob.size) { closeCam(); return toast("Кружочек не записался — попробуйте ещё раз"); }
+    var inp = el("seventAiInput");
+    if (!inp || !chatVisible()) return closeCam();
+    var id = "n" + Date.now(), meta = { kind: "vn", id: id, dur: s.dur, poster: s.poster || "", a: 1 };
+    idbPut(id, s.blob);
+    var blob = s.blob, mime = s.mime.split(";")[0], d = s.dur;
+    closeCam();
+    inp.value = "Кружочек (видеосообщение)";
+    W._saiSend(meta, { blob: blob, mime: mime, dur: d, video: true });
+    ev("SEVEN AI: кружочек", d + " сек");
+  }
+  function openCam() {
+    if (cam || recOn || W._aiBusy || !camOk()) return;
+    if (player) player.au.pause();
+    var ov = D.createElement("div");
+    ov.id = "saiCam"; ov.className = "sai-cam-ov";
+    ov.innerHTML = '<button type="button" class="sai-cam-x" aria-label="Закрыть">' + XI + '</button>' +
+      '<div class="sai-cam-t rec">00:00</div>' +
+      '<div class="sai-cam-c"><svg class="sai-cam-ring" viewBox="0 0 100 100"><circle class="bg" cx="50" cy="50" r="49"/><circle class="fg" cx="50" cy="50" r="49"/></svg>' +
+      '<canvas width="' + VN_SIZE + '" height="' + VN_SIZE + '"></canvas><video playsinline webkit-playsinline style="display:none"></video>' +
+      '<button type="button" class="sai-cam-pl" style="display:none" aria-label="Посмотреть запись">' + BIGPLAY + '</button></div>' +
+      '<button type="button" class="sai-cam-flip" aria-label="Сменить камеру">' + FLIP + '</button>' +
+      '<div class="sai-cam-bar"><button type="button" class="sai-cam-del" aria-label="Удалить запись">' + TRASH + '</button>' +
+      '<button type="button" class="sai-cam-stop" aria-label="Остановить запись"><i></i></button>' +
+      '<button type="button" class="sai-cam-go" aria-label="Отправить кружочек">' + SEND + '</button></div>';
+    D.body.appendChild(ov);
+    var s = cam = { ov: ov, facing: "user", alive: true, chunks: [], mime: vnMime(), len: 2 * Math.PI * 49 };
+    s.canvas = ov.querySelector("canvas"); s.g = s.canvas.getContext("2d");
+    s.play = ov.querySelector("video"); s.pl = ov.querySelector(".sai-cam-pl");
+    s.tEl = ov.querySelector(".sai-cam-t"); s.ring = ov.querySelector(".sai-cam-ring .fg");
+    s.ring.style.strokeDasharray = String(s.len); s.ring.style.strokeDashoffset = String(s.len);
+    s.src = D.createElement("video"); s.src.muted = true; s.src.playsInline = true; s.src.setAttribute("playsinline", "");
+    requestAnimationFrame(function () { ov.classList.add("show"); });
+    ov.querySelector(".sai-cam-x").onclick = closeCam;
+    ov.querySelector(".sai-cam-del").onclick = closeCam;
+    ov.querySelector(".sai-cam-stop").onclick = function () { camStop(s); };
+    ov.querySelector(".sai-cam-go").onclick = function () {
+      if (s.review) return camSend(s);
+      if (s.mr && s.mr.state === "recording") { s.sendAfter = true; camStop(s); }
+    };
+    ov.querySelector(".sai-cam-flip").onclick = function () {
+      if (s.review) return;
+      s.facing = s.facing === "user" ? "environment" : "user";
+      camVideo(s).catch(function () { s.facing = s.facing === "user" ? "environment" : "user"; toast("Вторая камера недоступна"); });
+    };
+    function togglePlay() { if (!s.review) return; if (s.play.paused) s.play.play().catch(function () {}); else s.play.pause(); }
+    s.pl.onclick = togglePlay; s.play.onclick = togglePlay;
+    s.play.onplay = function () { s.pl.style.display = "none"; };
+    s.play.onpause = s.play.onended = function () { s.pl.style.display = "flex"; };
+    s.play.ontimeupdate = function () { if (s.play.duration && isFinite(s.play.duration)) s.ring.style.strokeDashoffset = String(s.len * (1 - s.play.currentTime / s.play.duration)); };
+    navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }).then(function (as) {
+      s.astream = as;
+      if (!s.alive) return camTracksOff(s);
+      return camVideo(s);
+    }).then(function () {
+      if (!s.alive) return;
+      camDraw(s);
+      s.cs = s.canvas.captureStream(30);
+      var tracks = s.cs.getVideoTracks().concat(s.astream.getAudioTracks());
+      var opt = { videoBitsPerSecond: 700000, audioBitsPerSecond: 48000 };
+      if (s.mime) opt.mimeType = s.mime;
+      s.mr = new MediaRecorder(new MediaStream(tracks), opt);
+      s.mime = s.mr.mimeType || s.mime || "video/webm";
+      s.mr.ondataavailable = function (e) { if (e.data && e.data.size) s.chunks.push(e.data); };
+      s.mr.onstop = function () { if (s.alive) camReview(s); };
+      s.mr.start(500);
+      s.t0 = Date.now();
+      camTick(s);
+      safe(function () { navigator.vibrate && navigator.vibrate(10); });
+    }).catch(function () {
+      closeCam();
+      toast("Разрешите доступ к камере и микрофону в настройках браузера");
+    });
+    ev("SEVEN AI: камера");
+  }
+
+  // кружочек в переписке: круг с обложкой, тап — смотреть
+  var voiceDecor = W._saiVoiceDecor;
+  W._saiVoiceDecor = function (bubble, v) {
+    if (!v || v.kind !== "vn") return voiceDecor(bubble, v);
+    var box = bubble.firstChild, txt = box && box.firstChild;
+    if (!box) return;
+    box.classList.add("sai-vnbox");
+    if (txt) txt.classList.add("sai-vtxt");
+    var c = D.createElement("div");
+    c.className = "sai-vn";
+    c.innerHTML = (v.poster && /^data:image\/jpeg;base64,/.test(v.poster) ? '<img alt="" src="' + v.poster + '">' : "") +
+      '<span class="sai-vn-pl">' + PLAY + '</span><span class="sai-vn-d">' + dur(v.dur || 1) + "</span>";
+    box.insertBefore(c, box.firstChild);
+    if (!v.id) return;
+    idbGet(v.id).then(function (blob) {
+      if (!blob) return;
+      var vid = null, url = "";
+      c.setAttribute("role", "button"); c.setAttribute("aria-label", "Смотреть кружочек");
+      c.onclick = function () {
+        if (player) player.au.pause();
+        if (!vid) {
+          url = URL.createObjectURL(blob);
+          vid = D.createElement("video"); vid.playsInline = true; vid.setAttribute("playsinline", ""); vid.src = url;
+          if (v.poster) vid.poster = v.poster;
+          vid.onplay = function () { c.classList.add("playing"); };
+          vid.onpause = function () { c.classList.remove("playing"); };
+          vid.onended = function () { c.classList.remove("playing"); vid.currentTime = 0; };
+          c.insertBefore(vid, c.querySelector(".sai-vn-pl"));
+        }
+        if (vid.paused) vid.play().catch(function () { toast("Не получилось воспроизвести"); }); else vid.pause();
+      };
+    });
+  };
   var closeChat = W.seventAiClose;
-  W.seventAiClose = function () { if (recOn) stopRec(true); if (player) player.au.pause(); closeMenu(); var ed = el("saiEdit"); if (ed) { ed.remove(); var rw = el("seventAiInputRow"); if (rw) rw.style.display = "flex"; var ms = el("seventAiMessages"); if (ms) ms.classList.remove("sai-blur"); } return closeChat.apply(this, arguments); };
+  W.seventAiClose = function () { closeCam(); if (recOn) stopRec(true); if (player) player.au.pause(); closeMenu(); var ed = el("saiEdit"); if (ed) { ed.remove(); var rw = el("seventAiInputRow"); if (rw) rw.style.display = "flex"; var ms = el("seventAiMessages"); if (ms) ms.classList.remove("sai-blur"); } return closeChat.apply(this, arguments); };
 
   W._saiOnOpen = function () {
-    loadFacts(); setupMic(); setupHold();
+    loadFacts(); setupMic(); setupHold(); syncRow();
     // ответ администратора мог прийти, пока чат был закрыт (хранится 6 часов) — проверяем
     var o = opGet();
     if (o.asked && Date.now() - o.asked < 6 * 3600e3) { if (!(o.until > Date.now())) { o.until = Date.now() + OP_TTL; opSet(o); } opSchedule(300); }
