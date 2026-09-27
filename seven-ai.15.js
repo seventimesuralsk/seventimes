@@ -2214,13 +2214,9 @@
         city: typeof _guestCity !== "undefined" ? _guestCity : "", ip: typeof _guestIp !== "undefined" ? _guestIp : ""
       };
       if (by) body.by = by;
-      if (!audio || !audio.blob) return void fetch(API, { method: "POST", keepalive: true, body: JSON.stringify(body) }).catch(function () {});
-      var fr = new FileReader();
-      fr.onload = function () {
-        body.audio = String(fr.result || "").split(",")[1] || ""; body.mime = audio.mime; body.dur = audio.dur;
-        fetch(API, { method: "POST", body: JSON.stringify(body) }).catch(function () {});
-      };
-      fr.readAsDataURL(audio.blob);
+      // сам звук/видео в таблицу и Google Диск не шлём — он уже у тебя в Telegram
+      if (audio) { body.media = audio.video ? "кружочек" : "голосовое"; body.mdur = audio.dur; }
+      fetch(API, { method: "POST", keepalive: true, body: JSON.stringify(body) }).catch(function () {});
     });
   }
   W._saiLogVoiceOnly = function (audio) { log("[голосовое без расшифровки]", { text: "", known: 0, intent: "voice" }, audio); };
@@ -2292,8 +2288,7 @@
           var mm = msgBy(tm, "user");
           if (mm && e.tgId) { mm.tgId = e.tgId; seventAiSaveHistory(); }
           setTicks(2, tm);
-          // кружочки в Google Диск не сохраняем — только голосовые
-          log(t, { text: "(передано администратору)", known: 1, intent: "operator" }, audio && !audio.video ? audio : null, "Передано");
+          log(t, { text: "(передано администратору)", known: 1, intent: "operator" }, audio, "Передано");
           opStart(t, function () {
             // «оператор отошёл» — один раз и всё (не чаще раза в 6 часов)
             var last = 0;
