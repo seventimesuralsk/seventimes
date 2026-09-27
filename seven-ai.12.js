@@ -1987,6 +1987,7 @@
     ".sai-vmic.play{background:#fff;color:#7a1128;cursor:pointer}" +
     ".sai-vd{font-size:0.7rem;opacity:.85;font-variant-numeric:tabular-nums;flex-shrink:0}" +
     ".sai-vtxt{font-size:0.76rem;opacity:.82;font-style:italic}" +
+    ".sai-tk{display:inline-flex;margin-left:4px;vertical-align:-1px;opacity:.85}.sai-tk svg{width:17px;height:12px}.sai-tk.rd{color:#6fd3ff;opacity:1}" +
     "@media (prefers-reduced-motion:reduce){.sai-rec-dot{animation:none}}" +
     "@media (prefers-color-scheme:dark){" +
     ".sai-chip{background:#1c1c1e;border-color:#48343a;color:#ef6b83}.sai-chip:active{background:#2c2c2e}" +
@@ -2183,23 +2184,76 @@
     x.ontimeout = x.onerror = function () { cb(null); };
     x.send(body ? JSON.stringify(body) : null);
   }
-  function server(t, local, audio) {
-    var t0 = Date.now();
-    W._aiBusy = true; typing(true);
-    function showLocal(logIt) { seventAiAppendMessage("ai", local.text, local.acts, local.cards); if (logIt) log(t, local, audio); }
-    var body = { action: "aiAsk", branch: curBranch() || "", message: t, clientId: getClientId(), name: guestName(), history: seventAiHistory.slice(-13, -1).map(function (e) { return { role: e.role, text: String(e.text || "").slice(0, 1500) }; }) };
-    xhrJson("POST", API, body, 20e3, function (e) {
-      if (e && e.operator) {
-        // вопрос у администратора: гость видит «печатает»; молчит — через 2 минуты отвечает движок
-        log(t, { text: "(передано администратору)", known: 1, intent: "operator" }, audio, "Передано");
-        opStart(t, function () { showLocal(false); }, e.now);
-      } else {
-        // администратор не подключён — отвечает сам чат, с живой паузой «печатает»
-        setTimeout(function () { W._aiBusy = false; typing(false); showLocal(true); }, Math.max(0, Math.min(1100, 380 + 2 * String(local.text).length) - (Date.now() - t0)));
-      }
-    });
+  // ── галочки у сообщений гостя, как в мессенджерах:
+  // 1 — отправлено, 2 — дошло администратору в Telegram, 3 — прочитано (синие)
+  var TICK1 = '<svg width="16" height="11" viewBox="0 0 16 11" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 6l3 3 6.5-7.5"/></svg>';
+  var TICK2 = '<svg width="16" height="11" viewBox="0 0 16 11" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6l3 3 6.5-7.5"/><path d="M6.5 8.6l.9.9L14 2"/></svg>';
+  function tickEl(bubble) {
+    var box = bubble && bubble.firstChild, tm = box && box.lastChild;
+    if (!tm) return null;
+    var k = tm.querySelector && tm.querySelector(".sai-tk");
+    if (!k) { k = D.createElement("span"); k.className = "sai-tk"; tm.appendChild(k); }
+    return k;
   }
-  W._seventAiServer = server;
+  function paintTick(bubble, st) {
+    var k = st && tickEl(bubble);
+    if (!k) return;
+    k.innerHTML = st >= 2 ? TICK2 : TICK1;
+    k.classList.toggle("rd", st >= 3);
+    k.setAttribute("aria-label", st >= 3 ? "Прочитано" : st >= 2 ? "Доставлено" : "Отправлено");
+  }
+  // шапка сайта вызывает это для каждого сообщения гостя из истории
+  W._saiTickDecor = function (bubble, time) {
+    bubble.setAttribute("data-ut", String(time));
+    var m = seventAiHistory.filter(function (x) { return x.role === "user" && x.time === time; })[0];
+    if (m && m.st) paintTick(bubble, m.st);
+  };
+  // поднять статус: у одного сообщения (time) или у всех уже доставленных (time = 0, onlyFrom = 2)
+  function setTicks(st, time, onlyFrom) {
+    var changed = false;
+    seventAiHistory.forEach(function (m) {
+      if (m.role !== "user" || (time && m.time !== time) || (onlyFrom && (m.st || 0) < onlyFrom) || (m.st || 0) >= st) return;
+      if (!time && !m.st) return;
+      m.st = st; changed = true;
+      var el = D.querySelector('#seventAiMessages [data-ut="' + m.time + '"]');
+      if (el) paintTick(el, st);
+    });
+    if (changed) seventAiSaveHistory();
+  }
+
+  // вопрос гостя (и голосовое) — администратору. Сам чат на вопросы не отвечает.
+  var AWAY = "Ой, походу оператор отошёл. Ожидайте — ваше сообщение у него, он обязательно ответит.";
+  function forward(t, local, audio, tm) {
+    var o = opGet(), fresh = !(o.until > Date.now());
+    var body = fresh
+      ? { action: "aiAsk", branch: curBranch() || "", message: t, clientId: getClientId(), name: guestName(), history: seventAiHistory.slice(-13, -1).map(function (e) { return { role: e.role, text: String(e.text || "").slice(0, 1500) }; }) }
+      : { action: "jivoSend", clientId: getClientId(), name: guestName(), text: t };
+    function go() {
+      xhrJson("POST", API, body, 25e3, function (e) {
+        if (e && (e.operator || (!fresh && e.ok))) {
+          typing(false);
+          setTicks(2, tm);
+          log(t, { text: "(передано администратору)", known: 1, intent: "operator" }, audio, "Передано");
+          opStart(t, function () {
+            var o2 = opGet();
+            if (o2.away) return;
+            o2.away = true; opSet(o2);
+            seventAiAppendMessage("ai", AWAY);
+          }, e.now);
+        } else {
+          // администратор не подключён или Telegram недоступен — чтобы гость не остался без ответа, отвечает сам чат
+          typing(true);
+          setTimeout(function () { typing(false); seventAiAppendMessage("ai", local.text, local.acts, local.cards); log(t, local, audio); }, Math.min(1100, 380 + 2 * String(local.text).length));
+        }
+      });
+    }
+    if (audio && audio.blob && typeof FileReader !== "undefined") {
+      var fr = new FileReader();
+      fr.onload = function () { body.audio = String(fr.result || "").split(",")[1] || ""; body.mime = audio.mime; body.dur = audio.dur; go(); };
+      fr.onerror = go;
+      fr.readAsDataURL(audio.blob);
+    } else go();
+  }
 
   // ── «открой …»: выполняем только то, что гость попросил сам
   function doAuto(a) {
@@ -2217,7 +2271,7 @@
   // ── живой администратор (Jivo) внутри этого же чата ──
   // Гостю ничего не объявляем: ответ администратора приходит как обычное
   // сообщение SEVEN AI. Сессия живёт 15 минут после последней активности.
-  var OP_KEY = "sai_op", OP_WAIT = 120e3, OP_TTL = 15 * 60e3, opTimer = 0, opWaitTimer = 0, opWaiting = null;
+  var OP_KEY = "sai_op", OP_WAIT = 7e3, OP_TTL = 15 * 60e3, opTimer = 0, opWaitTimer = 0, opWaiting = null;
   function opGet() { return safe(function () { return JSON.parse(localStorage.getItem(OP_KEY) || "null"); }, null) || { since: 0, until: 0, human: 0, seen: [] }; }
   function opSet(o) { safe(function () { localStorage.setItem(OP_KEY, JSON.stringify(o)); }); }
   function opActive() { var o = opGet(); return o.until > Date.now(); }
@@ -2253,10 +2307,13 @@
         o2.human = Date.now(); o2.until = Date.now() + OP_TTL; got++;
         if (opWaiting) { opWaiting = null; clearTimeout(opWaitTimer); W._aiBusy = false; }
         typing(false);
+        o2.away = false;
+        setTicks(3, 0, 1);
         seventAiAppendMessage("ai", String(m.text));
         log(o2.q || "(продолжение разговора)", { text: String(m.text), known: 1, intent: "operator" }, null, "Оператор");
         if (!chatVisible()) toast("SEVEN AI ответила в «Сообщениях»");
       });
+      if (e && e.read && e.read > (o2.readSeen || 0)) { o2.readSeen = e.read; setTicks(3, 0, 2); }
       opSet(o2);
       // пока ждём — часто, потом — реже
       var fresh = Math.max(o2.human || 0, o2.asked || 0);
@@ -2282,17 +2339,14 @@
     var t0 = Date.now(), r = null;
     try { r = AI.reply(t, ctx()); save(); } catch (e) { r = null; }
     if (r && r.lang) W._saiLang = r.lang;
-    // сам чат делает только действия: оформление заказа/брони и «открой …». Остальное отвечает администратор.
+    // сам чат делает только действия: оформление заказа/брони и «открой …». На вопросы отвечает администратор.
     var action = r && (W._saiState.flow || r.auto || /^(order|book)/.test(r.intent || ""));
     if (r && !action && W.SEVENAI_ENABLED) {
-      if (opActive()) {
-        opForward(t);
-        opStart(t, function () { seventAiAppendMessage("ai", r.text, r.acts, r.cards); });
-        log(t, { text: "(передано администратору)", known: 1, intent: "operator" }, audio, "Передано");
-        return;
-      }
-      typing(false);
-      return server(t, r, audio);
+      W._aiBusy = false;
+      var mine = seventAiHistory[seventAiHistory.length - 1], tm = mine && mine.role === "user" ? mine.time : 0;
+      if (tm) setTicks(1, tm);
+      forward(t, r, audio, tm);
+      return;
     }
     if (r && action && opHuman()) opForward(t, "гость оформляет в чате сам: " + String(r.text).replace(/\s+/g, " ").slice(0, 160));
     if (!r) { W._aiBusy = false; typing(false); seventAiAppendMessage("ai", "Что-то я задумалась — напишите ещё раз."); return; }
