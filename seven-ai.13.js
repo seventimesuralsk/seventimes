@@ -2461,8 +2461,11 @@
     if (inp) { inp.value = "«" + it.name + "» — "; safe(function () { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }); }
   };
 
-  // приветствия нет: бот сам ничего не пишет
-  W._saiWelcome = function () { W._saiNoWelcome = false; };
+  // короткое приветствие на казахском и русском — единственное, что бот пишет сам (кроме «оператор отошёл»)
+  W._saiWelcome = function () {
+    if (W._saiNoWelcome) { W._saiNoWelcome = false; return; }
+    seventAiAppendMessage("ai", "Сәлеметсіз бе! Мен — сіздің SEVEN AI көмекшіңізбін. Кез келген сұрағыңызға жауап беремін.\n\nЗдравствуйте! Я ваш ИИ-помощник SEVEN AI. Отвечу на любые вопросы.");
+  };
 
 
   // ── голосовые сообщения, как в мессенджерах ──
