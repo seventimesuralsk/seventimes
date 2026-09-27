@@ -1499,7 +1499,7 @@ var seventAiPinned=!1;try{seventAiPinned="1"===localStorage.getItem("seventAiPin
 function seventAiClearAsk(){confirm("Очистить переписку с SEVEN AI?")&&seventAiClearHistory()}
 function seventAiRowUpdate(){var e=document.getElementById("seventAiRowText"),t=document.getElementById("seventAiRowTime");if(e){var n=null;try{var o=seventAiLoaded?seventAiHistory:JSON.parse(localStorage.getItem("seventAiHistory")||"[]");n=o[o.length-1]}catch(e){}if(n&&n.text){var r=noEmoji(String(n.text)).replace(/\s+/g," ");e.textContent=("user"===n.role?"Вы: ":"")+(r.length>60?r.slice(0,60)+"…":r);var a=new Date(n.time),i=new Date;t&&(t.textContent=a.toDateString()===i.toDateString()?a.toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"}):seventAiFormatDate(n.time))}else e.textContent="Спросите про меню, доставку или бронь",t&&(t.textContent="")}}
 var _saiEngineP=null;
-function sevenLocalLoad(){if(window.SevenLocalAI&&window._saiSend)return Promise.resolve(window.SevenLocalAI);if(_saiEngineP)return _saiEngineP;_saiEngineP=new Promise(function(e,t){var n=document.createElement("script");n.src="seven-ai.18.js",n.async=!0,n.onload=function(){window.SevenLocalAI&&window._saiSend?e(window.SevenLocalAI):(_saiEngineP=null,t())},n.onerror=function(){_saiEngineP=null,n.remove(),t()},document.head.appendChild(n)});return _saiEngineP}
+function sevenLocalLoad(){if(window.SevenLocalAI&&window._saiSend)return Promise.resolve(window.SevenLocalAI);if(_saiEngineP)return _saiEngineP;_saiEngineP=new Promise(function(e,t){var n=document.createElement("script");n.src="seven-ai.19.js",n.async=!0,n.onload=function(){window.SevenLocalAI&&window._saiSend?e(window.SevenLocalAI):(_saiEngineP=null,t())},n.onerror=function(){_saiEngineP=null,n.remove(),t()},document.head.appendChild(n)});return _saiEngineP}
 var _aiBusy=!1;
 function seventAiSend(){if(window._saiSend)return _saiSend();var e=document.getElementById("seventAiInput"),t=e.value.trim().slice(0,500);t&&!_aiBusy&&(_aiBusy=!0,sevenLocalLoad().then(function(){_aiBusy=!1,_saiSend()},function(){_aiBusy=!1,_saiBootFail(),e.value="",seventAiAppendMessage("user",t),seventAiAppendMessage("ai","Не получилось загрузить ответ — проверьте интернет и напишите ещё раз.")}))}
 function seventAiAct(e,t){window._saiAct?_saiAct(e,t):sevenLocalLoad().then(function(){_saiAct(e,t)},function(){})}
@@ -1569,7 +1569,31 @@ function pollSoon(){Date.now()-_verLastAt>3e3&&pollVersions(!0)}function startLi
      <svg fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewBox="0 0 24 24" width="20"><line x1="18" x2="6" y1="6" y2="18"></line><line x1="6" x2="18" y1="6" y2="18"></line></svg>
     </button>
     <div id="seventAiOvIcon" style="width:58px;height:58px;border-radius:17px;overflow:hidden;flex-shrink:0"><img loading="lazy" decoding="async" src="img/seven-ai-mascot.33e45c31.png" style="width:100%;height:100%;object-fit:cover" alt="SEVEN AI"></div>
-    <div id="seventAiOvTitle" style="font-weight:700;font-size:0.9rem">SEVEN AI</div>
+    <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;gap:2px">
+     <div style="display:flex;align-items:center;gap:4px;min-width:0"><div id="seventAiOvTitle" style="font-weight:700;font-size:0.9rem">SEVEN AI</div><span id="saiVerified" title="Официальный аккаунт" aria-label="Официальный аккаунт" style="display:inline-flex;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M12.00 0.00 L14.61 2.24 L18.00 1.61 L19.14 4.86 L22.39 6.00 L21.76 9.39 L24.00 12.00 L21.76 14.61 L22.39 18.00 L19.14 19.14 L18.00 22.39 L14.61 21.76 L12.00 24.00 L9.39 21.76 L6.00 22.39 L4.86 19.14 L1.61 18.00 L2.24 14.61 L0.00 12.00 L2.24 9.39 L1.61 6.00 L4.86 4.86 L6.00 1.61 L9.39 2.24Z" fill="#0095f6" stroke="#0095f6" stroke-width="1.2" stroke-linejoin="round"/><path d="M7.6 12.3l3 3 5.9-6.4" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+     <div id="saiStatus" class="sai-status"><i class="sai-sdot"></i><span id="saiStatusText">онлайн</span><span class="sai-tdots" aria-hidden="true"><i>.</i><i>.</i><i>.</i></span></div>
+    </div>
+    <style>
+     .sai-status{display:flex;align-items:center;gap:5px;font-size:.72rem;color:#6e6e73;line-height:1}
+     .sai-sdot{width:8px;height:8px;border-radius:50%;background:#34c759;box-shadow:0 0 0 2px rgba(52,199,89,.18);flex-shrink:0}
+     .sai-tdots{display:none}
+     .sai-status.typing{color:#1faa53;font-weight:500}
+     .sai-status.typing .sai-sdot{display:none}
+     .sai-status.typing .sai-tdots{display:inline-flex;margin-left:-3px}
+     .sai-tdots i{font-style:normal;opacity:0;animation:saiDot 1.5s infinite ease-in-out;animation-duration:1.5s!important;animation-delay:0s!important;display:inline-block;width:.32em}
+     .sai-tdots i:nth-child(2){animation-delay:.25s!important}.sai-tdots i:nth-child(3){animation-delay:.5s!important}
+     @keyframes saiDot{0%{opacity:0;transform:translateY(2px)}25%,65%{opacity:1;transform:none}90%,100%{opacity:0}}
+     @media (prefers-color-scheme:dark){.sai-status{color:#a1a1a6}.sai-status.typing{color:#30d158}}
+     @media (prefers-reduced-motion:reduce){.sai-tdots i{animation:none!important;opacity:1}}
+    </style>
+    <script>
+     // галочка и «онлайн» — только в чате SEVEN AI (в новостях это же окно с другим заголовком)
+     (function(){var t=document.getElementById("seventAiOvTitle"),v=document.getElementById("saiVerified"),st=document.getElementById("saiStatus");
+      function sync(){var ai=t.textContent.trim()==="SEVEN AI";v.style.display=ai?"inline-flex":"none";st.style.display=ai?"flex":"none"}
+      sync();try{new MutationObserver(sync).observe(t,{childList:true,characterData:true,subtree:true})}catch(e){}
+      // «печатает…» в шапке, как в мессенджерах
+      window._saiHeadTyping=function(on){st.classList.toggle("typing",!!on);document.getElementById("saiStatusText").textContent=on?"печатает":"онлайн"};})();
+    </script>
     <button id="seventAiClearBtn" aria-label="Очистить переписку" onclick="seventAiClearAsk()" style="display:none;margin-left:auto;background:none;border:none;cursor:pointer;padding:6px;color:#86868b;flex-shrink:0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M10 11v6M14 11v6"/><path d="M6 7l1 13h10l1-13"/><path d="M9 7V4h6v3"/></svg></button>
    </div>
    <div id="seventAiMessages" style="flex:1;overflow-y:auto;padding:16px var(--px);display:flex;flex-direction:column;gap:12px"></div>

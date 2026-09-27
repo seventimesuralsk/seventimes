@@ -284,6 +284,15 @@
     box.appendChild(t); scrollEnd();
   }
   W._saiTyping = typing;
+  // «печатает…» в шапке: администратор прочитал вопрос (синие галочки) — значит отвечает.
+  // Гаснет, когда пришёл ответ, или через 90 секунд.
+  var headT = 0;
+  function headTyping(on) {
+    clearTimeout(headT);
+    safe(function () { W._saiHeadTyping && W._saiHeadTyping(on); });
+    if (on) headT = setTimeout(function () { headTyping(false); }, 90e3);
+  }
+  function awaitingReply() { for (var i = seventAiHistory.length - 1; i >= 0; i--) { var m = seventAiHistory[i]; if (m.role === "user") return true; if (m.opId) return false; } return false; }
   function say(r) { seventAiAppendMessage("ai", r.text, r.acts, r.cards); save(); }
   W._saiSay = say;
 
@@ -637,7 +646,7 @@
         o2.since = Math.max(o2.since || 0, m.ts || 0);
         o2.human = Date.now(); o2.until = Date.now() + OP_TTL; got++;
         if (opWaiting) { opWaiting = null; clearTimeout(opWaitTimer); W._aiBusy = false; }
-        typing(false);
+        typing(false); headTyping(false);
         setTicks(3, 0, 1);
         seventAiAppendMessage("ai", String(m.text));
         var nm = seventAiHistory[seventAiHistory.length - 1];
@@ -651,7 +660,7 @@
         log(o2.q || "(продолжение разговора)", { text: String(m.text), known: 1, intent: "operator" }, null, "Оператор");
         if (!chatVisible()) toast("SEVEN AI ответила в «Сообщениях»");
       });
-      if (e && e.read && e.read > (o2.readSeen || 0)) { o2.readSeen = e.read; setTicks(3, 0, 2); }
+      if (e && e.read && e.read > (o2.readSeen || 0)) { o2.readSeen = e.read; setTicks(3, 0, 2); if (awaitingReply()) headTyping(true); }
       opSet(o2);
       ackSeen();
       // чат открыт — сразу следующий «длинный» запрос; закрыт — реже
@@ -1288,7 +1297,7 @@
     });
   };
   var closeChat = W.seventAiClose;
-  W.seventAiClose = function () { closeCam(); if (recOn) stopRec(true); if (player) player.au.pause(); closeMenu(); var ed = el("saiEdit"); if (ed) { ed.remove(); var rw = el("seventAiInputRow"); if (rw) rw.style.display = "flex"; var ms = el("seventAiMessages"); if (ms) ms.classList.remove("sai-blur"); } return closeChat.apply(this, arguments); };
+  W.seventAiClose = function () { headTyping(false); closeCam(); if (recOn) stopRec(true); if (player) player.au.pause(); closeMenu(); var ed = el("saiEdit"); if (ed) { ed.remove(); var rw = el("seventAiInputRow"); if (rw) rw.style.display = "flex"; var ms = el("seventAiMessages"); if (ms) ms.classList.remove("sai-blur"); } return closeChat.apply(this, arguments); };
 
   W._saiOnOpen = function () {
     loadFacts(); setupMic(); setupHold(); syncRow();
