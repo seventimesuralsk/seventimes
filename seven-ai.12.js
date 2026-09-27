@@ -2223,7 +2223,7 @@
 
   // вопрос гостя (и голосовое) — администратору. Сам чат на вопросы не отвечает.
   var AWAY = "Ой, походу оператор отошёл. Ожидайте — ваше сообщение у него, он обязательно ответит.";
-  function forward(t, local, audio, tm) {
+  function forward(t, audio, tm) {
     var o = opGet(), fresh = !(o.until > Date.now());
     var body = fresh
       ? { action: "aiAsk", branch: curBranch() || "", message: t, clientId: getClientId(), name: guestName(), history: seventAiHistory.slice(-13, -1).map(function (e) { return { role: e.role, text: String(e.text || "").slice(0, 1500) }; }) }
@@ -2235,16 +2235,15 @@
           setTicks(2, tm);
           log(t, { text: "(передано администратору)", known: 1, intent: "operator" }, audio, "Передано");
           opStart(t, function () {
-            var o2 = opGet();
-            if (o2.away) return;
-            o2.away = true; opSet(o2);
+            // «оператор отошёл» — один раз и всё (не чаще раза в 6 часов)
+            var last = 0;
+            try { last = Number(localStorage.getItem("sai_away") || 0); } catch (le) {}
+            if (Date.now() - last < 6 * 3600e3) return;
+            try { localStorage.setItem("sai_away", String(Date.now())); } catch (le2) {}
             seventAiAppendMessage("ai", AWAY);
           }, e.now);
-        } else {
-          // администратор не подключён или Telegram недоступен — чтобы гость не остался без ответа, отвечает сам чат
-          typing(true);
-          setTimeout(function () { typing(false); seventAiAppendMessage("ai", local.text, local.acts, local.cards); log(t, local, audio); }, Math.min(1100, 380 + 2 * String(local.text).length));
         }
+        // не дошло (Telegram не подключён или недоступен) — остаётся одна галочка, бот молчит
       });
     }
     if (audio && audio.blob && typeof FileReader !== "undefined") {
@@ -2307,7 +2306,6 @@
         o2.human = Date.now(); o2.until = Date.now() + OP_TTL; got++;
         if (opWaiting) { opWaiting = null; clearTimeout(opWaitTimer); W._aiBusy = false; }
         typing(false);
-        o2.away = false;
         setTicks(3, 0, 1);
         seventAiAppendMessage("ai", String(m.text));
         log(o2.q || "(продолжение разговора)", { text: String(m.text), known: 1, intent: "operator" }, null, "Оператор");
@@ -2335,28 +2333,11 @@
     if (!W.seventAiLoaded && W._saiOpenRender) W._saiOpenRender();
     W._aiBusy = true; inp.value = "";
     seventAiAppendMessage("user", t, null, null, voice && voice.dur ? voice : null);
-    typing(true);
-    var t0 = Date.now(), r = null;
-    try { r = AI.reply(t, ctx()); save(); } catch (e) { r = null; }
-    if (r && r.lang) W._saiLang = r.lang;
-    // сам чат делает только действия: оформление заказа/брони и «открой …». На вопросы отвечает администратор.
-    var action = r && (W._saiState.flow || r.auto || /^(order|book)/.test(r.intent || ""));
-    if (r && !action && W.SEVENAI_ENABLED) {
-      W._aiBusy = false;
-      var mine = seventAiHistory[seventAiHistory.length - 1], tm = mine && mine.role === "user" ? mine.time : 0;
-      if (tm) setTicks(1, tm);
-      forward(t, r, audio, tm);
-      return;
-    }
-    if (r && action && opHuman()) opForward(t, "гость оформляет в чате сам: " + String(r.text).replace(/\s+/g, " ").slice(0, 160));
-    if (!r) { W._aiBusy = false; typing(false); seventAiAppendMessage("ai", "Что-то я задумалась — напишите ещё раз."); return; }
-    log(t, r, audio);
-    var wait = Math.max(0, Math.min(1100, 380 + 2 * r.text.length) - (Date.now() - t0));
-    setTimeout(function () {
-      W._aiBusy = false; typing(false);
-      seventAiAppendMessage("ai", r.text, r.acts, r.cards);
-      if (r.auto) doAuto(r.auto);
-    }, wait);
+    // бот сам ничего не отвечает: всё — администратору в Telegram
+    W._aiBusy = false;
+    var mine = seventAiHistory[seventAiHistory.length - 1], tm = mine && mine.role === "user" ? mine.time : 0;
+    if (tm) setTicks(1, tm);
+    forward(t, audio, tm);
   };
 
   // ── отправка заказа, собранного в чате
@@ -2464,15 +2445,15 @@
   };
 
   // ── кнопка «Спросить SEVEN AI» в шторке блюда
-  W._saiFromDish = function (it) { say(AI.fromDish(it.id, ctx())); scrollEnd(); };
-
-  W._saiWelcome = function () {
-    if (W._saiNoWelcome) { W._saiNoWelcome = false; return; }
-    var g = guest(), acts = [];
-    if (g.last && g.last.items.length) acts.push({ a: "ask:повтори прошлый заказ", label: "Повторить прошлый заказ" });
-    acts.push({ a: "ask:Хочу оформить доставку", label: "Оформить доставку" }, { a: "ask:Хочу забронировать столик", label: "Забронировать столик" }, { a: "ask:Что есть в меню", label: "Что есть в меню" }, { a: "ask:До скольки работаете?", label: "Часы работы" });
-    seventAiAppendMessage("ai", (g.name ? "Привет, " + g.name + "! " : "Привет! ") + "Я SEVEN AI — помощник Seven Times. Не просто отвечаю: оформлю доставку и забронирую столик прямо здесь. Пишите как удобно — по-русски, қазақша или in English, можно с ошибками" + (SR ? " или голосом." : "."), acts);
+  // «Спросить SEVEN AI» в карточке блюда: бот не отвечает, просто подставляем блюдо в поле ввода
+  W._saiFromDish = function (it) {
+    var inp = el("seventAiInput");
+    if (inp) { inp.value = "«" + it.name + "» — "; safe(function () { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }); }
   };
+
+  // приветствия нет: бот сам ничего не пишет
+  W._saiWelcome = function () { W._saiNoWelcome = false; };
+
 
   // ── голосовые сообщения, как в мессенджерах ──
   // Тап по микрофону: браузер слушает (бесплатное распознавание речи) и
