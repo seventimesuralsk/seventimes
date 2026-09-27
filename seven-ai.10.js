@@ -479,8 +479,15 @@
     var found = null;
     for (var k in CAT_ALIASES) {
       if (anyKey(tokens, CAT_ALIASES[k])) {
-        var items = idx.filter(function (r) { return r.catKey === k || (k.length >= 3 && baseNorm(r.it.name).indexOf(k) >= 0); });
-        if (items.length) { found = { key: k, items: items, name: items[0].cat }; break; }
+        // сначала — родной раздел («Пицца»), а не всё, где в названии мелькает «пицца» (комбо, сеты)
+        var own = idx.filter(function (r) { return r.catKey === k; });
+        var items = own.length ? own : idx.filter(function (r) { return k.length >= 3 && baseNorm(r.it.name).indexOf(k) >= 0; });
+        if (items.length) {
+          var cnt = {}, nm = items[0].cat;
+          items.forEach(function (r) { cnt[r.cat] = (cnt[r.cat] || 0) + 1; if (cnt[r.cat] > (cnt[nm] || 0)) nm = r.cat; });
+          found = { key: k, items: items, name: nm, own: own.length > 0 };
+          break;
+        }
         if (!found) found = { key: k, items: [], name: null };
       }
     }
@@ -1532,6 +1539,21 @@
    * оформление в чате выключено, работают только ответы.
    */
   // «шаурма» → добавляем «донер»: только если само слово блюдом из меню не является
+  // слово — это название раздела? («бургеры» → бургер, «пиццу» → пицц)
+  function catWord(w, k) {
+    if (w.indexOf(k) === 0) return true;
+    return (CAT_ALIASES[k] || []).some(function (a) { a = a.charAt(0) === "=" ? a.slice(1) : a; return a.indexOf(" ") < 0 && (a === w || (a.length >= 4 && w.indexOf(a) === 0)); });
+  }
+  // «открой …» выполняем только при точном совпадении: с опечатками ничего сами не открываем
+  function strictDish(tokens, r) {
+    var q = tokens.filter(function (w) { return w.length >= 3 && !STOP[w] && !KNOWN[w]; });
+    var names = r.tokens.concat.apply(r.tokens.slice(), r.syn || []);
+    var full = baseNorm(r.it.name);
+    if (q.join(" ").indexOf(full) >= 0 && full.length >= 3) return true;
+    return q.length > 0 && q.every(function (w) {
+      return /^\d+$/.test(w) || names.some(function (n) { return n === w || (n.length >= 5 && w.length >= 5 && stemEq(stemRu(n), stemRu(w))); }) || KNOWN[w];
+    });
+  }
   function kbExpand(raw, idx) {
     var nr = " " + baseNorm(raw) + " ", add = [];
     KB.alias.forEach(function (x) {
@@ -1595,6 +1617,15 @@
     var pron = tokens.some(function (w) { return /^(она|он|оно|они|ее|его|их|эта|этот|это|эту|такая|такой|такую|такие|it|this|that|they|them|ол|мына|осы|сол)$/.test(w); });
     if (!dishes.length && !cat && pron && st.lastOne) { var lo = idx.filter(function (r) { return String(r.it.id) === String(st.lastOne); })[0]; if (lo) dishes = [lo]; }
     if (dishes.length > 1 && cat && cat.items.length && !nameNums(U.dishTokens).length && dishes.every(function (d) { return cat.items.indexOf(d) >= 0; })) dishes = [];
+    // «открой бургеры», «пиццы», «роллы»: кроме названия раздела ничего не сказано — это раздел, а не одно блюдо
+    var sigToks = U.dishTokens.filter(function (w) { return w.length >= 3 && !STOP[w] && !KNOWN[w] && !/^\d+$/.test(w); });
+    var onlyCat = cat && cat.own && cat.items.length > 1 && sigToks.length && !nameNums(U.dishTokens).length && sigToks.every(function (w) { return catWord(w, cat.key); });
+    if (onlyCat && !dishes.some(function (d) { return baseNorm(d.it.name) === sigToks.join(" "); })) dishes = [];
+    // «крылышки»: одно слово — берём блюда из родного раздела, а не комбо, где «крылышки» в составе названия
+    if (cat && cat.own && dishes.length > 1 && sigToks.length === 1 && !nameNums(U.dishTokens).length) {
+      var ownD = dishes.filter(function (d) { return d.catKey === cat.key; });
+      if (ownD.length) dishes = ownD;
+    }
 
     // ── старт оформления ──
     if (S && !has("orderStatus") && !has("complaint", 1)) {
@@ -1784,8 +1815,12 @@
             R.say(one.it.teaser ? L(lang, "«" + one.it.name + "» — скоро появится. Следите за меню!", one.it.name + " — жақында шығады.", one.it.name + " is coming soon.") : L(lang, "«" + one.it.name + "» на сегодня разобрали — быстрее нас. Вот что может зайти вместо:", one.it.name + " бүгін таусылды. Орнына мыналар:", one.it.name + " is sold out today. Maybe one of these instead:"));
             pickPopular(live.filter(function (r) { return r.catKey === one.catKey && r !== one; }), 3).forEach(function (r) { R.card(card(r, lang)); });
           } else {
-            if (has("open", 1) && one.current) { R.say(L(lang, "Открываю «" + one.it.name + "».", "«" + one.it.name + "» ашамын.", "Opening «" + one.it.name + "».")); R.auto = { a: "dish:" + one.it.id }; }
-            else R.say(dishLine(one, lang, multi, false) + L(lang, pick("dl", ["", ". Хороший выбор.", ". Одобряю."]), "", ""));
+            if (has("open", 1) && one.current && strictDish(U.dishTokens, one)) { R.say(L(lang, "Открываю «" + one.it.name + "».", "«" + one.it.name + "» ашамын.", "Opening «" + one.it.name + "».")); R.auto = { a: "dish:" + one.it.id }; }
+            else {
+              R.say(dishLine(one, lang, multi, false) + L(lang, pick("dl", ["", ". Хороший выбор.", ". Одобряю."]), "", ""));
+              // просили открыть, но написали с ошибкой — сами не открываем, даём кнопку
+              if (has("open", 1) && one.current) R.act({ a: "dish:" + one.it.id, label: L(lang, "Открыть «" + one.it.name + "»", "«" + one.it.name + "» ашу", "Open «" + one.it.name + "»") });
+            }
             R.card(card(one, lang));
             if (S && one.current) R.act(chip(L(lang, "Заказать", "Тапсырыс беру", "Order it"), L(lang, "хочу заказать ", "тапсырыс беремін ", "I want to order ") + one.it.name));
           }
@@ -1803,8 +1838,12 @@
         else if (!items.length) R.say(L(lang, "Этого сейчас нет в меню или закончилось — могу подсказать другое.", "Бұл қазір мәзірде жоқ немесе таусылды.", "That's not on the menu right now or it's sold out."));
         else if (items.length === 1) {
           var o1 = items[0];
-          if (has("open", 1) && o1.current) { R.say(L(lang, "Открываю «" + o1.it.name + "».", "«" + o1.it.name + "» ашамын.", "Opening «" + o1.it.name + "».")); R.auto = { a: "dish:" + o1.it.id }; }
-          else R.say(dishLine(o1, lang, !ctx.branch, false));
+          var strictOne = sigToks.length && sigToks.every(function (w) { return catWord(w, cat.key); }) || strictDish(U.dishTokens, o1);
+          if (has("open", 1) && o1.current && strictOne) { R.say(L(lang, "Открываю «" + o1.it.name + "».", "«" + o1.it.name + "» ашамын.", "Opening «" + o1.it.name + "».")); R.auto = { a: "dish:" + o1.it.id }; }
+          else {
+            R.say(dishLine(o1, lang, !ctx.branch, false));
+            if (has("open", 1) && o1.current) R.act({ a: "dish:" + o1.it.id, label: L(lang, "Открыть «" + o1.it.name + "»", "«" + o1.it.name + "» ашу", "Open «" + o1.it.name + "»") });
+          }
           R.card(card(o1, lang));
           if (S && o1.current) R.act(chip(L(lang, "Заказать", "Тапсырыс беру", "Order it"), L(lang, "хочу заказать ", "тапсырыс беремін ", "I want to order ") + o1.it.name));
           st.lastDishIds = [o1.it.id]; st.lastOne = o1.it.id;
@@ -1812,6 +1851,12 @@
         else {
           if (has("cheap")) items.sort(function (a, b) { return a.it.price - b.it.price; });
           var nm = cat.name || "";
+          if (has("open", 1) && S && cat.own && idx.some(function (x) { return x.current; }) && sigToks.length && !nameNums(U.dishTokens).length && sigToks.every(function (w) { return catWord(w, cat.key); })) {
+            R.say(L(lang, "Открываю раздел «" + nm + "».", "«" + nm + "» бөлімін ашамын.", "Opening the «" + nm + "» section."));
+            R.auto = { a: "cat:" + nm };
+            st.lastDishIds = items.slice(0, 10).map(function (r) { return r.it.id; }); st.lastOne = null;
+            used.push("category"); return out("category");
+          }
           R.say(L(lang, pick("cat", ["Из раздела «" + nm + "» — листайте:", "«" + nm + "» — вот что есть:", "В разделе «" + nm + "»:"]), "«" + nm + "»:", "From «" + nm + "»:") + (items.length > 10 ? L(lang, " (и ещё " + (items.length - 10) + " в меню)", " (мәзірде тағы " + (items.length - 10) + ")", " (+" + (items.length - 10) + " more on the menu)") : ""));
           items.slice(0, 10).forEach(function (r) { R.card(card(r, lang)); });
           if (cat.key === "ланч") {
@@ -2259,6 +2304,7 @@
     setTimeout(function () {
       if (!chatVisible()) return;
       if (a.indexOf("dish:") === 0) openCard({ id: a.slice(5) });
+      else if (a.indexOf("cat:") === 0) W._saiAct(a, "открой раздел");
       else if (a === "menu") { seventAiClose(); switchBottomTab("home"); }
       else if (a === "cart") { seventAiClose(); switchBottomTab("home"); openCart(); }
     }, 450);
