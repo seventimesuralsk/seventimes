@@ -2308,16 +2308,26 @@
         typing(false);
         setTicks(3, 0, 1);
         seventAiAppendMessage("ai", String(m.text));
+        o2.unseen = (o2.unseen || []).concat([m.id]).slice(-20);
         log(o2.q || "(продолжение разговора)", { text: String(m.text), known: 1, intent: "operator" }, null, "Оператор");
         if (!chatVisible()) toast("SEVEN AI ответила в «Сообщениях»");
       });
       if (e && e.read && e.read > (o2.readSeen || 0)) { o2.readSeen = e.read; setTicks(3, 0, 2); }
       opSet(o2);
+      ackSeen();
       // пока ждём — часто, потом — реже
       var fresh = Math.max(o2.human || 0, o2.asked || 0);
       opSchedule(opWaiting || got || Date.now() - (o2.asked || 0) < 90e3 ? 3000 : Date.now() - fresh < 180e3 ? 5000 : 20000);
     });
   }
+  // гость реально увидел ответ (чат открыт, страница перед глазами) → администратору 👀 в Telegram
+  function ackSeen() {
+    var o = opGet();
+    if (!o.unseen || !o.unseen.length || !chatVisible() || D.visibilityState === "hidden") return;
+    var ids = o.unseen.slice(); o.unseen = []; opSet(o);
+    xhrJson("GET", API + "?action=opSeen&clientId=" + encodeURIComponent(getClientId()) + "&ids=" + encodeURIComponent(ids.join(",")), null, 15e3, function () {});
+  }
+  D.addEventListener("visibilitychange", function () { if (D.visibilityState === "visible") setTimeout(ackSeen, 400); });
   // гость пишет, пока с ним администратор: сообщение — сразу ему
   function opForward(t, note) {
     xhrJson("POST", API, { action: "jivoSend", clientId: getClientId(), name: guestName(), text: t + (note ? "\n— " + note : "") }, 15e3, function () {});
@@ -2682,5 +2692,11 @@
   var closeChat = W.seventAiClose;
   W.seventAiClose = function () { if (recOn) stopRec(true); if (player) player.au.pause(); return closeChat.apply(this, arguments); };
 
-  W._saiOnOpen = function () { loadFacts(); setupMic(); if (opActive()) opSchedule(300); };
+  W._saiOnOpen = function () {
+    loadFacts(); setupMic();
+    // ответ администратора мог прийти, пока чат был закрыт (хранится 6 часов) — проверяем
+    var o = opGet();
+    if (o.asked && Date.now() - o.asked < 6 * 3600e3) { if (!(o.until > Date.now())) { o.until = Date.now() + OP_TTL; opSet(o); } opSchedule(300); }
+    setTimeout(ackSeen, 600);
+  };
 })();
