@@ -1987,6 +1987,28 @@
     ".sai-vmic.play{background:#fff;color:#7a1128;cursor:pointer}" +
     ".sai-vd{font-size:0.7rem;opacity:.85;font-variant-numeric:tabular-nums;flex-shrink:0}" +
     ".sai-vtxt{font-size:0.76rem;opacity:.82;font-style:italic}" +
+    ".sai-msg{position:relative;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;transition:transform .25s}" +
+    ".sai-msg.sai-pressing{transform:scale(.97)}.sai-msg.has-rx{margin-bottom:14px}.sai-msg.sai-flash>div{box-shadow:0 0 0 3px rgba(111,211,255,.7)}" +
+    ".sai-rx{position:absolute;bottom:-15px;right:10px;background:#fff;border:1px solid #e5e5e7;border-radius:999px;padding:1px 7px;font-size:0.85rem;line-height:1.5;box-shadow:0 1px 3px rgba(0,0,0,.12)}" +
+    ".sai-msg[style*='flex-start'] .sai-rx{right:auto;left:10px}" +
+    ".sai-q{flex-basis:100%;border-left:3px solid #6fd3ff;background:rgba(255,255,255,.14);border-radius:8px;padding:4px 8px;margin:2px 0 4px;font-size:0.74rem;line-height:1.35;display:flex;flex-direction:column;cursor:pointer;max-width:100%;overflow:hidden}" +
+    ".sai-q b{font-weight:600;color:#6fd3ff}.sai-q span{opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}" +
+    ".sai-msg[style*='flex-start'] .sai-q{background:rgba(0,0,0,.05);border-left-color:#7a1128}.sai-msg[style*='flex-start'] .sai-q b{color:#7a1128}" +
+    ".sai-ed{font-size:0.6rem;opacity:.7;margin-right:4px}" +
+    ".sai-menu-ov{position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.28);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);opacity:0;transition:opacity .18s}.sai-menu-ov.show{opacity:1}" +
+    ".sai-menu-msg{box-shadow:0 8px 30px rgba(0,0,0,.25);transform:scale(.98);transition:transform .18s}.sai-menu-ov.show .sai-menu-msg{transform:scale(1)}" +
+    ".sai-rbar{position:fixed;display:flex;gap:2px;padding:6px 8px;border-radius:999px;background:#fff;box-shadow:0 6px 24px rgba(0,0,0,.2)}" +
+    ".sai-rbar button{border:none;background:none;font-size:1.6rem;line-height:1;width:42px;height:42px;border-radius:50%;cursor:pointer;transition:transform .12s;-webkit-tap-highlight-color:transparent}.sai-rbar button:active{transform:scale(1.25)}.sai-rbar button.on{background:#ececef}" +
+    ".sai-mmenu{position:fixed;min-width:220px;border-radius:14px;background:#fff;box-shadow:0 8px 30px rgba(0,0,0,.2);overflow:hidden}" +
+    ".sai-mmenu button{display:flex;align-items:center;justify-content:space-between;width:100%;padding:13px 16px;border:none;background:none;font:inherit;font-size:0.95rem;color:#1d1d1f;cursor:pointer;border-bottom:1px solid #ececef}.sai-mmenu button:last-child{border-bottom:none}.sai-mmenu button:active{background:#f2f2f4}" +
+    ".sai-replybar{flex-shrink:0;display:flex;align-items:center;gap:10px;padding:8px var(--px);background:#fbfbfd;border-top:1px solid #e5e5e7}" +
+    ".sai-rq{flex:1;min-width:0;border-left:3px solid #7a1128;padding:2px 10px;display:flex;flex-direction:column;font-size:0.8rem}.sai-rq b{color:#7a1128;font-weight:600}.sai-rq span{color:#6e6e73;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}" +
+    ".sai-replybar button{border:none;background:none;color:#86868b;cursor:pointer;padding:4px;display:flex}" +
+    "#seventAiMessages.sai-blur{filter:blur(8px);pointer-events:none;transition:filter .2s}" +
+    ".sai-edit{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:10px;padding:10px var(--px) 12px;background:#fbfbfd;border-top:1px solid #e5e5e7}" +
+    ".sai-edit-prev{max-width:82%;padding:8px 10px 6px 14px;border-radius:16px;background:#7a1128;color:#fff;font-size:0.84rem;display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}" +
+    ".sai-edit-row{display:flex;align-items:center;gap:8px;width:100%}.sai-edit-row input{flex:1;min-width:0;font-size:16px;padding:10px 14px;border-radius:20px;border:1.5px solid #e5e5e7;outline:none;font-family:inherit;background:#fff;color:#1d1d1f}" +
+    ".sai-edit-x{border:none;background:none;color:#86868b;cursor:pointer;display:flex;padding:2px}.sai-edit-ok{width:40px;height:40px;border-radius:50%;border:none;background:#25d366;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}" +
     ".sai-tk{display:inline-flex;margin-left:4px;vertical-align:-1px;opacity:.85}.sai-tk svg{width:17px;height:12px}.sai-tk.rd{color:#6fd3ff;opacity:1}" +
     "@media (prefers-reduced-motion:reduce){.sai-rec-dot{animation:none}}" +
     "@media (prefers-color-scheme:dark){" +
@@ -1994,6 +2016,9 @@
     ".sai-card{background:#1c1c1e;border-color:#38383a}.sai-card-n{color:#f5f5f7}.sai-card-p{color:#ef6b83}" +
     ".sai-card-s,.sai-card-d{color:#a1a1a6}.sai-card img,.sai-card-ph{background:#2c2c2e}" +
     ".sai-rec{background:#111113;border-top-color:#38383a}.sai-rec-x{background:#2c2c2e;color:#a1a1a6}.sai-rec-t{color:#f5f5f7}.sai-rec-w i{background:#ef6b83}" +
+    ".sai-rx{background:#2c2c2e;border-color:#38383a}.sai-rbar,.sai-mmenu{background:#2c2c2e}.sai-mmenu button{color:#f5f5f7;border-bottom-color:#38383a}.sai-mmenu button:active{background:#3a3a3c}.sai-rbar button.on{background:#48484a}" +
+    ".sai-replybar,.sai-edit{background:#111113;border-top-color:#38383a}.sai-rq span{color:#a1a1a6}.sai-rq{border-left-color:#ef6b83}.sai-rq b{color:#ef6b83}.sai-edit-row input{background:#1c1c1e;border-color:#38383a;color:#f5f5f7}" +
+    ".sai-msg[style*='flex-start'] .sai-q{background:rgba(255,255,255,.06);border-left-color:#ef6b83}.sai-msg[style*='flex-start'] .sai-q b{color:#ef6b83}" +
     ".sai-mic{border-color:#38383a;color:#ef6b83}.sai-mic.on{background:#7a1128;border-color:#7a1128;color:#fff}}";
   if (!el("saiStyle")) { var stl = D.createElement("style"); stl.id = "saiStyle"; stl.textContent = css; D.head.appendChild(stl); }
 
@@ -2203,11 +2228,7 @@
     k.setAttribute("aria-label", st >= 3 ? "Прочитано" : st >= 2 ? "Доставлено" : "Отправлено");
   }
   // шапка сайта вызывает это для каждого сообщения гостя из истории
-  W._saiTickDecor = function (bubble, time) {
-    bubble.setAttribute("data-ut", String(time));
-    var m = seventAiHistory.filter(function (x) { return x.role === "user" && x.time === time; })[0];
-    if (m && m.st) paintTick(bubble, m.st);
-  };
+  W._saiTickDecor = function (bubble, time) { W._saiMsgDecor(bubble, time, "user"); };
   // поднять статус: у одного сообщения (time) или у всех уже доставленных (time = 0, onlyFrom = 2)
   function setTicks(st, time, onlyFrom) {
     var changed = false;
@@ -2215,7 +2236,7 @@
       if (m.role !== "user" || (time && m.time !== time) || (onlyFrom && (m.st || 0) < onlyFrom) || (m.st || 0) >= st) return;
       if (!time && !m.st) return;
       m.st = st; changed = true;
-      var el = D.querySelector('#seventAiMessages [data-ut="' + m.time + '"]');
+      var el = D.querySelector('#seventAiMessages [data-mt="' + m.time + '"]');
       if (el) paintTick(el, st);
     });
     if (changed) seventAiSaveHistory();
@@ -2228,10 +2249,21 @@
     var body = fresh
       ? { action: "aiAsk", branch: curBranch() || "", message: t, clientId: getClientId(), name: guestName(), history: seventAiHistory.slice(-13, -1).map(function (e) { return { role: e.role, text: String(e.text || "").slice(0, 1500) }; }) }
       : { action: "jivoSend", clientId: getClientId(), name: guestName(), text: t };
+    body.mt = tm;
+    var mine = msgBy(tm, "user");
+    if (mine && mine.reply) {
+      var rt = msgBy(mine.reply.mt);
+      var rtg = rt ? (rt.role === "user" ? rt.tgId : String(rt.opId || "").replace(/^tg/, "")) : "";
+      if (rtg) body.replyTg = rtg;
+      else if (fresh) body.message = "(в ответ на «" + String(mine.reply.text).slice(0, 80) + "») " + t;
+      else body.text = "(в ответ на «" + String(mine.reply.text).slice(0, 80) + "») " + t;
+    }
     function go() {
       xhrJson("POST", API, body, 25e3, function (e) {
         if (e && (e.operator || (!fresh && e.ok))) {
           typing(false);
+          var mm = msgBy(tm, "user");
+          if (mm && e.tgId) { mm.tgId = e.tgId; seventAiSaveHistory(); }
           setTicks(2, tm);
           log(t, { text: "(передано администратору)", known: 1, intent: "operator" }, audio, "Передано");
           opStart(t, function () {
@@ -2267,6 +2299,175 @@
     }, 450);
   }
 
+
+  // ════ сообщения как в мессенджере: реакции, «Ответить», «Изменить» ════
+  var HOLD_MS = 1500, REACTS = ["👍", "❤️", "😂", "😮", "😢", "🙏", "👏"], replyTo = null;
+  function msgBy(time, role) { time = Number(time); return seventAiHistory.filter(function (x) { return x.time === time && (!role || x.role === role); })[0] || null; }
+  function bubbleOf(time) { return D.querySelector('#seventAiMessages [data-mt="' + time + '"]'); }
+  function textSpan(bubble) { var box = bubble && bubble.firstChild; if (!box) return null; var sp = box.querySelectorAll(":scope > span"); return sp.length ? sp[0] : null; }
+  W._saiMsgDecor = function (bubble, time, role) {
+    bubble.setAttribute("data-mt", String(time));
+    bubble.classList.add("sai-msg");
+    var m = msgBy(time, role === "user" ? "user" : "ai");
+    if (m) decorate(bubble, m);
+  };
+  function decorate(bubble, m) {
+    var box = bubble.firstChild;
+    if (!box) return;
+    // голосовое: без текста расшифровки
+    if (m.voice) { var vt = box.querySelector(".sai-vtxt"); if (vt) vt.style.display = "none"; }
+    // цитата («ответ на»)
+    var oq = box.querySelector(".sai-q"); if (oq) oq.remove();
+    if (m.reply) {
+      var q = D.createElement("div");
+      q.className = "sai-q";
+      q.innerHTML = '<b>' + esc(m.reply.who || "") + '</b><span>' + esc(String(m.reply.text || "").slice(0, 160)) + "</span>";
+      q.onclick = function (ev) { ev.stopPropagation(); var t = bubbleOf(m.reply.mt); if (t) { t.scrollIntoView({ block: "center", behavior: "smooth" }); t.classList.add("sai-flash"); setTimeout(function () { t.classList.remove("sai-flash"); }, 1200); } };
+      box.insertBefore(q, box.firstChild);
+    }
+    // «изменено»
+    var tm = box.lastChild, oe = tm && tm.querySelector && tm.querySelector(".sai-ed");
+    if (oe) oe.remove();
+    if (m.edited && tm) { var ed = D.createElement("span"); ed.className = "sai-ed"; ed.textContent = "изменено"; tm.insertBefore(ed, tm.firstChild); }
+    if (m.role === "user" && m.st) paintTick(bubble, m.st);
+    // реакции под сообщением
+    var orx = bubble.querySelector(".sai-rx"); if (orx) orx.remove();
+    var list = [m.oreact, m.react].filter(function (x) { return x; });
+    bubble.classList.toggle("has-rx", list.length > 0);
+    if (list.length) {
+      var rx = D.createElement("div");
+      rx.className = "sai-rx";
+      rx.textContent = list.filter(function (x, i) { return list.indexOf(x) === i; }).join("");
+      if (list.length > 1 && list[0] === list[1]) rx.textContent += " 2";
+      bubble.appendChild(rx);
+    }
+  }
+  function refreshMsg(m) {
+    var b = bubbleOf(m.time);
+    if (!b) return;
+    var sp = textSpan(b);
+    if (sp && !m.voice && sp.textContent !== m.text) sp.textContent = ne(m.text);
+    decorate(b, m);
+  }
+
+  // долгое нажатие на сообщение → размытие, реакции и меню
+  var hold = null;
+  function holdCancel() { if (hold) { clearTimeout(hold.t); hold = null; } }
+  function setupHold() {
+    var box = el("seventAiMessages");
+    if (!box || box._saiHold) return;
+    box._saiHold = true;
+    box.addEventListener("pointerdown", function (e) {
+      var b = e.target.closest && e.target.closest(".sai-msg");
+      if (!b || e.target.closest(".sai-vmic,.sai-q,a,button")) return;
+      holdCancel();
+      hold = { b: b, x: e.clientX, y: e.clientY, t: setTimeout(function () { var bb = hold && hold.b; hold = null; if (bb) openMenu(bb); }, HOLD_MS) };
+      b.classList.add("sai-pressing");
+    });
+    box.addEventListener("pointermove", function (e) { if (hold && (Math.abs(e.clientX - hold.x) > 10 || Math.abs(e.clientY - hold.y) > 10)) { hold.b.classList.remove("sai-pressing"); holdCancel(); } });
+    ["pointerup", "pointercancel", "pointerleave"].forEach(function (n) { box.addEventListener(n, function () { if (hold) hold.b.classList.remove("sai-pressing"); holdCancel(); }); });
+    box.addEventListener("scroll", function () { if (hold) hold.b.classList.remove("sai-pressing"); holdCancel(); }, { passive: true });
+    box.addEventListener("contextmenu", function (e) { var b = e.target.closest && e.target.closest(".sai-msg"); if (b) { e.preventDefault(); holdCancel(); openMenu(b); } });
+  }
+  function closeMenu() { var o = el("saiMenu"); if (o) o.remove(); D.querySelectorAll(".sai-pressing").forEach(function (x) { x.classList.remove("sai-pressing"); }); }
+  function openMenu(b) {
+    closeMenu();
+    b.classList.remove("sai-pressing");
+    var m = msgBy(Number(b.getAttribute("data-mt")));
+    if (!m) return;
+    safe(function () { navigator.vibrate && navigator.vibrate(12); });
+    var r = b.firstChild.getBoundingClientRect(), mine = m.role === "user";
+    var ov = D.createElement("div");
+    ov.id = "saiMenu"; ov.className = "sai-menu-ov";
+    var clone = b.firstChild.cloneNode(true);
+    clone.className = "sai-menu-msg";
+    clone.style.cssText += ";position:fixed;left:" + r.left + "px;top:" + r.top + "px;width:" + r.width + "px;margin:0";
+    var bar = D.createElement("div");
+    bar.className = "sai-rbar";
+    REACTS.forEach(function (em) {
+      var bt = D.createElement("button");
+      bt.type = "button"; bt.textContent = em; bt.setAttribute("aria-label", "Реакция " + em);
+      if (m.react === em) bt.className = "on";
+      bt.onclick = function (ev) { ev.stopPropagation(); react(m, m.react === em ? "" : em); closeMenu(); };
+      bar.appendChild(bt);
+    });
+    var menu = D.createElement("div");
+    menu.className = "sai-mmenu";
+    function item(label, icon, fn) {
+      var it = D.createElement("button");
+      it.type = "button"; it.innerHTML = "<span>" + label + "</span>" + icon;
+      it.onclick = function (ev) { ev.stopPropagation(); closeMenu(); fn(); };
+      menu.appendChild(it);
+    }
+    item("Ответить", '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 6 6v5"/></svg>', function () { startReply(m); });
+    if (mine && !m.voice) item("Изменить", '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M14 6l4 4"/></svg>', function () { startEdit(m); });
+    ov.appendChild(clone); ov.appendChild(bar); ov.appendChild(menu);
+    ov.onclick = closeMenu;
+    D.body.appendChild(ov);
+    // реакции над сообщением, меню под ним (или наоборот, если не влезает)
+    var vh = W.innerHeight, vw = W.innerWidth, bw = bar.offsetWidth, mh = menu.offsetHeight;
+    var bl = mine ? Math.max(8, Math.min(r.right - bw, vw - bw - 8)) : Math.max(8, Math.min(r.left, vw - bw - 8));
+    var ml = mine ? Math.max(8, r.right - menu.offsetWidth) : Math.max(8, Math.min(r.left, vw - menu.offsetWidth - 8));
+    var top = r.top, shift = 0;
+    if (top - 64 < 8) shift = 72 - top;
+    if (r.bottom + shift + 12 + mh > vh - 8) shift = Math.min(shift, (vh - 8 - mh - 12) - r.bottom);
+    clone.style.top = (r.top + shift) + "px";
+    bar.style.left = bl + "px"; bar.style.top = (r.top + shift - 60) + "px";
+    menu.style.left = ml + "px"; menu.style.top = (r.bottom + shift + 10) + "px";
+    requestAnimationFrame(function () { ov.classList.add("show"); });
+  }
+  function react(m, em) {
+    m.react = em; seventAiSaveHistory(); refreshMsg(m);
+    var target = m.role === "user" ? m.tgId : m.opId;
+    if (target) xhrJson("POST", API, { action: "opReact", clientId: getClientId(), target: String(target), emoji: em }, 15e3, function () {});
+    ev("SEVEN AI: реакция", em || "убрал");
+  }
+
+  // «Ответить»: цитата над полем ввода
+  function closeReply() { replyTo = null; var rb = el("saiReplyBar"); if (rb) rb.remove(); }
+  function startReply(m) {
+    closeReply();
+    replyTo = { mt: m.time, who: m.role === "user" ? "Вы" : "SEVEN AI", text: m.voice ? "Голосовое сообщение" : String(m.text).slice(0, 200) };
+    var row = el("seventAiInputRow");
+    if (!row) return;
+    var rb = D.createElement("div");
+    rb.id = "saiReplyBar"; rb.className = "sai-replybar";
+    rb.innerHTML = '<div class="sai-rq"><b>' + esc(replyTo.who) + "</b><span>" + esc(replyTo.text) + '</span></div><button type="button" aria-label="Отменить ответ"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg></button>';
+    rb.querySelector("button").onclick = closeReply;
+    row.parentNode.insertBefore(rb, row);
+    var inp = el("seventAiInput"); if (inp) inp.focus();
+  }
+
+  // «Изменить»: переписка размыта, сообщение над полем, ✕ и ✓
+  function startEdit(m) {
+    var row = el("seventAiInputRow"), msgs = el("seventAiMessages"), src = bubbleOf(m.time);
+    if (!row || !msgs) return;
+    closeReply();
+    var pan = D.createElement("div");
+    pan.id = "saiEdit"; pan.className = "sai-edit";
+    var prev = src ? src.firstChild.cloneNode(true) : D.createElement("div");
+    prev.className = "sai-edit-prev";
+    pan.innerHTML = '<div class="sai-edit-row"><button type="button" class="sai-edit-x" aria-label="Отменить"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg></button><input type="text" maxlength="500" enterkeyhint="done"><button type="button" class="sai-edit-ok" aria-label="Сохранить"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button></div>';
+    pan.insertBefore(prev, pan.firstChild);
+    var inp = pan.querySelector("input");
+    inp.value = m.text;
+    function done(save) {
+      var t = inp.value.trim().slice(0, 500);
+      pan.remove(); row.style.display = "flex"; msgs.classList.remove("sai-blur");
+      if (!save || !t || t === m.text) return;
+      m.text = t; m.edited = true; seventAiSaveHistory(); refreshMsg(m);
+      if (m.tgId) xhrJson("POST", API, { action: "opEdit", clientId: getClientId(), tgId: String(m.tgId), text: t }, 15e3, function () {});
+      ev("SEVEN AI: гость изменил сообщение", t.slice(0, 60));
+    }
+    pan.querySelector(".sai-edit-x").onclick = function () { done(false); };
+    pan.querySelector(".sai-edit-ok").onclick = function () { done(true); };
+    inp.onkeydown = function (e) { if (e.key === "Enter" && !e.isComposing) done(true); if (e.key === "Escape") done(false); };
+    row.style.display = "none";
+    row.parentNode.insertBefore(pan, row);
+    msgs.classList.add("sai-blur");
+    setTimeout(function () { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }, 30);
+  }
+
   // ── живой администратор (Jivo) внутри этого же чата ──
   // Гостю ничего не объявляем: ответ администратора приходит как обычное
   // сообщение SEVEN AI. Сессия живёт 15 минут после последней активности.
@@ -2300,6 +2501,14 @@
     xhrJson("GET", API + "?action=jivoPoll&clientId=" + encodeURIComponent(getClientId()) + "&since=" + (o.since || 0), null, 15e3, function (e) {
       var o2 = opGet(), got = 0;
       ((e && e.msgs) || []).forEach(function (m) {
+        if (m && m.kind === "react") {
+          if (o2.seen.indexOf(m.id) >= 0) return;
+          o2.seen.push(m.id); o2.seen = o2.seen.slice(-50);
+          o2.since = Math.max(o2.since || 0, m.ts || 0);
+          var tgt = msgBy(m.mt, "user");
+          if (tgt) { tgt.oreact = m.emoji || ""; seventAiSaveHistory(); refreshMsg(tgt); }
+          return;
+        }
         if (!m || !m.text || o2.seen.indexOf(m.id) >= 0) return;
         o2.seen.push(m.id); o2.seen = o2.seen.slice(-50);
         o2.since = Math.max(o2.since || 0, m.ts || 0);
@@ -2308,6 +2517,13 @@
         typing(false);
         setTicks(3, 0, 1);
         seventAiAppendMessage("ai", String(m.text));
+        var nm = seventAiHistory[seventAiHistory.length - 1];
+        if (nm && nm.role === "ai") {
+          nm.opId = m.id;
+          var qm = m.q ? msgBy(m.q, "user") : null;
+          if (qm) nm.reply = { mt: qm.time, who: "Вы", text: qm.voice ? "Голосовое сообщение" : String(qm.text).slice(0, 200) };
+          seventAiSaveHistory(); refreshMsg(nm);
+        }
         o2.unseen = (o2.unseen || []).concat([m.id]).slice(-20);
         log(o2.q || "(продолжение разговора)", { text: String(m.text), known: 1, intent: "operator" }, null, "Оператор");
         if (!chatVisible()) toast("SEVEN AI ответила в «Сообщениях»");
@@ -2346,6 +2562,8 @@
     // бот сам ничего не отвечает: всё — администратору в Telegram
     W._aiBusy = false;
     var mine = seventAiHistory[seventAiHistory.length - 1], tm = mine && mine.role === "user" ? mine.time : 0;
+    if (mine && tm && replyTo) { mine.reply = replyTo; seventAiSaveHistory(); refreshMsg(mine); }
+    closeReply();
     if (tm) setTicks(1, tm);
     forward(t, audio, tm);
   };
@@ -2693,10 +2911,10 @@
     b.style.display = "";
   }
   var closeChat = W.seventAiClose;
-  W.seventAiClose = function () { if (recOn) stopRec(true); if (player) player.au.pause(); return closeChat.apply(this, arguments); };
+  W.seventAiClose = function () { if (recOn) stopRec(true); if (player) player.au.pause(); closeMenu(); var ed = el("saiEdit"); if (ed) { ed.remove(); var rw = el("seventAiInputRow"); if (rw) rw.style.display = "flex"; var ms = el("seventAiMessages"); if (ms) ms.classList.remove("sai-blur"); } return closeChat.apply(this, arguments); };
 
   W._saiOnOpen = function () {
-    loadFacts(); setupMic();
+    loadFacts(); setupMic(); setupHold();
     // ответ администратора мог прийти, пока чат был закрыт (хранится 6 часов) — проверяем
     var o = opGet();
     if (o.asked && Date.now() - o.asked < 6 * 3600e3) { if (!(o.until > Date.now())) { o.until = Date.now() + OP_TTL; opSet(o); } opSchedule(300); }
