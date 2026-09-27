@@ -357,6 +357,7 @@
       ? { action: "aiAsk", branch: curBranch() || "", message: t, clientId: getClientId(), name: guestName(), history: seventAiHistory.slice(-13, -1).map(function (e) { return { role: e.role, text: String(e.text || "").slice(0, 1500) }; }) }
       : { action: "jivoSend", clientId: getClientId(), name: guestName(), text: t };
     body.mt = tm;
+    var lg = langGet(); if (lg) body.lang = lg;
     var mine = msgBy(tm, "user");
     if (mine && mine.reply) {
       var rt = msgBy(mine.reply.mt);
@@ -690,7 +691,35 @@
     closeReply();
     if (tm) setTicks(1, tm);
     forward(t, audio, tm);
+    askLang();
   };
+
+  // ── язык общения: после первого сообщения один раз спрашиваем (сначала по-казахски, потом по-русски).
+  // Выбор запоминается на телефоне и уходит администратору (Telegram и панель), чтобы он отвечал на нужном языке.
+  var LANG_KEY = "sai_lang", LANG_ASKED = "sai_lang_asked";
+  var LANG_Q = "Сізбен қай тілде сөйлескен ыңғайлы?\nНа каком языке вам удобнее общаться?";
+  function langGet() { var v = lsGet(LANG_KEY); return v === "kz" || v === "ru" ? v : ""; }
+  function askLang() {
+    if (langGet() || lsGet(LANG_ASKED)) return;
+    lsSet(LANG_ASKED, "1");
+    setTimeout(function () {
+      if (langGet()) return;
+      seventAiAppendMessage("ai", LANG_Q, [{ a: "lang:kz", label: "Қазақша" }, { a: "lang:ru", label: "Русский" }]);
+    }, 700);
+  }
+  function setLang(code) {
+    lsSet(LANG_KEY, code);
+    W._saiLang = code;
+    // кнопки выбора больше не показываем (и после перезагрузки тоже)
+    var changed = false;
+    seventAiHistory.forEach(function (m) { if (m.acts && m.acts.some(function (c) { return c && /^lang:/.test(c.a); })) { delete m.acts; changed = true; } });
+    if (changed) seventAiSaveHistory();
+    safe(function () { D.querySelectorAll("#seventAiMessages .sai-chips").forEach(function (x) { x.remove(); }); });
+    seventAiAppendMessage("ai", code === "kz" ? "Жақсы! Сізге қазақ тілінде жауап береміз." : "Хорошо! Будем общаться на русском.");
+    xhrJson("POST", API, { action: "opLang", clientId: getClientId(), name: guestName(), lang: code }, 15e3, function () {});
+    ev("SEVEN AI: язык", code === "kz" ? "Қазақша" : "Русский");
+  }
+  safe(function () { var lg = langGet(); if (lg) W._saiLang = lg; });
 
   // ── отправка заказа, собранного в чате
   function sendOrder() {
@@ -774,6 +803,7 @@
     a = String(a || "");
     if (a.indexOf("ask:") === 0) { var inp = el("seventAiInput"); inp.value = a.slice(4); return seventAiSend(); }
     if (a === "wa") return;
+    if (a === "lang:kz" || a === "lang:ru") return setLang(a.slice(5));
     ev("SEVEN AI: кнопка", String(label || a));
     if (a === "order:send") return sendOrder();
     if (a === "book:send") return sendBooking();
