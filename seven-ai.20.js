@@ -120,15 +120,7 @@
     ".sai-edit-x{border:none;background:none;color:#86868b;cursor:pointer;display:flex;padding:2px}.sai-edit-ok{width:40px;height:40px;border-radius:50%;border:none;background:#25d366;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}" +
     ".sai-tk{display:inline-flex;margin-left:4px;vertical-align:-1px;opacity:.85}.sai-tk svg{width:17px;height:12px}.sai-tk.rd{color:#6fd3ff;opacity:1}" +
     "@media (prefers-reduced-motion:reduce){.sai-rec-dot{animation:none}}" +
-    "@media (prefers-color-scheme:dark){" +
-    ".sai-chip{background:#1c1c1e;border-color:#48343a;color:#ef6b83}.sai-chip:active{background:#2c2c2e}" +
-    ".sai-card{background:#1c1c1e;border-color:#38383a}.sai-card-n{color:#f5f5f7}.sai-card-p{color:#ef6b83}" +
-    ".sai-card-s,.sai-card-d{color:#a1a1a6}.sai-card img,.sai-card-ph{background:#2c2c2e}" +
-    ".sai-rec{background:#111113;border-top-color:#38383a}.sai-rec-x{background:#2c2c2e;color:#a1a1a6}.sai-rec-t{color:#f5f5f7}.sai-rec-w i{background:#ef6b83}" +
-    ".sai-rx{background:#2c2c2e;border-color:#38383a}.sai-rbar,.sai-mmenu{background:#2c2c2e}.sai-mmenu button{color:#f5f5f7;border-bottom-color:#38383a}.sai-mmenu button:active{background:#3a3a3c}.sai-rbar button.on{background:#48484a}" +
-    ".sai-replybar,.sai-edit{background:#111113;border-top-color:#38383a}.sai-rq span{color:#a1a1a6}.sai-rq{border-left-color:#ef6b83}.sai-rq b{color:#ef6b83}.sai-edit-row input{background:#1c1c1e;border-color:#38383a;color:#f5f5f7}" +
-    ".sai-msg[style*='flex-start'] .sai-q{background:rgba(255,255,255,.06);border-left-color:#ef6b83}.sai-msg[style*='flex-start'] .sai-q b{color:#ef6b83}" +
-    ".sai-camb{color:#ef6b83}}";
+    "";
   if (!el("saiStyle")) { var stl = D.createElement("style"); stl.id = "saiStyle"; stl.textContent = css; D.head.appendChild(stl); }
 
   // ── состояние разговора (переживает перезагрузку вкладки)
