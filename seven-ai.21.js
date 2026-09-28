@@ -80,6 +80,11 @@
     ".sai-vn-pl{position:absolute;left:50%;top:50%;width:48px;height:48px;margin:-24px 0 0 -24px;border-radius:50%;background:rgba(0,0,0,.45);color:#fff;display:flex;align-items:center;justify-content:center}" +
     ".sai-vn.playing .sai-vn-pl{display:none}" +
     ".sai-vn-d{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);font-size:.66rem;color:#fff;background:rgba(0,0,0,.45);padding:1px 7px;border-radius:9px}" +
+    ".sai-imgbox .sai-vtxt,.sai-vpill~.sai-vtxt{font-style:normal!important;opacity:1!important;padding-left:8px}.sai-imgbox{padding:4px 4px 6px!important}.sai-imgbox>span:last-child{padding-right:6px}" +
+    ".sai-img{flex-basis:100%;width:230px;max-width:100%;min-height:150px;border-radius:12px;overflow:hidden;background:#e4e4e8;display:flex;align-items:center;justify-content:center;color:#86868b;font-size:.72rem;cursor:zoom-in}" +
+    ".sai-img img{display:block;width:100%;height:auto}.sai-img.st{width:140px;min-height:140px;background:transparent;cursor:default}" +
+    ".sai-stbox{background:transparent!important;padding:0!important;color:#86868b!important;flex-direction:column;align-items:flex-start!important;gap:2px!important}" +
+    ".sai-imgview{position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;cursor:zoom-out}.sai-imgview img{max-width:100%;max-height:100%;object-fit:contain}" +
     "@keyframes saiPulse{0%,100%{box-shadow:0 0 0 0 rgba(122,17,40,.35)}50%{box-shadow:0 0 0 7px rgba(122,17,40,0)}}" +
     ".sai-rec{flex-shrink:0;align-items:center;gap:10px;padding:12px var(--px);border-top:1px solid #e5e5e7;background:#fbfbfd;min-height:68px;box-sizing:border-box}" +
     ".sai-rec button{flex-shrink:0;width:44px;height:44px;border-radius:12px;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent}" +
@@ -417,7 +422,7 @@
 
   // ════ сообщения как в мессенджере: реакции, «Ответить», «Изменить» ════
   var HOLD_MS = 1500, REACTS = ["👍", "❤️", "😂", "😮", "😢", "🙏", "👏"], replyTo = null;
-  function mediaLabel(m) { return m.voice ? (m.voice.kind === "vn" ? "Видеосообщение" : "Голосовое сообщение") : String(m.text).slice(0, 200); }
+  function mediaLabel(m) { var v = m.voice; return v && !v.cap ? (v.kind === "vn" ? "Видеосообщение" : v.kind === "img" ? (v.st ? "Стикер" : "Фото") : "Голосовое сообщение") : String(m.text).slice(0, 200); }
   function msgBy(time, role) { time = Number(time); return seventAiHistory.filter(function (x) { return x.time === time && (!role || x.role === role); })[0] || null; }
   function bubbleOf(time) { return D.querySelector('#seventAiMessages [data-mt="' + time + '"]'); }
   function textSpan(bubble) { var box = bubble && bubble.firstChild; if (!box) return null; var sp = box.querySelectorAll(":scope > span"); return sp.length ? sp[0] : null; }
@@ -431,7 +436,7 @@
     var box = bubble.firstChild;
     if (!box) return;
     // голосовое: без текста расшифровки
-    if (m.voice) { var vt = box.querySelector(".sai-vtxt"); if (vt) vt.style.display = "none"; }
+    if (m.voice && !m.voice.cap) { var vt = box.querySelector(".sai-vtxt"); if (vt) vt.style.display = "none"; }
     // цитата («ответ на»)
     var oq = box.querySelector(".sai-q"); if (oq) oq.remove();
     if (m.reply) {
@@ -633,14 +638,17 @@
           if (tgt) { tgt.oreact = m.emoji || ""; seventAiSaveHistory(); refreshMsg(tgt); }
           return;
         }
-        if (!m || !m.text || o2.seen.indexOf(m.id) >= 0) return;
+        if (!m || (!m.text && !m.media) || o2.seen.indexOf(m.id) >= 0) return;
         o2.seen.push(m.id); o2.seen = o2.seen.slice(-50);
         o2.since = Math.max(o2.since || 0, m.ts || 0);
         o2.human = Date.now(); o2.until = Date.now() + OP_TTL; got++;
         if (opWaiting) { opWaiting = null; clearTimeout(opWaitTimer); W._aiBusy = false; }
         typing(false); headTyping(false);
         setTicks(3, 0, 1);
-        seventAiAppendMessage("ai", String(m.text));
+        var md = m.media, mv = md && md.fid ? { kind: md.k === "vn" ? "vn" : md.k === "img" ? "img" : "voice", id: "op_" + m.id, fid: String(md.fid), dur: Number(md.dur) || 0, a: 0 } : null;
+        if (mv && md.st) mv.st = 1;
+        if (mv && m.text) mv.cap = 1;
+        seventAiAppendMessage("ai", String(m.text || (mv ? (mv.kind === "img" ? (mv.st ? "Стикер" : "📷 Фото") : mv.kind === "vn" ? "Видеосообщение" : "🎤 Голосовое сообщение") : "")), null, null, mv);
         var nm = seventAiHistory[seventAiHistory.length - 1];
         if (nm && nm.role === "ai") {
           nm.opId = m.id;
@@ -649,7 +657,7 @@
           seventAiSaveHistory(); refreshMsg(nm);
         }
         o2.unseen = (o2.unseen || []).concat([m.id]).slice(-20);
-        log(o2.q || "(продолжение разговора)", { text: String(m.text), known: 1, intent: "operator" }, null, "Оператор");
+        log(o2.q || "(продолжение разговора)", { text: String(m.text || (mv ? "[" + mediaLabel(nm || { voice: mv }) + "]" : "")), known: 1, intent: "operator" }, null, "Оператор");
         if (!chatVisible()) toast("SEVEN AI ответила в «Сообщениях»");
       });
       if (e && e.read && e.read > (o2.readSeen || 0)) { o2.readSeen = e.read; setTicks(3, 0, 2); if (awaitingReply()) headTyping(true); }
@@ -1288,6 +1296,55 @@
       };
     });
   };
+  // фото/стикер в переписке; файлы администратора из Telegram скачиваем один раз и храним у гостя
+  var vnDecor = W._saiVoiceDecor;
+  W._saiVoiceDecor = function (bubble, v) {
+    if (v && v.fid && !v.a) setTimeout(function () { opMediaLoad(v); }, 0);
+    if (!v || v.kind !== "img") return vnDecor(bubble, v);
+    var box = bubble.firstChild, txt = box && box.firstChild;
+    if (!box) return;
+    box.classList.add(v.st ? "sai-stbox" : "sai-imgbox");
+    if (txt) txt.classList.add("sai-vtxt");
+    var w = D.createElement("div");
+    w.className = "sai-img" + (v.st ? " st" : "");
+    w.textContent = v.a ? "" : "Загружаем…";
+    box.insertBefore(w, box.firstChild);
+    if (!v.id || !v.a) return;
+    idbGet(v.id).then(function (blob) {
+      if (!blob) { w.textContent = "Фото недоступно"; return; }
+      var url = URL.createObjectURL(blob), im = D.createElement("img");
+      im.alt = ""; im.src = url; w.textContent = ""; w.appendChild(im);
+      if (!v.st) w.onclick = function (ev) {
+        ev.stopPropagation();
+        var ov = D.createElement("div"); ov.className = "sai-imgview";
+        ov.innerHTML = '<img alt="" src="' + url + '">';
+        ov.onclick = function () { ov.remove(); };
+        D.body.appendChild(ov);
+      };
+    });
+  };
+  var mediaBusy = {};
+  function opMediaLoad(v, tries) {
+    if (!v || !v.fid || v.a || mediaBusy[v.id]) return;
+    mediaBusy[v.id] = 1;
+    xhrJson("GET", API + "?action=opMedia&clientId=" + encodeURIComponent(getClientId()) + "&fid=" + encodeURIComponent(v.fid), null, 60e3, function (r) {
+      delete mediaBusy[v.id];
+      var m = seventAiHistory.filter(function (x) { return x.voice && x.voice.id === v.id; })[0];
+      if (!m) return;
+      if (!r || !r.ok || !r.b64) { if ((tries || 0) < 2) setTimeout(function () { opMediaLoad(m.voice, (tries || 0) + 1); }, 4000); return; }
+      var bin = atob(r.b64), arr = new Uint8Array(bin.length);
+      for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+      idbPut(m.voice.id, new Blob([arr], { type: r.mime || "application/octet-stream" })).then(function () {
+        m.voice.a = 1; seventAiSaveHistory();
+        var b = bubbleOf(m.time), box = b && b.firstChild;
+        if (!box) return;
+        // перерисовываем только «медиа»-часть пузыря
+        [].slice.call(box.querySelectorAll(".sai-vpill,.sai-vn,.sai-img,.sai-q")).forEach(function (x) { x.remove(); });
+        box.classList.remove("sai-vnbox", "sai-imgbox", "sai-stbox");
+        W._saiVoiceDecor(b, m.voice); decorate(b, m);
+      });
+    });
+  }
   var closeChat = W.seventAiClose;
   W.seventAiClose = function () { headTyping(false); closeCam(); if (recOn) stopRec(true); if (player) player.au.pause(); closeMenu(); var ed = el("saiEdit"); if (ed) { ed.remove(); var rw = el("seventAiInputRow"); if (rw) rw.style.display = "flex"; var ms = el("seventAiMessages"); if (ms) ms.classList.remove("sai-blur"); } return closeChat.apply(this, arguments); };
 
