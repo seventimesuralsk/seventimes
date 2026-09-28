@@ -648,7 +648,9 @@
         var md = m.media, mv = md && md.fid ? { kind: md.k === "vn" ? "vn" : md.k === "img" ? "img" : "voice", id: "op_" + m.id, fid: String(md.fid), dur: Number(md.dur) || 0, a: 0 } : null;
         if (mv && md.st) mv.st = 1;
         if (mv && m.text) mv.cap = 1;
-        seventAiAppendMessage("ai", String(m.text || (mv ? (mv.kind === "img" ? (mv.st ? "Стикер" : "📷 Фото") : mv.kind === "vn" ? "Видеосообщение" : "🎤 Голосовое сообщение") : "")), null, null, mv);
+        // кнопка от администратора (/бронь, /меню…) — только из безопасного списка
+        var oacts = (m.acts || []).filter(function (c) { return c && /^(book|menu|cart|news|vacancy)$/.test(c.a) && c.label; }).slice(0, 3).map(function (c) { return { a: c.a, label: String(c.label).slice(0, 40) }; });
+        seventAiAppendMessage("ai", String(m.text || (mv ? (mv.kind === "img" ? (mv.st ? "Стикер" : "📷 Фото") : mv.kind === "vn" ? "Видеосообщение" : "🎤 Голосовое сообщение") : "")), oacts.length ? oacts : null, null, mv);
         var nm = seventAiHistory[seventAiHistory.length - 1];
         if (nm && nm.role === "ai") {
           nm.opId = m.id;
