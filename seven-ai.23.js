@@ -649,8 +649,14 @@
         if (mv && md.st) mv.st = 1;
         if (mv && m.text) mv.cap = 1;
         // кнопка от администратора (/бронь, /меню…) — только из безопасного списка
-        var oacts = (m.acts || []).filter(function (c) { return c && /^(book|menu|cart|news|vacancy)$/.test(c.a) && c.label; }).slice(0, 3).map(function (c) { return { a: c.a, label: String(c.label).slice(0, 40) }; });
-        seventAiAppendMessage("ai", String(m.text || (mv ? (mv.kind === "img" ? (mv.st ? "Стикер" : "📷 Фото") : mv.kind === "vn" ? "Видеосообщение" : "🎤 Голосовое сообщение") : "")), oacts.length ? oacts : null, null, mv);
+        var oacts = (m.acts || []).filter(function (c) { return c && (/^(book|menu|cart|news|vacancy)$/.test(c.a) || /^cat:[^<>]{1,60}$/.test(c.a)) && c.label; }).slice(0, 3).map(function (c) { return { a: c.a, label: String(c.label).slice(0, 50) }; });
+        // /маргарита, /пицца — карточки блюд из меню на сайте (цена и фото — свежие, для филиала гостя)
+        var ocards = (m.dishes || []).slice(0, 10).map(function (d) {
+          var it = d && findById(d.id);
+          if (!it) return d && d.id ? { id: String(d.id), name: String(d.name || ""), price: "" } : null;
+          return { id: String(it.id), name: it.name, price: it.stopped ? "Закончилось" : (Number(it.price) || 0).toLocaleString("ru") + " ₸", photo: it.photo || "", desc: String(it.desc || "").slice(0, 90), b: curBranch() || "" };
+        }).filter(function (c) { return c; });
+        seventAiAppendMessage("ai", String(m.text || (mv ? (mv.kind === "img" ? (mv.st ? "Стикер" : "📷 Фото") : mv.kind === "vn" ? "Видеосообщение" : "🎤 Голосовое сообщение") : "")), oacts.length ? oacts : null, ocards.length ? ocards : null, mv);
         var nm = seventAiHistory[seventAiHistory.length - 1];
         if (nm && nm.role === "ai") {
           nm.opId = m.id;
