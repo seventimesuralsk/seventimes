@@ -80,6 +80,14 @@
     ".sai-vn-pl{position:absolute;left:50%;top:50%;width:48px;height:48px;margin:-24px 0 0 -24px;border-radius:50%;background:rgba(0,0,0,.45);color:#fff;display:flex;align-items:center;justify-content:center}" +
     ".sai-vn.playing .sai-vn-pl{display:none}" +
     ".sai-vn-d{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);font-size:.66rem;color:#fff;background:rgba(0,0,0,.45);padding:1px 7px;border-radius:9px}" +
+    ".sai-opc{flex-basis:100%;margin:8px 0 2px;background:#fff;border:1px solid #ececf0;border-radius:14px;padding:12px;font-size:.8rem;color:#1d1d1f;line-height:1.45}" +
+    ".sai-opc h4{margin:0 0 8px;font-size:.84rem}.sai-opc .r{display:flex;justify-content:space-between;gap:10px;padding:2px 0}.sai-opc .r b{white-space:nowrap}" +
+    ".sai-opc .tot{border-top:1px solid #ececf0;margin-top:6px;padding-top:6px;font-weight:700}.sai-opc .mt{color:#6e6e73;margin-top:6px}.sai-opc .warn{color:#c0392b;margin-top:6px}" +
+    ".sai-opc input,.sai-opc select{width:100%;box-sizing:border-box;margin-top:6px;padding:9px 11px;border:1px solid #d9d9df;border-radius:10px;font:inherit;font-size:16px;background:#fff;color:#1d1d1f}" +
+    ".sai-opc .two{display:flex;gap:6px}.sai-opc .two>*{flex:1}.sai-opc label.ck{display:flex;gap:8px;align-items:flex-start;margin-top:8px;font-size:.74rem;color:#3a3a3c}.sai-opc label.ck input{width:auto;margin:2px 0 0}" +
+    ".sai-opc .go{display:block;width:100%;margin-top:10px;padding:12px;border:none;border-radius:12px;background:#25d366;color:#fff;font:inherit;font-weight:700;font-size:.84rem;cursor:pointer}" +
+    ".sai-opc .go:disabled{opacity:.5}.sai-opc .ed{display:block;width:100%;margin-top:6px;padding:8px;border:none;background:none;color:#7a1128;font:inherit;font-size:.76rem;cursor:pointer}" +
+    ".sai-opc .ok{margin-top:10px;color:#1faa53;font-weight:700}.sai-opc a{color:#7a1128}" +
     ".sai-imgbox .sai-vtxt,.sai-vpill~.sai-vtxt{font-style:normal!important;opacity:1!important;padding-left:8px}.sai-imgbox{padding:4px 4px 6px!important}.sai-imgbox>span:last-child{padding-right:6px}" +
     ".sai-img{flex-basis:100%;width:230px;max-width:100%;min-height:150px;border-radius:12px;overflow:hidden;background:#e4e4e8;display:flex;align-items:center;justify-content:center;color:#86868b;font-size:.72rem;cursor:zoom-in}" +
     ".sai-img img{display:block;width:100%;height:auto}.sai-img.st{width:140px;min-height:140px;background:transparent;cursor:default}" +
@@ -305,7 +313,7 @@
       };
       if (by) body.by = by;
       // сам звук/видео в таблицу и Google Диск не шлём — он уже у тебя в Telegram
-      if (audio) { body.media = audio.video ? "кружочек" : "голосовое"; body.mdur = audio.dur; }
+      if (audio) { body.media = audio.photo ? "фото" : audio.video ? "кружочек" : "голосовое"; body.mdur = audio.dur; }
       fetch(API, { method: "POST", keepalive: true, body: JSON.stringify(body) }).catch(function () {});
     });
   }
@@ -357,12 +365,26 @@
 
   // вопрос гостя (и голосовое) — администратору. Сам чат на вопросы не отвечает.
   var AWAY = "Ой, походу оператор отошёл. Ожидайте — ваше сообщение у него, он обязательно ответит.";
+  // что гость делает на сайте — администратору рядом с сообщением
+  function guestCtx() {
+    return safe(function () {
+      var prof = (typeof loadClientProfile === "function" && loadClientProfile()) || {}, bp = (typeof bk_loadProfile === "function" && bk_loadProfile()) || {};
+      var c = typeof cart !== "undefined" && cart ? cart : [];
+      return { cart: c.slice(0, 15).map(function (x) { return [String(x.name), x.qty]; }), sum: typeof cartTotal === "function" ? cartTotal() : 0, seen: W._saiLastSeen || "",
+        orders: Number(lsGet("st_order_count") || 0), nm: prof.name || bp.name || "", ph: prof.phone || bp.phone || "", br: curBranch() || "" };
+    }, null);
+  }
+  safe(function () {
+    var od = W.openDetail;
+    if (typeof od === "function" && !od._sai) { W.openDetail = function (it) { try { if (it && it.name) W._saiLastSeen = String(it.name).slice(0, 60); } catch (e) {} return od.apply(this, arguments); }; W.openDetail._sai = 1; }
+  });
   function forward(t, audio, tm) {
     var o = opGet(), fresh = !(o.until > Date.now());
     var body = fresh
       ? { action: "aiAsk", branch: curBranch() || "", message: t, clientId: getClientId(), name: guestName(), history: seventAiHistory.slice(-13, -1).map(function (e) { return { role: e.role, text: String(e.text || "").slice(0, 1500) }; }) }
       : { action: "jivoSend", clientId: getClientId(), name: guestName(), text: t };
     body.mt = tm;
+    var gc = guestCtx(); if (gc) body.ctx = gc;
     var lg = langGet(); if (lg) body.lang = lg;
     var mine = msgBy(tm, "user");
     if (mine && mine.reply) {
@@ -373,7 +395,7 @@
       else body.text = "(в ответ на «" + String(mine.reply.text).slice(0, 80) + "») " + t;
     }
     function go() {
-      xhrJson("POST", API, body, audio && audio.video ? 180e3 : 25e3, function (e) {
+      xhrJson("POST", API, body, audio && audio.video ? 180e3 : audio && audio.photo ? 60e3 : 25e3, function (e) {
         if (e && (e.operator || (!fresh && e.ok))) {
           typing(false);
           var mm = msgBy(tm, "user");
@@ -397,7 +419,8 @@
       fr.onload = function () {
         // тип файла бывает с кодеками через запятую (video/mp4;codecs=avc1…,mp4a…) — берём всё после «base64,»
         var du = String(fr.result || ""), bi = du.indexOf(";base64,"), b64 = bi >= 0 ? du.slice(bi + 8) : "";
-        if (audio.video) { body.video = b64; body.vmime = audio.mime; body.vdur = audio.dur; }
+        if (audio.photo) { body.photo = b64; body.pmime = audio.mime || "image/jpeg"; }
+        else if (audio.video) { body.video = b64; body.vmime = audio.mime; body.vdur = audio.dur; }
         else { body.audio = b64; body.mime = audio.mime; body.dur = audio.dur; }
         go();
       };
@@ -451,6 +474,7 @@
     if (oe) oe.remove();
     if (m.edited && tm) { var ed = D.createElement("span"); ed.className = "sai-ed"; ed.textContent = "изменено"; tm.insertBefore(ed, tm.firstChild); }
     if (m.role === "user" && m.st) paintTick(bubble, m.st);
+    if (m.opOrder || m.opBook) renderOpCard(bubble, m);
     // реакции под сообщением
     var orx = bubble.querySelector(".sai-rx"); if (orx) orx.remove();
     var list = [m.oreact, m.react].filter(function (x) { return x; });
@@ -660,6 +684,8 @@
         var nm = seventAiHistory[seventAiHistory.length - 1];
         if (nm && nm.role === "ai") {
           nm.opId = m.id;
+          if (m.opOrder && m.opOrder.items) nm.opOrder = cleanOrder(m.opOrder);
+          if (m.opBook && m.opBook.y) nm.opBook = cleanBook(m.opBook);
           var qm = m.q ? msgBy(m.q, "user") : null;
           if (qm) nm.reply = { mt: qm.time, who: "Вы", text: mediaLabel(qm) };
           seventAiSaveHistory(); refreshMsg(nm);
@@ -667,6 +693,7 @@
         o2.unseen = (o2.unseen || []).concat([m.id]).slice(-20);
         log(o2.q || "(продолжение разговора)", { text: String(m.text || (mv ? "[" + mediaLabel(nm || { voice: mv }) + "]" : "")), known: 1, intent: "operator" }, null, "Оператор");
         if (!chatVisible()) toast("SEVEN AI ответила в «Сообщениях»");
+        if (!chatVisible() || D.visibilityState === "hidden") { lsSet("sai_unread", String(Number(lsGet("sai_unread") || 0) + 1)); safe(function () { navigator.vibrate && navigator.vibrate([60, 40, 60]); }); safe(function () { W._saiUnreadPaint && W._saiUnreadPaint(); }); }
       });
       if (e && e.read && e.read > (o2.readSeen || 0)) { o2.readSeen = e.read; setTicks(3, 0, 2); if (awaitingReply()) headTyping(true); }
       opSet(o2);
@@ -815,6 +842,150 @@
     say(AI.afterSend("book", {}, { state: W._saiState }));
   }
 
+  // ── стартовые кнопки и быстрые ответы без администратора
+  function L(ru, kz) { return langGet() === "kz" ? kz : ru; }
+  function starterChips() {
+    return [{ a: "menu", label: L("Меню и цены", "Мәзір мен бағалар") }, { a: "info:dlv", label: L("Доставка", "Жеткізу") },
+      { a: "book", label: L("Забронировать столик", "Үстел брондау") }, { a: "info:addr", label: L("Адреса и часы работы", "Мекенжай және жұмыс уақыты") }];
+  }
+  function infoAddr() {
+    return safe(function () {
+      var cfg = typeof BRANCH_STATUS_CONFIG !== "undefined" ? BRANCH_STATUS_CONFIG : {};
+      return L("Наши рестораны в Уральске:", "Орал қаласындағы мейрамханаларымыз:") + "\n" + BRANCHES.map(function (b) { var h = cfg[b.id] && cfg[b.id].hours; return "• " + b.name + (h ? " — " + h.replace("-", "–") : ""); }).join("\n");
+    }, L("Адреса ресторанов — во вкладке «Меню», вверху.", "Мекенжайлар — «Мәзір» бетінің жоғарғы жағында."));
+  }
+  function infoDlv() {
+    var br = curBranch(), win = br ? safe(function () { return getOrderWindowText(br); }, "") : "";
+    return L("Доставка и самовывоз: выберите блюда в меню, добавьте в корзину и оформите заказ — он придёт нам в WhatsApp, и мы подтвердим.", "Жеткізу және алып кету: мәзірден тағам таңдап, себетке салып, тапсырыс беріңіз — ол бізге WhatsApp-қа келеді, біз растаймыз.") +
+      (win ? "\n" + L("Заказы принимаем ", "Тапсырыс қабылдау уақыты: ") + win + "." : "");
+  }
+
+  // ── заказ и бронь, собранные администратором: гость проверяет и жмёт одну кнопку → WhatsApp
+  function str(v, n) { return String(v == null ? "" : v).slice(0, n || 80); }
+  function cleanOrder(o) {
+    return { items: (o.items || []).slice(0, 20).map(function (x) { return { id: str(x.id, 40), name: str(x.name), qty: Math.max(1, Math.min(99, Number(x.qty) || 1)) }; }),
+      mode: o.mode === "self" ? "self" : "delivery", pay: o.pay === "cash" ? "cash" : "kaspi", cutlery: Math.max(0, Math.min(20, Number(o.cutlery) || 0)),
+      note: str(o.note, 300), name: str(o.name, 40), phone: str(o.phone, 20), pickup: str(o.pickup, 40),
+      street: str(o.street, 80), house: str(o.house, 12), entrance: str(o.entrance, 4), flat: str(o.flat, 8), floor: str(o.floor, 4) };
+  }
+  function cleanBook(b) {
+    var n = function (v, lo, hi) { v = Number(v); return isFinite(v) ? Math.max(lo, Math.min(hi, Math.round(v))) : lo; };
+    return { y: n(b.y, 2024, 2100), m: n(b.m, 0, 11), d: n(b.d, 1, 31), h: n(b.h, 0, 23), mi: n(b.mi, 0, 59), guests: n(b.guests, 0, 30), br: [0, 1, 3].indexOf(Number(b.br)) >= 0 ? Number(b.br) : -1,
+      name: str(b.name, 40), phone: str(b.phone, 20), comment: str(b.comment, 200) };
+  }
+  var MONG = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
+  var BK_IDS = { samal: 0, skoro: 1, abulhair: 3 };
+  function money(v) { return (Number(v) || 0).toLocaleString("ru") + " ₸"; }
+  function profile() { var a = safe(function () { return loadClientProfile(); }, null) || {}, b = safe(function () { return bk_loadProfile(); }, null) || {}; return { name: a.name || b.name || "", phone: a.phone || b.phone || "", street: a.street || "", house: a.house || "", entrance: a.entrance || "", flat: a.flat || "", floor: a.floor || "" }; }
+  function inputEl(ph, val, type) { var i = D.createElement("input"); i.placeholder = ph; i.value = val || ""; if (type) i.type = type; return i; }
+  function phoneOk(v) { var d = String(v || "").replace(/\D/g, ""); return d.length >= 10 && d.length <= 12; }
+  function renderOpCard(bubble, m) {
+    var box = bubble.firstChild;
+    if (!box) return;
+    var old = box.querySelector(".sai-opc");
+    if (old) old.remove();
+    var card = D.createElement("div");
+    card.className = "sai-opc";
+    card.onpointerdown = function (e) { e.stopPropagation(); };
+    box.insertBefore(card, box.lastChild);
+    if (m.opOrder) orderCard(card, m); else bookCard(card, m);
+  }
+  function sentBlock(card, txt, retry) {
+    var ok = D.createElement("div"); ok.className = "ok"; ok.textContent = "✓ " + txt; card.appendChild(ok);
+    if (retry) { var r = D.createElement("button"); r.type = "button"; r.className = "ed"; r.textContent = L("Открыть WhatsApp ещё раз", "WhatsApp-ты қайта ашу"); r.onclick = retry; card.appendChild(r); }
+  }
+  function orderCard(card, m) {
+    var o = m.opOrder, pr = profile(), rows = [], miss = [], total = 0;
+    o.items.forEach(function (x) {
+      var it = findById(x.id);
+      if (!it || it.stopped) { miss.push(x.name); return; }
+      rows.push({ it: it, qty: x.qty }); total += (Number(it.price) || 0) * x.qty;
+    });
+    var h = '<h4>🧾 ' + esc(L(o.mode === "self" ? "Самовывоз" : "Доставка", o.mode === "self" ? "Алып кету" : "Жеткізу")) + (curBranch() ? " · " + esc(safe(function () { return branchDisplayName(curBranch()); }, "")) : "") + "</h4>";
+    rows.forEach(function (r) { h += '<div class="r"><span>' + esc(ne(r.it.name)) + " ×" + r.qty + "</span><b>" + money(r.it.price * r.qty) + "</b></div>"; });
+    h += '<div class="r tot"><span>' + L("Итого", "Барлығы") + "</span><b>" + money(total) + "</b></div>";
+    if (o.mode === "self") h += '<div class="mt">' + L("Заберу: ", "Алып кетемін: ") + esc(o.pickup || L("время уточним", "уақытын нақтылаймыз")) + "</div>";
+    h += '<div class="mt">' + L("Оплата: ", "Төлем: ") + (o.pay === "cash" ? L("наличные", "қолма-қол") : "Kaspi") + (o.note ? "<br>" + L("Пожелания: ", "Тілектер: ") + esc(o.note) : "") + "</div>";
+    if (miss.length) h += '<div class="warn">' + L("Нет в вашем филиале сейчас: ", "Қазір филиалыңызда жоқ: ") + esc(miss.join(", ")) + "</div>";
+    card.innerHTML = h;
+    if (m.opOrder.sent) return sentBlock(card, L("Заказ отправлен в WhatsApp", "Тапсырыс WhatsApp-қа жіберілді"), function () { retryOpenWhatsapp(); });
+    var f = {};
+    if (o.mode !== "self") {
+      f.street = inputEl(L("Улица", "Көше"), o.street || pr.street); f.house = inputEl(L("Дом", "Үй"), o.house || pr.house); f.flat = inputEl(L("Кв.", "Пәтер"), o.flat || pr.flat);
+      var two = D.createElement("div"); two.className = "two"; two.appendChild(f.house); two.appendChild(f.flat);
+      var lab = D.createElement("div"); lab.className = "mt"; lab.textContent = L("Адрес доставки:", "Жеткізу мекенжайы:");
+      card.appendChild(lab); card.appendChild(f.street); card.appendChild(two);
+    }
+    f.name = inputEl(L("Ваше имя", "Атыңыз"), o.name || pr.name); f.phone = inputEl(L("Телефон", "Телефон"), o.phone || pr.phone, "tel");
+    var two2 = D.createElement("div"); two2.className = "two"; two2.appendChild(f.name); two2.appendChild(f.phone); card.appendChild(two2);
+    var go = D.createElement("button"); go.type = "button"; go.className = "go"; go.textContent = L("Подтвердить и отправить в WhatsApp", "Растау және WhatsApp-қа жіберу");
+    go.disabled = !rows.length;
+    go.onclick = function () {
+      if (!curBranch()) { toast(L("Сначала выберите филиал", "Алдымен филиалды таңдаңыз")); safe(function () { seventAiClose(); switchBottomTab("home"); showBranchModal(); }); return; }
+      var v = function (k) { return f[k] ? f[k].value.trim() : ""; };
+      if (v("name").length < 2) return toast(L("Впишите имя", "Атыңызды жазыңыз"));
+      if (!phoneOk(v("phone"))) return toast(L("Впишите телефон", "Телефонды жазыңыз"));
+      if (o.mode !== "self" && (!v("street") || !v("house"))) return toast(L("Впишите улицу и дом", "Көше мен үйді жазыңыз"));
+      cart.splice(0, cart.length);
+      rows.forEach(function (r) { cart.push({ id: r.it.id, name: r.it.name, price: r.it.price, qty: r.qty }); });
+      safe(function () { saveCartToStorage(); updBadge(); });
+      var pk = o.pickup && /^\d{1,2}[:.]\d{2}$/.test(o.pickup) ? "к " + o.pickup.replace(".", ":") : o.pickup;
+      W._saiState.flow = { t: "order", d: { final: { branch: curBranch(), mode: o.mode === "self" ? "self" : "delivery", name: v("name"), phone: v("phone"),
+        street: v("street"), house: v("house"), flat: v("flat"), entrance: o.entrance || pr.entrance, floor: o.floor || pr.floor, pay: o.pay, pickup: pk, cutlery: o.cutlery || 1, note: o.note } } };
+      sendOrder();
+      if (!cart.length) {
+        m.opOrder.sent = Date.now(); seventAiSaveHistory(); refreshMsg(m);
+        opNote("✅ Гость подтвердил заказ и отправил его в WhatsApp");
+      }
+    };
+    card.appendChild(go);
+    var ed = D.createElement("button"); ed.type = "button"; ed.className = "ed"; ed.textContent = L("Изменить состав в корзине", "Себетте өзгерту");
+    ed.onclick = function () {
+      cart.splice(0, cart.length);
+      rows.forEach(function (r) { cart.push({ id: r.it.id, name: r.it.name, price: r.it.price, qty: r.qty }); });
+      safe(function () { saveCartToStorage(); updBadge(); });
+      seventAiClose(); switchBottomTab("home"); safe(function () { openCart(); });
+    };
+    card.appendChild(ed);
+  }
+  function bookCard(card, m) {
+    var b = m.opBook, pr = profile(), wd = new Date(Date.UTC(b.y, b.m, b.d)).getUTCDay(), WD = ["вс", "пн", "вт", "ср", "чт", "пт", "сб"];
+    var h = "<h4>📅 " + L("Бронь столика", "Үстел брондау") + "</h4>" +
+      '<div class="r"><span>' + L("Дата", "Күні") + "</span><b>" + b.d + " " + MONG[b.m] + " (" + WD[wd] + ")</b></div>" +
+      '<div class="r"><span>' + L("Время", "Уақыты") + "</span><b>" + String(b.h).padStart(2, "0") + ":" + String(b.mi).padStart(2, "0") + "</b></div>" +
+      (b.comment ? '<div class="mt">' + L("Комментарий: ", "Пікір: ") + esc(b.comment) + "</div>" : "");
+    card.innerHTML = h;
+    if (b.sent) return sentBlock(card, L("Заявка на бронь отправлена в WhatsApp", "Брондау өтінімі WhatsApp-қа жіберілді"), function () { if (lastBookMsg) openWa(lastBookMsg); });
+    var sel = D.createElement("select"), br = b.br >= 0 ? b.br : (BK_IDS[curBranch()] !== undefined ? BK_IDS[curBranch()] : 0);
+    [0, 1, 3].forEach(function (id) { var op = D.createElement("option"); op.value = id; op.textContent = safe(function () { return bk_bookingWindow(id).name; }, String(id)); if (id === br) op.selected = true; sel.appendChild(op); });
+    var gs = D.createElement("select");
+    for (var i = 1; i <= 10; i++) { var og = D.createElement("option"); og.value = i; og.textContent = L("Гостей: ", "Қонақ саны: ") + i + (i === 10 ? "+" : ""); if (i === (b.guests ? Math.min(10, b.guests) : 2)) og.selected = true; gs.appendChild(og); }
+    var two0 = D.createElement("div"); two0.className = "two"; two0.appendChild(sel); two0.appendChild(gs); card.appendChild(two0);
+    var fn = inputEl(L("Ваше имя", "Атыңыз"), b.name || pr.name), fp = inputEl(L("Телефон", "Телефон"), b.phone || pr.phone, "tel");
+    var two = D.createElement("div"); two.className = "two"; two.appendChild(fn); two.appendChild(fp); card.appendChild(two);
+    var ck = D.createElement("label"); ck.className = "ck";
+    ck.innerHTML = '<input type="checkbox"><span>' + L("Согласен с ", "Келісемін: ") + '<a href="#">' + L("условиями бронирования", "брондау шарттары") + "</a>" + L(" (столик держим 20 мин, предоплата 2000 ₸ не возвращается при неявке)", " (үстел 20 мин ұсталады, келмесеңіз 2000 ₸ алдын ала төлем қайтарылмайды)") + "</span>";
+    ck.querySelector("a").onclick = function (e) { e.preventDefault(); W._saiAct("link:book"); };
+    card.appendChild(ck);
+    var go = D.createElement("button"); go.type = "button"; go.className = "go"; go.textContent = L("Подтвердить и отправить в WhatsApp", "Растау және WhatsApp-қа жіберу");
+    go.onclick = function () {
+      if (fn.value.trim().length < 2) return toast(L("Впишите имя", "Атыңызды жазыңыз"));
+      if (!phoneOk(fp.value)) return toast(L("Впишите телефон", "Телефонды жазыңыз"));
+      if (!ck.querySelector("input").checked) return toast(L("Отметьте согласие с условиями", "Шарттармен келісуді белгілеңіз"));
+      var id = Number(sel.value), g = Number(gs.value), before = lastBookMsg;
+      W._saiState.flow = { t: "book", d: { final: { bookId: id, branchName: safe(function () { return bk_bookingWindow(id).name; }, ""), y: b.y, m: b.m, d: b.d, h: b.h, mi: b.mi,
+        guests: g, guestsExact: g, comment: b.comment || "", name: fn.value.trim(), phone: fp.value.trim() } } };
+      sendBooking();
+      if (lastBookMsg && lastBookMsg !== before) {
+        b.sent = Date.now(); seventAiSaveHistory(); refreshMsg(m);
+        opNote("✅ Гость подтвердил бронь и отправил её в WhatsApp");
+      }
+    };
+    card.appendChild(go);
+  }
+  // тихая пометка администратору (в Telegram и в панель), гостю в чат не пишем
+  function opNote(t) { xhrJson("POST", API, { action: "jivoSend", clientId: getClientId(), name: guestName(), text: t }, 20e3, function () {}); }
+
   // ── кнопки под сообщениями
   W._saiAct = function (a, label) {
     a = String(a || "");
@@ -823,6 +994,8 @@
     if (a === "lang:kz" || a === "lang:ru") return setLang(a.slice(5));
     ev("SEVEN AI: кнопка", String(label || a));
     if (a === "order:send") return sendOrder();
+    if (a === "info:addr") return seventAiAppendMessage("ai", infoAddr(), [{ a: "book", label: L("Забронировать столик", "Үстел брондау") }, { a: "menu", label: L("Меню", "Мәзір") }]);
+    if (a === "info:dlv") return seventAiAppendMessage("ai", infoDlv(), [{ a: "menu", label: L("Открыть меню", "Мәзірді ашу") }]);
     if (a === "book:send") return sendBooking();
     if (a === "link:order") return void W.open("https://taplink.cc/seventimes/p/1153436/", "_blank", "noopener");
     if (a === "link:book") { termsOpened = true; return void W.open("https://taplink.cc/seventimes/p/1154a9f/", "_blank", "noopener"); }
@@ -853,7 +1026,7 @@
   // короткое приветствие на казахском и русском — единственное, что бот пишет сам (кроме «оператор отошёл»)
   W._saiWelcome = function () {
     if (W._saiNoWelcome) { W._saiNoWelcome = false; return; }
-    seventAiAppendMessage("ai", "Сәлеметсіз бе! Мен — сіздің SEVEN AI көмекшіңізбін. Кез келген сұрағыңызға жауап беремін.\n\nЗдравствуйте! Я ваш ИИ-помощник SEVEN AI. Отвечу на любые вопросы.");
+    seventAiAppendMessage("ai", "Сәлеметсіз бе! Мен — сіздің SEVEN AI көмекшіңізбін. Кез келген сұрағыңызға жауап беремін.\n\nЗдравствуйте! Я ваш ИИ-помощник SEVEN AI. Отвечу на любые вопросы.", starterChips());
   };
 
 
@@ -1079,7 +1252,8 @@
   function micOk() { return !!(SR || (W.MediaRecorder && navigator.mediaDevices && navigator.mediaDevices.getUserMedia)); }
   function camOk() { return !!(W.MediaRecorder && navigator.mediaDevices && navigator.mediaDevices.getUserMedia && W.HTMLCanvasElement && HTMLCanvasElement.prototype.captureStream); }
   function syncRow() {
-    var inp = el("seventAiInput"), send = el("seventAiSendBtn"), mic = el("saiMic"), cam = el("saiCamBtn");
+    var inp = el("seventAiInput"), send = el("seventAiSendBtn"), mic = el("saiMic"), cam = el("saiCamBtn"), ph = el("saiPhotoBtn");
+    if (ph) ph.style.display = chatVisible() && inp && !inp.disabled ? "" : "none";
     if (!inp || !send) return;
     var live = chatVisible() && !inp.disabled, has = !!inp.value.trim();
     var m = live && !has && !!mic && micOk(), c = live && !has && !!cam && camOk();
@@ -1099,6 +1273,15 @@
       c.onclick = openCam;
       row.insertBefore(c, send);
     }
+    if (!el("saiPhotoBtn")) {
+      var pb = D.createElement("button"), pf = D.createElement("input");
+      pb.type = "button"; pb.id = "saiPhotoBtn"; pb.className = "sai-camb"; pb.setAttribute("aria-label", "Отправить фото");
+      pb.innerHTML = '<svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="8.5" cy="9.5" r="1.7"/><path d="m21 16-5-5-9 9"/></svg>';
+      pf.type = "file"; pf.accept = "image/*"; pf.id = "saiPhotoIn"; pf.style.display = "none";
+      pf.onchange = function () { var f = pf.files && pf.files[0]; pf.value = ""; if (f) pickPhoto(f); };
+      pb.onclick = function () { pf.click(); };
+      row.insertBefore(pb, c); row.appendChild(pf);
+    }
     if (!b) {
       b = D.createElement("button");
       b.type = "button"; b.id = "saiMic"; b.className = "sai-mic"; b.setAttribute("aria-label", "Записать голосовое");
@@ -1109,6 +1292,30 @@
     if (inp && !inp._saiRow) { inp._saiRow = true; inp.addEventListener("input", syncRow); }
     syncRow();
   }
+  // ── фото от гостя: сжимаем до 1600px и отправляем, как голосовое (администратору в Telegram)
+  function pickPhoto(file) {
+    if (!/^image\//.test(file.type || "image/")) return toast("Это не фото");
+    var url = URL.createObjectURL(file), im = new Image();
+    im.onload = function () {
+      var k = Math.min(1, 1600 / Math.max(im.naturalWidth || 1, im.naturalHeight || 1)), cv = D.createElement("canvas");
+      cv.width = Math.max(1, Math.round(im.naturalWidth * k)); cv.height = Math.max(1, Math.round(im.naturalHeight * k));
+      cv.getContext("2d").drawImage(im, 0, 0, cv.width, cv.height);
+      URL.revokeObjectURL(url);
+      cv.toBlob(function (blob) {
+        if (!blob) return toast("Не получилось обработать фото");
+        if (blob.size > 5e6) return toast("Фото слишком большое");
+        var id = "ph" + Date.now(), inp = el("seventAiInput"), cap = inp ? inp.value.trim().slice(0, 500) : "";
+        idbPut(id, blob).then(function () {
+          if (!inp) return;
+          inp.value = cap || "📷 Фото";
+          W._saiSend({ kind: "img", id: id, a: 1, dur: 1, cap: cap ? 1 : 0 }, { blob: blob, mime: "image/jpeg", photo: 1, dur: 0 });
+        });
+      }, "image/jpeg", 0.82);
+    };
+    im.onerror = function () { URL.revokeObjectURL(url); toast("Не получилось открыть фото"); };
+    im.src = url;
+  }
+
   // чат новостей открывается в том же окне — там кнопок записи нет
   var openChat = W.seventAiOpen;
   if (openChat) W.seventAiOpen = function () { var r = openChat.apply(this, arguments); syncRow(); return r; };
@@ -1358,6 +1565,7 @@
 
   W._saiOnOpen = function () {
     loadFacts(); setupMic(); setupHold(); syncRow();
+    lsSet("sai_unread", "0"); safe(function () { W._saiUnreadPaint && W._saiUnreadPaint(); });
     // ответ администратора мог прийти, пока чат был закрыт (хранится 6 часов) — проверяем
     var o = opGet();
     if (o.asked && Date.now() - o.asked < 6 * 3600e3) { if (!(o.until > Date.now())) { o.until = Date.now() + OP_TTL; opSet(o); } opSchedule(300); }
