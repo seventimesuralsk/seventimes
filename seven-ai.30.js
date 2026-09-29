@@ -395,6 +395,7 @@
     var gc = guestCtx(); if (gc) body.ctx = gc;
     var lg = langGet(); if (lg) body.lang = lg;
     var mine = msgBy(tm, "user");
+    if (tm && !isLocked()) fbSend({ t: audio ? "" : t, mt: tm, k: audio ? (audio.video ? "vn" : audio.photo ? "img" : "voice") : "" });
     if (mine && mine.reply) {
       var rt = msgBy(mine.reply.mt);
       var rtg = rt ? (rt.role === "user" ? rt.tgId : String(rt.opId || "").replace(/^tg/, "")) : "";
@@ -675,6 +676,16 @@
         if (!m || (!m.text && !m.media) || o2.seen.indexOf(m.id) >= 0) return;
         o2.seen.push(m.id); o2.seen = o2.seen.slice(-50);
         o2.since = Math.max(o2.since || 0, m.ts || 0);
+        var fm = fbMatch(m);
+        if (fm) {
+          // уже показан мгновенно (Firebase) — только привязываем id скрипта
+          fm.opId = m.id;
+          var fq = m.q ? msgBy(m.q, "user") : null;
+          if (fq && !fm.reply) fm.reply = { mt: fq.time, who: "Вы", text: mediaLabel(fq) };
+          seventAiSaveHistory(); refreshMsg(fm);
+          o2.unseen = (o2.unseen || []).concat([m.id]).slice(-20);
+          return;
+        }
         o2.human = Date.now(); o2.until = Date.now() + OP_TTL; got++;
         if (opWaiting) { opWaiting = null; clearTimeout(opWaitTimer); W._aiBusy = false; }
         typing(false); headTyping(false);
@@ -729,6 +740,137 @@
     var o = opGet(); o.until = Date.now() + OP_TTL; o.q = t; o.asked = Date.now(); opSet(o);
     opSchedule(200);
   }
+
+  // ── мгновенный канал (Firebase Realtime Database): текст, «печатает», галочки и блок — за доли секунды.
+  // Скрипт Google остаётся как был (Telegram, история, голосовые, фото) и страхует: нет Firebase — всё идёт через него.
+  var FB = W._saiFB || { key: "AIzaSyD3101vOHEOxSVJM1cVADAr781geVbt8OY", db: "https://seven-ai-50995-default-rtdb.europe-west1.firebasedatabase.app", auth: "https://identitytoolkit.googleapis.com", sec: "https://securetoken.googleapis.com", ns: "" };
+  var fb = { tok: "", exp: 0, uid: "", ready: null, es: null, st: null, known: {}, t0: 0, idle: 0, blk: false, off: false };
+  function fbUrl(path, q) { return FB.db + "/" + path + ".json?" + (FB.ns ? "ns=" + FB.ns + "&" : "") + "auth=" + encodeURIComponent(fb.tok) + (q ? "&" + q : ""); }
+  function fbJson(r) { if (!r.ok) throw new Error("fb " + r.status); return r.json(); }
+  function fbAuth() {
+    if (fb.tok && Date.now() < fb.exp - 120e3) return Promise.resolve(fb.tok);
+    var rt = lsGet("sai_fb_rt");
+    var p = rt ? fetch(FB.sec + "/v1/token?key=" + FB.key, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: "grant_type=refresh_token&refresh_token=" + encodeURIComponent(rt) })
+      .then(fbJson).then(function (j) { return { t: j.id_token, r: j.refresh_token, u: j.user_id, e: j.expires_in }; }) : Promise.reject();
+    return p.catch(function () {
+      return fetch(FB.auth + "/v1/accounts:signUp?key=" + FB.key, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ returnSecureToken: true }) })
+        .then(fbJson).then(function (j) { return { t: j.idToken, r: j.refreshToken, u: j.localId, e: j.expiresIn }; });
+    }).then(function (a) {
+      if (!a.t) throw new Error("fb auth");
+      fb.tok = a.t; fb.uid = a.u; fb.exp = Date.now() + (Number(a.e) || 3600) * 1000; lsSet("sai_fb_rt", a.r);
+      return fb.tok;
+    });
+  }
+  // вход + «этот чат мой» (ID телефона закрепляется за этим браузером)
+  function fbReady() {
+    if (fb.off || typeof fetch === "undefined") return Promise.reject(new Error("off"));
+    if (fb.ready && fb.tok && Date.now() < fb.exp - 120e3) return fb.ready;
+    var cid = getClientId();
+    fb.ready = fbAuth().then(function () {
+      if (lsGet("sai_fb_own") === fb.uid + "|" + cid) return true;
+      return fetch(fbUrl("own/" + cid), { method: "PUT", body: JSON.stringify(fb.uid) }).then(function (r) {
+        if (r.status === 401 || r.status === 403) { fb.off = true; throw new Error("not mine"); } // чат закреплён за другим браузером — только через скрипт
+        if (!r.ok) throw new Error("fb own");
+        lsSet("sai_fb_own", fb.uid + "|" + cid); return true;
+      });
+    });
+    fb.ready.catch(function () { fb.ready = null; });
+    return fb.ready;
+  }
+  // сообщение гостя — оператору в панель сразу (скрипт получает его параллельно, как раньше)
+  function fbSend(it) {
+    return fbReady().then(function () {
+      var d = { c: getClientId(), t: String(it.t || "").slice(0, 2000), mt: Number(it.mt) || 0, ts: { ".sv": "timestamp" } };
+      if (it.k) d.k = it.k;
+      var nm = guestName(); if (nm) d.nm = String(nm).slice(0, 40);
+      return fetch(fbUrl("in"), { method: "POST", body: JSON.stringify(d) }).then(fbJson);
+    }).then(function () { if (it.mt) setTicks(2, it.mt); if (fb.es && fb.es.close) fbIdle(); else fbListen(); return true; }, function () { return false; });
+  }
+  // ответы, «печатает», прочитано и блок — одним потоком, пока чат открыт
+  function fbListen() {
+    if (fb.es || fb.off || !W.EventSource || !chatVisible() || D.visibilityState === "hidden") return;
+    if (lsGet("sai_chatted") !== "1" && !seventAiHistory.some(function (m) { return m.role === "user"; })) return;
+    fb.es = { pending: 1 };
+    fbReady().then(function () {
+      if (!fb.es || !fb.es.pending) return;
+      var es = new EventSource(fbUrl("g/" + getClientId()));
+      fb.es = es; fb.st = null; fb.t0 = Date.now(); fbIdle();
+      es.addEventListener("put", function (e) { fbEv(e, false); });
+      es.addEventListener("patch", function (e) { fbEv(e, true); });
+      es.addEventListener("auth_revoked", function () { fbClose(); fb.tok = ""; setTimeout(fbListen, 300); });
+      es.addEventListener("cancel", function () { fbClose(); });
+      es.onerror = function () { if (es.readyState === 2) { fbClose(); setTimeout(fbListen, 3000); } };
+    }, function () { fb.es = null; });
+  }
+  function fbClose() { var es = fb.es; fb.es = null; clearTimeout(fb.idle); if (es && es.close) es.close(); }
+  // 5 минут тишины в открытом чате — отключаемся (ответ всё равно придёт через скрипт)
+  function fbIdle() { clearTimeout(fb.idle); fb.idle = setTimeout(fbClose, 5 * 60e3); }
+  W._saiFbClose = fbClose;
+  function fbEv(e, patch) {
+    var d = safe(function () { return JSON.parse(e.data); }, null);
+    if (!d) return;
+    var first = fb.st === null, parts = String(d.path || "/").split("/").filter(Boolean);
+    if (first) fb.st = {};
+    if (!parts.length) {
+      if (patch) { for (var k in d.data || {}) fb.st[k] = d.data[k]; } else fb.st = d.data || {};
+    } else {
+      var node = fb.st;
+      for (var i = 0; i < parts.length - 1; i++) { if (!node[parts[i]] || typeof node[parts[i]] !== "object") node[parts[i]] = {}; node = node[parts[i]]; }
+      var last = parts[parts.length - 1];
+      if (patch) { if (!node[last] || typeof node[last] !== "object") node[last] = {}; for (var k2 in d.data || {}) node[last][k2] = d.data[k2]; }
+      else if (d.data === null) delete node[last]; else node[last] = d.data;
+    }
+    fbApply(first && !parts.length, parts[0] || "");
+  }
+  function fbApply(initial, what) {
+    var s = fb.st || {};
+    // блок: нажал в панели — у гостя замок сразу
+    if (s.blk && !fb.blk) { fb.blk = true; lockChat(true, true); }
+    else if (!s.blk && fb.blk) { fb.blk = false; lockChat(false); }
+    if (initial) { for (var k0 in s.r || {}) fb.known[k0] = 1; }
+    if (!initial || (s.r && Object.keys(s.r).length)) {
+      var keys = Object.keys(s.r || {}).sort();
+      keys.forEach(function (k) {
+        if (fb.known[k]) return;
+        fb.known[k] = 1;
+        var it = s.r[k];
+        if (!it || !it.t || fbHas(it.lid)) return;
+        fbShow(it);
+      });
+    }
+    if (initial) return;
+    if (what === "ty") { if (s.ty) { headTyping(true); clearTimeout(fb.tyT); fb.tyT = setTimeout(function () { headTyping(false); }, 6000); } else headTyping(false); }
+    if (what === "rd" && s.rd) setTicks(3, 0, 2);
+  }
+  function fbHas(lid) { return !!lid && seventAiHistory.some(function (m) { return m.role === "ai" && m.lid === lid; }); }
+  function fbShow(it) {
+    var o2 = opGet(); o2.human = Date.now(); o2.until = Math.max(o2.until || 0, Date.now() + OP_TTL); opSet(o2);
+    if (opWaiting) { opWaiting = null; clearTimeout(opWaitTimer); W._aiBusy = false; }
+    typing(false); headTyping(false); clearTimeout(fb.tyT);
+    setTicks(3, 0, 1);
+    seventAiAppendMessage("ai", String(it.t).slice(0, 3000));
+    var nm = seventAiHistory[seventAiHistory.length - 1];
+    if (nm && nm.role === "ai") {
+      nm.lid = String(it.lid || "");
+      var qm = it.q ? msgBy(it.q, "user") : null;
+      if (qm) nm.reply = { mt: qm.time, who: "Вы", text: mediaLabel(qm) };
+      seventAiSaveHistory(); refreshMsg(nm);
+    }
+    fbIdle();
+    if (!chatVisible() || D.visibilityState === "hidden") { lsSet("sai_unread", String(Number(lsGet("sai_unread") || 0) + 1)); safe(function () { navigator.vibrate && navigator.vibrate([60, 40, 60]); }); safe(function () { W._saiUnreadPaint && W._saiUnreadPaint(); }); }
+    opSchedule(150); // скрипт подтянет тот же ответ с его id (реакции, «увидел») — без дубля
+  }
+  // ответ пришёл и через скрипт — это тот же, что уже показан мгновенно
+  function fbMatch(m) {
+    if (!m || m.media || (m.acts && m.acts.length) || (m.dishes && m.dishes.length)) return null;
+    var hit = null;
+    seventAiHistory.forEach(function (x) {
+      if (hit || x.role !== "ai" || !x.lid || x.opId) return;
+      if ((m.lid && x.lid === m.lid) || (!m.lid && String(x.text) === String(m.text || ""))) hit = x;
+    });
+    return hit;
+  }
+  D.addEventListener("visibilitychange", function () { if (D.visibilityState === "hidden") fbClose(); else if (chatVisible()) fbListen(); });
 
   W._saiSend = function (voice, audio) {
     var inp = el("seventAiInput");
@@ -1397,7 +1539,7 @@
 
   // чат новостей открывается в том же окне — там кнопок записи нет
   var openChat = W.seventAiOpen;
-  if (openChat) W.seventAiOpen = function () { var r = openChat.apply(this, arguments); syncRow(); if (chatVisible()) lockCheck(); return r; };
+  if (openChat) W.seventAiOpen = function () { var r = openChat.apply(this, arguments); syncRow(); if (chatVisible()) { lockCheck(); fbListen(); } return r; };
 
   // ── кружочки (видеосообщения), как в Telegram/WhatsApp ──
   // Камера на весь экран, фон размыт: сверху ✕ и таймер, по центру круг,
@@ -1640,7 +1782,7 @@
     });
   }
   var closeChat = W.seventAiClose;
-  W.seventAiClose = function () { headTyping(false); closeCam(); if (recOn) stopRec(true); if (player) player.au.pause(); closeMenu(); var ed = el("saiEdit"); if (ed) { ed.remove(); var rw = el("seventAiInputRow"); if (rw) rw.style.display = "flex"; var ms = el("seventAiMessages"); if (ms) ms.classList.remove("sai-blur"); } return closeChat.apply(this, arguments); };
+  W.seventAiClose = function () { fbClose(); headTyping(false); closeCam(); if (recOn) stopRec(true); if (player) player.au.pause(); closeMenu(); var ed = el("saiEdit"); if (ed) { ed.remove(); var rw = el("seventAiInputRow"); if (rw) rw.style.display = "flex"; var ms = el("seventAiMessages"); if (ms) ms.classList.remove("sai-blur"); } return closeChat.apply(this, arguments); };
 
   W._saiOnOpen = function () {
     loadFacts(); setupMic(); setupHold(); syncRow();
