@@ -83,6 +83,38 @@
     "#seventAiInputRow.sai-locked{display:none!important}" +
     ".sai-lockbar{display:none;margin:0 var(--px,16px) calc(12px + env(safe-area-inset-bottom,0px));padding:14px 16px;border-radius:16px;background:#f2f2f7;color:#3a3a3c;font-size:.84rem;line-height:1.35;text-align:center;align-items:center;justify-content:center;gap:8px}" +
     ".sai-lockbar.on{display:flex}" +
+    /* тема чата: свой цвет сообщений и обои */
+    "#seventAiOv.sai-th #seventAiMessages .sai-msg[style*='flex-end']>div:first-child:not(.sai-vnbox){background:var(--sai-me)!important;color:var(--sai-me-fg)!important}" +
+    "#seventAiOv.sai-th-wall #seventAiMessages .sai-msg[style*='flex-start']>div:first-child:not(.sai-vnbox){background:#fff!important;box-shadow:0 1px 1.5px rgba(0,0,0,.13)}" +
+    "#seventAiOv.sai-th-dark #seventAiMessages .sai-msg[style*='flex-start']>div:first-child:not(.sai-vnbox){background:#2a2c31!important;color:#f2f2f7!important;box-shadow:none}" +
+    "#seventAiOv.sai-th-dark #seventAiMessages>div[style*='align-self:center'] span{background:rgba(255,255,255,.14)!important;color:#e5e5ea!important}" +
+    "#seventAiOv.sai-th-wall #seventAiMessages>div[style*='align-self:center'] span{box-shadow:0 1px 1px rgba(0,0,0,.08)}" +
+    "#seventAiOv.sai-th-dark .sai-vnbox{color:#e5e5ea!important}" +
+    "#seventAiMessages{transition:background .25s}" +
+    "#seventAiOv.sai-th .sai-mic,#seventAiOv.sai-th .sai-send{background:var(--sai-me)!important;color:var(--sai-me-fg)!important}#seventAiOv.sai-th .sai-plus,#seventAiOv.sai-th .sai-camb{color:var(--sai-me)!important}" +
+    ".sai-set-ov{position:fixed;inset:0;z-index:1200;background:rgba(0,0,0,.32);display:flex;align-items:flex-end;justify-content:center;animation:saiSetF .18s ease}" +
+    "@keyframes saiSetF{from{opacity:0}to{opacity:1}}@keyframes saiSetU{from{transform:translateY(40px)}to{transform:none}}" +
+    ".sai-set{width:100%;max-width:520px;max-height:90vh;overflow-y:auto;background:#f2f2f7;border-radius:18px 18px 0 0;padding:0 16px calc(24px + env(safe-area-inset-bottom,0px));animation:saiSetU .24s cubic-bezier(.2,.8,.2,1);-webkit-overflow-scrolling:touch}" +
+    ".sai-set-h{position:sticky;top:0;z-index:1;display:flex;align-items:center;justify-content:center;padding:14px 0 10px;background:#f2f2f7}.sai-set-h b{font-size:1rem}" +
+    ".sai-set-x{position:absolute;right:0;top:10px;border:none;background:none;color:#7a1128;font:inherit;font-weight:600;font-size:.95rem;padding:6px;cursor:pointer}" +
+    ".sai-set-pv{display:flex;justify-content:center;margin:4px 0 6px}" +
+    ".sai-set-g{font-size:.72rem;color:#6e6e73;text-transform:uppercase;letter-spacing:.04em;margin:16px 4px 8px}" +
+    ".sai-set-l{background:#fff;border-radius:14px;overflow:hidden}" +
+    ".sai-set-r{display:flex;align-items:center;gap:12px;width:100%;padding:13px 14px;border:none;background:#fff;font:inherit;font-size:.92rem;color:#1d1d1f;text-align:left;cursor:pointer;border-bottom:1px solid #ececf0}" +
+    ".sai-set-r span{width:26px;text-align:center}" +
+    ".sai-sol{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;padding:12px 14px}.sai-sol[hidden]{display:none}" +
+    ".sai-tws{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}" +
+    ".sai-tw{border:none;background:none;padding:0;font:inherit;cursor:pointer;display:flex;flex-direction:column;gap:5px;align-items:center}.sai-tw em{font-style:normal;font-size:.72rem;color:#3a3a3c}" +
+    ".sai-tt{position:relative;display:block;width:100%;aspect-ratio:3/4;border-radius:14px;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}" +
+    ".sai-tt.big{width:132px}" +
+    ".sai-tt i{position:absolute;height:11%;border-radius:8px}.sai-tt .a{left:9%;top:16%;width:52%;background:#fff;box-shadow:0 1px 1px rgba(0,0,0,.12)}.sai-tt .a.d{background:#2a2c31}" +
+    ".sai-tt .b{right:9%;top:38%;width:46%}.sai-tt .a.s{top:60%;width:38%}" +
+    ".sai-tw.on .sai-tt{box-shadow:0 0 0 3px #fff,0 0 0 5px #7a1128}" +
+    ".sai-tcs{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;background:#fff;border-radius:14px;padding:14px}" +
+    ".sai-tc{width:100%;aspect-ratio:1;border-radius:50%;border:none;cursor:pointer;position:relative;padding:0}.sai-tc.sq{border-radius:12px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}" +
+    ".sai-tc.on::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1rem;border-radius:inherit;box-shadow:0 0 0 3px #fff,0 0 0 5px #1d1d1f;text-shadow:0 0 3px rgba(0,0,0,.5)}" +
+    ".sai-seg{display:flex;background:#e3e3e8;border-radius:10px;padding:2px}.sai-seg button{flex:1;border:none;background:none;font:inherit;font-size:.88rem;padding:8px;border-radius:8px;cursor:pointer;color:#1d1d1f}.sai-seg button.on{background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12);font-weight:600}" +
+    ".sai-set-reset{display:block;width:100%;margin-top:18px;padding:13px;border:none;border-radius:14px;background:#fff;color:#d70015;font:inherit;font-size:.92rem;cursor:pointer}" +
     ".sai-plus{flex-shrink:0;width:38px;height:44px;border:none;background:none;color:#7a1128;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;align-self:center;-webkit-tap-highlight-color:transparent}" +
     ".sai-pmenu{position:fixed;z-index:100001;background:rgba(255,255,255,.96);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border-radius:16px;box-shadow:0 10px 36px rgba(0,0,0,.18),0 0 0 .5px rgba(0,0,0,.06);padding:6px;min-width:190px;animation:saiPop .16s ease-out}" +
     "@keyframes saiPop{from{transform:translateY(6px) scale(.97);opacity:0}}" +
@@ -412,14 +444,8 @@
           lsSet("sai_chatted", "1");
           setTicks(2, tm);
           log(t, { text: "(передано администратору)", known: 1, intent: "operator" }, audio, "Передано");
-          opStart(t, function () {
-            // «оператор отошёл» — один раз и всё (не чаще раза в 6 часов)
-            var last = 0;
-            try { last = Number(localStorage.getItem("sai_away") || 0); } catch (le) {}
-            if (Date.now() - last < 6 * 3600e3) return;
-            try { localStorage.setItem("sai_away", String(Date.now())); } catch (le2) {}
-            seventAiAppendMessage("ai", AWAY);
-          }, e.now);
+          // SEVEN AI сам ничего не пишет: отвечает только администратор (панель или Telegram)
+          opStart(t, null, e.now);
         }
         if (e && e.blocked) { typing(false); lockChat(true, true); }
         // не дошло (Telegram не подключён или недоступен) — остаётся одна галочка, бот молчит
@@ -720,6 +746,7 @@
       if (e && e.read && e.read > (o2.readSeen || 0)) { o2.readSeen = e.read; setTicks(3, 0, 2); if (awaitingReply()) headTyping(true); }
       opSet(o2);
       ackSeen();
+      if (got) fbSeenNow();
       // чат открыт — сразу следующий «длинный» запрос; закрыт — реже
       var fresh = Math.max(o2.human || 0, o2.asked || 0);
       if (!e) opSchedule(4000);
@@ -796,6 +823,22 @@
       return fetch(fbUrl("in"), { method: "POST", body: JSON.stringify(d) }).then(fbJson);
     }).then(function () { if (it.mt) setTicks(2, it.mt); if (fb.es && fb.es.close) fbIdle(); else fbListen(); return true; }, function () { return false; });
   }
+  // «гость прочитал» и «гость печатает» — администратору в панель мгновенно (не чаще раза в 2–3 с)
+  var fbPingAt = {};
+  function fbPing(kind) {
+    if (fb.off || isLocked() || Date.now() - (fbPingAt[kind] || 0) < (kind === "ty" ? 3000 : 2000)) return;
+    if (lsGet("sai_chatted") !== "1") return;
+    fbPingAt[kind] = Date.now();
+    fbReady().then(function () {
+      return fetch(fbUrl("in"), { method: "POST", body: JSON.stringify({ c: getClientId(), t: "", mt: 0, k: kind, ts: { ".sv": "timestamp" } }) });
+    }).catch(function () {});
+  }
+  function fbSeenNow() {
+    if (!chatVisible() || D.visibilityState === "hidden") return;
+    var last = seventAiHistory[seventAiHistory.length - 1];
+    if (last && last.role === "ai" && (last.lid || last.opId)) fbPing("seen");
+  }
+  W._saiFbSeen = fbSeenNow;
   // ответы, «печатает», прочитано и блок — одним потоком, пока чат открыт
   function fbListen() {
     if (fb.es || fb.off || !W.EventSource || !chatVisible() || D.visibilityState === "hidden") return;
@@ -867,6 +910,7 @@
       seventAiSaveHistory(); refreshMsg(nm);
     }
     fbIdle();
+    fbSeenNow();
     if (!chatVisible() || D.visibilityState === "hidden") { lsSet("sai_unread", String(Number(lsGet("sai_unread") || 0) + 1)); safe(function () { navigator.vibrate && navigator.vibrate([60, 40, 60]); }); safe(function () { W._saiUnreadPaint && W._saiUnreadPaint(); }); }
     opSchedule(150); // скрипт подтянет тот же ответ с его id (реакции, «увидел») — без дубля
   }
@@ -880,7 +924,7 @@
     });
     return hit;
   }
-  D.addEventListener("visibilitychange", function () { if (D.visibilityState === "hidden") fbClose(); else if (chatVisible()) fbListen(); });
+  D.addEventListener("visibilitychange", function () { if (D.visibilityState === "hidden") fbClose(); else if (chatVisible()) { fbListen(); fbSeenNow(); } });
 
   W._saiSend = function (voice, audio) {
     var inp = el("seventAiInput");
@@ -897,7 +941,6 @@
     closeReply();
     if (tm) setTicks(1, tm);
     forward(t, audio, tm);
-    askLang();
   };
 
   // ── язык общения: после первого сообщения один раз спрашиваем (сначала по-казахски, потом по-русски).
@@ -921,20 +964,131 @@
     seventAiHistory.forEach(function (m) { if (m.acts && m.acts.some(function (c) { return c && /^lang:/.test(c.a); })) { delete m.acts; changed = true; } });
     if (changed) seventAiSaveHistory();
     safe(function () { D.querySelectorAll("#seventAiMessages .sai-chips").forEach(function (x) { x.remove(); }); });
-    seventAiAppendMessage("ai", code === "kz" ? "Жақсы! Сізге қазақ тілінде жауап береміз." : "Хорошо! Будем общаться на русском.");
+    toast(code === "kz" ? "Қазақ тілі таңдалды" : "Выбран русский язык");
     xhrJson("POST", API, { action: "opLang", clientId: getClientId(), name: guestName(), lang: code }, 15e3, function () {});
     ev("SEVEN AI: язык", code === "kz" ? "Қазақша" : "Русский");
   }
   safe(function () { var lg = langGet(); if (lg) W._saiLang = lg; });
 
+  // ── Настройки SEVEN AI: тема чата (обои + цвет сообщений) и язык. Всё хранится на телефоне гостя.
+  // Обои нарисованы кодом (градиенты и узоры SVG) — ничего не скачивается, открываются мгновенно.
+  var DOODLE = function (fg) {
+    var s = '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120" fill="none" stroke="' + fg + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M14 22h16v10a8 8 0 0 1-16 0zM30 25h3a3 3 0 0 1 0 6h-3"/><path d="M18 17c0-2 2-2 2-4M24 17c0-2 2-2 2-4"/>' +
+      '<path d="M70 14l22 8-18 20z"/><circle cx="78" cy="22" r="1.5"/><circle cx="84" cy="27" r="1.5"/>' +
+      '<path d="M18 80c8-10 20-10 28 0M16 84h32M18 88h28"/><path d="M78 76a10 10 0 1 0 20 0 10 10 0 1 0-20 0M88 66v-4M96 70l3-3"/>' +
+      '<path d="M52 52l3 6 6 1-5 4 1 6-5-3-5 3 1-6-5-4 6-1z"/><path d="M100 100q6-6 12 0M4 104q6-6 12 0"/></svg>';
+    return "url(\"data:image/svg+xml," + encodeURIComponent(s) + "\")";
+  };
+  var WALLS = [
+    { id: "none", n: "Без обоев", bg: "#ffffff" },
+    { id: "cream", n: "Крем", bg: DOODLE("rgba(122,17,40,.10)") + " 0 0/120px 120px, #f6f0e6" },
+    { id: "mint", n: "Мята", bg: DOODLE("rgba(0,90,60,.10)") + " 0 0/120px 120px, #e4f2ea" },
+    { id: "sky", n: "Небо", bg: DOODLE("rgba(20,70,140,.10)") + " 0 0/120px 120px, #e3eef9" },
+    { id: "lilac", n: "Лаванда", bg: DOODLE("rgba(80,40,140,.10)") + " 0 0/120px 120px, #ece6f6" },
+    { id: "night", n: "Ночь", bg: DOODLE("rgba(255,255,255,.07)") + " 0 0/120px 120px, #15171b", dark: 1 },
+    { id: "wine", n: "Бордо", bg: DOODLE("rgba(255,255,255,.08)") + " 0 0/120px 120px, #3a0a15", dark: 1 },
+    { id: "dawn", n: "Рассвет", bg: "linear-gradient(165deg,#ffe2d1 0%,#ffd0dd 50%,#e8d6ff 100%)" },
+    { id: "peach", n: "Персик", bg: "linear-gradient(165deg,#fff1dc 0%,#ffd8bf 100%)" },
+    { id: "lagoon", n: "Лагуна", bg: "linear-gradient(165deg,#d5f5ee 0%,#cfe4ff 100%)" },
+    { id: "rose", n: "Роза", bg: "radial-gradient(circle at 20% 15%,#ffd9e6 0,transparent 45%),radial-gradient(circle at 85% 80%,#ffe8cc 0,transparent 45%),#fff5f7" },
+    { id: "aurora", n: "Сияние", bg: "radial-gradient(circle at 15% 20%,#c9f2e3 0,transparent 42%),radial-gradient(circle at 85% 30%,#d9d2ff 0,transparent 45%),radial-gradient(circle at 50% 90%,#ffe0ee 0,transparent 45%),#f7f7fb" },
+    { id: "sand", n: "Песок", bg: "linear-gradient(180deg,#f4ecdf 0%,#e9dcc6 100%)" },
+    { id: "ocean", n: "Океан", bg: "linear-gradient(165deg,#0f2b4a 0%,#1d4f7a 100%)", dark: 1 },
+    { id: "forest", n: "Лес", bg: "linear-gradient(165deg,#12302a 0%,#285446 100%)", dark: 1 },
+    { id: "violet", n: "Фиалка", bg: "linear-gradient(165deg,#2a1640 0%,#5a2f73 100%)", dark: 1 }
+  ];
+  var SOLIDS = ["#f2f2f7", "#e8f5e9", "#e3f2fd", "#fff8e1", "#fce4ec", "#ede7f6", "#e0f2f1", "#efebe9", "#1c1c1e", "#0b3d2e", "#102a43", "#3b1020"];
+  // цвет своих сообщений (как «Значок чата» в WhatsApp): [фон, текст]
+  var BUBBLES = [["#7a1128", "#fff"], ["#1f7a4d", "#fff"], ["#0a6e5c", "#fff"], ["#0b5cad", "#fff"], ["#1e3a8a", "#fff"], ["#5b3cc4", "#fff"],
+    ["#8e44ad", "#fff"], ["#c2185b", "#fff"], ["#d9463b", "#fff"], ["#b8561c", "#fff"], ["#8d6e63", "#fff"], ["#5d4037", "#fff"],
+    ["#2e7d32", "#fff"], ["#558b2f", "#fff"], ["#00838f", "#fff"], ["#0277bd", "#fff"], ["#455a64", "#fff"], ["#37474f", "#fff"],
+    ["#b8860b", "#fff"], ["#f2c94c", "#1d1d1f"], ["#a5d6a7", "#1d1d1f"], ["#90caf9", "#1d1d1f"], ["#f8bbd0", "#1d1d1f"], ["#1d1d1f", "#fff"]];
+  var TH_KEY = "sai_theme", TH_IMG = "sai_theme_img";
+  function thGet() { return safe(function () { return JSON.parse(localStorage.getItem(TH_KEY) || "{}") || {}; }, {}); }
+  function thSet(t) { safe(function () { localStorage.setItem(TH_KEY, JSON.stringify(t)); }); thApply(); }
+  function thWall(t) {
+    if (t.w === "img") { var im = lsGet(TH_IMG); return im ? { bg: "url(" + JSON.stringify(im) + ") center/cover no-repeat, #222", dark: 1, img: 1 } : WALLS[0]; }
+    if (t.w && /^#[0-9a-f]{6}$/i.test(t.w)) return { bg: t.w, dark: SOLIDS.indexOf(t.w) >= 8 ? 1 : 0 };
+    for (var i = 0; i < WALLS.length; i++) if (WALLS[i].id === t.w) return WALLS[i];
+    return WALLS[0];
+  }
+  function thApply() {
+    var box = el("seventAiMessages"), ov = el("seventAiOv"); if (!box || !ov) return;
+    var ai = chatVisible() || (el("seventAiOvTitle") && el("seventAiOvTitle").textContent === "SEVEN AI");
+    var sb = el("saiSetBtn"); if (sb) sb.style.display = ai ? "block" : "none";
+    var t = thGet(), w = thWall(t), b = BUBBLES[Number(t.b) || 0] || BUBBLES[0], on = ai && (w.id !== "none" || t.b);
+    box.style.background = ai && w.id !== "none" ? w.bg : "";
+    box.style.backgroundAttachment = w.img ? "local" : "";
+    ov.classList.toggle("sai-th", !!on);
+    ov.classList.toggle("sai-th-wall", ai && w.id !== "none");
+    ov.classList.toggle("sai-th-dark", ai && !!w.dark);
+    ov.style.setProperty("--sai-me", b[0]); ov.style.setProperty("--sai-me-fg", b[1]);
+  }
+  W._saiThemeSync = thApply;
+  // файл чата грузится в момент первого открытия — тему применяем сразу и ещё раз, когда окно дорисуется
+  safe(thApply); setTimeout(function () { safe(thApply); }, 0); setTimeout(function () { safe(thApply); }, 300);
+  function thThumb(bg, dark, me) {
+    return '<span class="sai-tt" style="background:' + String(bg).replace(/"/g, "&quot;") + '"><i class="a' + (dark ? " d" : "") + '"></i><i class="b" style="background:' + me + '"></i><i class="a s' + (dark ? " d" : "") + '"></i></span>';
+  }
+  function thSheet() {
+    var old = el("saiSet"); if (old) old.remove();
+    var t = thGet(), me = (BUBBLES[Number(t.b) || 0] || BUBBLES[0])[0], lg = langGet();
+    var ov = D.createElement("div"); ov.id = "saiSet"; ov.className = "sai-set-ov";
+    var walls = WALLS.map(function (w) { return '<button type="button" class="sai-tw' + ((t.w || "none") === w.id ? " on" : "") + '" data-w="' + w.id + '">' + thThumb(w.bg, w.dark, me) + "<em>" + esc(w.n) + "</em></button>"; }).join("");
+    var cols = BUBBLES.map(function (b, i) { return '<button type="button" class="sai-tc' + ((Number(t.b) || 0) === i ? " on" : "") + '" data-b="' + i + '" style="background:' + b[0] + '" aria-label="Цвет ' + (i + 1) + '"></button>'; }).join("");
+    var sol = SOLIDS.map(function (c) { return '<button type="button" class="sai-tc sq' + (t.w === c ? " on" : "") + '" data-w="' + c + '" style="background:' + c + '"></button>'; }).join("");
+    ov.innerHTML = '<div class="sai-set" role="dialog" aria-label="Настройки SEVEN AI"><div class="sai-set-h"><b>Настройки</b><button type="button" class="sai-set-x" aria-label="Закрыть">Готово</button></div>' +
+      '<div class="sai-set-pv">' + thThumb(thWall(t).bg, thWall(t).dark, me).replace("sai-tt", "sai-tt big") + "</div>" +
+      '<div class="sai-set-g">Обои</div><div class="sai-set-l">' +
+      '<label class="sai-set-r"><span>🖼</span>Выбрать из фото<input type="file" accept="image/*" hidden></label>' +
+      '<button type="button" class="sai-set-r" data-open="sol"><span>🎨</span>Установить цвет</button>' +
+      '<div class="sai-sol" hidden>' + sol + "</div></div>" +
+      '<div class="sai-tws">' + walls + "</div>" +
+      '<div class="sai-set-g">Цвет ваших сообщений</div><div class="sai-tcs">' + cols + "</div>" +
+      '<div class="sai-set-g">Язык общения</div><div class="sai-seg"><button type="button" data-l="ru"' + (lg !== "kz" ? ' class="on"' : "") + '>Русский</button><button type="button" data-l="kz"' + (lg === "kz" ? ' class="on"' : "") + ">Қазақша</button></div>" +
+      '<button type="button" class="sai-set-reset">Сбросить тему</button></div>';
+    D.body.appendChild(ov);
+    function redraw() { var keep = ov.querySelector(".sai-set").scrollTop; thSheet(); var n = el("saiSet"); if (n) n.querySelector(".sai-set").scrollTop = keep; }
+    ov.addEventListener("click", function (e) {
+      if (e.target === ov || e.target.closest(".sai-set-x")) return ov.remove();
+      var w = e.target.closest("[data-w]"), b = e.target.closest("[data-b]"), l = e.target.closest("[data-l]");
+      if (e.target.closest("[data-open]")) { var s = ov.querySelector(".sai-sol"); s.hidden = !s.hidden; return; }
+      if (w) { var t1 = thGet(); t1.w = w.getAttribute("data-w"); thSet(t1); return redraw(); }
+      if (b) { var t2 = thGet(); t2.b = Number(b.getAttribute("data-b")); thSet(t2); return redraw(); }
+      if (l) { if (l.getAttribute("data-l") !== langGet()) setLang(l.getAttribute("data-l")); return redraw(); }
+      if (e.target.closest(".sai-set-reset")) { safe(function () { localStorage.removeItem(TH_KEY); localStorage.removeItem(TH_IMG); }); thApply(); return redraw(); }
+    });
+    ov.querySelector('input[type="file"]').onchange = function () {
+      var f = this.files && this.files[0]; if (!f) return;
+      var url = URL.createObjectURL(f), im = new Image();
+      im.onload = function () {
+        // сжимаем до 900px — фото хранится на телефоне гостя, никуда не отправляется
+        var k = Math.min(1, 900 / Math.max(im.width, im.height)), c = D.createElement("canvas");
+        c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
+        c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+        var q = 0.8, data = c.toDataURL("image/jpeg", q);
+        while (data.length > 900000 && q > 0.4) { q -= 0.15; data = c.toDataURL("image/jpeg", q); }
+        var ok = safe(function () { localStorage.setItem(TH_IMG, data); return true; }, false);
+        if (!ok) return toast("Фото слишком большое — выберите другое");
+        var t3 = thGet(); t3.w = "img"; thSet(t3); redraw();
+      };
+      im.onerror = function () { toast("Не получилось открыть фото"); };
+      im.src = url;
+    };
+  }
+  W._saiSettings = thSheet;
+
   // ── отправка заказа, собранного в чате
-  function sendOrder() {
+  function fail(msg) { toast(msg); return false; }
+  // fromOp — заказ собрал администратор: часы работы он уже учёл, не блокируем
+  function sendOrder(fromOp) {
     var f = W._saiState.flow;
-    if (!f || f.t !== "order" || !f.d || !f.d.final) return seventAiAppendMessage("ai", "Этот заказ уже неактуален — давайте соберём заново.", [{ a: "ask:Хочу оформить доставку", label: "Оформить заказ" }]);
+    if (!f || f.t !== "order" || !f.d || !f.d.final) return fail("Этот заказ уже неактуален — давайте соберём заново.");
     var o = f.d.final;
-    if (!cart.length) return seventAiAppendMessage("ai", "Корзина пустая — сначала добавим блюда. Что везём?");
-    if (branch !== o.branch) return seventAiAppendMessage("ai", "Филиал поменялся — давайте проверим заказ ещё раз.", [{ a: "ask:Хочу оформить доставку", label: "Оформить заказ" }]);
-    if (!canOrderNow(branch) && !isTestPhoneActive()) return seventAiAppendMessage("ai", "Заказы сейчас не принимаем — принимаем " + getOrderWindowText(branch) + ". Могу забронировать столик.", [{ a: "ask:Хочу забронировать столик", label: "Забронировать столик" }]);
+    if (!cart.length) return fail("Корзина пустая — сначала добавим блюда. Что везём?");
+    if (branch !== o.branch) return fail("Филиал поменялся — давайте проверим заказ ещё раз.");
+    if (!fromOp && !canOrderNow(branch) && !isTestPhoneActive()) return fail(getOrderWindowText(branch) ? "Заказы сейчас не принимаем. Часы приёма: " + getOrderWindowText(branch) : "Заказы из этого филиала сейчас не принимаем");
     var dlv = o.mode === "delivery", prof = loadClientProfile() || {}, isNew = !(prof.name && prof.phone);
     oType = dlv ? "delivery" : "self";
     cutlery = o.cutlery || 1;
@@ -972,7 +1126,7 @@
     var where = dlv ? "ул. " + o.street + ", д. " + o.house + (o.entrance ? ", под. " + o.entrance : "") + (o.flat ? ", кв. " + o.flat : "") : "Самовывоз, " + (o.pickup || "время не указано");
     _pendingStatsDetails = "Заказ:" + num + " | Тип:" + (dlv ? "Доставка" : "Самовывоз") + " | Адрес:" + where + " | Сумма:" + total + " | Аллергии:" + (allergy || "нет") + " | Товары:" + cart.map(function (e) { return e.name + " x" + e.qty; }).join(", ") + " | Через SEVEN AI";
     confirmAndSendOrder();
-    say(AI.afterSend("order", { num: num }, { state: W._saiState }));
+    return true;
   }
 
   // ── отправка брони, собранной в чате
@@ -981,14 +1135,14 @@
     a.href = "https://wa.me/77760709898?text=" + encodeURIComponent(text); a.target = "_blank"; a.rel = "noopener noreferrer";
     D.body.appendChild(a); a.click(); a.remove();
   }
-  function sendBooking() {
+  function sendBooking(fromOp) {
     var f = W._saiState.flow;
-    if (!f || f.t !== "book" || !f.d || !f.d.final) return seventAiAppendMessage("ai", "Эта бронь уже неактуальна — давайте оформим заново.", [{ a: "ask:Хочу забронировать столик", label: "Забронировать столик" }]);
+    if (!f || f.t !== "book" || !f.d || !f.d.final) return fail("Эта бронь уже неактуальна — давайте оформим заново.");
     var b = f.d.final, p2 = function (n) { return String(n).padStart(2, "0"); };
-    if (site.bkClosed()) return seventAiAppendMessage("ai", "Ресторан сейчас временно закрыт, бронь недоступна.");
-    if (!bk_isBookingAllowedNow(b.bookId)) return seventAiAppendMessage("ai", "Заявки на бронь сейчас не принимаем — с 12:00. Загляните попозже.");
-    if (bk_isDateBlocked(b.m, b.d, b.bookId)) return seventAiAppendMessage("ai", "В этот день ресторан не работает — выберите другую дату.", [{ a: "ask:изменить дату", label: "Изменить дату" }]);
-    if (Date.UTC(b.y, b.m, b.d, b.h - 5, b.mi) - Date.now() < 36e5) return seventAiAppendMessage("ai", "Бронь — минимум за час до визита. Давайте выберем время попозже.", [{ a: "ask:изменить время", label: "Изменить время" }]);
+    if (site.bkClosed()) return fail("Ресторан сейчас временно закрыт, бронь недоступна.");
+    if (!fromOp && !bk_isBookingAllowedNow(b.bookId)) return fail("Заявки на бронь сейчас не принимаем — с 12:00. Загляните попозже.");
+    if (bk_isDateBlocked(b.m, b.d, b.bookId)) return fail("В этот день ресторан не работает — выберите другую дату.");
+    if (Date.UTC(b.y, b.m, b.d, b.h - 5, b.mi) - Date.now() < 36e5) return fail("Бронь — минимум за час до визита. Давайте выберем время попозже.");
     var guests = b.guests >= 6 ? "6 и более" : b.guests,
       comment = b.comment + (b.guestsExact > 6 ? (b.comment ? "; " : "") + "гостей: " + b.guestsExact : ""),
       MON = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
@@ -1001,7 +1155,7 @@
     if (typeof _bookOpenedNoSubmit !== "undefined") _bookOpenedNoSubmit = false;
     ev("Бронь через SEVEN AI", b.branchName + ", " + p2(b.d) + "." + p2(b.m + 1) + " " + p2(b.h) + ":" + p2(b.mi) + ", гостей: " + guests);
     openWa(m);
-    say(AI.afterSend("book", {}, { state: W._saiState }));
+    return true;
   }
 
   // ── стартовые кнопки и быстрые ответы без администратора
@@ -1104,7 +1258,7 @@
       var pk = o.pickup && /^\d{1,2}[:.]\d{2}$/.test(o.pickup) ? "к " + o.pickup.replace(".", ":") : o.pickup;
       W._saiState.flow = { t: "order", d: { final: { branch: curBranch(), mode: o.mode === "self" ? "self" : "delivery", name: v("name"), phone: v("phone"),
         street: v("street"), house: v("house"), flat: v("flat"), entrance: o.entrance || pr.entrance, floor: o.floor || pr.floor, pay: o.pay, pickup: pk, cutlery: o.cutlery || 1, note: o.note } } };
-      sendOrder();
+      sendOrder(true);
       if (!cart.length) {
         m.opOrder.sent = Date.now(); seventAiSaveHistory(); refreshMsg(m);
         opNote("✅ Гость подтвердил заказ и отправил его в WhatsApp");
@@ -1147,7 +1301,7 @@
       var id = sel ? Number(sel.value) : b.br, g = gs ? Number(gs.value) : b.guests, before = lastBookMsg;
       W._saiState.flow = { t: "book", d: { final: { bookId: id, branchName: safe(function () { return bk_bookingWindow(id).name; }, ""), y: b.y, m: b.m, d: b.d, h: b.h, mi: b.mi,
         guests: g, guestsExact: g, comment: b.comment || "", name: nmv, phone: phv } } };
-      sendBooking();
+      sendBooking(true);
       if (lastBookMsg && lastBookMsg !== before) {
         b.sent = Date.now(); seventAiSaveHistory(); refreshMsg(m);
         opNote("✅ Гость подтвердил бронь и отправил её в WhatsApp");
@@ -1508,7 +1662,7 @@
       b.onclick = toggleMic;
       row.insertBefore(b, send);
     }
-    if (inp && !inp._saiRow) { inp._saiRow = true; inp.addEventListener("input", syncRow); inp.addEventListener("focus", fbWarm); inp.addEventListener("input", fbWarm); }
+    if (inp && !inp._saiRow) { inp._saiRow = true; inp.addEventListener("input", syncRow); inp.addEventListener("focus", fbWarm); inp.addEventListener("input", fbWarm); inp.addEventListener("input", function () { if (inp.value.trim() && chatVisible()) fbPing("ty"); }); }
     syncRow();
   }
   function plusMenu(btn, pf) {
@@ -1549,7 +1703,7 @@
 
   // чат новостей открывается в том же окне — там кнопок записи нет
   var openChat = W.seventAiOpen;
-  if (openChat) W.seventAiOpen = function () { var r = openChat.apply(this, arguments); syncRow(); if (chatVisible()) { lockCheck(); fbListen(); } return r; };
+  if (openChat) W.seventAiOpen = function () { var r = openChat.apply(this, arguments); syncRow(); thApply(); if (chatVisible()) { lockCheck(); fbListen(); setTimeout(fbSeenNow, 300); } return r; };
 
   // ── кружочки (видеосообщения), как в Telegram/WhatsApp ──
   // Камера на весь экран, фон размыт: сверху ✕ и таймер, по центру круг,

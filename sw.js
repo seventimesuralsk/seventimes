@@ -7,7 +7,7 @@
 //    просто добавляются в него по мере просмотра, старые остаются лежать вечно
 //    (пока сам браузер гостя не решит почистить место на диске).
 
-const APP_CACHE = "seventimes-app-v4";
+const APP_CACHE = "seventimes-app-v5";
 const IMAGE_CACHE = "seventimes-images"; // без номера версии — стабильное имя навсегда
 
 const APP_SHELL = [
@@ -47,7 +47,7 @@ self.addEventListener("fetch", function (event) {
     return;
   }
 
-  // Сама страница сайта — "сеть, а если сеть тупит дольше 3 сек или её нет — кэш".
+  // Сама страница сайта — "сеть, а если сеть тупит дольше 0,8 сек или её нет — кэш" (на плохом интернете меню открывается сразу).
   // Свежая версия всё равно докачается в фоне и сохранится на следующий заход.
   if (req.mode === "navigate") {
     var network = fetch(req).then(function (res) {
@@ -68,7 +68,7 @@ self.addEventListener("fetch", function (event) {
       var finish = function (res) { if (!done && res) { done = true; resolve(res); } };
       var timer = setTimeout(function () {
         fromCache().then(finish);
-      }, 3000);
+      }, 800);
       network.then(function (res) {
         clearTimeout(timer);
         finish(res);
