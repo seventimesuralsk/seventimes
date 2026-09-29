@@ -705,6 +705,7 @@
         var nm = seventAiHistory[seventAiHistory.length - 1];
         if (nm && nm.role === "ai") {
           nm.opId = m.id;
+          if (m.lid) nm.lid = String(m.lid);
           if (m.opOrder && m.opOrder.items) nm.opOrder = cleanOrder(m.opOrder);
           if (m.opBook && m.opBook.y) nm.opBook = cleanBook(m.opBook);
           var qm = m.q ? msgBy(m.q, "user") : null;
@@ -747,8 +748,15 @@
   var fb = { tok: "", exp: 0, uid: "", ready: null, es: null, st: null, known: {}, t0: 0, idle: 0, blk: false, off: false };
   function fbUrl(path, q) { return FB.db + "/" + path + ".json?" + (FB.ns ? "ns=" + FB.ns + "&" : "") + "auth=" + encodeURIComponent(fb.tok) + (q ? "&" + q : ""); }
   function fbJson(r) { if (!r.ok) throw new Error("fb " + r.status); return r.json(); }
+  // вход — строго один раз, даже если его попросили несколько раз подряд (иначе два аккаунта на один телефон)
   function fbAuth() {
     if (fb.tok && Date.now() < fb.exp - 120e3) return Promise.resolve(fb.tok);
+    if (fb.authP) return fb.authP;
+    fb.authP = fbAuth1();
+    fb.authP.then(function () { fb.authP = null; }, function () { fb.authP = null; });
+    return fb.authP;
+  }
+  function fbAuth1() {
     var rt = lsGet("sai_fb_rt");
     var p = rt ? fetch(FB.sec + "/v1/token?key=" + FB.key, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: "grant_type=refresh_token&refresh_token=" + encodeURIComponent(rt) })
       .then(fbJson).then(function (j) { return { t: j.id_token, r: j.refresh_token, u: j.user_id, e: j.expires_in }; }) : Promise.reject();
@@ -764,7 +772,8 @@
   // вход + «этот чат мой» (ID телефона закрепляется за этим браузером)
   function fbReady() {
     if (fb.off || typeof fetch === "undefined") return Promise.reject(new Error("off"));
-    if (fb.ready && fb.tok && Date.now() < fb.exp - 120e3) return fb.ready;
+    // «чат мой» проверяем один раз; дальше только свежий пропуск
+    if (fb.ready) return fb.ready.then(function () { return fbAuth(); });
     var cid = getClientId();
     fb.ready = fbAuth().then(function () {
       if (lsGet("sai_fb_own") === fb.uid + "|" + cid) return true;
@@ -802,6 +811,8 @@
       es.onerror = function () { if (es.readyState === 2) { fbClose(); setTimeout(fbListen, 3000); } };
     }, function () { fb.es = null; });
   }
+  // гость тапнул в поле — заранее входим в Firebase, чтобы и первое сообщение ушло мгновенно
+  function fbWarm() { if (!fb.off && !fb.tok && !fb.ready && chatVisible() && !isLocked()) fbReady().catch(function () {}); }
   function fbClose() { var es = fb.es; fb.es = null; clearTimeout(fb.idle); if (es && es.close) es.close(); }
   // 5 минут тишины в открытом чате — отключаемся (ответ всё равно придёт через скрипт)
   function fbIdle() { clearTimeout(fb.idle); fb.idle = setTimeout(fbClose, 5 * 60e3); }
@@ -827,17 +838,15 @@
     // блок: нажал в панели — у гостя замок сразу
     if (s.blk && !fb.blk) { fb.blk = true; lockChat(true, true); }
     else if (!s.blk && fb.blk) { fb.blk = false; lockChat(false); }
-    if (initial) { for (var k0 in s.r || {}) fb.known[k0] = 1; }
-    if (!initial || (s.r && Object.keys(s.r).length)) {
-      var keys = Object.keys(s.r || {}).sort();
-      keys.forEach(function (k) {
-        if (fb.known[k]) return;
-        fb.known[k] = 1;
-        var it = s.r[k];
-        if (!it || !it.t || fbHas(it.lid)) return;
-        fbShow(it);
-      });
-    }
+    // ответы: при подключении — только свежие (5 мин), которых ещё нет в переписке (метка lid)
+    Object.keys(s.r || {}).sort(function (a, b) { return ((s.r[a] || {}).ts || 0) - ((s.r[b] || {}).ts || 0); }).forEach(function (k) {
+      if (fb.known[k]) return;
+      fb.known[k] = 1;
+      var it = s.r[k];
+      if (!it || !it.t || fbHas(it.lid)) return;
+      if (initial && !(Number(it.ts) > Date.now() - 5 * 60e3)) return;
+      fbShow(it);
+    });
     if (initial) return;
     if (what === "ty") { if (s.ty) { headTyping(true); clearTimeout(fb.tyT); fb.tyT = setTimeout(function () { headTyping(false); }, 6000); } else headTyping(false); }
     if (what === "rd" && s.rd) setTicks(3, 0, 2);
@@ -1498,7 +1507,7 @@
       b.onclick = toggleMic;
       row.insertBefore(b, send);
     }
-    if (inp && !inp._saiRow) { inp._saiRow = true; inp.addEventListener("input", syncRow); }
+    if (inp && !inp._saiRow) { inp._saiRow = true; inp.addEventListener("input", syncRow); inp.addEventListener("focus", fbWarm); inp.addEventListener("input", fbWarm); }
     syncRow();
   }
   function plusMenu(btn, pf) {
