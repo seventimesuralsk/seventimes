@@ -403,7 +403,7 @@
       else body.text = "(в ответ на «" + String(mine.reply.text).slice(0, 80) + "») " + t;
     }
     function go() {
-      xhrJson("POST", API, body, audio && audio.video ? 180e3 : audio && audio.photo ? 60e3 : 25e3, function (e) {
+      xhrJson("POST", API, body, audio && audio.video ? 180e3 : audio && audio.photo ? 60e3 : audio && audio.blob ? 900e3 : 25e3, function (e) {
         if (e && (e.operator || (!fresh && e.ok))) {
           typing(false);
           var mm = msgBy(tm, "user");
@@ -1173,7 +1173,6 @@
       }
       var f = Math.floor((Date.now() - s.t0) / 1000);
       if (tEl) tEl.textContent = Math.floor(f / 60) + ":" + String(f % 60).padStart(2, "0");
-      if (f >= 60) stopRec(false);
       s.raf = requestAnimationFrame(frame);
     }
     s.raf = requestAnimationFrame(frame);
@@ -1221,7 +1220,7 @@
     vs = s;
     if (rec) {
     rec.lang = l === "kz" ? "kk-KZ" : l === "en" ? "en-US" : "ru-RU";
-    rec.interimResults = true; rec.maxAlternatives = 1; rec.continuous = false;
+    rec.interimResults = true; rec.maxAlternatives = 1; rec.continuous = true;
     rec.onresult = function (e) {
       var tmp = "";
       for (var i = e.resultIndex; i < e.results.length; i++) { var x = e.results[i][0].transcript; if (e.results[i].isFinal) s.fin += x; else tmp += x; }
@@ -1232,12 +1231,20 @@
     rec.onerror = function (e) { s.err = e && e.error || "error"; };
     rec.onend = function () {
       s.recEnded = true;
+      // пауза в речи — телефон перестаёт «слушать», но запись звука идёт дальше:
+      // голосовое заканчивает только сам гость (отправить / отменить), хоть через час
+      if (!s.stopping && s.alive && s.useMr && s.err !== "not-allowed" && s.err !== "service-not-allowed") {
+        s.restarts = (s.restarts || 0) + 1;
+        if (s.restarts < 400) setTimeout(function () { if (!s.stopping && s.alive && vs === s) { try { rec.start(); s.recEnded = false; } catch (re) {} } }, 150);
+        return;
+      }
       if (!s.mr || s.mr.state === "inactive") return finish(s);
       safe(function () { s.mr.stop(); });
       s.guard = setTimeout(function () { finish(s); }, 1500);
     };
     }
     // звук пишем всегда, когда телефон это умеет — голосовое уйдёт тебе в бот
+    s.useMr = canRec;
     if (canRec) {
       safe(function () { var AC = W.AudioContext || W.webkitAudioContext; s.ac = new AC(); });
       navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }).then(function (stream) {
@@ -1255,7 +1262,9 @@
       }, function () {
         safe(function () { s.ac && s.ac.close(); }); s.ac = null;
         // без распознавания и без микрофона записывать нечего
+        s.useMr = false;
         if (!rec) { s.err = "not-allowed"; finish(s); }
+        else if (s.recEnded) finish(s);
       });
     }
     if (rec) { try { rec.start(); } catch (e) { rec = s.rec = null; if (!canRec) { release(s); vs = null; return toast("Голосовые сейчас недоступны — напишите текстом"); } } }
