@@ -411,7 +411,9 @@
       var prof = (typeof loadClientProfile === "function" && loadClientProfile()) || {}, bp = (typeof bk_loadProfile === "function" && bk_loadProfile()) || {};
       var c = typeof cart !== "undefined" && cart ? cart : [];
       return { cart: c.slice(0, 15).map(function (x) { return [String(x.name), x.qty]; }), sum: typeof cartTotal === "function" ? cartTotal() : 0, seen: W._saiLastSeen || "",
-        orders: Number(lsGet("st_order_count") || 0), nm: prof.name || bp.name || "", ph: prof.phone || bp.phone || "", br: curBranch() || "" };
+        orders: Number(lsGet("st_order_count") || 0), nm: prof.name || bp.name || "", ph: prof.phone || bp.phone || "", br: curBranch() || "",
+        lo: W._saiLastOrder ? W._saiLastOrder() : undefined,
+        ad: prof.street ? { st: prof.street, ho: prof.house || "", en: prof.entrance || "", fl: prof.flat || "", fr: prof.floor || "" } : undefined };
     }, null);
   }
   safe(function () {
@@ -1182,7 +1184,8 @@
     return { items: (o.items || []).slice(0, 20).map(function (x) { return { id: str(x.id, 40), name: str(x.name), qty: Math.max(1, Math.min(99, Number(x.qty) || 1)) }; }),
       mode: o.mode === "self" ? "self" : "delivery", pay: o.pay === "cash" ? "cash" : "kaspi", cutlery: Math.max(0, Math.min(20, Number(o.cutlery) || 0)),
       note: str(o.note, 300), name: str(o.name, 40), phone: str(o.phone, 20), pickup: str(o.pickup, 40),
-      street: str(o.street, 80), house: str(o.house, 12), entrance: str(o.entrance, 4), flat: str(o.flat, 8), floor: str(o.floor, 4) };
+      street: str(o.street, 80), house: str(o.house, 12), entrance: str(o.entrance, 4), flat: str(o.flat, 8), floor: str(o.floor, 4),
+      br: o.br === "samal" || o.br === "skoro" ? o.br : "" };
   }
   function cleanBook(b) {
     var n = function (v, lo, hi) { v = Number(v); return isFinite(v) ? Math.max(lo, Math.min(hi, Math.round(v))) : lo; };
@@ -1217,7 +1220,9 @@
       if (!it || it.stopped) { miss.push(x.name); return; }
       rows.push({ it: it, qty: x.qty }); total += (Number(it.price) || 0) * x.qty;
     });
-    var h = '<h4>🧾 ' + esc(L(o.mode === "self" ? "Самовывоз" : "Доставка", o.mode === "self" ? "Алып кету" : "Жеткізу")) + (curBranch() ? " · " + esc(safe(function () { return branchDisplayName(curBranch()); }, "")) : "") + "</h4>";
+    // филиал выбрал администратор — показываем его; иначе — филиал гостя на сайте
+    var obr = o.br || curBranch();
+    var h = '<h4>🧾 ' + esc(L(o.mode === "self" ? "Самовывоз" : "Доставка", o.mode === "self" ? "Алып кету" : "Жеткізу")) + (obr ? " · " + esc(safe(function () { return branchDisplayName(obr); }, "")) : "") + "</h4>";
     rows.forEach(function (r) { h += '<div class="r"><span>' + esc(ne(r.it.name)) + " ×" + r.qty + "</span><b>" + money(r.it.price * r.qty) + "</b></div>"; });
     h += '<div class="r tot"><span>' + L("Итого", "Барлығы") + "</span><b>" + money(total) + "</b></div>";
     if (o.mode === "self") h += '<div class="mt">' + L("Заберу: ", "Алып кетемін: ") + esc(o.pickup || L("время уточним", "уақытын нақтылаймыз")) + "</div>";
@@ -1247,6 +1252,8 @@
     var go = D.createElement("button"); go.type = "button"; go.className = "go"; go.textContent = L("Подтвердить и отправить в WhatsApp", "Растау және WhatsApp-қа жіберу");
     go.disabled = !rows.length;
     go.onclick = function () {
+      // заказ в филиал, который выбрал администратор: переключаем сайт гостя на него
+      if (o.br && curBranch() !== o.br) safe(function () { branch = o.br; });
       if (!curBranch()) { toast(L("Сначала выберите филиал", "Алдымен филиалды таңдаңыз")); safe(function () { seventAiClose(); switchBottomTab("home"); showBranchModal(); }); return; }
       var v = function (k) { return f[k] ? f[k].value.trim() : String(o[k] || ""); };
       if (v("name").length < 2) return toast(L("Впишите имя", "Атыңызды жазыңыз"));
