@@ -1269,7 +1269,7 @@
   function micOk() { return !!(SR || (W.MediaRecorder && navigator.mediaDevices && navigator.mediaDevices.getUserMedia)); }
   function camOk() { return !!(W.MediaRecorder && navigator.mediaDevices && navigator.mediaDevices.getUserMedia && W.HTMLCanvasElement && HTMLCanvasElement.prototype.captureStream); }
   function syncRow() {
-    var inp = el("seventAiInput"), send = el("seventAiSendBtn"), mic = el("saiMic"), cam = null, ph = el("saiPlus");
+    var inp = el("seventAiInput"), send = el("seventAiSendBtn"), mic = el("saiMic"), cam = el("saiCamBtn"), ph = el("saiPlus");
     if (ph) ph.style.display = chatVisible() && inp && !inp.disabled ? "" : "none";
     if (!inp || !send) return;
     var live = chatVisible() && !inp.disabled, has = !!inp.value.trim();
@@ -1286,12 +1286,21 @@
     // «+» слева: фото и кружочек в одном месте (справа — только микрофон / отправить)
     if (!el("saiPlus")) {
       var pl = D.createElement("button"), pf = D.createElement("input");
-      pl.type = "button"; pl.id = "saiPlus"; pl.className = "sai-plus"; pl.setAttribute("aria-label", "Прикрепить фото или кружочек");
+      pl.type = "button"; pl.id = "saiPlus"; pl.className = "sai-plus"; pl.setAttribute("aria-label", "Отправить фото");
       pl.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
       pf.type = "file"; pf.accept = "image/*"; pf.id = "saiPhotoIn"; pf.style.display = "none";
       pf.onchange = function () { var f = pf.files && pf.files[0]; pf.value = ""; if (f) pickPhoto(f); };
-      pl.onclick = function (e) { e.stopPropagation(); plusMenu(pl, pf); };
+      // «+» — сразу системный выбор айфона/андроида: галерея или камера
+      pl.onclick = function (e) { e.stopPropagation(); pf.click(); };
       row.insertBefore(pl, row.firstChild); row.appendChild(pf);
+    }
+    // кружочек — рядом с микрофоном, как раньше
+    if (!el("saiCamBtn")) {
+      var c = D.createElement("button");
+      c.type = "button"; c.id = "saiCamBtn"; c.className = "sai-camb"; c.setAttribute("aria-label", "Записать кружочек");
+      c.innerHTML = CAM;
+      c.onclick = openCam;
+      row.insertBefore(c, send);
     }
     if (!b) {
       b = D.createElement("button");
