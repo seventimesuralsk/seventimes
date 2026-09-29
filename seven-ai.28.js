@@ -80,6 +80,9 @@
     ".sai-vn-pl{position:absolute;left:50%;top:50%;width:48px;height:48px;margin:-24px 0 0 -24px;border-radius:50%;background:rgba(0,0,0,.45);color:#fff;display:flex;align-items:center;justify-content:center}" +
     ".sai-vn.playing .sai-vn-pl{display:none}" +
     ".sai-vn-d{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);font-size:.66rem;color:#fff;background:rgba(0,0,0,.45);padding:1px 7px;border-radius:9px}" +
+    "#seventAiInputRow.sai-locked{display:none!important}" +
+    ".sai-lockbar{display:none;margin:0 var(--px,16px) calc(12px + env(safe-area-inset-bottom,0px));padding:14px 16px;border-radius:16px;background:#f2f2f7;color:#3a3a3c;font-size:.84rem;line-height:1.35;text-align:center;align-items:center;justify-content:center;gap:8px}" +
+    ".sai-lockbar.on{display:flex}" +
     ".sai-plus{flex-shrink:0;width:38px;height:44px;border:none;background:none;color:#7a1128;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;align-self:center;-webkit-tap-highlight-color:transparent}" +
     ".sai-pmenu{position:fixed;z-index:100001;background:rgba(255,255,255,.96);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border-radius:16px;box-shadow:0 10px 36px rgba(0,0,0,.18),0 0 0 .5px rgba(0,0,0,.06);padding:6px;min-width:190px;animation:saiPop .16s ease-out}" +
     "@keyframes saiPop{from{transform:translateY(6px) scale(.97);opacity:0}}" +
@@ -369,7 +372,7 @@
   }
 
   // вопрос гостя (и голосовое) — администратору. Сам чат на вопросы не отвечает.
-  var AWAY = "Ой, походу оператор отошёл. Ожидайте — ваше сообщение у него, он обязательно ответит.";
+  var AWAY = "Уточняю информацию по вашему вопросу — ответ придёт сюда, в этот чат. Можно пока смотреть меню, я напишу.";
   // что гость делает на сайте — администратору рядом с сообщением
   function guestCtx() {
     return safe(function () {
@@ -417,7 +420,7 @@
             seventAiAppendMessage("ai", AWAY);
           }, e.now);
         }
-        if (e && e.blocked && !W._saiBlockedSaid) { W._saiBlockedSaid = true; typing(false); seventAiAppendMessage("ai", "Доступ к чату ограничен администратором."); }
+        if (e && e.blocked) { typing(false); lockChat(true, true); }
         // не дошло (Telegram не подключён или недоступен) — остаётся одна галочка, бот молчит
       });
     }
@@ -729,7 +732,7 @@
 
   W._saiSend = function (voice, audio) {
     var inp = el("seventAiInput");
-    if (!inp || W._aiBusy) return;
+    if (!inp || W._aiBusy || isLocked()) return;
     var t = inp.value.trim().slice(0, 500);
     if (!t) return;
     if (!W.seventAiLoaded && W._saiOpenRender) W._saiOpenRender();
@@ -1268,7 +1271,42 @@
   var SEND = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3.4 20.4 21 12 3.4 3.6l-.02 6.53L15 12 3.38 13.87z"/></svg>';
   function micOk() { return !!(SR || (W.MediaRecorder && navigator.mediaDevices && navigator.mediaDevices.getUserMedia)); }
   function camOk() { return !!(W.MediaRecorder && navigator.mediaDevices && navigator.mediaDevices.getUserMedia && W.HTMLCanvasElement && HTMLCanvasElement.prototype.captureStream); }
+  // ── блокировка: чат закрыт целиком (ни текста, ни фото, ни голоса). Гостю — от имени SEVEN AI, не от человека
+  var LOCK_TXT = "SEVEN AI автоматически ограничил доступ к чату: система обнаружила нарушение правил общения.";
+  function isLocked() { return lsGet("sai_blocked") === "1"; }
+  function lockBar() {
+    var b = el("saiLockBar"), row = el("seventAiInputRow");
+    if (!b && row && row.parentNode) {
+      b = D.createElement("div"); b.id = "saiLockBar"; b.className = "sai-lockbar";
+      b.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span></span>';
+      b.lastChild.textContent = LOCK_TXT;
+      row.parentNode.insertBefore(b, row.nextSibling);
+    }
+    return b;
+  }
+  function lockChat(on, say) {
+    var was = isLocked();
+    lsSet("sai_blocked", on ? "1" : "");
+    if (on && say && !was) seventAiAppendMessage("ai", LOCK_TXT);
+    if (on) { safe(function () { if (recOn) stopRec(true); closeCam(); }); var i = el("seventAiInput"); if (i) { i.value = ""; i.blur(); } }
+    syncRow();
+  }
+  W._saiLock = lockChat;
+  // при открытии чата — сверяемся с сервером: заблокирован / разблокирован
+  var lockAt = 0;
+  function lockCheck() {
+    if (Date.now() - lockAt < 15e3) return;
+    lockAt = Date.now();
+    var body = { action: "opCtx", clientId: typeof getClientId === "function" ? getClientId() : "", ev: [] }, gc = guestCtx();
+    if (!body.clientId) return;
+    if (gc) body.ctx = gc;
+    xhrJson("POST", API, body, 15e3, function (e) { if (e && typeof e === "object") lockChat(!!e.blocked, true); });
+  }
+  W._saiLockCheck = lockCheck;
   function syncRow() {
+    var row0 = el("seventAiInputRow"), lk = chatVisible() && isLocked(), lb = lockBar();
+    if (row0) row0.classList.toggle("sai-locked", lk);
+    if (lb) lb.classList.toggle("on", lk);
     var inp = el("seventAiInput"), send = el("seventAiSendBtn"), mic = el("saiMic"), cam = el("saiCamBtn"), ph = el("saiPlus");
     if (ph) ph.style.display = chatVisible() && inp && !inp.disabled ? "" : "none";
     if (!inp || !send) return;
@@ -1350,7 +1388,7 @@
 
   // чат новостей открывается в том же окне — там кнопок записи нет
   var openChat = W.seventAiOpen;
-  if (openChat) W.seventAiOpen = function () { var r = openChat.apply(this, arguments); syncRow(); return r; };
+  if (openChat) W.seventAiOpen = function () { var r = openChat.apply(this, arguments); syncRow(); if (chatVisible()) lockCheck(); return r; };
 
   // ── кружочки (видеосообщения), как в Telegram/WhatsApp ──
   // Камера на весь экран, фон размыт: сверху ✕ и таймер, по центру круг,
