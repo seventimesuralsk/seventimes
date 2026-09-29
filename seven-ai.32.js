@@ -395,7 +395,7 @@
     var gc = guestCtx(); if (gc) body.ctx = gc;
     var lg = langGet(); if (lg) body.lang = lg;
     var mine = msgBy(tm, "user");
-    if (tm && !isLocked()) fbSend({ t: audio ? "" : t, mt: tm, k: audio ? (audio.video ? "vn" : audio.photo ? "img" : "voice") : "" });
+    if (tm && !isLocked()) fbSend({ t: audio ? "" : t, mt: tm, k: audio ? (audio.video ? "vn" : audio.photo ? "img" : "voice") : "", dur: audio && audio.dur });
     if (mine && mine.reply) {
       var rt = msgBy(mine.reply.mt);
       var rtg = rt ? (rt.role === "user" ? rt.tgId : String(rt.opId || "").replace(/^tg/, "")) : "";
@@ -791,6 +791,7 @@
     return fbReady().then(function () {
       var d = { c: getClientId(), t: String(it.t || "").slice(0, 2000), mt: Number(it.mt) || 0, ts: { ".sv": "timestamp" } };
       if (it.k) d.k = it.k;
+      if (it.dur) d.dur = Math.round(Number(it.dur) || 0);
       var nm = guestName(); if (nm) d.nm = String(nm).slice(0, 40);
       return fetch(fbUrl("in"), { method: "POST", body: JSON.stringify(d) }).then(fbJson);
     }).then(function () { if (it.mt) setTicks(2, it.mt); if (fb.es && fb.es.close) fbIdle(); else fbListen(); return true; }, function () { return false; });
