@@ -7,7 +7,8 @@ name: Снимок меню
 
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    # не на «круглые» минуты: в :00/:10 у GitHub очередь, плановые запуски теряются
+    - cron: "3-59/10 * * * *"
   workflow_dispatch:
 
 permissions:
