@@ -7,12 +7,15 @@
 //    просто добавляются в него по мере просмотра, старые остаются лежать вечно
 //    (пока сам браузер гостя не решит почистить место на диске).
 
-const APP_CACHE = "seventimes-app-v5";
+const APP_CACHE = "seventimes-app-3134b72f";
 const IMAGE_CACHE = "seventimes-images"; // без номера версии — стабильное имя навсегда
 
 const APP_SHELL = [
   "./",
-  "./index.html"
+  "./index.html",
+  "assets/core.css?v=926c2ee1",
+  "assets/core.js?v=88309fb2",
+  "assets/menu.js?v=55f2a934"
 ];
 
 self.addEventListener("install", function (event) {
@@ -59,8 +62,11 @@ self.addEventListener("fetch", function (event) {
     });
     event.waitUntil(network.catch(function () {}));
     var fromCache = function () {
-      return caches.match(req, { cacheName: APP_CACHE }).then(function (cached) {
-        return cached || caches.match("./index.html", { cacheName: APP_CACHE });
+      // у каждой страницы своя копия; копией меню подменяем только само меню
+      return caches.match(req, { cacheName: APP_CACHE, ignoreSearch: true }).then(function (cached) {
+        if (cached) return cached;
+        var u = req.url.split("#")[0].split("?")[0], root = self.registration.scope;
+        return u === root || u === root + "index.html" ? caches.match("./index.html", { cacheName: APP_CACHE }) : null;
       });
     };
     event.respondWith(new Promise(function (resolve) {

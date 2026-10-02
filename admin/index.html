@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="ru" data-page="admin">
+ <head>
+  <meta charset="utf-8"/>
+  <base href="../"/>
+  <meta name="robots" content="noindex,nofollow"/>
+  <title>Админ — Seven Times</title>
+  <meta name="description" content="Служебная страница."/>
+  <link rel="canonical" href="https://seventimesuralsk.github.io/seventimes/admin/"/>
+  <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport"/>
+  <link href="manifest.webmanifest" rel="manifest"/>
+  <meta content="yes" name="apple-mobile-web-app-capable"/>
+  <meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+  <meta content="Seven Times" name="apple-mobile-web-app-title"/>
+  <meta name="color-scheme" content="light only"/>
+  <meta content="#f5f5f7" name="theme-color"/>
+  <meta content="yes" name="mobile-web-app-capable"/>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://script.google.com" rel="preconnect"/>
+  <link href="https://script.googleusercontent.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&amp;display=swap" rel="stylesheet" media="print" onload="this.media='all'"/><noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&amp;display=swap" rel="stylesheet"/></noscript>
+  <link rel="stylesheet" href="assets/core.css?v=926c2ee1"/>
+  <script src="assets/core.js?v=88309fb2" defer></script>
+  <script src="assets/admin.js?v=b298fc1f" defer></script>
+  <script type="speculationrules">{"prefetch":[{"source":"document","where":{"href_matches":"/*"},"eagerness":"moderate"}]}</script>
+ </head>
+ <body>
+  <div class="mov" id="admMov" onclick="if(event.target===this)closeAdm()" style="z-index:700">
+    <div class="mbox" style="max-height:96svh">
+     <div class="mhandle">
+     </div>
+     <div class="mhead">
+      <div class="mtitle" id="admTitle">
+       Панель управления
+      </div>
+      <button aria-label="Закрыть панель управления" class="mx" onclick="closeAdm()">
+       ×
+      </button>
+     </div>
+     <div class="mbody" id="admBody">
+      <div id="adm-login">
+       <div style="text-align:center;padding:16px 0 20px">
+        <div style="margin-bottom:8px;font-size:1.76rem">
+        </div>
+        <div style="color:#1d1d1f;font-size:0.88rem;font-weight:400">
+         Панель управления
+        </div>
+        <div style="color:#6e6e73;margin-top:4px;font-size:0.66rem">
+         Seven Times
+        </div>
+       </div>
+       <form id="admLoginForm" autocomplete="on" onsubmit="event.preventDefault();admLogin();return false">
+        <input autocomplete="username" autocapitalize="none" spellcheck="false" class="admi" id="admlogin" maxlength="60" name="username" placeholder="ЛОГИН" type="text"/>
+        <input autocomplete="current-password" class="admi" id="admcode" maxlength="80" name="password" placeholder="ПАРОЛЬ" type="password"/>
+        <input autocomplete="off" autocapitalize="none" spellcheck="false" class="admi" id="admsecret" maxlength="80" name="admin-secret" placeholder="СЕКРЕТНОЕ СЛОВО" type="password"/>
+        <div class="admerr" id="admerr">
+        </div>
+        <button class="admloginbtn" id="admLoginBtn" type="submit">
+         Войти →
+        </button>
+        <button class="admclosebtn" onclick="closeAdm()" type="button">
+         Закрыть
+        </button>
+       </form>
+      </div>
+      <div id="adm-main" style="display:none">
+       <div class="admbtabs" style="margin-bottom:16px">
+        <button class="admbtab on" id="abtSamal" onclick="admSwitch('samal')">
+         Самал
+        </button>
+        <button class="admbtab" id="abtSkoro" onclick="admSwitch('skoro')">
+         Скоробогатова
+        </button>
+        <button class="admbtab" id="abtAbulhair" onclick="admSwitch('abulhair')">
+         Абулхаир Хана
+        </button>
+       </div>
+       <div id="adm-home" style="grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;display:grid">
+        <button class="adm-nav-btn" onclick="admSection('status')" style="grid-column:1/-1">
+         Статус сайта
+        </button>
+        <button class="adm-nav-btn" onclick="admSection('items')">
+         Блюда
+        </button>
+        <button class="adm-nav-btn" onclick="admSection('add')">
+         Добавить блюдо
+        </button>
+        <button class="adm-nav-btn" onclick="admSection('cats')">
+         Категории
+        </button>
+        <button class="adm-nav-btn" onclick="admSection('stop')">
+         Стоп-лист
+        </button>
+        <button class="adm-nav-btn" onclick="admSection('stats')" style="grid-column:1/-1">
+         Статистика
+        </button>
+        <button class="adm-nav-btn" onclick="admSection('aiSettings')" style="grid-column:1/-1">
+         Настройки SEVEN AI
+        </button>
+        <button class="adm-nav-btn" onclick="admSection('news')" style="grid-column:1/-1">
+         Сообщения (Акции / Безопасность)
+        </button>
+        <button class="adm-nav-btn" onclick="admSection('banner')" style="grid-column:1/-1">
+         Баннер вверху сайта
+        </button>
+       </div>
+       <div id="adm-items-sec" style="display:none">
+        <div style="align-items:center;gap:8px;margin-bottom:10px;display:flex">
+         <button class="adm-back" onclick="admShowHome()">
+          ← Назад
+         </button>
+         <div style="color:#1d1d1f;font-size:0.79rem;font-weight:400">
+          Все блюда
+         </div>
+        </div>
+        <input class="admsearch" id="admSearchInput" oninput="admFilter(this.value)" placeholder="Поиск…"/>
+        <div id="admItemsList">
+        </div>
+       </div>
+       <div id="adm-add-sec" style="display:none">
+        <div style="align-items:center;gap:8px;margin-bottom:14px;display:flex">
+         <button class="adm-back" onclick="admShowHome()">
+          ← Назад
+         </button>
+         <div style="color:#1d1d1f;font-size:0.79rem;font-weight:400">
+          Добавить блюдо
+         </div>
+        </div>
+        <div class="adm-form">
+         <div class="adm-field-label">
+          Категория
+          <span style="color:#1d1d1f">
+           *
+          </span>
+         </div>
+         <div style="gap:6px;margin-bottom:10px;display:flex">
+          <select class="adm-select" id="addCat" style="flex:1">
+          </select>
+          <button class="adm-mini-btn" onclick="admNewCatPrompt()">
+           + Новая
+          </button>
+         </div>
+         <div class="adm-field-label">
+          Название
+          <span style="color:#1d1d1f">
+           *
+          </span>
+         </div>
+         <input class="admi" id="addName" placeholder="Название блюда"/>
+         <div class="adm-field-label">
+          Цена (₸)
+         </div>
+         <input class="admi" id="addPrice" placeholder="0" type="number"/>
+         <div class="adm-field-label">
+          Описание
+         </div>
+         <input class="admi" id="addDesc" placeholder="Состав, вес…"/>
+         <div class="adm-field-label">
+          Фото (ссылка Google Drive)
+         </div>
+         <input class="admi" id="addPhoto" placeholder="https://res.cloudinary.com/..." type="url"/>
+         <div style="color:#6e6e73;background:#6e6e7314;border-radius:8px;margin-top:-6px;margin-bottom:10px;padding:7px 10px;font-size:0.62rem">
+          Рекомендуем
+          <b>
+           Cloudinary
+          </b>
+          — грузится быстрее Google Drive.
+          <br/>
+          Media Library → загрузить фото → Copy URL. Ссылки Google Drive и os.md тоже поддерживаются.
+         </div>
+         <div class="adm-field-label">
+          Бейдж (необязательно)
+         </div>
+         <input class="admi" id="addBadge" placeholder="Хит / Популярное"/>
+         <div class="adm-field-label">
+          Модификаторы (необязательно)
+         </div>
+         <input class="admi" id="addMods" placeholder="1л:1890|0,5л:890"/>
+         <div style="color:#6e6e73;margin-top:-6px;margin-bottom:10px;font-size:0.62rem">
+          Формат: вариант:цена|вариант:цена
+         </div>
+         <div class="adm-field-label">
+          Аллергены (необязательно)
+         </div>
+         <input class="admi" id="addAllergens" placeholder="молоко, глютен, орехи"/>
+         <div class="adm-field-label">
+          Доставка
+         </div>
+         <select class="adm-select" id="addDelivery" style="width:100%;margin-bottom:10px">
+          <option value="да">
+           Да — доступно для доставки
+          </option>
+          <option value="нет">
+           Нет — только самовывоз
+          </option>
+         </select>
+         <div class="adm-field-label">
+          Самовывоз
+         </div>
+         <select class="adm-select" id="addSelfpick" style="width:100%;margin-bottom:10px">
+          <option value="да">
+           Да — доступно для самовывоза
+          </option>
+          <option value="нет">
+           Нет — только доставка
+          </option>
+         </select>
+         <button class="admloginbtn" onclick="admAddItem()" style="margin-top:6px">
+          Добавить блюдо
+         </button>
+         <div class="admerr" id="addErr" style="margin-top:8px">
+         </div>
+        </div>
+       </div>
+       <div id="adm-cats-sec" style="display:none">
+        <div style="align-items:center;gap:8px;margin-bottom:14px;display:flex">
+         <button class="adm-back" onclick="admShowHome()">
+          ← Назад
+         </button>
+         <div style="color:#1d1d1f;font-size:0.79rem;font-weight:400">
+          Категории
+         </div>
+        </div>
+        <div id="admCatsList">
+        </div>
+       </div>
+       <div id="adm-stop-sec" style="display:none">
+        <div style="align-items:center;gap:8px;margin-bottom:14px;display:flex">
+         <button class="adm-back" onclick="admShowHome()">
+          ← Назад
+         </button>
+         <div style="color:#1d1d1f;font-size:0.79rem;font-weight:400">
+          Стоп-лист
+         </div>
+        </div>
+        <div style="color:#6e6e73;margin-bottom:12px;font-size:0.66rem">
+         Блюда в стоп-листе показываются как "Закончилось "
+        </div>
+        <div id="admStopList">
+        </div>
+       </div>
+       <div id="adm-status-sec" style="display:none">
+        <div style="align-items:center;gap:8px;margin-bottom:14px;display:flex">
+         <button class="adm-back" onclick="admShowHome()">
+          ← Назад
+         </button>
+         <div style="color:#1d1d1f;font-size:0.79rem;font-weight:400">
+          Статус сайта
+         </div>
+        </div>
+        <div id="admStatusCurrent" style="color:#6e6e73;margin-bottom:14px;font-size:0.69rem">
+         Загрузка…
+        </div>
+        <div style="color:#6e6e73;margin-bottom:14px;font-size:0.63rem;line-height:1.6">
+         Укажите когда сайт закроется и когда откроется — дальше всё произойдёт само, без вашего участия.
+        </div>
+        <div class="adm-field-label">
+         Закроется
+        </div>
+        <input class="admi" id="admStatusCloseAt" type="datetime-local"/>
+        <div class="adm-field-label">
+         Откроется
+        </div>
+        <input class="admi" id="admStatusOpenAt" type="datetime-local"/>
+        <div class="adm-field-label">
+         Сообщение гостям, пока закрыто
+        </div>
+        <input class="admi" id="admStatusMsg" placeholder="Технический перерыв, приносим извинения"/>
+        <button class="admloginbtn" onclick="admSaveStatus()" style="margin-top:6px">
+         Сохранить расписание
+        </button>
+        <button class="adm-stop-remove" onclick="admClearStatus()" style="margin-top:8px">
+         Убрать расписание, открыть сразу
+        </button>
+        <div class="admerr" id="admStatusErr" style="margin-top:8px">
+        </div>
+       </div>
+       <div id="adm-aiSettings-sec" style="display:none">
+        <div style="align-items:center;gap:8px;margin-bottom:14px;display:flex">
+         <button class="adm-back" onclick="admShowHome()">
+          ← Назад
+         </button>
+         <div style="color:#1d1d1f;font-size:0.79rem;font-weight:400">
+          Настройки SEVEN AI
+         </div>
+        </div>
+        <div style="font-size:0.68rem;color:#6e6e73;line-height:1.6;margin-bottom:12px">
+         Готовые ответы для SEVEN AI — по одному в строке: слова гостя через запятую, знак «=», ответ. Например: <b>парковка, припарковаться = У всех филиалов есть парковка.</b> Ассистент понимает эти слова в любой форме и с опечатками. Строки без «=» — просто заметки. Сохранённое подключается сразу, без правки кода.
+        </div>
+        <textarea id="admAiFactsInput" rows="14" style="width:100%;font-size:0.76rem;padding:12px;border-radius:10px;border:1.5px solid #e5e5e7;font-family:inherit;resize:vertical;margin-bottom:10px" placeholder="Например:&#10;парковка, припарковаться = У всех филиалов есть парковка.&#10;живая музыка = Живая музыка по пятницам с 20:00 в Самал 70/3.&#10;детский стул, стульчик = Детские стульчики есть во всех филиалах."></textarea>
+        <button class="admloginbtn" onclick="admSaveAiSettings()" id="admAiSaveBtn">
+         Сохранить
+        </button>
+        <div class="admerr" id="admAiSettingsErr" style="margin-top:8px">
+        </div>
+       </div>
+       <div id="adm-news-sec" style="display:none">
+        <div style="align-items:center;gap:8px;margin-bottom:14px;display:flex">
+         <button class="adm-back" onclick="admShowHome()">
+          ← Назад
+         </button>
+         <div style="color:#1d1d1f;font-size:0.79rem;font-weight:400">
+          Сообщения
+         </div>
+        </div>
+        <div style="font-size:0.68rem;color:#6e6e73;line-height:1.6;margin-bottom:12px">
+         Напиши текст — он сразу появится у гостей в «Сообщениях» как новое сообщение в разделе «Акции и скидки», «Безопасность» или «SEVEN AI», с автоматическими датой и временем. Ничего в коде править не нужно.
+        </div>
+        <div class="admbtabs" style="margin-bottom:10px">
+         <button class="admbtab on" id="admNewsTabPromo" onclick="admNewsSetTarget('Акции и скидки')">
+          Акции и скидки
+         </button>
+         <button class="admbtab" id="admNewsTabSafety" onclick="admNewsSetTarget('Безопасность')">
+          Безопасность
+         </button>
+         <button class="admbtab" id="admNewsTabAi" onclick="admNewsSetTarget('SEVEN AI')">
+          SEVEN AI
+         </button>
+        </div>
+        <textarea id="admNewsTextInput" rows="6" style="width:100%;font-size:0.76rem;padding:12px;border-radius:10px;border:1.5px solid #e5e5e7;font-family:inherit;resize:vertical;margin-bottom:10px" placeholder="Например: Сегодня скидка 15% на всю пиццу до 22:00!"></textarea>
+        <button class="admloginbtn" onclick="admSendNews()" id="admNewsSendBtn">
+         Отправить гостям
+        </button>
+        <div class="admerr" id="admNewsErr" style="margin-top:8px">
+        </div>
+        <div style="font-size:0.7rem;color:#6e6e73;margin:18px 0 8px;font-weight:600">
+         Отправленные сообщения
+        </div>
+        <div id="admNewsList">
+        </div>
+       </div>
+       <div id="adm-banner-sec" style="display:none">
+        <div style="align-items:center;gap:8px;margin-bottom:14px;display:flex">
+         <button class="adm-back" onclick="admShowHome()">
+          ← Назад
+         </button>
+         <div style="color:#1d1d1f;font-size:0.79rem;font-weight:400">
+          Баннер вверху сайта
+         </div>
+        </div>
+        <div style="font-size:0.68rem;color:#6e6e73;line-height:1.6;margin-bottom:14px">
+         Строка вверху сайта: акция, объявление, обращение к гостям или оценка сайта. После сохранения у гостей обновится сама примерно за 10 секунд.
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;margin-bottom:14px;font-size:0.76rem;color:#1d1d1f">
+         <input type="checkbox" id="admBannerEnabled" style="width:18px;height:18px">
+         Баннер включён
+        </label>
+        <div style="font-size:0.66rem;color:#6e6e73;margin-bottom:4px">Что показывать</div>
+        <select id="admBannerType" class="oinput" onchange="admBannerTypeChanged(!0)">
+         <option value="promo">Акция — таймер + заявка</option>
+         <option value="text">Просто текст, без кнопки</option>
+         <option value="info">Текст + «Подробнее» (шторка)</option>
+         <option value="rating">Оценка сайта 1–5 звёзд</option>
+        </select>
+        <label style="display:flex;align-items:center;gap:8px;margin-bottom:14px;font-size:0.76rem;color:#1d1d1f">
+         <input type="checkbox" id="admBannerForever" onchange="admBannerTypeChanged()" style="width:18px;height:18px">
+         Навсегда — без дат и времени, висит пока включён
+        </label>
+        <div id="admBannerTimeBox">
+        <div style="display:flex;gap:10px;margin-bottom:10px">
+         <div style="flex:1">
+          <div style="font-size:0.66rem;color:#6e6e73;margin-bottom:4px">Дата начала</div>
+          <input type="date" id="admBannerStart" class="oinput" style="margin-bottom:0">
+         </div>
+         <div style="flex:1">
+          <div style="font-size:0.66rem;color:#6e6e73;margin-bottom:4px">Дата окончания</div>
+          <input type="date" id="admBannerEnd" class="oinput" style="margin-bottom:0">
+         </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-bottom:10px">
+         <div style="flex:1">
+          <div style="font-size:0.66rem;color:#6e6e73;margin-bottom:4px">С какого часа (0–23)</div>
+          <input type="number" min="0" max="23" id="admBannerOpenHour" class="oinput" style="margin-bottom:0">
+         </div>
+         <div style="flex:1">
+          <div style="font-size:0.66rem;color:#6e6e73;margin-bottom:4px">До какого часа (1–24)</div>
+          <input type="number" min="0" max="24" id="admBannerCloseHour" class="oinput" style="margin-bottom:0">
+         </div>
+        </div>
+                </div>
+        <div style="font-size:0.66rem;color:#6e6e73;margin-bottom:4px">Текст в строке — если строк несколько, они плавно сменяют друг друга</div>
+        <textarea id="admBannerMessages" rows="3" style="width:100%;font-size:0.76rem;padding:12px;border-radius:10px;border:1.5px solid #e5e5e7;font-family:inherit;resize:vertical;margin-bottom:10px"></textarea>
+        <div id="admBannerDetailsBox" style="display:none">
+         <div style="font-size:0.66rem;color:#6e6e73;margin-bottom:4px">Полный текст для шторки «Подробнее»</div>
+         <textarea id="admBannerDetails" rows="5" maxlength="3000" style="width:100%;font-size:0.76rem;padding:12px;border-radius:10px;border:1.5px solid #e5e5e7;font-family:inherit;resize:vertical;margin-bottom:10px"></textarea>
+        </div>
+        <div id="admBannerBtnBox">
+         <div style="font-size:0.66rem;color:#6e6e73;margin-bottom:4px">Текст на кнопке</div>
+         <input type="text" id="admBannerButtonText" class="oinput">
+        </div>
+        <div id="admBannerRatingBox" style="display:none;background:#f5f5f7;border-radius:12px;padding:12px;margin-bottom:14px;font-size:0.74rem;color:#1d1d1f;line-height:1.6">
+         <div id="admRatingSummary">Загружаем оценки…</div>
+        </div>
+        <div style="font-size:0.66rem;color:#6e6e73;margin-bottom:4px">Цвет фона баннера</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+         <input type="color" id="admBannerColor" oninput="document.getElementById('admBannerColorHex').value=this.value" style="width:44px;height:36px;padding:0;border:1.5px solid #e5e5e7;border-radius:8px;cursor:pointer">
+         <input type="text" id="admBannerColorHex" oninput="document.getElementById('admBannerColor').value=this.value" class="oinput" style="margin-bottom:0;flex:1" placeholder="#0a84ff">
+        </div>
+        <button class="admloginbtn" onclick="admSaveBannerSettings()" id="admBannerSaveBtn">
+         Сохранить
+        </button>
+        <div class="admerr" id="admBannerErr" style="margin-top:8px">
+        </div>
+       </div>
+       <div id="adm-stats-sec" style="display:none">
+        <div style="align-items:center;gap:8px;margin-bottom:14px;display:flex">
+         <button class="adm-back" onclick="admShowHome()">
+          ← Назад
+         </button>
+         <div style="color:#1d1d1f;font-size:0.79rem;font-weight:400">
+          Статистика
+         </div>
+        </div>
+        <div id="admStatsBody">
+         <div style="text-align:center;color:#6e6e73;padding:30px 0;font-size:0.7rem">
+          Загрузка…
+         </div>
+        </div>
+       </div>
+       <div id="adm-edit-sec" style="display:none">
+        <div style="align-items:center;gap:8px;margin-bottom:14px;display:flex">
+         <button class="adm-back" onclick="admSection('items')">
+          ← Назад
+         </button>
+         <div style="color:#1d1d1f;font-size:0.79rem;font-weight:400">
+          Редактировать
+         </div>
+        </div>
+        <div class="adm-form">
+         <div class="adm-field-label">
+          Категория
+         </div>
+         <select class="adm-select" id="editCat" style="width:100%;margin-bottom:10px">
+         </select>
+         <div class="adm-field-label">
+          Название
+         </div>
+         <input class="admi" id="editName"/>
+         <div class="adm-field-label">
+          Цена (₸)
+         </div>
+         <input class="admi" id="editPrice" type="number"/>
+         <div class="adm-field-label">
+          Описание
+         </div>
+         <input class="admi" id="editDesc"/>
+         <div class="adm-field-label">
+          Фото (ссылка)
+         </div>
+         <input class="admi" id="editPhoto" type="url"/>
+         <div id="editPhotoPreview" style="margin-bottom:10px;display:none">
+          <img id="editPhotoImg" style="object-fit:cover;border-radius:10px;width:100%;max-height:140px"/>
+         </div>
+         <div class="adm-field-label">
+          Бейдж
+         </div>
+         <input class="admi" id="editBadge" placeholder="Хит / пусто = без бейджа"/>
+         <div class="adm-field-label">
+          Модификаторы (варианты)
+         </div>
+         <input class="admi" id="editMods" placeholder="1л:1890|0,5л:890"/>
+         <div style="color:#6e6e73;margin-top:-6px;margin-bottom:10px;font-size:0.62rem">
+          Формат: вариант:цена|вариант:цена. Пример: 1л:1890|0,5л:890
+         </div>
+         <div class="adm-field-label">
+          Аллергены (необязательно)
+         </div>
+         <input class="admi" id="editAllergens" placeholder="молоко, глютен, орехи"/>
+         <div class="adm-field-label">
+          Доставка
+         </div>
+         <select class="adm-select" id="editDelivery" style="width:100%;margin-bottom:10px">
+          <option value="да">
+           Да — доступно для доставки
+          </option>
+          <option value="нет">
+           Нет — только самовывоз
+          </option>
+         </select>
+         <div class="adm-field-label">
+          Самовывоз
+         </div>
+         <select class="adm-select" id="editSelfpick" style="width:100%;margin-bottom:10px">
+          <option value="да">
+           Да — доступно для самовывоза
+          </option>
+          <option value="нет">
+           Нет — только доставка
+          </option>
+         </select>
+         <button class="admloginbtn" onclick="admSaveEdit()" style="margin-top:6px">
+          Сохранить
+         </button>
+         <div class="adm-stop-section">
+          <div class="adm-stop-title">
+           Стоп-лист
+          </div>
+          <div id="editStopStatus" style="color:#6e6e73;margin-bottom:10px;font-size:0.69rem">
+          </div>
+          <div class="adm-time-grid">
+           <button class="adm-time-btn" onclick="admSelTime(this,'eod')">
+            До конца дня
+           </button>
+           <button class="adm-time-btn" onclick="admSelTime(this,'30')">
+            30 минут
+           </button>
+           <button class="adm-time-btn" onclick="admSelTime(this,'60')">
+            1 час
+           </button>
+           <button class="adm-time-btn" onclick="admSelTime(this,'custom')">
+            Своё время
+           </button>
+          </div>
+          <div class="adm-custom-time" id="customTimeRow">
+           <input class="adm-time-inp" id="customTimeVal" type="time"/>
+           <span style="color:#6e6e73;white-space:nowrap;font-size:0.69rem">
+            до этого времени
+           </span>
+          </div>
+          <button class="adm-stop-apply" onclick="admApplyStop()">
+           Поставить в стоп
+          </button>
+          <button class="adm-stop-remove" id="editStopRemoveBtn" onclick="admRemoveStop()" style="display:none">
+           Убрать из стопа
+          </button>
+         </div>
+         <div class="adm-stop-section">
+          <div class="adm-stop-title">
+           Временная цена
+          </div>
+          <div style="color:#6e6e73;margin-bottom:10px;font-size:0.62rem;line-height:1.5">
+           Ставишь новую цену и срок — сразу для всех филиалов. По истечении срока цена сама вернётся к обычной, вручную ничего возвращать не нужно.
+          </div>
+          <div id="editTempPriceStatus" style="color:#6e6e73;margin-bottom:10px;font-size:0.69rem">
+          </div>
+          <div class="adm-field-label">
+           Временная цена (₸)
+          </div>
+          <input class="admi" id="editTempPriceVal" type="number" placeholder="Например: 999">
+          <div class="adm-time-grid">
+           <button class="adm-time-btn adm-tp-time-btn" onclick="admSelTempPriceTime(this,'eod')">
+            До конца дня
+           </button>
+           <button class="adm-time-btn adm-tp-time-btn" onclick="admSelTempPriceTime(this,'24h')">
+            24 часа
+           </button>
+           <button class="adm-time-btn adm-tp-time-btn" onclick="admSelTempPriceTime(this,'week')">
+            7 дней
+           </button>
+           <button class="adm-time-btn adm-tp-time-btn" onclick="admSelTempPriceTime(this,'custom')">
+            Своя дата
+           </button>
+          </div>
+          <div class="adm-custom-time" id="customTempPriceTimeRow" style="gap:6px">
+           <input class="adm-time-inp" id="customTempPriceVal" type="date"/>
+           <input class="adm-time-inp" id="customTempPriceTimeVal" type="time" value="23:59"/>
+           <span style="color:#6e6e73;white-space:nowrap;font-size:0.69rem">
+            действует до этой даты и времени
+           </span>
+          </div>
+          <button class="adm-stop-apply" onclick="admApplyTempPrice()">
+           Поставить временную цену
+          </button>
+          <button class="adm-stop-remove" id="editTempPriceRemoveBtn" onclick="admRemoveTempPrice()" style="display:none">
+           Вернуть обычную цену сейчас
+          </button>
+         </div>
+         <button onclick="admDeleteItem()" style="color:#1d1d1f;cursor:pointer;background:#7a11281a;border:1px solid #1d1d1f40;border-radius:11px;width:100%;margin-top:12px;padding:12px;font-family:-apple-system,BlinkMacSystemFont,Inter,sans-serif;font-size:0.72rem;font-weight:400">
+          Удалить блюдо
+         </button>
+         <div class="admerr" id="editErr" style="margin-top:8px">
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+  <div class="mov" id="funMov" style="z-index:970">
+    <div class="mbox">
+     <div class="mhandle">
+     </div>
+     <div style="text-align:center;padding:8px 26px 32px">
+      <div id="funEmoji" style="margin-bottom:14px;font-size:2.64rem">
+      </div>
+      <div id="funText" style="color:#1d1d1f;margin-bottom:22px;font-size:0.86rem;font-weight:400;line-height:1.55">
+      </div>
+      <button class="btn-main btn-wa" id="funBtn" onclick="closeMov('funMov')">
+       Понятно
+      </button>
+     </div>
+    </div>
+   </div>
+  <div class="mov" id="confirmMov" style="z-index:680">
+    <div class="mbox">
+     <div class="mhandle">
+     </div>
+     <div class="mhead">
+      <div class="mtitle" data-i18n="review_order_title">
+       Проверьте заказ
+      </div>
+     </div>
+     <div class="mbody" id="confirmBody">
+     </div>
+     <div class="mfoot" style="gap:8px;display:flex">
+      <button class="btn-main" data-i18n="edit_btn" onclick="backToEditOrder()" style="color:#1d1d1f;background:#f0f0f0;flex:1">
+       Изменить
+      </button>
+      <button class="btn-main btn-wa" data-i18n="confirm_btn" onclick="confirmAndSendOrder()" style="flex:1.4">
+       Подтвердить
+      </button>
+     </div>
+    </div>
+   </div>
+  <div class="toast" id="toast">
+   </div>
+ </body>
+</html>
