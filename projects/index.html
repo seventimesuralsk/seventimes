@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru" data-page="projects">
+ <head>
+  <meta charset="utf-8"/>
+  <base href="../"/>
+
+  <title>Проекты — Seven Times</title>
+  <meta name="description" content="Проекты Seven Times: исполняем мечты гостей. Расскажите о своей мечте."/>
+  <link rel="canonical" href="https://seventimesuralsk.github.io/seventimes/projects/"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:site_name" content="Seven Times"/>
+  <meta property="og:locale" content="ru_RU"/>
+  <meta property="og:url" content="https://seventimesuralsk.github.io/seventimes/projects/"/>
+  <meta property="og:title" content="Проекты — Seven Times"/>
+  <meta property="og:description" content="Проекты Seven Times: исполняем мечты гостей. Расскажите о своей мечте."/>
+  <meta property="og:image" content="https://seventimesuralsk.github.io/seventimes/img/og-cover.1.jpg"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport"/>
+  <link href="manifest.webmanifest" rel="manifest"/>
+  <meta content="yes" name="apple-mobile-web-app-capable"/>
+  <meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+  <meta content="Seven Times" name="apple-mobile-web-app-title"/>
+  <meta name="color-scheme" content="light only"/>
+  <meta content="#f5f5f7" name="theme-color"/>
+  <meta content="yes" name="mobile-web-app-capable"/>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://script.google.com" rel="preconnect"/>
+  <link href="https://script.googleusercontent.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&amp;display=swap" rel="stylesheet" media="print" onload="this.media='all'"/><noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&amp;display=swap" rel="stylesheet"/></noscript>
+  <link rel="stylesheet" href="assets/core.css?v=926c2ee1"/>
+  <script src="assets/core.js?v=88309fb2" defer></script>
+  <script src="assets/projects.js?v=9f3a07a4" defer></script>
+  <script type="speculationrules">{"prefetch":[{"source":"document","where":{"href_matches":"/*"},"eagerness":"moderate"}]}</script>
+ </head>
+ <body>
+  <div class="stories-ov" id="dreamStoriesOv">
+ <div class="stories-progress-row" id="dreamProgressRow"></div>
+ <div class="stories-tap-zone left" onclick="dreamStoriesPrev()" onpointerdown="dreamPauseStart()" onpointerup="dreamPauseEnd()" onpointerleave="dreamPauseEnd()" onpointercancel="dreamPauseEnd()"></div>
+ <div class="stories-tap-zone right" onclick="dreamStoriesNext()" onpointerdown="dreamPauseStart()" onpointerup="dreamPauseEnd()" onpointerleave="dreamPauseEnd()" onpointercancel="dreamPauseEnd()"></div>
+ <div class="stories-slide active" data-slide="0">
+  <div class="stories-slide-label">О проекте</div>
+  <div class="stories-slide-title">Проект «Армандар орындалады»</div>
+  <div class="stories-slide-text">Наш проект уже запущен. Иногда исполняем мечты гостей — просто потому, что любим вас.</div>
+ </div>
+ <div class="stories-slide" data-slide="1">
+  <div class="stories-slide-label">Цель проекта</div>
+  <div class="stories-slide-title">Не акция, не скидка и не розыгрыш</div>
+  <div class="stories-slide-text">Это то, что мы делаем для своих — без условий и без повода.</div>
+ </div>
+ <div class="stories-slide" data-slide="2">
+  <div class="stories-slide-label">Если хотите</div>
+  <div class="stories-slide-title">Поделитесь мечтой</div>
+  <div class="stories-slide-text" style="margin-bottom:18px">Иногда получается исполнить то, что напишете — просто попробуйте.</div>
+  <div id="dreamWishForm" style="position:relative;z-index:6;width:100%;max-width:300px;text-align:left">
+   <input class="oinput" id="dreamWishName" placeholder="Ваше имя" oninput="dreamOnlyLetters(this)"/>
+   <div class="ferr" id="dreamWishNameErr"></div>
+   <input class="oinput" id="dreamWishPhone" maxlength="18" type="tel" value="+7 " placeholder="+7 (___) ___-__-__" onfocus="if(!this.value)this.value='+7 '" oninput="formatPhoneInput(this)"/>
+   <div class="ferr" id="dreamWishPhoneErr"></div>
+   <textarea class="oinput" id="dreamWishText" rows="3" placeholder="Опишите свою мечту" style="resize:none;font-family:inherit"></textarea>
+   <div class="ferr" id="dreamWishTextErr"></div>
+   <button class="stories-slide-cta" id="dreamWishSubmitBtn" style="width:100%;margin-top:4px" onclick="submitDreamWish()">Поделиться</button>
+   <div class="dream-wish-privacy">Это прочитает только один человек.</div>
+  </div>
+ </div>
+</div>
+  <div class="mov" id="funMov" style="z-index:970">
+    <div class="mbox">
+     <div class="mhandle">
+     </div>
+     <div style="text-align:center;padding:8px 26px 32px">
+      <div id="funEmoji" style="margin-bottom:14px;font-size:2.64rem">
+      </div>
+      <div id="funText" style="color:#1d1d1f;margin-bottom:22px;font-size:0.86rem;font-weight:400;line-height:1.55">
+      </div>
+      <button class="btn-main btn-wa" id="funBtn" onclick="closeMov('funMov')">
+       Понятно
+      </button>
+     </div>
+    </div>
+   </div>
+  <div class="toast" id="toast">
+   </div>
+  <div id="bottomTabBar" style="position:fixed;left:0;right:0;bottom:0;z-index:500;background:#fff;border-top:1px solid #e5e5e7;display:flex;padding-bottom:env(safe-area-inset-bottom)">
+   <a class="bottom-tab-btn" data-tab="home" href="./" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 4px 10px;background:none;border:none;cursor:pointer;font-family:inherit">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
+    <span style="font-size:0.66rem;font-weight:600">Меню</span>
+   </a>
+   <a class="bottom-tab-btn" data-tab="vacancy" href="vacancy/" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 4px 10px;background:none;border:none;cursor:pointer;font-family:inherit;position:relative">
+    <span style="position:absolute;top:6px;left:calc(50% + 6px);background:#7a1128;color:#fff;font-size:0.5rem;font-weight:700;padding:1px 4px;border-radius:6px;line-height:1.4">NEW</span>
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+    <span style="font-size:0.66rem;font-weight:600">Вакансии</span>
+   </a>
+   <a class="bottom-tab-btn" data-tab="news" href="chat/" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 4px 10px;background:none;border:none;cursor:pointer;font-family:inherit;position:relative">
+    <span id="newsTabBadge" style="display:none;position:absolute;top:6px;left:calc(50% + 6px);background:#7a1128;color:#fff;font-size:0.6rem;font-weight:700;min-width:16px;height:16px;border-radius:8px;align-items:center;justify-content:center;padding:0 4px;line-height:1"></span>
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <span style="font-size:0.66rem;font-weight:600">Сообщения</span>
+   </a>
+   <a class="bottom-tab-btn active" data-tab="services" href="services/" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 4px 10px;background:none;border:none;cursor:pointer;font-family:inherit">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+    <span style="font-size:0.66rem;font-weight:600">Сервисы</span>
+   </a>
+  </div>
+ </body>
+</html>

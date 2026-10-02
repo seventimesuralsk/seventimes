@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ru" data-page="booking">
+ <head>
+  <meta charset="utf-8"/>
+  <base href="../"/>
+
+  <title>Бронь столика — Seven Times</title>
+  <meta name="description" content="Забронируйте столик в Seven Times в Уральске: Самал 70/3, Скоробогатова 65/1, Абулхаир Хана 177. Дата, время и гости — за минуту."/>
+  <link rel="canonical" href="https://seventimesuralsk.github.io/seventimes/booking/"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:site_name" content="Seven Times"/>
+  <meta property="og:locale" content="ru_RU"/>
+  <meta property="og:url" content="https://seventimesuralsk.github.io/seventimes/booking/"/>
+  <meta property="og:title" content="Бронь столика — Seven Times"/>
+  <meta property="og:description" content="Забронируйте столик в Seven Times в Уральске: Самал 70/3, Скоробогатова 65/1, Абулхаир Хана 177. Дата, время и гости — за минуту."/>
+  <meta property="og:image" content="https://seventimesuralsk.github.io/seventimes/img/og-cover.1.jpg"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport"/>
+  <link href="manifest.webmanifest" rel="manifest"/>
+  <meta content="yes" name="apple-mobile-web-app-capable"/>
+  <meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+  <meta content="Seven Times" name="apple-mobile-web-app-title"/>
+  <meta name="color-scheme" content="light only"/>
+  <meta content="#f5f5f7" name="theme-color"/>
+  <meta content="yes" name="mobile-web-app-capable"/>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://script.google.com" rel="preconnect"/>
+  <link href="https://script.googleusercontent.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&amp;display=swap" rel="stylesheet" media="print" onload="this.media='all'"/><noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&amp;display=swap" rel="stylesheet"/></noscript>
+  <link rel="stylesheet" href="assets/core.css?v=926c2ee1"/>
+  <script src="assets/core.js?v=88309fb2" defer></script>
+  <script src="assets/booking.js?v=ef903f8b" defer></script>
+  <script type="speculationrules">{"prefetch":[{"source":"document","where":{"href_matches":"/*"},"eagerness":"moderate"}]}</script>
+ </head>
+ <body>
+  <div class="sheet-modal-ov" id="bookingSheet">
+ <div class="sheet-modal-backdrop" onclick="closeSheetModal('bookingSheet')"></div>
+
+ <div class="sheet-modal-panel">
+  <div class="sheet-modal-handle"></div>
+  <button class="sheet-modal-close" onclick="closeSheetModal('bookingSheet')" aria-label="Закрыть">
+   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+  </button>
+  <div class="sheet-modal-frame" id="bookingFrame" style="overflow-y:auto;-webkit-overflow-scrolling:touch">
+
+
+<div class="bk-wrap bk-show" id="bk-bookingWrap">
+  <div class="bk-title">Бронь столика</div>
+
+  <div class="bk-card">
+    <div class="bk-label">Филиал</div>
+    <div id="bk-branchReadout" style="display:none;margin-bottom:14px;padding:12px 14px;background:#f6f6f6;border-radius:12px;font-weight:400;font-size:.82rem;color:#1d1d1f"></div>
+    <div id="bk-branchPicker" style="display:none;gap:8px;margin-bottom:14px">
+      <button id="bk-branchBtn0" onclick="bk_selectBranch(0)" class="bk-branch-btn">Самал 70/3</button>
+      <button id="bk-branchBtn1" onclick="bk_selectBranch(1)" class="bk-branch-btn">Скоробогатова 65/1</button>
+      <button id="bk-branchBtn3" onclick="bk_selectBranch(3)" class="bk-branch-btn">Абулхаир Хана 177</button>
+    </div>
+
+    <div class="bk-hint" style="margin-bottom:14px" id="bk-scheduleHint">Бронь с 12:00. Самал — до 23:00, Скоробогатова — до 01:00.</div>
+
+    <div class="bk-label">Дата</div>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <select id="bk-bookDay" class="bk-bfield" style="flex:1;min-width:0"></select>
+      <select id="bk-bookMonth" class="bk-bfield" style="flex:1;min-width:0"></select>
+    </div>
+
+    <div class="bk-label">Время <span style="color:rgba(0,0,0,.5)">*</span></div>
+    <div style="display:flex;gap:8px;margin-bottom:6px;align-items:center">
+      <select id="bk-bookHour" class="bk-bfield" style="flex:1;min-width:0" onchange="bk_clearTimeFieldError()"></select>
+      <span style="color:rgba(255,255,255,.4);font-size:1.1rem;font-weight:400;flex-shrink:0">:</span>
+      <select id="bk-bookMin" class="bk-bfield" style="flex:1;min-width:0" onchange="bk_clearTimeFieldError()"></select>
+    </div>
+    <div id="bk-timeRequiredHint" style="font-size:.62rem;color:rgba(255,255,255,.3);margin-bottom:14px">Выберите час и минуты — поле обязательно</div>
+
+    <div class="bk-label">Гостей</div>
+    <div style="display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap">
+      <button onclick="bk_selectGuests(1)" id="bk-g1" class="bk-guest-btn">1</button>
+      <button onclick="bk_selectGuests(2)" id="bk-g2" class="bk-guest-btn">2</button>
+      <button onclick="bk_selectGuests(3)" id="bk-g3" class="bk-guest-btn">3</button>
+      <button onclick="bk_selectGuests(4)" id="bk-g4" class="bk-guest-btn">4</button>
+      <button onclick="bk_selectGuests(5)" id="bk-g5" class="bk-guest-btn">5</button>
+      <button onclick="bk_selectGuests(6)" id="bk-g6" class="bk-guest-btn">6+</button>
+    </div>
+
+    <div class="bk-label">Ваше имя</div>
+    <div style="margin-bottom:14px">
+      <input id="bk-bookName" type="text" placeholder="Например: Нурлан" maxlength="40" class="bk-bfield" oninput="this.value=this.value.replace(/[^А-Яа-яЁёA-Za-z\s-]/g,'')">
+    </div>
+
+    <div class="bk-label">Номер телефона</div>
+    <input id="bk-bookPhone" type="tel" placeholder="+7 (___) ___-__-__" maxlength="18" class="bk-bfield" style="margin-bottom:14px" oninput="bk_formatBookPhone(this);">
+
+    <div class="bk-label">Комментарий (необязательно)</div>
+    <input id="bk-bookComment" type="text" placeholder="Возле окна, детский стул, ширма" maxlength="120" class="bk-bfield" style="margin-bottom:18px">
+
+    <label class="bk-consent-row" for="bookConsent">
+      <input type="checkbox" id="bk-bookConsent" class="bk-consent-checkbox" onchange="bk_toggleSendBtn();">
+      <span class="bk-consent-label">Принимаю <a id="bk-termsLink" href="https://taplink.cc/seventimes/p/1154a9f/" target="_blank" onclick="event.stopPropagation();bk__termsOpened=true;">условия бронирования столика</a>, в том числе невозврат предоплаты 2 000 ₸ при неявке</span>
+    </label>
+
+    <a id="bk-bookWALink" href="#" onclick="return bk_sendBooking();" class="bk-wa-btn bk-disabled">Отправить в WhatsApp</a>
+    <div id="bk-bookError" class="bk-err"></div>
+    <div style="font-size:.62rem;color:rgba(255,255,255,.3);text-align:center;margin-top:14px;line-height:1.6">Отправляя заявку, вы соглашаетесь с <a href="https://taplink.cc/seventimes/p/1153436/" target="_blank" style="color:rgba(255,255,255,.5);text-decoration:underline">Условиями и положениями</a> Seven Times.</div>
+  </div>
+</div>
+
+<button class="bk-hamburger-btn" onclick="bk_toggleAdminPanel()"><span></span><span></span><span></span></button>
+
+<div id="bk-adminDrawerOv" class="bk-admin-drawer-ov" onclick="if(event.target===this) bk_toggleAdminPanel()">
+  <div class="bk-admin-drawer">
+    <div class="bk-admin-drawer-title">Меню <button class="bk-admin-drawer-close" onclick="bk_toggleAdminPanel()">✕</button></div>
+
+    <div class="bk-drawer-links" id="bk-drawerLinks">
+      <a class="bk-drawer-link" href="https://taplink.cc/seventimes/p/1154a9f/" target="_blank">Условия бронирования</a>
+      <a class="bk-drawer-link" href="https://taplink.cc/seventimes/p/1153436/" target="_blank">Условия и положения сайта</a>
+    </div>
+  </div>
+</div>
+
+<div id="bk-adminModalOv" class="bk-admin-modal-ov" onclick="if(event.target===this) bk_closeAdminModal()">
+  <div class="bk-admin-modal" style="max-width:340px;max-height:86vh;overflow-y:auto">
+    <button class="bk-admin-modal-close" onclick="bk_closeAdminModal()">✕</button>
+    <div id="bk-adminLoginBlock" style="clear:both;padding-top:6px">
+      <div class="bk-label">Логин</div>
+      <input id="bk-adminLogin" type="text" class="bk-field" placeholder="Логин" autocomplete="username" autocapitalize="none" spellcheck="false">
+      <div class="bk-label">Пароль</div>
+      <input id="bk-adminPw" type="password" class="bk-field" placeholder="Пароль" autocomplete="current-password">
+      <div class="bk-label">Секретное слово</div>
+      <input id="bk-adminSecret" type="password" class="bk-field" placeholder="Секретное слово" autocomplete="off" autocapitalize="none" spellcheck="false">
+      <button class="bk-admin-save" onclick="bk_adminLogin()">Войти</button>
+      <div id="bk-adminLoginMsg" class="bk-admin-msg bk-err"></div>
+    </div>
+    <div id="bk-adminControlBlock" style="display:none;clear:both;padding-top:6px">
+      <div id="bk-adminCurrentStatus" style="font-size:.72rem;color:rgba(255,255,255,.6);margin-bottom:12px">Загрузка…</div>
+      <div class="bk-admin-toggle-row">
+        <button id="bk-adminBtnOpen" class="bk-admin-toggle-btn bk-open-b" onclick="bk_adminSetLocal(false)">Открыто</button>
+        <button id="bk-adminBtnClosed" class="bk-admin-toggle-btn bk-closed-b" onclick="bk_adminSetLocal(true)">Закрыто</button>
+      </div>
+
+      <div id="bk-adminClosedOptions" style="display:none">
+        <div class="bk-label">Причина (необязательно, можно выбрать готовую)</div>
+        <div id="bk-adminReasonChips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px"></div>
+
+        <div class="bk-label">Когда откроемся</div>
+        <div id="bk-adminTimePresets" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px"></div>
+
+        <div id="bk-adminCustomTimeRow" style="display:none;flex-wrap:wrap;gap:6px;margin-bottom:10px">
+          <select id="bk-adminCDay" class="bk-field" style="flex:1;min-width:56px;margin-bottom:0"></select>
+          <select id="bk-adminCMonth" class="bk-field" style="flex:1.6;min-width:90px;margin-bottom:0"></select>
+          <select id="bk-adminCHour" class="bk-field" style="flex:1;min-width:56px;margin-bottom:0"></select>
+          <select id="bk-adminCMin" class="bk-field" style="flex:1;min-width:56px;margin-bottom:0"></select>
+          <select id="bk-adminCSec" class="bk-field" style="flex:1;min-width:56px;margin-bottom:0"></select>
+        </div>
+
+        <div id="bk-adminReopenPreview" style="font-size:.68rem;color:rgba(255,255,255,.45);margin:-4px 0 12px;line-height:1.5"></div>
+      </div>
+
+      <div class="bk-label">Сообщение гостям (если закрыто)</div>
+      <input id="bk-adminMsgInput" type="text" class="bk-field" placeholder="Откроемся завтра в 12:00" maxlength="140">
+      <button class="bk-admin-save" onclick="bk_adminSave()">Сохранить</button>
+      <div id="bk-adminSaveMsg" class="bk-admin-msg"></div>
+
+      <div style="border-top:1px solid rgba(255,255,255,.1);margin:18px 0 14px;padding-top:14px">
+        <div class="bk-label">Заблокировать конкретную дату</div>
+
+        <div style="display:flex;gap:8px;margin-bottom:10px">
+          <button id="bk-adminBlockBranch0" class="bk-admin-time-btn bk-on" style="flex:1" onclick="bk_adminSelectBlockBranch(0)">Самал</button>
+          <button id="bk-adminBlockBranch1" class="bk-admin-time-btn" style="flex:1" onclick="bk_adminSelectBlockBranch(1)">Скоробогатова</button>
+          <button id="bk-adminBlockBranchBoth" class="bk-admin-time-btn" style="flex:1" onclick="bk_adminSelectBlockBranch(2)">Оба</button>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-bottom:10px">
+          <select id="bk-adminBlockDay" class="bk-field" style="flex:1;margin-bottom:0"></select>
+          <select id="bk-adminBlockMonth" class="bk-field" style="flex:1.6;margin-bottom:0"></select>
+        </div>
+
+        <input id="bk-adminBlockReason" type="text" class="bk-field" placeholder="Причина (необязательно)" maxlength="80">
+
+        <button class="bk-admin-save" style="background:#7a1128" onclick="bk_adminAddBlockedDate()">Заблокировать дату</button>
+        <div id="bk-adminBlockMsg" class="bk-admin-msg"></div>
+
+        <div class="bk-label" style="margin-top:16px">Заблокированные даты</div>
+        <div id="bk-adminBlockedList" style="font-size:.72rem;color:rgba(255,255,255,.5)">Загрузка…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="bk-iosNotif" class="bk-ios-notif">
+  
+  <div class="bk-ios-notif-body">
+    <div class="bk-ios-notif-title"><span class="bk-ios-notif-app">Seven Times</span><span class="bk-ios-notif-time" id="bk-iosNotifTime">сейчас</span></div>
+    <div class="bk-ios-notif-text" id="bk-iosNotifText">Привет!</div>
+  </div>
+</div>
+
+<div id="bk-closedScreen" class="bk-closed-screen">
+  
+  <div class="bk-closed-title">Ресторан временно закрыт</div>
+  <div class="bk-closed-text" id="bk-closedText">Бронь сейчас недоступна. Загляните позже.</div>
+  <div class="bk-closed-text" id="bk-closedReopenText" style="margin-top:10px;font-weight:400;color:#1d1d1f"></div>
+</div>
+
+<div id="bk-bookGateOv" class="bk-gate-ov">
+  <div class="bk-gate-sheet">
+    <div class="bk-gate-handle"></div>
+    <div style="display:none" id="bk-bookGateIcon"></div>
+    <div class="bk-gate-title" id="bk-bookGateTitle">Бронь пока недоступна</div>
+    <div class="bk-gate-text" id="bk-bookGateText"></div>
+    <button class="bk-gate-btn" onclick="bk_closeBookGate()">Понятно</button>
+  </div>
+</div>
+
+</div>
+ </div>
+</div>
+  <div class="mov" id="funMov" style="z-index:970">
+    <div class="mbox">
+     <div class="mhandle">
+     </div>
+     <div style="text-align:center;padding:8px 26px 32px">
+      <div id="funEmoji" style="margin-bottom:14px;font-size:2.64rem">
+      </div>
+      <div id="funText" style="color:#1d1d1f;margin-bottom:22px;font-size:0.86rem;font-weight:400;line-height:1.55">
+      </div>
+      <button class="btn-main btn-wa" id="funBtn" onclick="closeMov('funMov')">
+       Понятно
+      </button>
+     </div>
+    </div>
+   </div>
+  <div id="clientBlockedScreen" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;background:#f5f5f7;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center">
+    
+    <div style="font-size:1.14rem;font-weight:400;margin-bottom:10px;color:#1d1d1f">
+     Доступ ограничён
+    </div>
+    <div style="font-size:0.75rem;color:#6e6e73;max-width:320px;line-height:1.7">
+     К сожалению, вам недоступен просмотр меню и заказ на этом сайте.
+    </div>
+   </div>
+  <div class="toast" id="toast">
+   </div>
+  <div id="bottomTabBar" style="position:fixed;left:0;right:0;bottom:0;z-index:500;background:#fff;border-top:1px solid #e5e5e7;display:flex;padding-bottom:env(safe-area-inset-bottom)">
+   <a class="bottom-tab-btn" data-tab="home" href="./" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 4px 10px;background:none;border:none;cursor:pointer;font-family:inherit">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
+    <span style="font-size:0.66rem;font-weight:600">Меню</span>
+   </a>
+   <a class="bottom-tab-btn" data-tab="vacancy" href="vacancy/" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 4px 10px;background:none;border:none;cursor:pointer;font-family:inherit;position:relative">
+    <span style="position:absolute;top:6px;left:calc(50% + 6px);background:#7a1128;color:#fff;font-size:0.5rem;font-weight:700;padding:1px 4px;border-radius:6px;line-height:1.4">NEW</span>
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+    <span style="font-size:0.66rem;font-weight:600">Вакансии</span>
+   </a>
+   <a class="bottom-tab-btn" data-tab="news" href="chat/" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 4px 10px;background:none;border:none;cursor:pointer;font-family:inherit;position:relative">
+    <span id="newsTabBadge" style="display:none;position:absolute;top:6px;left:calc(50% + 6px);background:#7a1128;color:#fff;font-size:0.6rem;font-weight:700;min-width:16px;height:16px;border-radius:8px;align-items:center;justify-content:center;padding:0 4px;line-height:1"></span>
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <span style="font-size:0.66rem;font-weight:600">Сообщения</span>
+   </a>
+   <a class="bottom-tab-btn active" data-tab="services" href="services/" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 4px 10px;background:none;border:none;cursor:pointer;font-family:inherit">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+    <span style="font-size:0.66rem;font-weight:600">Сервисы</span>
+   </a>
+  </div>
+ </body>
+</html>

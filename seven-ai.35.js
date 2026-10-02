@@ -1337,7 +1337,10 @@
     if (a.indexOf("dish:") === 0) return openCard({ id: a.slice(5) });
     if (a.indexOf("cat:") === 0) {
       var i = Object.keys(menuNow()).indexOf(a.slice(4));
-      seventAiClose(); switchBottomTab("home");
+      seventAiClose();
+      // сайт разделён на страницы: из «Сообщений» — сразу в меню на эту категорию
+      if (W.PAGE && W.PAGE !== "menu" && W.goPage) return W.goPage("./?cat=" + (i >= 0 ? i : 0));
+      switchBottomTab("home");
       if (i >= 0) setTimeout(function () { scrollToSec(i); }, 80);
       return;
     }
@@ -1346,7 +1349,7 @@
     else if (a === "book") bookBtnClick();
     else if (a === "news") switchBottomTab("news");
     else if (a === "vacancy") switchBottomTab("vacancy");
-    else if (a === "cart") { switchBottomTab("home"); openCart(); }
+    else if (a === "cart") { if (!(W.PAGE && W.PAGE !== "menu")) switchBottomTab("home"); openCart(); }
   };
 
   // ── кнопка «Спросить SEVEN AI» в шторке блюда

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ru" data-page="services">
+ <head>
+  <meta charset="utf-8"/>
+  <base href="../"/>
+
+  <title>Сервисы — Seven Times</title>
+  <meta name="description" content="Сервисы Seven Times: профиль и история заказов, бронь столика, рестораны, вопросы и проекты."/>
+  <link rel="canonical" href="https://seventimesuralsk.github.io/seventimes/services/"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:site_name" content="Seven Times"/>
+  <meta property="og:locale" content="ru_RU"/>
+  <meta property="og:url" content="https://seventimesuralsk.github.io/seventimes/services/"/>
+  <meta property="og:title" content="Сервисы — Seven Times"/>
+  <meta property="og:description" content="Сервисы Seven Times: профиль и история заказов, бронь столика, рестораны, вопросы и проекты."/>
+  <meta property="og:image" content="https://seventimesuralsk.github.io/seventimes/img/og-cover.1.jpg"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport"/>
+  <link href="manifest.webmanifest" rel="manifest"/>
+  <meta content="yes" name="apple-mobile-web-app-capable"/>
+  <meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+  <meta content="Seven Times" name="apple-mobile-web-app-title"/>
+  <meta name="color-scheme" content="light only"/>
+  <meta content="#f5f5f7" name="theme-color"/>
+  <meta content="yes" name="mobile-web-app-capable"/>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://script.google.com" rel="preconnect"/>
+  <link href="https://script.googleusercontent.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&amp;display=swap" rel="stylesheet" media="print" onload="this.media='all'"/><noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&amp;display=swap" rel="stylesheet"/></noscript>
+  <link rel="stylesheet" href="assets/core.css?v=926c2ee1"/>
+  <script src="assets/core.js?v=88309fb2" defer></script>
+  <script src="assets/services.js?v=d40e6e33" defer></script>
+  <script type="speculationrules">{"prefetch":[{"source":"document","where":{"href_matches":"/*"},"eagerness":"moderate"}]}</script>
+ </head>
+ <body>
+  <div id="servicesScreen" style="display:none;position:fixed;inset:0;z-index:490;background:#fff;flex-direction:column;padding-bottom:78px">
+   <div style="padding:16px var(--px)12px;font-weight:600;font-size:1.15rem;text-align:center;background:#fff">Сервисы</div>
+   <div style="flex:1;overflow-y:auto">
+    <div id="svcProfileRow" onclick="openProfile()" style="display:flex;align-items:center;gap:12px;padding:16px var(--px);background:#fff;cursor:pointer">
+     <svg width="44" height="44" viewBox="0 0 24 24" style="border-radius:50%;background:#e5e5e7;flex-shrink:0"><circle cx="12" cy="9" r="3.6" fill="#b0b0b5"/><path d="M4.5 20c1-4 4-6 7.5-6s6.5 2 7.5 6" fill="#b0b0b5"/></svg>
+     <div style="flex:1">
+      <div id="svcProfileName" style="font-size:0.88rem;font-weight:400;color:#1d1d1f">Гость</div>
+      <div style="font-size:0.66rem;color:#86868b">Профиль и история заказов</div>
+     </div>
+     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c7c7cc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M9 6l6 6-6 6"/></svg>
+    </div>
+    <div style="height:10px;background:#f5f5f7"></div>
+    <div style="padding:6px var(--px)22px;display:grid;grid-template-columns:repeat(3,1fr);gap:24px 4px">
+     <a href="booking/" class="svc-tile">
+      <img loading="lazy" decoding="async" class="svc-icon" src="img/svc-booking.3cb0ef1b.png" alt=""><span class="svc-label">Бронь столика</span>
+     </a>
+     <a href="about/" class="svc-tile">
+      <img loading="lazy" decoding="async" class="svc-icon" src="img/svc-about.8998f965.png" alt=""><span class="svc-label">О компании</span>
+     </a>
+     <a href="faq/" class="svc-tile">
+      <img loading="lazy" decoding="async" class="svc-icon" src="img/svc-faq.f54c3e31.png" alt=""><span class="svc-label">Вопросы</span>
+     </a>
+     <a href="restaurants/" class="svc-tile">
+      <img loading="lazy" decoding="async" class="svc-icon" src="img/svc-restaurants.2547af82.png" alt=""><span class="svc-label">Рестораны</span>
+     </a>
+     <a href="projects/" class="svc-tile">
+      <img loading="lazy" decoding="async" class="svc-icon" src="img/svc-projects.2bc9c015.png" alt=""><span class="svc-label">Проекты</span>
+     </a>
+    </div>
+   </div>
+  </div>
+  <div id="profileModalOv" onclick="event.target===this&&closeMov('profileModalOv')" style="display:none;position:fixed;inset:0;z-index:960;background:rgba(0,0,0,.4);align-items:flex-end">
+    <div style="background:#fff;border-radius:20px 20px 0 0;width:100%;max-height:80vh;display:flex;flex-direction:column">
+     <div style="display:flex;align-items:center;justify-content:space-between;padding:18px var(--px)10px">
+      <div style="font-weight:700;font-size:1rem">Профиль</div>
+      <button aria-label="Закрыть" onclick="closeMov('profileModalOv')" style="background:none;border:none;font-size:1.4rem;color:#6e6e73;cursor:pointer;line-height:1">×</button>
+     </div>
+     <div class="mbody" id="profileBody" style="overflow-y:auto;padding:0 var(--px)20px">
+     </div>
+    </div>
+   </div>
+  <div class="mov" id="funMov" style="z-index:970">
+    <div class="mbox">
+     <div class="mhandle">
+     </div>
+     <div style="text-align:center;padding:8px 26px 32px">
+      <div id="funEmoji" style="margin-bottom:14px;font-size:2.64rem">
+      </div>
+      <div id="funText" style="color:#1d1d1f;margin-bottom:22px;font-size:0.86rem;font-weight:400;line-height:1.55">
+      </div>
+      <button class="btn-main btn-wa" id="funBtn" onclick="closeMov('funMov')">
+       Понятно
+      </button>
+     </div>
+    </div>
+   </div>
+  <div class="sov" id="registerMov" onclick="event.target===this&&closeMov('registerMov')" style="z-index:960">
+    <div class="sbox" style="max-height:74svh">
+     <div style="text-align:center;padding:22px 20px 4px">
+      <div data-i18n="contact_data_title" style="color:#1d1d1f;margin-bottom:6px;font-size:1.01rem;font-weight:400">
+       Контактные данные
+      </div>
+     </div>
+     <div style="padding:16px 20px 22px">
+      <input class="oinput" data-i18n-ph="name_ph" id="regName" placeholder="Имя"/>
+      <div class="ferr" id="regNameErr">
+      </div>
+      <input class="oinput" id="regPhone" maxlength="18" onfocus="if(!this.value)this.value='+7 '" oninput="formatPhoneInput(this)" placeholder="+7 (___) ___-__-__" type="tel" value="+7 "/>
+      <div class="ferr" id="regPhoneErr">
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:9px;margin-bottom:12px;padding:11px 12px;background:#f6f6f6;border-radius:11px">
+       <input id="regAgreeTerms" onchange="toggleRegAgreeErr()" style="width:18px;height:18px;margin-top:1px;flex-shrink:0;accent-color:#1d1d1f" type="checkbox"/>
+       <label for="regAgreeTerms" style="font-size:0.65rem;color:#1d1d1f;line-height:1.5;cursor:pointer">
+        Принимаю
+        <a href="https://taplink.cc/seventimes/p/1153436/" onclick="event.stopPropagation()" style="color:#1d1d1f;text-decoration:underline" target="_blank">
+         условия и положения
+        </a>
+       </label>
+      </div>
+      <div id="regAgreeErr" style="color:#1d1d1f;font-size:0.62rem;margin-top:-6px;margin-bottom:10px;display:none">
+       Нужно согласиться с условиями, чтобы продолжить
+      </div>
+      <button class="btn-main btn-wa" data-i18n="continue_btn" onclick="submitRegister()">
+       Продолжить
+      </button>
+      <div style="color:#86868b;text-align:center;margin-top:12px;font-size:0.62rem;line-height:1.55">
+       Регистрация только для заказов на сайте. Без рассылок и подписок — используем имя и телефон только для доставки ваших заказов.
+      </div>
+     </div>
+    </div>
+   </div>
+  <div id="clientBlockedScreen" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;background:#f5f5f7;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center">
+    
+    <div style="font-size:1.14rem;font-weight:400;margin-bottom:10px;color:#1d1d1f">
+     Доступ ограничён
+    </div>
+    <div style="font-size:0.75rem;color:#6e6e73;max-width:320px;line-height:1.7">
+     К сожалению, вам недоступен просмотр меню и заказ на этом сайте.
+    </div>
+   </div>
+  <div class="toast" id="toast">
+   </div>
+  <div id="bottomTabBar" style="position:fixed;left:0;right:0;bottom:0;z-index:500;background:#fff;border-top:1px solid #e5e5e7;display:flex;padding-bottom:env(safe-area-inset-bottom)">
+   <a class="bottom-tab-btn" data-tab="home" href="./" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 4px 10px;background:none;border:none;cursor:pointer;font-family:inherit">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
+    <span style="font-size:0.66rem;font-weight:600">Меню</span>
+   </a>
+   <a class="bottom-tab-btn" data-tab="vacancy" href="vacancy/" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 4px 10px;background:none;border:none;cursor:pointer;font-family:inherit;position:relative">
+    <span style="position:absolute;top:6px;left:calc(50% + 6px);background:#7a1128;color:#fff;font-size:0.5rem;font-weight:700;padding:1px 4px;border-radius:6px;line-height:1.4">NEW</span>
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+    <span style="font-size:0.66rem;font-weight:600">Вакансии</span>
+   </a>
+   <a class="bottom-tab-btn" data-tab="news" href="chat/" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 4px 10px;background:none;border:none;cursor:pointer;font-family:inherit;position:relative">
+    <span id="newsTabBadge" style="display:none;position:absolute;top:6px;left:calc(50% + 6px);background:#7a1128;color:#fff;font-size:0.6rem;font-weight:700;min-width:16px;height:16px;border-radius:8px;align-items:center;justify-content:center;padding:0 4px;line-height:1"></span>
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <span style="font-size:0.66rem;font-weight:600">Сообщения</span>
+   </a>
+   <a class="bottom-tab-btn active" data-tab="services" href="services/" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 4px 10px;background:none;border:none;cursor:pointer;font-family:inherit">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+    <span style="font-size:0.66rem;font-weight:600">Сервисы</span>
+   </a>
+  </div>
+ </body>
+</html>
