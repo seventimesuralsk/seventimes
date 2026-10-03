@@ -38,18 +38,18 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&amp;display=swap" rel="stylesheet" media="print" onload="this.media='all'"/><noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&amp;display=swap" rel="stylesheet"/></noscript>
   <link rel="stylesheet" href="assets/core.css?v=926c2ee1"/>
   <script src="assets/core.js?v=fa28570e" defer></script>
-  <script src="assets/menu.js?v=beaae092" defer></script>
+  <script src="assets/menu.js?v=3cc4346e" defer></script>
   <script type="speculationrules">{"prefetch":[{"source":"document","where":{"href_matches":"/*"},"eagerness":"moderate"}]}</script>
  </head>
  <body>
   <div id="appShell">
    <div class="branch-dropdown-backdrop" id="branchDropdownBackdrop" onclick="closeBranchDropdown()">
    </div>
-   <div id="breakfastPromoBar" style="display:none;align-items:center;gap:12px;position:fixed;top:0;left:0;right:0;z-index:320;background:rgba(10,132,255,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.15);padding:11px 16px">
+   <div id="breakfastPromoBar" style="display:none;align-items:center;gap:12px;position:fixed;top:0;left:0;right:0;z-index:320;background:#7a1128;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.15);padding:11px 16px">
     <div style="flex:1;min-width:0;overflow:hidden;height:17px">
-     <div id="bfBarTitle" style="height:17px;line-height:17px;font-weight:500;font-size:0.8rem;letter-spacing:.01em;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity .1s ease">Завтраки за 999 ₸</div>
+     <div id="bfBarTitle" style="height:17px;line-height:17px;font-weight:500;font-size:0.8rem;letter-spacing:.01em;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity .1s ease">Карта лояльности</div>
     </div>
-    <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:1px">
+    <div style="flex-shrink:0;display:none;flex-direction:column;align-items:center;gap:1px">
      <div id="bfBarCountdown" style="font-size:0.76rem;font-weight:500;color:#fff;font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:.02em">
       —
      </div>
@@ -57,7 +57,7 @@
       осталось
      </div>
     </div>
-    <button id="bfBarBtn" onclick="bannerAction()" style="background:#fff;border:none;color:#0a84ff;font-size:0.68rem;font-weight:500;cursor:pointer;padding:9px 16px;border-radius:999px;flex-shrink:0;margin-left:6px">
+    <button id="bfBarBtn" onclick="bannerAction()" style="background:#fff;border:none;color:#7a1128;font-size:0.68rem;font-weight:500;cursor:pointer;padding:9px 16px;border-radius:999px;flex-shrink:0;margin-left:6px">
      Получить
     </button>
    </div>
@@ -105,6 +105,7 @@
    </nav>
    <div id="navSpacer" style="height:56px">
    </div>
+   <script>!function(){var g=function(i){return document.getElementById(i)},e=g("breakfastPromoBar"),s=null;if(e){try{s=JSON.parse(localStorage.getItem("st_bar_v1")||"null")}catch(x){}if(s&&s.off)return;if(s&&s.t){var t=g("bfBarTitle"),b=g("bfBarBtn");t.textContent=s.t,s.x&&(t.style.textAlign="center"),e.style.background=s.c,b.textContent=s.b,b.style.color=s.c,s.b||(b.style.display="none")}e.style.display="flex";var h=e.offsetHeight,n=document.querySelector("nav"),p=g("navSpacer");n&&(n.style.top=h+"px"),p&&(p.style.height=56+h+"px")}}()</script>
    <div id="promoBannersWrap" style="background:0 0;border-bottom:none;padding:10px 0 6px;display:none">
     <div class="sec-title" style="padding:0 var(--px);margin-bottom:8px">
      Новинки и рекомендации
