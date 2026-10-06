@@ -12,17 +12,18 @@ function renderBranchCarousel(){}function startBreakfastPromoTicker(){}function 
 function updateSearchTop(){}
 function scrollToSec(c){goPage("./?cat="+encodeURIComponent(c))}
 function hr_open(){goPage("vacancy/")}
-function sevenLocalLoad(){return Promise.resolve()}
-function loadNewsFeed(){apiGet({action:"getNews"},function(e){var t=e&&"success"===e.status&&e.news?e.news:[];_newsFeedData=_newsSortWithPin(t);_newsRenderList();_newsSaveCache(t);try{localStorage.setItem("st_news_t",String(Date.now()))}catch(x){}},function(){})}
-function _newsRenderList(){try{_newsUpdateTabBadge()}catch(e){}}
-function seventAiRowUpdate(){}
-function openAdm(){goPage("admin/")}
+
+
+
+
+
+function openAdm(){}
 function openRestaurantsModal(){goPage("restaurants/")}
 function openDreamStories(){goPage("projects/")}
 function openAboutCompanyModal(){goPage("about/")}
 function openFaqModal(){goPage("faq/")}
 function bookBtnClick(){if(_bookLongPressFired){_bookLongPressFired=!1;return}goPage("booking/")}
-function seventAiOpen(){goPage("chat/#ai")}
+
 var _scrollLockCount=0,_scrollLockY=0;;
 function lockBodyScroll(){0===_scrollLockCount&&(_scrollLockY=window.scrollY||window.pageYOffset||0,document.body.style.position="fixed",document.body.style.top="-"+_scrollLockY+"px",document.body.style.left="0",document.body.style.right="0",document.body.style.width="100%"),_scrollLockCount++};
 function unlockBodyScroll(){0===(_scrollLockCount=Math.max(0,_scrollLockCount-1))&&(document.body.style.position="",document.body.style.top="",document.body.style.left="",document.body.style.right="",document.body.style.width="",window.scrollTo(0,_scrollLockY))};
@@ -47,7 +48,7 @@ var _geQ=[],_geT=0,_geL=0;;
 function logGuestEvent(e,t){try{_geL||(_geL=1,addEventListener("pagehide",_geFlush),document.addEventListener("visibilitychange",function(){"hidden"===document.visibilityState&&_geFlush()})),_geQ.push([String(e),String(t||"")]),_geQ.length>=15?_geFlush():_geT||(_geT=setTimeout(_geFlush,4e3))}catch(x){}};
 function _geFlush(){clearTimeout(_geT),_geT=0;if(_geQ.length)try{var q=_geQ.splice(0,20),b=JSON.stringify({action:"logGuestEvents",events:q,clientId:getClientId(),branch:branch||"",device:_guestDevice,source:_guestSource,city:_guestCity,ip:_guestIp});fetch(API,{method:"POST",body:b,keepalive:!0}).catch(function(){})}catch(x){}};
 function logGuestEventsBeacon(e){try{if(!e||!e.length)return;var t=JSON.stringify({action:"logGuestEvents",events:e,clientId:getClientId(),branch:branch||"",device:_guestDevice,source:_guestSource,city:_guestCity,ip:_guestIp});navigator.sendBeacon&&navigator.sendBeacon(API,t)||fetch(API,{method:"POST",body:t,keepalive:!0}).catch(function(){})}catch(e){}};
-function initGuestTracking(){_guestDevice=detectGuestDevice(),_guestSource=detectGuestSource();
+function initGuestTracking(){if(PAGE==="admin")return;_guestDevice=detectGuestDevice(),_guestSource=detectGuestSource();
 /* один визит = одна вкладка: переходы между страницами сайта не считаются новым визитом и уходом */
 var SS=null;try{SS=JSON.parse(sessionStorage.getItem("st_sess")||"null")}catch(x){}var fresh=!SS||!SS.t;
 if(fresh){SS={t:Date.now()};try{sessionStorage.setItem("st_sess",JSON.stringify(SS))}catch(x){}}else{_guestIp=SS.ip||"";_guestCity=SS.city||""}
@@ -221,21 +222,21 @@ function confirmAndSendOrder(){if(_orderSending)return;_orderSending=!0;let e=do
 function showSentBanner(e){let n=document.getElementById("sentToast");n&&(document.getElementById("sentToastMain").textContent=t("order_sent")+" "+e,n.classList.add("show"),clearTimeout(n._t),n._t=setTimeout(()=>{n.classList.remove("show")},7e3))};
 function retryOpenWhatsapp(){if(!_pendingOrderMsg)return void showToast(t("order_text_unavailable"));let e=document.createElement("a");e.href="https://wa.me/77760709898?text="+encodeURIComponent(_pendingOrderMsg),e.target="_blank",e.rel="noopener noreferrer",document.body.appendChild(e),e.click(),document.body.removeChild(e);let n=document.getElementById("sentToast");n&&n.classList.remove("show")};
 function closeSheet(){closeMov("sheetOv")};
-var _newsLoaded=!1;;
-function switchBottomTab(e){var m={home:"./",news:"chat/",services:"services/",vacancy:"vacancy/"},pg={home:"menu",news:"chat",services:"services",vacancy:"vacancy"};e in m&&pg[e]!==PAGE&&goPage(m[e])};
-var _newsFeedData=[];;
-function _newsReadKeys(){try{return JSON.parse(localStorage.getItem("seventNewsRead")||"[]")}catch(e){return[]}};
-function _newsKey(e,t){return e.id?"id"+e.id:(e.title||"")+"|"+(e.date||"")+"|"+t};
-function _newsIsRead(e){return-1!==_newsReadKeys().indexOf(e)};
-function _saiUnread(){try{return Number(localStorage.getItem("sai_unread")||0)||0}catch(e){return 0}};
-function _newsUpdateTabBadge(){var e=document.getElementById("newsTabBadge");if(e){var t=_saiUnread();_newsFeedData.forEach(function(e,n){_newsIsRead(_newsKey(e,n))||t++}),t>0?(e.textContent=t>9?"9+":String(t),e.style.display="flex"):e.style.display="none"}};
-function _newsSortWithPin(e){e=(e||[]).filter(function(e){return e&&"SEVEN AI"!==e.title}).map(function(e){return e&&e.text&&(e.text=noEmoji(e.text)),e});return e.slice().sort(function(e,t){var n="SEVEN AI"===e.title?1:0,o="SEVEN AI"===t.title?1:0;return n!==o?o-n:new Date(t.date)-new Date(e.date)})};
+;
+;
+;
+;
+;
+;
+;
+;
+;
 function openSheetModal(e){var t=document.getElementById(e);t&&(t.style.display="block",lockBodyScroll(),t.offsetWidth,requestAnimationFrame(function(){t.classList.add("open")}))};
 function closeSheetModal(e){var t=document.getElementById(e);t&&(t.classList.remove("open"),unlockBodyScroll(),setTimeout(function(){t.classList.contains("open")||(t.style.display="none")},0))};
 var _bookPressTimer=null,_bookLongPressFired=!1;;
-function bookBtnPressStart(){_bookLongPressFired=!1,clearTimeout(_bookPressTimer),_bookPressTimer=setTimeout(function(){_bookLongPressFired=!0,navigator.vibrate&&navigator.vibrate(30),openAdm()},1e4)};
+function bookBtnPressStart(){_bookLongPressFired=!1,clearTimeout(_bookPressTimer),_bookPressTimer=0};
 function bookBtnPressEnd(){clearTimeout(_bookPressTimer)};
-var BOOT_ACTIONS={getStatus:1,getBannerSettings:1,getBookingStatus:1,getBookingBlockedDates:1,getNews:1},_boot=null,_bootUsed={};;
+var BOOT_ACTIONS={getStatus:1,getBannerSettings:1,getBookingStatus:1,getBookingBlockedDates:1},_boot=null,_bootUsed={};;
 var _bootT=0;;
 function bootData(){return _boot||(_bootT=Date.now(),_boot=fetchWithTimeout(API+"?action=boot",12e3).then(function(r){return r.json()}).then(function(d){if(!d||"success"!==d.status)throw Error("boot");return d.ver&&!_verSeen&&(_verSeen=d.ver),d})),_boot};
 function bootTake(a){if(!BOOT_ACTIONS[a]||_bootUsed[a]||_boot&&Date.now()-_bootT>15e3)return null;_bootUsed[a]=1;return bootData().then(function(d){var x=d[a];if(!x||"object"!=typeof x)throw Error("boot");return x})};
@@ -260,7 +261,7 @@ function branchHasOrdering(e){return!!DELIVERY_HOURS[e]};
 function canOrderNow(e){if(isTestPhoneActive())return!0;var t=DELIVERY_HOURS[e];if(!t)return!1;var n=getKZMinutes(),o=60*t.openH+t.openM,r=60*t.closeH+t.closeM;return r<=o?n>=o||n<r:n>=o&&n<r};
 function getDeliveryMinutesLeft(e){var t=DELIVERY_HOURS[e];if(!t||!canOrderNow(e))return null;var n=getKZMinutes(),o=60*t.openH+t.openM,r=60*t.closeH+t.closeM;return r<=o&&n>=o?r+1440-n:r-n};
 function getOrderWindowText(e){var n=DELIVERY_HOURS[e];if(!n)return"";var o=String(n.openH).padStart(2,"0")+":"+String(n.openM).padStart(2,"0"),r=String(n.closeH).padStart(2,"0")+":"+String(n.closeM).padStart(2,"0");return t("time_window_from_to").replace("{0}",o).replace("{1}",r)};
-function getOrderClosedContent(e){var w=getOrderWindowText(e);return{emoji:"",text:w?t("orders_closed_text")+w+".":"Заказы из этого филиала через сайт пока не принимаем. Выберите другой филиал или напишите нам в SEVEN AI.",btn:t("got_it_btn")}};
+function getOrderClosedContent(e){var w=getOrderWindowText(e);return{emoji:"",text:w?t("orders_closed_text")+w+".":"Заказы из этого филиала через сайт пока не принимаем. Выберите другой филиал.",btn:t("got_it_btn")}};
 function getKZDay(){var e=(new Date).getTime()+18e6;return new Date(e).getUTCDay()};
 function showToast(e){let t=document.getElementById("toast");t.textContent=e,t.classList.add("show"),clearTimeout(t._t),t._t=setTimeout(()=>t.classList.remove("show"),2e3)};
 var _sitePollTimer=null;;
@@ -269,55 +270,26 @@ function checkSiteStatus(){apiGet({action:"getStatus"},function(e){var t=documen
 var _menuVer={},_menuSoftT=0;;
 function refreshMenuSoft(force){if(!branch)return;var now=Date.now();if(!force&&now-_menuSoftT<15e3)return;_menuSoftT=now;var b=branch;fetchMenuJson(b,15e3,!0).then(function(r){r&&"success"===r.status&&(saveMenuCache("st_menu_"+b,r.categories),_menuVer[b]=r.v,branch===b&&patchMenuLive(r.categories))}).catch(function(){})};
 function relockLunch(){if(branch&&menuData&&Object.keys(menuData).length)try{patchMenuLive(JSON.parse(JSON.stringify(menuData)))}catch(e){}};
-function _newsSaveCache(list){try{localStorage.setItem("st_news_v1",JSON.stringify(list||[]))}catch(e){}};
-function refreshNewsNow(){_apiGetNet({action:"getNews"},function(e){var l=e&&"success"===e.status&&e.news?e.news:[];_newsFeedData=_newsSortWithPin(l),_newsRenderList(),_newsSaveCache(l)},function(){})};
+;
+;
 var _verSeen=null,_verBusy=!1,_verLastAt=0,_lastInteract=Date.now(),_lunchTickAt=Date.now();;
-function applyVersions(d){var v=d.v,seen=_verSeen||v;_verSeen=v;branch&&_menuVer[branch]&&v.menu&&v.menu!==_menuVer[branch]&&refreshMenuSoft(!0);v.news!==seen.news&&refreshNewsNow();v.banner!==seen.banner&&refreshBannerNow();var sc=document.getElementById("siteClosedScreen"),shown=!!sc&&"flex"===sc.style.display;(v.status!==seen.status||!!d.sc!==shown)&&checkSiteStatus();if(v.booking!==seen.booking||"undefined"!=typeof bk__restaurantClosed&&!!d.bc!==!!bk__restaurantClosed)try{bk_checkRestaurantStatus(),bk_fetchBlockedDates()}catch(e){}};
+function applyVersions(d){var v=d.v,seen=_verSeen||v;_verSeen=v;branch&&_menuVer[branch]&&v.menu&&v.menu!==_menuVer[branch]&&refreshMenuSoft(!0);v.banner!==seen.banner&&refreshBannerNow();var sc=document.getElementById("siteClosedScreen"),shown=!!sc&&"flex"===sc.style.display;(v.status!==seen.status||!!d.sc!==shown)&&checkSiteStatus();if(v.booking!==seen.booking||"undefined"!=typeof bk__restaurantClosed&&!!d.bc!==!!bk__restaurantClosed)try{bk_checkRestaurantStatus(),bk_fetchBlockedDates()}catch(e){}};
 function pollVersions(force){if(document.hidden||_verBusy)return;var now=Date.now();if(!force&&now-_lastInteract>9e5&&now-_verLastAt<6e4)return;_verBusy=!0,_verLastAt=now,fetchWithTimeout(API+"?action=ver&clientId="+encodeURIComponent(getClientId())+"&branch="+encodeURIComponent(branch||"")+"&_t="+Date.now(),8e3).then(function(r){return r.json()}).then(function(d){d&&"success"===d.status&&d.v&&applyVersions(d)}).catch(function(){}).finally(function(){_verBusy=!1}),now-_lunchTickAt>6e4&&(_lunchTickAt=now,relockLunch())};
 function pollSoon(){Date.now()-_verLastAt>3e3&&pollVersions(!0)};
 function startLiveUpdates(){["pointerdown","keydown","scroll","touchstart"].forEach(function(e){window.addEventListener(e,function(){_lastInteract=Date.now()},{passive:!0,capture:!0})}),setInterval(pollVersions,1e4),document.addEventListener("visibilitychange",function(){document.hidden||pollVersions(!0)})};
-!function(){var baseTitle=null;window._saiUnreadPaint=function(){var n=0;try{n=Number(localStorage.getItem("sai_unread")||0)||0}catch(e){}if(baseTitle===null)baseTitle=document.title.replace(/^\(\d+\+?\)\s*/,"");document.title=(n?"("+(n>9?"9+":n)+") ":"")+baseTitle;var u=document.getElementById("seventAiRowUnread");if(u){u.textContent=n>9?"9+":String(n);u.style.display=n?"inline-flex":"none"}try{_newsUpdateTabBadge()}catch(e){}};
-      document.addEventListener("DOMContentLoaded",function(){window._saiUnreadPaint()});
-      // что гость делает на сайте — администратору в карточку гостя (только тем, кто уже писал в чат)
-      (function(){var Q=[],T=0,ok=null;
-        function on(){if(ok===true)return ok;try{ok=localStorage.getItem("sai_chatted")==="1"||/"role":"user"/.test(localStorage.getItem("seventAiHistory")||"")}catch(e){ok=false}return ok}
-        function cx(){try{var p=(typeof loadClientProfile==="function"&&loadClientProfile())||{},b=(typeof bk_loadProfile==="function"&&bk_loadProfile())||{},c=typeof cart!=="undefined"&&cart?cart:[];return{cart:c.slice(0,15).map(function(x){return[String(x.name),x.qty]}),sum:typeof cartTotal==="function"?cartTotal():0,seen:window._saiLastSeen||"",orders:Number(localStorage.getItem("st_order_count")||0),nm:p.name||b.name||"",ph:p.phone||b.phone||"",br:typeof branch!=="undefined"&&branch?branch:"",lo:window._saiLastOrder&&_saiLastOrder(),ad:p.street?{st:p.street,ho:p.house||"",en:p.entrance||"",fl:p.flat||"",fr:p.floor||""}:undefined}}catch(e){return null}}
-        // последний заказ гостя (с его телефона) — администратору в карточку
-        window._saiLastOrder=function(){try{var h=JSON.parse(localStorage.getItem("st_order_history")||"[]")[0];if(!h)return undefined;return{d:h.dateStr||"",s:Number(h.total)||0,t:h.type||"",br:h.branch||"",it:(h.itemsList||[]).slice(0,15).map(function(x){return[String(x.name),x.qty]})}}catch(e){return undefined}};
-        function flush(){if(!on())return;var ev=Q.splice(0,10);try{fetch(API,{method:"POST",keepalive:true,body:JSON.stringify({action:"opCtx",clientId:getClientId(),ctx:cx(),ev:ev})}).then(function(r){return r.json()}).then(function(j){if(j&&typeof j==="object"){try{if(window._saiLock)window._saiLock(!!j.blocked,true);else localStorage.setItem("sai_blocked",j.blocked?"1":"")}catch(e){}}}).catch(function(){})}catch(e){}}
-        function push(t,n,q){ok=null;if(!on())return;Q.push({t:t,n:String(n||"").slice(0,60),q:q||0,ts:Date.now()});clearTimeout(T);T=setTimeout(flush,1200)}
-        window._saiTrack=push;window._saiFlush=function(){Q.length&&(clearTimeout(T),flush())};window.addEventListener("pagehide",window._saiFlush);
-        function wrap(n,f){var o=window[n];if(typeof o!=="function"||o._trk)return;var w=function(){try{f.apply(this,arguments)}catch(e){}return o.apply(this,arguments)};w._trk=1;w._sai=o._sai;window[n]=w}
-        function init(){
-          wrap("addCart",function(it,q){if(it&&q)push(q>0?"add":"rem",it.name,q)});
-          wrap("remCart",function(id){var x=(typeof cart!=="undefined"&&cart||[]).filter(function(c){return c.id===id})[0];push("rem",x?x.name:"",-(x?x.qty:1))});
-          wrap("openDetail",function(it){if(it&&it.name){window._saiLastSeen=String(it.name).slice(0,60);push("view",it.name)}});
-          wrap("openCart",function(){push("cart","")});
-          wrap("switchBottomTab",function(t){push("tab",{home:"Меню",news:"Сообщения",services:"Сервисы",vacancy:"Вакансии"}[t]||t)});
-          wrap("bookBtnClick",function(){push("book","")});
-          wrap("confirmAndSendOrder",function(){push("order",typeof cartTotal==="function"?String(cartTotal()):"")});
-          if(on())PAGE==="menu"?push("open",""):push("tab",{chat:"Сообщения",services:"Сервисы",vacancy:"Вакансии",booking:"Бронь",about:"О компании",faq:"Вопросы",restaurants:"Рестораны",projects:"Проекты",admin:"Админ"}[PAGE]||PAGE);
-          setInterval(function(){if(on()&&document.visibilityState==="visible")flush()},60000);
-          document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible"&&on())flush()});
-        }
-        onReady(init);
-      })();
-      }();
 
 /* ── общий старт любой страницы ── */
 !function(){
- var tabs={menu:"home",chat:"news",services:"services",vacancy:"vacancy",booking:"services",about:"services",faq:"services",restaurants:"services",projects:"services"};
+ var tabs={menu:"home",services:"services",vacancy:"vacancy",booking:"services",about:"services",faq:"services",restaurants:"services",projects:"services"};
  function boot(){
   document.querySelectorAll(".bottom-tab-btn").forEach(function(b){b.classList.toggle("active",b.getAttribute("data-tab")===tabs[PAGE])});
-  if(PAGE!=="menu"){
+  if(PAGE!=="menu"&&PAGE!=="admin"){
    try{var lb=localStorage.getItem("st_branch");lb&&BRANCHES.some(function(b){return b.id===lb})&&(branch=lb)}catch(e){}
-   try{var c=JSON.parse(localStorage.getItem("st_news_v1")||"null");Array.isArray(c)&&c.length&&!_newsFeedData.length&&(_newsFeedData=_newsSortWithPin(c),_newsRenderList())}catch(e){}
    startLiveUpdates();applyI18n();
    /* блокировка гостя: проверяем раз в 5 минут, между страницами — из памяти вкладки */
    var bk=null;try{bk=JSON.parse(sessionStorage.getItem("st_blk")||"null")}catch(e){}
-   if(PAGE!=="chat"&&bk&&Date.now()-bk.t<3e5){if(bk.b){var s=document.getElementById("clientBlockedScreen");s&&(s.style.display="flex",lockBodyScroll())}}else checkClientBlocked();
+   if(bk&&Date.now()-bk.t<3e5){if(bk.b){var s=document.getElementById("clientBlockedScreen");s&&(s.style.display="flex",lockBodyScroll())}}else checkClientBlocked();
   }
-  if(PAGE!=="chat"){var nt=0;try{nt=Number(localStorage.getItem("st_news_t")||0)}catch(e){}Date.now()-nt>6e4&&setTimeout(loadNewsFeed,900)}
   /* предзагрузка соседних страниц при касании ссылки — открываются мгновенно */
   var done={};function pf(e){var a=e.target.closest&&e.target.closest("a[href]");if(!a||a.target||a.origin!==location.origin||done[a.href])return;done[a.href]=1;var l=document.createElement("link");l.rel="prefetch";l.href=a.href;document.head.appendChild(l)}
   document.addEventListener("pointerdown",pf,{passive:!0,capture:!0});
@@ -331,23 +303,6 @@ function startLiveUpdates(){["pointerdown","keydown","scroll","touchstart"].forE
   var lb=localStorage.getItem("st_branch");
   if(PAGE==="menu"&&lb&&lb!==branch&&BRANCHES.some(function(b){return b.id===lb}))switchBranch(lb);
   else{if(PAGE!=="menu"&&lb)branch=lb;cart=[];restoreCartFromStorage();updBadge();try{renderMenu()}catch(x){}}
-  window._saiUnreadPaint&&_saiUnreadPaint();_newsUpdateTabBadge();pollVersions(!0)}catch(x){}});
- "serviceWorker" in navigator&&window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})});
+  pollVersions(!0)}catch(x){}});
+ PAGE!=="admin"&&"serviceWorker" in navigator&&window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})});
 }();
-
-/* ответ администратора, пока гость на другой странице: счётчик на «Сообщениях», (1) в заголовке, вибро, подсказка.
-   Разговор (sai_op) не трогаем — чат при открытии сам покажет ответ как обычно. */
-!function(){if(PAGE==="chat"||PAGE==="admin")return;var busy=0,T=0;
- function og(){try{return JSON.parse(localStorage.getItem("sai_op")||"null")||{}}catch(e){return{}}}
- function lg(k,d){try{return JSON.parse(localStorage.getItem(k)||"null")||d}catch(e){return d}}
- function sched(ms){clearTimeout(T);T=setTimeout(poll,ms)}
- function poll(){var o=og();if(!(o.until>Date.now()))return sched(3e4);if(busy||document.hidden)return sched(5e3);
-  var fresh=Math.max(o.human||0,o.asked||0),live=Date.now()-fresh<6e5,since=Math.max(o.since||0,Number(lg("sai_wsince",0))||0);busy=1;
-  fetchWithTimeout(API+"?action=jivoPoll&clientId="+encodeURIComponent(getClientId())+"&since="+since+"&rs="+(o.readSeen||0)+(live?"&wait=20":""),live?4e4:15e3).then(function(r){return r.json()}).then(function(e){
-   var seen=og().seen||[],w=lg("sai_wseen",[]),n=0,mx=since;
-   ((e&&e.msgs)||[]).forEach(function(m){if(!m)return;mx=Math.max(mx,Number(m.ts)||0);if(m.kind==="react"||!m.text&&!m.media||seen.indexOf(m.id)>=0||w.indexOf(m.id)>=0)return;w.push(m.id);n++});
-   try{localStorage.setItem("sai_wsince",String(mx))}catch(x){}
-   if(n){try{localStorage.setItem("sai_wseen",JSON.stringify(w.slice(-50)));localStorage.setItem("sai_unread",String((Number(localStorage.getItem("sai_unread"))||0)+n))}catch(x){}
-    try{navigator.vibrate&&navigator.vibrate([60,40,60])}catch(x){}window._saiUnreadPaint&&_saiUnreadPaint();try{showToast("SEVEN AI ответила в «Сообщениях»")}catch(x){}}
-  }).catch(function(){}).then(function(){busy=0;var o2=og(),f2=Math.max(o2.human||0,o2.asked||0);sched(!(o2.until>Date.now())?3e4:Date.now()-f2<6e5?150:Date.now()-f2<18e4?5e3:2e4)})}
- onReady(function(){sched(1200)});document.addEventListener("visibilitychange",function(){document.hidden||sched(300)})}();
