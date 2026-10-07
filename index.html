@@ -36,9 +36,9 @@
   <link href="https://script.googleusercontent.com" rel="preconnect"/>
   <link href="https://res.cloudinary.com" rel="preconnect"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&amp;display=swap" rel="stylesheet" media="print" onload="this.media='all'"/><noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&amp;display=swap" rel="stylesheet"/></noscript>
-  <link rel="stylesheet" href="assets/core.css?v=c6e9dbf5"/>
-  <script src="assets/core.js?v=8cbb14f4" defer></script>
-  <script src="assets/menu.js?v=523a8cca" defer></script>
+  <link rel="stylesheet" href="assets/core.css?v=32e7ba1f"/>
+  <script src="assets/core.js?v=97965023" defer></script>
+  <script src="assets/menu.js?v=a03f502e" defer></script>
   <script type="speculationrules">{"prefetch":[{"source":"document","where":{"href_matches":"/*"},"eagerness":"moderate"}]}</script>
  </head>
  <body>
@@ -63,14 +63,8 @@
    </div>
    <nav>
     <div style="position:relative">
-     <button class="nav-branch-btn" id="navBranchBtn" onclick="openBranchSwitcher()" onpointerdown="bookBtnPressStart()" onpointerup="bookBtnPressEnd()" onpointerleave="bookBtnPressEnd()" onpointercancel="bookBtnPressEnd()">
-      <span data-i18n="choose_restaurant_short" id="navBranchLabel">
-       Выбор филиала
-      </span>
-      <svg fill="none" height="12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" width="12">
-       <polyline points="6 9 12 15 18 9">
-       </polyline>
-      </svg>
+     <button class="nav-branch-btn" id="navBranchBtn" onpointerdown="bookBtnPressStart()" onpointerup="bookBtnPressEnd()" onpointerleave="bookBtnPressEnd()" onpointercancel="bookBtnPressEnd()">
+      <span id="navBranchLabel">Seven Times</span>
      </button>
      <div class="branch-dropdown" id="branchDropdown">
      </div>
@@ -152,7 +146,7 @@
     </div>
    </div>
    <div class="menu-content" id="menuContent">
-    <script>!function(){var b="";try{b=localStorage.getItem("st_branch")||""}catch(e){}if(b){document.documentElement.classList.add("hb");document.getElementById("menuContent").insertAdjacentHTML("afterbegin","<div class=\"sk-sec\"><div class=\"sk sk-title\"></div><div class=\"sk-grid\"><div class=\"sk-card\"><div class=\"sk sk-img\"></div><div class=\"sk-bd\"><div class=\"sk sk-name\"></div><div class=\"sk sk-price\"></div></div></div><div class=\"sk-card\"><div class=\"sk sk-img\"></div><div class=\"sk-bd\"><div class=\"sk sk-name\"></div><div class=\"sk sk-price\"></div></div></div><div class=\"sk-card\"><div class=\"sk sk-img\"></div><div class=\"sk-bd\"><div class=\"sk sk-name\"></div><div class=\"sk sk-price\"></div></div></div><div class=\"sk-card\"><div class=\"sk sk-img\"></div><div class=\"sk-bd\"><div class=\"sk sk-name\"></div><div class=\"sk sk-price\"></div></div></div></div></div><div class=\"sk-sec\"><div class=\"sk sk-title\"></div><div class=\"sk-grid\"><div class=\"sk-card\"><div class=\"sk sk-img\"></div><div class=\"sk-bd\"><div class=\"sk sk-name\"></div><div class=\"sk sk-price\"></div></div></div><div class=\"sk-card\"><div class=\"sk sk-img\"></div><div class=\"sk-bd\"><div class=\"sk sk-name\"></div><div class=\"sk sk-price\"></div></div></div><div class=\"sk-card\"><div class=\"sk sk-img\"></div><div class=\"sk-bd\"><div class=\"sk sk-name\"></div><div class=\"sk sk-price\"></div></div></div><div class=\"sk-card\"><div class=\"sk sk-img\"></div><div class=\"sk-bd\"><div class=\"sk sk-name\"></div><div class=\"sk sk-price\"></div></div></div></div></div>")}}()</script>
+    <script>!function(){document.documentElement.classList.add("hb");document.getElementById("menuContent").insertAdjacentHTML("afterbegin","<div class=\"sk-sec\"><div class=\"sk sk-title\"></div><div class=\"sk-grid\"><div class=\"sk-card\"><div class=\"sk sk-img\"></div><div class=\"sk-bd\"><div class=\"sk sk-name\"></div><div class=\"sk sk-price\"></div></div></div><div class=\"sk-card\"><div class=\"sk sk-img\"></div><div class=\"sk-bd\"><div class=\"sk sk-name\"></div><div class=\"sk sk-price\"></div></div></div><div class=\"sk-card\"><div class=\"sk sk-img\"></div><div class=\"sk-bd\"><div class=\"sk sk-name\"></div><div class=\"sk sk-price\"></div></div></div><div class=\"sk-card\"><div class=\"sk sk-img\"></div><div class=\"sk-bd\"><div class=\"sk sk-name\"></div><div class=\"sk sk-price\"></div></div></div></div></div><div class=\"sk-sec\"><div class=\"sk sk-title\"></div><div class=\"sk-grid\"><div class=\"sk-card\"><div class=\"sk sk-img\"></div><div class=\"sk-bd\"><div class=\"sk sk-name\"></div><div class=\"sk sk-price\"></div></div></div><div class=\"sk-card\"><div class=\"sk sk-img\"></div><div class=\"sk-bd\"><div class=\"sk sk-name\"></div><div class=\"sk sk-price\"></div></div></div><div class=\"sk-card\"><div class=\"sk sk-img\"></div><div class=\"sk-bd\"><div class=\"sk sk-name\"></div><div class=\"sk sk-price\"></div></div></div><div class=\"sk-card\"><div class=\"sk sk-img\"></div><div class=\"sk-bd\"><div class=\"sk sk-name\"></div><div class=\"sk sk-price\"></div></div></div></div></div>")}()</script>
     <div id="noBranchPlaceholder" style="text-align:center;flex-direction:column;justify-content:center;align-items:center;padding:70px 30px;display:flex">
      <div data-i18n="menu_unavailable" style="color:#1d1d1f;margin-bottom:6px;font-size:0.88rem;font-weight:400">
       Меню недоступно
@@ -378,7 +372,7 @@
         </div>
         <div class="ferr" id="estreet">
         </div>
-        <input class="oinput" data-i18n-ph="house_ph" id="ohouse" placeholder="Дом"/>
+        <input class="oinput" data-i18n-ph="house_ph" id="ohouse" oninput="_brGeoSoon()" placeholder="Дом"/>
         <div class="ferr" id="ehouse">
         </div>
         <div style="grid-template-columns:1fr 1fr 1fr;gap:8px;display:grid">
@@ -411,6 +405,15 @@
          </span>
         </div>
        </div>
+      </div>
+      <div class="osec" id="obrSec">
+       <div class="olabel">
+        <span id="obrLbl">Из какого филиала доставить</span>
+        <span class="req">*</span>
+       </div>
+       <div class="obr-hint" id="obrHint" style="display:none"></div>
+       <div class="obr-list" id="obrList"></div>
+       <div class="ferr" id="eobr"></div>
       </div>
       <div class="osec">
        <div class="olabel">
