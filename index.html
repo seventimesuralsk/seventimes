@@ -36,8 +36,8 @@
   <link href="https://script.googleusercontent.com" rel="preconnect"/>
   <link href="https://res.cloudinary.com" rel="preconnect"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&amp;display=swap" rel="stylesheet" media="print" onload="this.media='all'"/><noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&amp;display=swap" rel="stylesheet"/></noscript>
-  <link rel="stylesheet" href="assets/core.css?v=df079aa9"/>
-  <script src="assets/core.js?v=75124c7e" defer></script>
+  <link rel="stylesheet" href="assets/core.css?v=f4b3354f"/>
+  <script src="assets/core.js?v=fce8c058" defer></script>
   <script src="assets/menu.js?v=a03f502e" defer></script>
   <script type="speculationrules">{"prefetch":[{"source":"document","where":{"href_matches":"/*"},"eagerness":"moderate"}]}</script>
  </head>
@@ -322,6 +322,20 @@
      </div>
     </div>
    </div>
+   <div class="mov" id="obrMov" onclick="if(event.target===this)closeMov('obrMov')" style="z-index:660">
+    <div class="mbox">
+     <div class="mhandle">
+     </div>
+     <div class="mhead">
+      <div class="mtitle">Выберите филиал</div>
+      <button aria-label="Закрыть" class="mx" onclick="closeMov('obrMov')">×</button>
+     </div>
+     <div class="mbody">
+      <div class="obr-sub">Откуда оформить заказ — доставка или самовывоз</div>
+      <div class="obr-list" id="obrList"></div>
+     </div>
+    </div>
+   </div>
    <div class="mov" id="orderMov" onclick="if(event.target===this)closeOrder()" style="z-index:650">
     <div class="mbox">
      <div class="mhandle">
@@ -335,6 +349,11 @@
       </button>
      </div>
      <div class="mbody">
+      <div class="osec" id="obrSec">
+       <div class="olabel"><span>Филиал</span></div>
+       <button class="obr-cur" onclick="openBranchStep()" type="button"><span id="obrCurName"></span><span class="obr-chg">Изменить</span></button>
+       <div class="ferr" id="eobr"></div>
+      </div>
       <div class="osec">
        <div class="olabel">
         <span data-i18n="receive_method">
@@ -366,9 +385,7 @@
          </span>
         </div>
         <div style="position:relative">
-         <input autocomplete="off" class="oinput" data-i18n-ph="street_ph" id="ostreet" onblur="this._h=setTimeout(hideSuggest,150)" onfocus="clearTimeout(this._h),this.value||showRecentAddr()" oninput="onStreetInput(this.value)" placeholder="Улица"/>
-         <div class="addr-suggest" id="addrSuggest">
-         </div>
+         <input autocomplete="off" class="oinput" data-i18n-ph="street_ph" id="ostreet" oninput="onStreetInput(this.value)" placeholder="Улица"/>
         </div>
         <div class="ferr" id="estreet">
         </div>
@@ -405,14 +422,6 @@
          </span>
         </div>
        </div>
-      </div>
-      <div class="osec" id="obrSec">
-       <div class="olabel">
-        <span id="obrLbl">Из какого филиала доставить</span>
-        <span class="req">*</span>
-       </div>
-       <div class="obr-list" id="obrList"></div>
-       <div class="ferr" id="eobr"></div>
       </div>
       <div class="osec">
        <div class="olabel">
