@@ -306,7 +306,7 @@ function startLiveUpdates(){["pointerdown","keydown","scroll","touchstart"].forE
 
 /* ── общий старт любой страницы ── */
 !function(){
- var tabs={menu:"home",services:"services",vacancy:"vacancy",booking:"services",about:"services",faq:"services",restaurants:"services",projects:"services"};
+ var tabs={menu:"home",services:"services",vacancy:"services",booking:"services",about:"services",faq:"services",restaurants:"services",projects:"services"};
  function boot(){
   document.querySelectorAll(".bottom-tab-btn").forEach(function(b){b.classList.toggle("active",b.getAttribute("data-tab")===tabs[PAGE])});
   if(PAGE!=="menu"&&PAGE!=="admin"){
