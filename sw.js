@@ -7,7 +7,7 @@
 //    просто добавляются в него по мере просмотра, старые остаются лежать вечно
 //    (пока сам браузер гостя не решит почистить место на диске).
 
-const APP_CACHE = "seventimes-app-f3f8fc16";
+const APP_CACHE = "seventimes-app-b998d7c1";
 const IMAGE_CACHE = "seventimes-images"; // без номера версии — стабильное имя навсегда
 
 const APP_SHELL = [
@@ -53,7 +53,9 @@ self.addEventListener("fetch", function (event) {
   // Сама страница сайта — "сеть, а если сеть тупит дольше 0,8 сек или её нет — кэш" (на плохом интернете меню открывается сразу).
   // Свежая версия всё равно докачается в фоне и сохранится на следующий заход.
   if (req.mode === "navigate") {
-    var network = fetch(req).then(function (res) {
+    // no-cache: браузер обязан спросить сервер (304, если не менялось) — иначе GitHub Pages
+    // до 10 минут отдаёт старую страницу из HTTP-кэша и гость видит прошлую версию
+    var network = fetch(req.url, { cache: "no-cache", credentials: "same-origin" }).then(function (res) {
       if (res && res.ok && !res.redirected) {
         var resClone = res.clone();
         caches.open(APP_CACHE).then(function (cache) { cache.put(req, resClone); });
