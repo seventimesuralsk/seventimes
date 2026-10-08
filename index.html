@@ -36,8 +36,8 @@
   <link href="https://script.googleusercontent.com" rel="preconnect"/>
   <link href="https://res.cloudinary.com" rel="preconnect"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&amp;display=swap" rel="stylesheet" media="print" onload="this.media='all'"/><noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&amp;display=swap" rel="stylesheet"/></noscript>
-  <link rel="stylesheet" href="assets/core.css?v=f4b3354f"/>
-  <script src="assets/core.js?v=fce8c058" defer></script>
+  <link rel="stylesheet" href="assets/core.css?v=c3ed04ca"/>
+  <script src="assets/core.js?v=87d88e5f" defer></script>
   <script src="assets/menu.js?v=a03f502e" defer></script>
   <script type="speculationrules">{"prefetch":[{"source":"document","where":{"href_matches":"/*"},"eagerness":"moderate"}]}</script>
  </head>
@@ -331,7 +331,7 @@
       <button aria-label="Закрыть" class="mx" onclick="closeMov('obrMov')">×</button>
      </div>
      <div class="mbody">
-      <div class="obr-sub">Откуда оформить заказ — доставка или самовывоз</div>
+      <div class="obr-sub" id="obrSub">Откуда оформить заказ — доставка или самовывоз</div>
       <div class="obr-list" id="obrList"></div>
      </div>
     </div>
@@ -385,7 +385,7 @@
          </span>
         </div>
         <div style="position:relative">
-         <input autocomplete="off" class="oinput" data-i18n-ph="street_ph" id="ostreet" oninput="onStreetInput(this.value)" placeholder="Улица"/>
+         <input autocomplete="off" class="oinput" data-i18n-ph="street_ph" id="ostreet" oninput="/[0-9]/.test(this.value)&&(this.value=this.value.replace(/[0-9]/g,'')),onStreetInput(this.value)" placeholder="Улица"/>
         </div>
         <div class="ferr" id="estreet">
         </div>
@@ -495,7 +495,7 @@
         Если у вас есть аллергия на какой-то продукт — сообщите об этом заранее.
        </div>
       </div>
-      <div style="display:flex;align-items:flex-start;gap:9px;margin-bottom:12px;padding:11px 12px;background:#f6f6f6;border-radius:11px">
+      <div style="display:none">
        <input id="agreeTerms" onchange="toggleAgreeErr()" style="width:18px;height:18px;margin-top:1px;flex-shrink:0;accent-color:#1d1d1f" type="checkbox"/>
        <label for="agreeTerms" style="font-size:0.65rem;color:#1d1d1f;line-height:1.5;cursor:pointer">
         Принимаю
