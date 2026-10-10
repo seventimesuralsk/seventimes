@@ -372,7 +372,7 @@
          </span>
         </div>
         <div style="position:relative">
-         <input autocomplete="off" class="oinput" data-i18n-ph="street_ph" id="ostreet" oninput="/[0-9]/.test(this.value)&&(this.value=this.value.replace(/[0-9]/g,'')),onStreetInput(this.value)" placeholder="Улица"/>
+         <input autocomplete="off" class="oinput" data-i18n-ph="street_ph" id="ostreet" oninput="onStreetInput(this.value)" placeholder="Улица"/>
         </div>
         <div class="ferr" id="estreet">
         </div>
