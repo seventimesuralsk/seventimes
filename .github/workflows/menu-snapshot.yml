@@ -1,5 +1,5 @@
-# Снимок меню: каждые 10 минут забираем меню всех филиалов из Google-скрипта
-# и кладём файлами menu/<филиал>.json рядом с сайтом.
+# Снимок меню: забираем общее меню (одно на все филиалы) из Google-скрипта
+# и кладём файлом menu/samal.json рядом с сайтом.
 # Новый гость получает меню мгновенно с GitHub, а не ждёт Google 1–5 секунд.
 # Свежесть не страдает: сайт сразу после показа сверяет меню с Google и
 # докатывает изменения (стоп-лист, цены) живьём.
@@ -30,7 +30,7 @@ jobs:
           API=$(grep -rhoE 'https://script\.google\.com/macros/s/[A-Za-z0-9_-]+/exec' index.html assets 2>/dev/null | head -1)
           if [ -z "$API" ]; then echo "::error::не нашёл адрес скрипта"; exit 1; fi
           mkdir -p menu
-          for b in samal skoro abulhair; do
+          for b in samal; do
             if curl -sSfL --retry 3 --retry-delay 5 --max-time 60 "$API?action=getMenu&branch=$b" -o "/tmp/$b.json" \
               && jq -e '.status == "success" and (.categories | type == "object") and (.categories | length > 0)' "/tmp/$b.json" > /dev/null; then
               jq -c . "/tmp/$b.json" > "menu/$b.json"

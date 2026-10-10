@@ -23,14 +23,11 @@
   <meta name="color-scheme" content="light only"/>
   <meta content="#f5f5f7" name="theme-color"/>
   <meta content="yes" name="mobile-web-app-capable"/>
-  <link href="https://fonts.googleapis.com" rel="preconnect"/>
-  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
   <link href="https://script.google.com" rel="preconnect"/>
   <link href="https://script.googleusercontent.com" rel="preconnect"/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&amp;display=swap" rel="stylesheet" media="print" onload="this.media='all'"/><noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&amp;display=swap" rel="stylesheet"/></noscript>
-  <link rel="stylesheet" href="assets/core.css?v=c3ed04ca"/>
-  <script src="assets/core.js?v=5421162f" defer></script>
-  <script src="assets/booking.js?v=e715c703" defer></script>
+  <link rel="stylesheet" href="assets/core.css?v=70e20408"/>
+  <script src="assets/core.js?v=ede35003" defer></script>
+  <script src="assets/booking.js?v=98b9b8fe" defer></script>
   <script type="speculationrules">{"prefetch":[{"source":"document","where":{"href_matches":"/*"},"eagerness":"moderate"}]}</script>
  </head>
  <body>
@@ -89,7 +86,7 @@
     </div>
 
     <div class="bk-label">Номер телефона</div>
-    <input id="bk-bookPhone" type="tel" placeholder="+7 (___) ___-__-__" maxlength="18" class="bk-bfield" style="margin-bottom:14px" oninput="bk_formatBookPhone(this);">
+    <input id="bk-bookPhone" type="tel" placeholder="+7 (___) ___-__-__" maxlength="24" class="bk-bfield" style="margin-bottom:14px" oninput="bk_formatBookPhone(this);">
 
     <div class="bk-label">Комментарий (необязательно)</div>
     <input id="bk-bookComment" type="text" placeholder="Возле окна, детский стул, ширма" maxlength="120" class="bk-bfield" style="margin-bottom:18px">
@@ -118,74 +115,6 @@
   </div>
 </div>
 
-<div id="bk-adminModalOv" class="bk-admin-modal-ov" onclick="if(event.target===this) bk_closeAdminModal()">
-  <div class="bk-admin-modal" style="max-width:340px;max-height:86vh;overflow-y:auto">
-    <button class="bk-admin-modal-close" onclick="bk_closeAdminModal()">✕</button>
-    <div id="bk-adminLoginBlock" style="clear:both;padding-top:6px">
-      <div class="bk-label">Логин</div>
-      <input id="bk-adminLogin" type="text" class="bk-field" placeholder="Логин" autocomplete="username" autocapitalize="none" spellcheck="false">
-      <div class="bk-label">Пароль</div>
-      <input id="bk-adminPw" type="password" class="bk-field" placeholder="Пароль" autocomplete="current-password">
-      <div class="bk-label">Секретное слово</div>
-      <input id="bk-adminSecret" type="password" class="bk-field" placeholder="Секретное слово" autocomplete="off" autocapitalize="none" spellcheck="false">
-      <button class="bk-admin-save" onclick="bk_adminLogin()">Войти</button>
-      <div id="bk-adminLoginMsg" class="bk-admin-msg bk-err"></div>
-    </div>
-    <div id="bk-adminControlBlock" style="display:none;clear:both;padding-top:6px">
-      <div id="bk-adminCurrentStatus" style="font-size:.72rem;color:rgba(255,255,255,.6);margin-bottom:12px">Загрузка…</div>
-      <div class="bk-admin-toggle-row">
-        <button id="bk-adminBtnOpen" class="bk-admin-toggle-btn bk-open-b" onclick="bk_adminSetLocal(false)">Открыто</button>
-        <button id="bk-adminBtnClosed" class="bk-admin-toggle-btn bk-closed-b" onclick="bk_adminSetLocal(true)">Закрыто</button>
-      </div>
-
-      <div id="bk-adminClosedOptions" style="display:none">
-        <div class="bk-label">Причина (необязательно, можно выбрать готовую)</div>
-        <div id="bk-adminReasonChips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px"></div>
-
-        <div class="bk-label">Когда откроемся</div>
-        <div id="bk-adminTimePresets" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px"></div>
-
-        <div id="bk-adminCustomTimeRow" style="display:none;flex-wrap:wrap;gap:6px;margin-bottom:10px">
-          <select id="bk-adminCDay" class="bk-field" style="flex:1;min-width:56px;margin-bottom:0"></select>
-          <select id="bk-adminCMonth" class="bk-field" style="flex:1.6;min-width:90px;margin-bottom:0"></select>
-          <select id="bk-adminCHour" class="bk-field" style="flex:1;min-width:56px;margin-bottom:0"></select>
-          <select id="bk-adminCMin" class="bk-field" style="flex:1;min-width:56px;margin-bottom:0"></select>
-          <select id="bk-adminCSec" class="bk-field" style="flex:1;min-width:56px;margin-bottom:0"></select>
-        </div>
-
-        <div id="bk-adminReopenPreview" style="font-size:.68rem;color:rgba(255,255,255,.45);margin:-4px 0 12px;line-height:1.5"></div>
-      </div>
-
-      <div class="bk-label">Сообщение гостям (если закрыто)</div>
-      <input id="bk-adminMsgInput" type="text" class="bk-field" placeholder="Откроемся завтра в 12:00" maxlength="140">
-      <button class="bk-admin-save" onclick="bk_adminSave()">Сохранить</button>
-      <div id="bk-adminSaveMsg" class="bk-admin-msg"></div>
-
-      <div style="border-top:1px solid rgba(255,255,255,.1);margin:18px 0 14px;padding-top:14px">
-        <div class="bk-label">Заблокировать конкретную дату</div>
-
-        <div style="display:flex;gap:8px;margin-bottom:10px">
-          <button id="bk-adminBlockBranch0" class="bk-admin-time-btn bk-on" style="flex:1" onclick="bk_adminSelectBlockBranch(0)">Самал</button>
-          <button id="bk-adminBlockBranch1" class="bk-admin-time-btn" style="flex:1" onclick="bk_adminSelectBlockBranch(1)">Скоробогатова</button>
-          <button id="bk-adminBlockBranchBoth" class="bk-admin-time-btn" style="flex:1" onclick="bk_adminSelectBlockBranch(2)">Оба</button>
-        </div>
-
-        <div style="display:flex;gap:8px;margin-bottom:10px">
-          <select id="bk-adminBlockDay" class="bk-field" style="flex:1;margin-bottom:0"></select>
-          <select id="bk-adminBlockMonth" class="bk-field" style="flex:1.6;margin-bottom:0"></select>
-        </div>
-
-        <input id="bk-adminBlockReason" type="text" class="bk-field" placeholder="Причина (необязательно)" maxlength="80">
-
-        <button class="bk-admin-save" style="background:#7a1128" onclick="bk_adminAddBlockedDate()">Заблокировать дату</button>
-        <div id="bk-adminBlockMsg" class="bk-admin-msg"></div>
-
-        <div class="bk-label" style="margin-top:16px">Заблокированные даты</div>
-        <div id="bk-adminBlockedList" style="font-size:.72rem;color:rgba(255,255,255,.5)">Загрузка…</div>
-      </div>
-    </div>
-  </div>
-</div>
 
 <div id="bk-iosNotif" class="bk-ios-notif">
   
