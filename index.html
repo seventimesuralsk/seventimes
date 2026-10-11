@@ -33,8 +33,8 @@
   <link href="https://script.google.com" rel="preconnect"/>
   <link href="https://script.googleusercontent.com" rel="preconnect"/>
   <link href="https://res.cloudinary.com" rel="preconnect"/>
-  <link rel="stylesheet" href="assets/core.css?v=1afe6a17"/>
-  <script src="assets/core.js?v=429b6860" defer></script>
+  <link rel="stylesheet" href="assets/core.css?v=e5230222"/>
+  <script src="assets/core.js?v=e75938bd" defer></script>
   <script src="assets/menu.js?v=e33278a5" defer></script>
   <script type="speculationrules">{"prefetch":[{"source":"document","where":{"href_matches":"/*"},"eagerness":"moderate"}]}</script>
  </head>
@@ -337,7 +337,7 @@
          </span>
         </div>
         <div style="position:relative">
-         <input autocomplete="off" class="oinput" data-i18n-ph="street_ph" id="ostreet" oninput="onStreetInput(this.value)" placeholder="Улица"/>
+         <input autocomplete="address-line1" class="oinput" data-i18n-ph="street_ph" id="ostreet" oninput="onStreetInput(this.value)" placeholder="Улица"/>
         </div>
         <div class="ferr" id="estreet">
         </div>
@@ -384,7 +384,7 @@
          *
         </span>
        </div>
-       <input class="oinput" data-i18n-ph="name_ph" id="oname" placeholder="Имя"/>
+       <input autocomplete="name" class="oinput" data-i18n-ph="name_ph" id="oname" placeholder="Имя"/>
        <div class="ferr" id="ename">
        </div>
       </div>
@@ -397,7 +397,7 @@
          *
         </span>
        </div>
-       <input class="oinput" id="ophone" maxlength="24" onfocus="if(!this.value)this.value='+7 '" oninput="formatPhoneInput(this)" placeholder="+7 (___) ___-__-__" type="tel" value="+7 "/>
+       <input autocomplete="tel" class="oinput" id="ophone" maxlength="24" onfocus="if(!this.value)this.value='+7 '" oninput="formatPhoneInput(this)" placeholder="+7 (___) ___-__-__" type="tel" value="+7 "/>
        <div class="ferr" id="ephone">
        </div>
       </div>
@@ -461,12 +461,10 @@
       </div>
       <div class="osum" id="osum">
       </div>
-      <button class="btn-main btn-wa" data-i18n="confirm_order" onclick="submitOrder()">
-       Отправить в WhatsApp
-      </button>
       <div class="oerr" id="oerr" style="display:none">
       </div>
-      <div style="height:14px">
+      <div class="obar">
+       <button class="btn-main btn-wa" onclick="submitOrder()"><span data-i18n="confirm_order">Отправить в WhatsApp</span><span id="oBtnSum"></span></button>
       </div>
      </div>
     </div>
