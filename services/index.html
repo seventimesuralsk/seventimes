@@ -25,8 +25,8 @@
   <meta content="yes" name="mobile-web-app-capable"/>
   <link href="https://script.google.com" rel="preconnect"/>
   <link href="https://script.googleusercontent.com" rel="preconnect"/>
-  <link rel="stylesheet" href="assets/core.css?v=70e20408"/>
-  <script src="assets/core.js?v=53851b5e" defer></script>
+  <link rel="stylesheet" href="assets/core.css?v=9b4368b0"/>
+  <script src="assets/core.js?v=a6f7876d" defer></script>
   <script src="assets/services.js?v=d40e6e33" defer></script>
   <script type="speculationrules">{"prefetch":[{"source":"document","where":{"href_matches":"/*"},"eagerness":"moderate"}]}</script>
  </head>
@@ -87,41 +87,6 @@
       <button class="btn-main btn-wa" id="funBtn" onclick="closeMov('funMov')">
        Понятно
       </button>
-     </div>
-    </div>
-   </div>
-  <div class="sov" id="registerMov" onclick="event.target===this&&closeMov('registerMov')" style="z-index:960">
-    <div class="sbox" style="max-height:74svh">
-     <div style="text-align:center;padding:22px 20px 4px">
-      <div data-i18n="contact_data_title" style="color:#1d1d1f;margin-bottom:6px;font-size:1.01rem;font-weight:400">
-       Контактные данные
-      </div>
-     </div>
-     <div style="padding:16px 20px 22px">
-      <input class="oinput" data-i18n-ph="name_ph" id="regName" placeholder="Имя"/>
-      <div class="ferr" id="regNameErr">
-      </div>
-      <input class="oinput" id="regPhone" maxlength="24" onfocus="if(!this.value)this.value='+7 '" oninput="formatPhoneInput(this)" placeholder="+7 (___) ___-__-__" type="tel" value="+7 "/>
-      <div class="ferr" id="regPhoneErr">
-      </div>
-      <div style="display:flex;align-items:flex-start;gap:9px;margin-bottom:12px;padding:11px 12px;background:#f6f6f6;border-radius:11px">
-       <input id="regAgreeTerms" onchange="toggleRegAgreeErr()" style="width:18px;height:18px;margin-top:1px;flex-shrink:0;accent-color:#1d1d1f" type="checkbox"/>
-       <label for="regAgreeTerms" style="font-size:0.65rem;color:#1d1d1f;line-height:1.5;cursor:pointer">
-        Принимаю
-        <a href="https://taplink.cc/seventimes/p/1153436/" onclick="event.stopPropagation()" style="color:#1d1d1f;text-decoration:underline" target="_blank">
-         условия и положения
-        </a>
-       </label>
-      </div>
-      <div id="regAgreeErr" style="color:#1d1d1f;font-size:0.62rem;margin-top:-6px;margin-bottom:10px;display:none">
-       Нужно согласиться с условиями, чтобы продолжить
-      </div>
-      <button class="btn-main btn-wa" data-i18n="continue_btn" onclick="submitRegister()">
-       Продолжить
-      </button>
-      <div style="color:#86868b;text-align:center;margin-top:12px;font-size:0.62rem;line-height:1.55">
-       Регистрация только для заказов на сайте. Без рассылок и подписок — используем имя и телефон только для доставки ваших заказов.
-      </div>
      </div>
     </div>
    </div>
