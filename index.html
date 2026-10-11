@@ -34,7 +34,7 @@
   <link href="https://script.googleusercontent.com" rel="preconnect"/>
   <link href="https://res.cloudinary.com" rel="preconnect"/>
   <link rel="stylesheet" href="assets/core.css?v=e5230222"/>
-  <script src="assets/core.js?v=e75938bd" defer></script>
+  <script src="assets/core.js?v=1a795f53" defer></script>
   <script src="assets/menu.js?v=e33278a5" defer></script>
   <script type="speculationrules">{"prefetch":[{"source":"document","where":{"href_matches":"/*"},"eagerness":"moderate"}]}</script>
  </head>
@@ -353,8 +353,9 @@
       </div>
       <div class="dfield" id="pickupFields">
        <div class="osec">
-        <div class="olabel" data-i18n="pickup_time">
-         Время самовывоза
+        <div class="olabel">
+         <span data-i18n="pickup_time">Время самовывоза</span>
+         <span class="req">*</span>
         </div>
         <div class="payopts">
          <button class="payopt" data-i18n="min15" id="pt15" onclick="selPickupTime(this,'15 минут')">
@@ -372,6 +373,8 @@
          <span data-i18n="minutes_word" style="color:#6e6e73;white-space:nowrap;font-size:0.7rem">
           минут
          </span>
+        </div>
+        <div class="ferr" id="epickup" style="margin-top:6px">
         </div>
        </div>
       </div>
