@@ -2,8 +2,8 @@
 <html lang="ru" data-page="menu">
  <head>
   <meta charset="utf-8"/>
-  <style>html{font-size:16px}html.boot #promoCarousel,html.boot #stickyHeader{visibility:hidden}html.hb #noBranchPlaceholder{display:none}#cnote:empty{display:none!important}.cgift{margin:0 0 12px;padding:11px 12px 12px;border-radius:14px;background:linear-gradient(135deg,#fff5f7,#ffe9ee);border:1px solid #f6d3dc;transition:background .4s,border-color .4s}.cgift-t{font-size:.74rem;color:#1d1d1f;line-height:1.35;margin-bottom:9px}.cgift-t b{color:#7a1128;font-weight:800}.cgift-t span{display:block;font-size:.62rem;color:#6e6e73;margin-top:1px}.cgift-bar{position:relative;height:10px;border-radius:999px;background:#f1dfe4;overflow:visible}.cgift-fill{height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#a8183f,#7a1128);transition-property:width!important;transition-duration:1.1s!important;transition-timing-function:cubic-bezier(.25,.8,.25,1)!important;will-change:width}.cgift-ico{position:absolute;right:-4px;top:50%;transform:translateY(-50%);font-size:1rem;line-height:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.15))}.cgift.done{background:linear-gradient(135deg,#7a1128,#a8183f);border-color:#7a1128}.cgift.done .cgift-t,.cgift.done .cgift-t b,.cgift.done .cgift-t span{color:#fff}.cgift.done .cgift-bar{background:rgba(255,255,255,.25)}.cgift.done .cgift-fill{background:#fff}@media(prefers-reduced-motion:reduce){.cgift-fill{transition-duration:0s!important}}#breakfastPromoBar.bf-rich{padding:8px 14px 9px!important;box-shadow:0 2px 12px rgba(122,17,40,.25)}.bf-rich.bf-mini{padding:7px 14px!important}.bf-mini .bfr2,.bf-mini .bfr3{display:none}#breakfastPromoBar.bf-rich>div:first-child{height:auto!important;overflow:visible!important}#breakfastPromoBar.bf-rich #bfBarTitle{height:auto!important;line-height:1.25!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important}.bfr{text-align:center;color:#fff;letter-spacing:.01em}.bfr1{font-size:.84rem;font-weight:700;line-height:1.25}.bfr2{font-size:.66rem;font-weight:500;opacity:.95;margin-top:2px;line-height:1.3}.bfr2 b{font-weight:800;background:#fff;color:#7a1128;border-radius:6px;padding:0 5px;white-space:nowrap}.bfr3{display:inline-block;margin-top:4px;font-size:.6rem;font-weight:600;letter-spacing:.03em;text-transform:uppercase;background:rgba(255,255,255,.16);border-radius:999px;padding:2px 9px;white-space:nowrap}@media(max-width:374px){.bfr1{font-size:.78rem}.bfr2{font-size:.58rem}.bfr3{font-size:.5rem;letter-spacing:.02em;padding:2px 7px}}@media(max-width:768px){html.hb.boot #promoCarousel{min-height:115px;box-sizing:border-box}html.hb.boot #stickyHeader{min-height:71px;box-sizing:border-box}}</style>
-  <script>document.documentElement.classList.add("boot");setTimeout(function(){document.documentElement.classList.remove("boot")},1500)</script>
+  <style>html{font-size:16px}html.hb #noBranchPlaceholder{display:none}@media(max-width:768px){#promoCarousel{min-height:134px;box-sizing:border-box}#bannersWrap{min-height:46px;box-sizing:border-box}#promoCardsDots:empty{display:none}#stickyHeader{min-height:71px;box-sizing:border-box}}#cnote:empty{display:none!important}</style>
+  
   <script>!function(){var S=window._menuSnap={};function get(x){if(S[x]||!window.fetch)return S[x];var h=0;try{h="2"===localStorage.getItem("st_menu_"+x+"_ver")&&!!localStorage.getItem("st_menu_"+x)}catch(e){}if(h)return;return S[x]=fetch("menu/"+x+".json").then(function(r){return r.ok?r.json():null}).then(function(d){return d&&"success"===d.status&&d.categories&&"object"==typeof d.categories&&Object.keys(d.categories).length?d:null}).catch(function(){return null})}window._menuSnapGet=get;get("samal")}()</script>
   <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport"/>
   <title>
@@ -33,30 +33,18 @@
   <link href="https://script.google.com" rel="preconnect"/>
   <link href="https://script.googleusercontent.com" rel="preconnect"/>
   <link href="https://res.cloudinary.com" rel="preconnect"/>
-  <link rel="stylesheet" href="assets/core.css?v=e5230222"/>
-  <script src="assets/core.js?v=1a795f53" defer></script>
-  <script src="assets/menu.js?v=e33278a5" defer></script>
+  <link rel="stylesheet" href="assets/core.css?v=f493c702"/>
+  <script src="assets/core.js?v=4d27af69" defer></script>
+  <script src="assets/menu.js?v=a85c5e82" defer></script>
   <script type="speculationrules">{"prefetch":[{"source":"document","where":{"href_matches":"/*"},"eagerness":"moderate"}]}</script>
  </head>
  <body>
   <div id="appShell">
-   <div class="bf-rich" id="breakfastPromoBar" style="display:none;align-items:center;gap:12px;position:fixed;top:0;left:0;right:0;z-index:320;background:linear-gradient(135deg,#7a1128 0%,#a8183f 100%);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.15);padding:11px 16px">
-    <div style="flex:1;min-width:0;overflow:hidden;height:17px">
-     <div id="bfBarTitle" style="height:17px;line-height:17px;font-weight:500;font-size:0.8rem;letter-spacing:.01em;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity .1s ease;text-align:center"><div class="bfr"><div class="bfr1">🎁 Цезарь темпура — в подарок!</div><div class="bfr2">При заказе от <b>8&nbsp;000&nbsp;₸</b> · доставка или самовывоз</div><div class="bfr3">Акция до 13 октября · в зале не действует</div></div></div>
-    </div>
-    <div style="flex-shrink:0;display:none;flex-direction:column;align-items:center;gap:1px">
-     <div id="bfBarCountdown" style="font-size:0.76rem;font-weight:500;color:#fff;font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:.02em">
-      —
-     </div>
-     <div style="font-size:0.48rem;color:#fff;opacity:.75;white-space:nowrap">
-      осталось
-     </div>
-    </div>
-    <button id="bfBarBtn" onclick="window.bannerAction&&bannerAction()" style="display:none;background:#fff;border:none;color:#7a1128;font-size:0.68rem;font-weight:500;cursor:pointer;padding:9px 16px;border-radius:999px;flex-shrink:0;margin-left:6px">
-     Получить
-    </button>
-   </div>
-   <script>!function(){var g=function(i){return document.getElementById(i)},e=g("breakfastPromoBar"),s=null;if(e){try{s=JSON.parse(localStorage.getItem("st_bar_v2")||"null")}catch(x){}if(s&&s.off||!s&&new Date>=new Date(2026,9,14))return;if(s&&s.t){var t=g("bfBarTitle"),b=g("bfBarBtn");e.classList.remove("bf-rich"),t.textContent=s.t,s.x&&(t.style.textAlign="center"),e.style.background=s.c,b.textContent=s.b,b.style.color=s.c,s.b||(b.style.display="none")}e.style.display="flex",document.documentElement.style.setProperty("--bar-h",e.offsetHeight+"px")}}()</script>
+   <a class="ann" href="https://t.me/seventimesuralsk" id="annBar" onclick="try{logGuestEvent('Нажал полосу «Подарки к завтраку»','')}catch(e){}" rel="noopener" target="_blank">
+    <span>Подарки к завтраку, количество ограничено</span>
+    <svg aria-hidden="true" class="ann-a" fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="18"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+   </a>
+   <script>!function(){var b=document.getElementById("annBar");b&&document.documentElement.style.setProperty("--bar-h",b.offsetHeight+"px")}()</script>
    <nav>
     <div style="position:relative">
      <button class="nav-branch-btn" id="navBranchBtn" onpointerdown="bookBtnPressStart()" onpointerup="bookBtnPressEnd()" onpointerleave="bookBtnPressEnd()" onpointercancel="bookBtnPressEnd()">
@@ -105,30 +93,13 @@
    <div class="promo-carousel" id="promoCarousel"></div>
    <div class="promo-dots" id="promoCardsDots"></div>
    <div class="sticky-header" id="stickyHeader">
-    <div id="catSectionTitle" style="padding:10px var(--px)2px;display:none">
+    <div id="catSectionTitle" style="padding:10px var(--px)2px">
      <div class="sec-title" data-i18n="choose_category" style="margin-bottom:2px">
-      Категорию
+      Выберите категорию
      </div>
     </div>
     <div class="banners-wrap" id="bannersWrap">
      <div class="banners-track" id="bannersTrack">
-     </div>
-    </div>
-   </div>
-   <div class="sov" id="breakfastPromoMov" onclick="event.target===this&&closeMov('breakfastPromoMov')" style="z-index:960">
-    <div class="sbox" style="max-height:70svh">
-     <div style="text-align:center;padding:22px 20px 4px">
-      <div id="bfPromoModalTitle" style="color:#1d1d1f;margin-bottom:6px;font-size:1.01rem;font-weight:400">Акция</div>
-      <div id="bfPromoModalSub" style="color:#6e6e73;font-size:0.68rem;line-height:1.5">Оставьте имя и телефон — мы вас ждём.</div>
-     </div>
-     <div style="padding:16px 20px 22px">
-      <input class="oinput" id="bfPromoName" placeholder="Имя"/>
-      <div class="ferr" id="bfPromoNameErr"></div>
-      <input class="oinput" id="bfPromoPhone" maxlength="24" onfocus="if(!this.value)this.value='+7 '" oninput="formatPhoneInput(this)" placeholder="+7 (___) ___-__-__" type="tel" value="+7 "/>
-      <div class="ferr" id="bfPromoPhoneErr"></div>
-      <button class="btn-main btn-wa" onclick="submitBreakfastPromo()" id="bfPromoSubmitBtn">
-       Получить
-      </button>
      </div>
     </div>
    </div>
@@ -240,25 +211,6 @@
      </div>
     </div>
    </div>
-   <div class="mov" id="ratingMov" style="z-index:970" onclick="event.target===this&&closeMov('ratingMov')">
-   <div class="mbox">
-    <div class="mhandle"></div>
-    <div style="text-align:center;padding:8px 26px 32px">
-     <div id="ratingTitle" style="color:#1d1d1f;margin-bottom:16px;font-size:0.95rem;font-weight:500;line-height:1.45">Оцените наш сайт</div>
-     <div id="ratingStars" style="display:flex;justify-content:center;gap:8px;margin-bottom:6px">
-      <button onclick="setSiteRating(1)" aria-label="1 из 5" style="background:none;border:none;font-size:2.2rem;line-height:1;color:#d1d1d6;cursor:pointer;padding:2px">★</button>
-      <button onclick="setSiteRating(2)" aria-label="2 из 5" style="background:none;border:none;font-size:2.2rem;line-height:1;color:#d1d1d6;cursor:pointer;padding:2px">★</button>
-      <button onclick="setSiteRating(3)" aria-label="3 из 5" style="background:none;border:none;font-size:2.2rem;line-height:1;color:#d1d1d6;cursor:pointer;padding:2px">★</button>
-      <button onclick="setSiteRating(4)" aria-label="4 из 5" style="background:none;border:none;font-size:2.2rem;line-height:1;color:#d1d1d6;cursor:pointer;padding:2px">★</button>
-      <button onclick="setSiteRating(5)" aria-label="5 из 5" style="background:none;border:none;font-size:2.2rem;line-height:1;color:#d1d1d6;cursor:pointer;padding:2px">★</button>
-     </div>
-     <div id="ratingHint" style="font-size:0.72rem;color:#86868b;min-height:18px;margin-bottom:14px">Нажмите на звезду</div>
-     <div id="ratingReasons" style="display:none;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:16px"></div>
-     <button class="btn-main btn-wa" id="ratingSendBtn" onclick="submitSiteRating()">Отправить</button>
-     <div id="ratingErr" style="color:#c0392b;font-size:0.72rem;margin-top:8px;min-height:16px"></div>
-    </div>
-   </div>
-  </div>
   <div class="mov" id="funMov" style="z-index:970">
     <div class="mbox">
      <div class="mhandle">
