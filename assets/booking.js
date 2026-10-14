@@ -5,4 +5,7 @@ const bk_STATS_API=API;let bk__bookBranch=null,bk__bookGuests=0;const bk_PROFILE
 /* страница «Бронь столика»: форма открыта сразу, «закрыть» — назад */
 !function(){if(PAGE!=="booking")return;var _cs=closeSheetModal;closeSheetModal=function(id){if(id==="bookingSheet")return goBack();_cs.apply(this,arguments)};
  function go(){bookBtnClick()}
+ /* ссылка booking/?b=samal со страницы «Рестораны»: филиал выбран сразу (после того, как форма сбросится при загрузке) */
+ function pick(){try{var b=new URLSearchParams(location.search).get("b"),m={samal:0,skoro:1,abulhair:3};b in m&&"function"==typeof bk_selectBranch&&bk_selectBranch(m[b])}catch(e){}}
+ "complete"===document.readyState?pick():window.addEventListener("load",pick);
  onReady(go)}();

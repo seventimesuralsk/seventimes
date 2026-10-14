@@ -111,7 +111,7 @@ function _brCheckStock(b){if(b===MENU_SRC||!cart.length)return;fetchMenuJson(b,8
 function _brRender(){var n=document.getElementById("obrCurName");n&&(n.textContent=_oBranch?branchDisplayName(_oBranch):"");var m=_brMissing(_oBranch),e=document.getElementById("eobr");e&&(e.textContent=_oBranch&&m.length?"В этом филиале сейчас нет: "+m.join(", ")+". Выберите другой филиал или уберите блюда из корзины.":"")};
 var BRANCHES=[{id:"abulhair",emoji:"",name:"Абулхаир Хана 177",subKey:"daily_schedule",bg:"linear-gradient(145deg,#2b0812,#7a1128)"},{id:"samal",emoji:"",name:"Самал 70/3",subKey:"daily_schedule",bg:"linear-gradient(145deg,#4a0f1e,#a3193b)"},{id:"skoro",emoji:"",name:"Скоробогатова 65/1",subKey:"daily_schedule",bg:"linear-gradient(145deg,#5c1226,#c23558)"}];;
 function branchDisplayName(e){for(var t=0;t<BRANCHES.length;t++)if(BRANCHES[t].id===e)return BRANCHES[t].name;return"samal"===e?"Самал 70/3":"Скоробогатова 65/1"};
-const BRANCH_COORDS={samal:{lat:51.262822,lon:51.460272},skoro:{lat:51.217804,lon:51.381346},abulhair:{lat:51.249352,lon:51.432745}};;
+const BRANCH_COORDS={samal:{lat:51.262822,lon:51.460272},skoro:{lat:51.217804,lon:51.381346},abulhair:{lat:51.248375,lon:51.431358}};;
 function haversineKm(e,t,n,o){var r=(n-e)*Math.PI/180,a=(o-t)*Math.PI/180,i=Math.sin(r/2)*Math.sin(r/2)+Math.cos(e*Math.PI/180)*Math.cos(n*Math.PI/180)*Math.sin(a/2)*Math.sin(a/2);return 12742*Math.atan2(Math.sqrt(i),Math.sqrt(1-i))};
 function setGeoConsentState(e){try{localStorage.setItem("st_geo_consent",e)}catch(e){}};
 var _promoSeen={},_promoCarouselSwipeBound=!1,PROMO_CARDS=[{id:"dream",bg:"url('img/promo-dream.c59d2146.jpg')",label:"Проект",title:"«Армандар орындалады»",cta:"Подробнее",onclick:"openDreamStories()"}];;
