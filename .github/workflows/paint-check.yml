@@ -1,0 +1,27 @@
+# ВРЕМЕННО: проверка шага «Обновить кадр первого экрана» на сервере GitHub. Ничего не сохраняет.
+name: Проверка кадра (временно)
+
+on:
+  push:
+    branches: [claude/relaxed-pasteur-5s42y4]
+    paths: [".github/workflows/paint-check.yml"]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Меню поменялось — шаг должен снять новый кадр
+        run: |
+          google-chrome --version; node --version
+          python3 - <<'PY'
+          import json
+          p = "menu/samal.json"; d = json.load(open(p, encoding="utf-8"))
+          d["categories"]["Завтраки"][0]["price"] = 3333
+          json.dump(d, open(p, "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
+          PY
+          yq '.jobs.snapshot.steps[] | select(.name == "Обновить кадр первого экрана") | .run' .github/workflows/menu-snapshot.yml > /tmp/step.sh
+          time bash -e /tmp/step.sh
+          git diff --stat
+          test "$(grep -c '3&nbsp;333' index.html)" -ge 1 && echo "КАДР ОБНОВЛЁН НА СЕРВЕРЕ GITHUB"
