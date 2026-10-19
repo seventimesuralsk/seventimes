@@ -7,15 +7,15 @@
 //    просто добавляются в него по мере просмотра, старые остаются лежать вечно
 //    (пока сам браузер гостя не решит почистить место на диске).
 
-const APP_CACHE = "seventimes-app-8efd977e";
+const APP_CACHE = "seventimes-app-a970725f";
 const IMAGE_CACHE = "seventimes-images"; // без номера версии — стабильное имя навсегда
 
 const APP_SHELL = [
   "./",
   "./index.html",
-  "assets/core.css?v=9cc57597",
-  "assets/core.js?v=96a9bd33",
-  "assets/menu.js?v=1647d3b6"
+  "assets/core.css?v=d8db8499",
+  "assets/core.js?v=d5970d2c",
+  "assets/menu.js?v=b7c19618"
 ];
 
 self.addEventListener("install", function (event) {
