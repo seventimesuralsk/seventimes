@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="kk" data-page="booking">
+ <head>
+  <meta charset="utf-8"/>
+  <base href="../"/>
+
+  <title>Үстел брондау — Seven Times</title>
+  <meta name="description" content="Оралдағы Seven Times-та үстел брондаңыз: Самал 70/3, Скоробогатова 65/1, Абулхаир Хана 177. Күні, уақыты және қонақтар — бір минутта."/>
+  <link rel="canonical" href="https://seventimesuralsk.github.io/seventimes/kk/booking/"/>
+  <link rel="alternate" hreflang="ru" href="https://seventimesuralsk.github.io/seventimes/booking/"/><link rel="alternate" hreflang="kk" href="https://seventimesuralsk.github.io/seventimes/kk/booking/"/><link rel="alternate" hreflang="x-default" href="https://seventimesuralsk.github.io/seventimes/booking/"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:site_name" content="Seven Times"/>
+  <meta property="og:locale" content="kk_KZ"/>
+  <meta property="og:url" content="https://seventimesuralsk.github.io/seventimes/kk/booking/"/>
+  <meta property="og:title" content="Үстел брондау — Seven Times"/>
+  <meta property="og:description" content="Оралдағы Seven Times-та үстел брондаңыз: Самал 70/3, Скоробогатова 65/1, Абулхаир Хана 177. Күні, уақыты және қонақтар — бір минутта."/>
+  <meta property="og:image" content="https://seventimesuralsk.github.io/seventimes/img/og-cover.1.jpg"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport"/>
+  <link href="../manifest.webmanifest" rel="manifest"/>
+  <meta content="yes" name="apple-mobile-web-app-capable"/>
+  <meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+  <meta content="Seven Times" name="apple-mobile-web-app-title"/>
+  <meta name="color-scheme" content="light only"/>
+  <meta content="#f5f5f7" name="theme-color"/>
+  <meta content="yes" name="mobile-web-app-capable"/>
+  <link href="https://script.google.com" rel="preconnect"/>
+  <link href="https://script.googleusercontent.com" rel="preconnect"/>
+  <link rel="stylesheet" href="../assets/core.css?v=1cd500d7"/>
+  <script src="assets/core.js?v=b830d165" defer></script>
+  <script src="assets/booking.js?v=a9547fa1" defer></script>
+  <script type="speculationrules">{"prefetch":[{"source":"document","where":{"href_matches":"/*"},"eagerness":"moderate"}]}</script>
+ </head>
+ <body>
+  <div class="sheet-modal-ov" id="bookingSheet">
+ <div class="sheet-modal-backdrop" onclick="closeSheetModal('bookingSheet')"></div>
+
+ <div class="sheet-modal-panel">
+  <div class="sheet-modal-handle"></div>
+  <button class="sheet-modal-close" onclick="closeSheetModal('bookingSheet')" aria-label="Жабу">
+   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+  </button>
+  <div class="sheet-modal-frame" id="bookingFrame" style="overflow-y:auto;-webkit-overflow-scrolling:touch">
+
+
+<div class="bk-wrap bk-show" id="bk-bookingWrap">
+  <div class="bk-title">Үстел брондау</div>
+
+  <div class="bk-card">
+    <div class="bk-label">Филиал</div>
+    <div id="bk-branchReadout" style="display:none;margin-bottom:14px;padding:12px 14px;background:#f6f6f6;border-radius:12px;font-weight:400;font-size:.82rem;color:#1d1d1f"></div>
+    <div id="bk-branchPicker" style="display:none;gap:8px;margin-bottom:14px">
+      <button id="bk-branchBtn0" onclick="bk_selectBranch(0)" class="bk-branch-btn">Самал 70/3</button>
+      <button id="bk-branchBtn1" onclick="bk_selectBranch(1)" class="bk-branch-btn">Скоробогатова 65/1</button>
+      <button id="bk-branchBtn3" onclick="bk_selectBranch(3)" class="bk-branch-btn">Абулхаир Хана 177</button>
+    </div>
+
+    <div class="bk-hint" style="margin-bottom:14px" id="bk-scheduleHint">Брондау 12:00-ден бастап. Самал — 23:00-ге дейін, Скоробогатова — 01:00-ге дейін.</div>
+
+    <div class="bk-label">Күні</div>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <select id="bk-bookDay" class="bk-bfield" style="flex:1;min-width:0"></select>
+      <select id="bk-bookMonth" class="bk-bfield" style="flex:1;min-width:0"></select>
+    </div>
+
+    <div class="bk-label">Уақыты <span style="color:rgba(0,0,0,.5)">*</span></div>
+    <div style="display:flex;gap:8px;margin-bottom:6px;align-items:center">
+      <select id="bk-bookHour" class="bk-bfield" style="flex:1;min-width:0" onchange="bk_clearTimeFieldError()"></select>
+      <span style="color:rgba(255,255,255,.4);font-size:1.1rem;font-weight:400;flex-shrink:0">:</span>
+      <select id="bk-bookMin" class="bk-bfield" style="flex:1;min-width:0" onchange="bk_clearTimeFieldError()"></select>
+    </div>
+    <div id="bk-timeRequiredHint" style="font-size:.62rem;color:rgba(255,255,255,.3);margin-bottom:14px">Сағат пен минутты таңдаңыз — міндетті өріс</div>
+
+    <div class="bk-label">Қонақ саны</div>
+    <div style="display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap">
+      <button onclick="bk_selectGuests(1)" id="bk-g1" class="bk-guest-btn">1</button>
+      <button onclick="bk_selectGuests(2)" id="bk-g2" class="bk-guest-btn">2</button>
+      <button onclick="bk_selectGuests(3)" id="bk-g3" class="bk-guest-btn">3</button>
+      <button onclick="bk_selectGuests(4)" id="bk-g4" class="bk-guest-btn">4</button>
+      <button onclick="bk_selectGuests(5)" id="bk-g5" class="bk-guest-btn">5</button>
+      <button onclick="bk_selectGuests(6)" id="bk-g6" class="bk-guest-btn">6+</button>
+    </div>
+
+    <div class="bk-label">Атыңыз</div>
+    <div style="margin-bottom:14px">
+      <input id="bk-bookName" type="text" autocomplete="name" placeholder="Мысалы: Нұрлан" maxlength="40" class="bk-bfield" oninput="this.value=this.value.replace(/[^А-Яа-яЁёA-Za-z\s-]/g,'')">
+    </div>
+
+    <div class="bk-label">Телефон нөмірі</div>
+    <input id="bk-bookPhone" type="tel" autocomplete="tel" placeholder="+7 (___) ___-__-__" maxlength="24" class="bk-bfield" style="margin-bottom:14px" oninput="bk_formatBookPhone(this);">
+
+    <div class="bk-label">Пікір (міндетті емес)</div>
+    <input id="bk-bookComment" type="text" placeholder="Терезе жанында, балалар орындығы, ширма" maxlength="120" class="bk-bfield" style="margin-bottom:18px">
+
+    <label class="bk-consent-row" for="bookConsent">
+      <input type="checkbox" id="bk-bookConsent" class="bk-consent-checkbox" onchange="bk_toggleSendBtn();">
+      <span class="bk-consent-label"><a id="bk-termsLink" href="https://taplink.cc/seventimes/p/1154a9f/" target="_blank" onclick="event.stopPropagation();bk__termsOpened=true;">Үстел брондау шарттарын</a>, соның ішінде келмеген жағдайда 2 000 ₸ алдын ала төлем қайтарылмайтынын қабылдаймын</span>
+    </label>
+
+    <a id="bk-bookWALink" href="#" onclick="return bk_sendBooking();" class="bk-wa-btn bk-disabled">WhatsApp-қа жіберу</a>
+    <div id="bk-bookError" class="bk-err"></div>
+    <div style="font-size:.62rem;color:rgba(255,255,255,.3);text-align:center;margin-top:14px;line-height:1.6">Өтінім жіберу арқылы сіз Seven Times-тың <a href="https://taplink.cc/seventimes/p/1153436/" target="_blank" style="color:rgba(255,255,255,.5);text-decoration:underline">Шарттары мен ережелерімен</a> келісесіз.</div>
+  </div>
+</div>
+
+<button class="bk-hamburger-btn" onclick="bk_toggleAdminPanel()"><span></span><span></span><span></span></button>
+
+<div id="bk-adminDrawerOv" class="bk-admin-drawer-ov" onclick="if(event.target===this) bk_toggleAdminPanel()">
+  <div class="bk-admin-drawer">
+    <div class="bk-admin-drawer-title">Мәзір <button class="bk-admin-drawer-close" onclick="bk_toggleAdminPanel()">✕</button></div>
+
+    <div class="bk-drawer-links" id="bk-drawerLinks">
+      <a class="bk-drawer-link" href="https://taplink.cc/seventimes/p/1154a9f/" target="_blank">Брондау шарттары</a>
+      <a class="bk-drawer-link" href="https://taplink.cc/seventimes/p/1153436/" target="_blank">Сайттың шарттары мен ережелері</a>
+    </div>
+  </div>
+</div>
+
+
+<div id="bk-iosNotif" class="bk-ios-notif">
+  
+  <div class="bk-ios-notif-body">
+    <div class="bk-ios-notif-title"><span class="bk-ios-notif-app">Seven Times</span><span class="bk-ios-notif-time" id="bk-iosNotifTime">қазір</span></div>
+    <div class="bk-ios-notif-text" id="bk-iosNotifText">Сәлем!</div>
+  </div>
+</div>
+
+<div id="bk-closedScreen" class="bk-closed-screen">
+  
+  <div class="bk-closed-title">Мейрамхана уақытша жабық</div>
+  <div class="bk-closed-text" id="bk-closedText">Брондау қазір қолжетімсіз. Кейінірек кіріңіз.</div>
+  <div class="bk-closed-text" id="bk-closedReopenText" style="margin-top:10px;font-weight:400;color:#1d1d1f"></div>
+</div>
+
+<div id="bk-bookGateOv" class="bk-gate-ov">
+  <div class="bk-gate-sheet">
+    <div class="bk-gate-handle"></div>
+    <div style="display:none" id="bk-bookGateIcon"></div>
+    <div class="bk-gate-title" id="bk-bookGateTitle">Брондау әзірге қолжетімсіз</div>
+    <div class="bk-gate-text" id="bk-bookGateText"></div>
+    <button class="bk-gate-btn" onclick="bk_closeBookGate()">Түсінікті</button>
+  </div>
+</div>
+
+</div>
+ </div>
+</div>
+  <div class="mov" id="funMov" style="z-index:970">
+    <div class="mbox">
+     <div class="mhandle">
+     </div>
+     <div style="text-align:center;padding:8px 26px 32px">
+      <div id="funEmoji" style="margin-bottom:14px;font-size:2.64rem">
+      </div>
+      <div id="funText" style="color:#1d1d1f;margin-bottom:22px;font-size:0.86rem;font-weight:400;line-height:1.55">
+      </div>
+      <button class="btn-main btn-wa" id="funBtn" onclick="closeMov('funMov')">
+       Түсінікті
+      </button>
+     </div>
+    </div>
+   </div>
+  <div id="clientBlockedScreen" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;background:#f5f5f7;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center">
+    
+    <div style="font-size:1.14rem;font-weight:400;margin-bottom:10px;color:#1d1d1f">
+     Қолжетімділік шектелген
+    </div>
+    <div style="font-size:0.75rem;color:#6e6e73;max-width:320px;line-height:1.7">
+     Өкінішке қарай, бұл сайтта мәзірді қарау және тапсырыс беру сізге қолжетімсіз.
+    </div>
+   </div>
+  <div class="toast" id="toast">
+   </div>
+  <div id="bottomTabBar" style="position:fixed;left:0;right:0;bottom:0;z-index:500;background:#fff;border-top:1px solid #e5e5e7;display:flex;padding-bottom:env(safe-area-inset-bottom)">
+   <a class="bottom-tab-btn" data-tab="home" href="./" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 4px 10px;background:none;border:none;cursor:pointer;font-family:inherit">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
+    <span style="font-size:0.66rem;font-weight:600">Мәзір</span>
+   </a>
+   <a class="bottom-tab-btn" data-tab="loyalty" href="https://t.me/seventimesuralsk" target="_blank" rel="noopener" onclick="try{logGuestEvent('Открыл карту лояльности','')}catch(e){}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 4px 10px;background:none;border:none;cursor:pointer;font-family:inherit;position:relative">
+    <span style="position:absolute;top:6px;left:calc(50% + 6px);background:#7a1128;color:#fff;font-size:0.5rem;font-weight:700;padding:1px 4px;border-radius:6px;line-height:1.4">NEW</span>
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9.5h19"/><path d="M6 15h4"/></svg>
+    <span style="font-size:0.66rem;font-weight:600">Лоялдық картасы</span>
+   </a>
+   <a class="bottom-tab-btn active" data-tab="services" href="services/" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 4px 10px;background:none;border:none;cursor:pointer;font-family:inherit">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+    <span style="font-size:0.66rem;font-weight:600">Сервистер</span>
+   </a>
+  </div>
+ </body>
+</html>
