@@ -46,21 +46,23 @@ jobs:
       # меню из свежего снимка), .github/paint.js кладёт кадр в страницу.
       - name: Обновить кадр первого экрана
         run: |
-          if git diff --quiet -- menu && ! grep -q '<template id="p0"></template>' index.html; then echo "меню не менялось"; exit 0; fi
+          if git diff --quiet -- menu && ! grep -q '<template id="p0"></template>' index.html kk/index.html; then echo "меню не менялось"; exit 0; fi
           python3 -m http.server 8765 --bind 127.0.0.1 > /dev/null 2>&1 &
           sleep 1
-          if timeout 90 google-chrome --headless=new --no-sandbox --disable-gpu --blink-settings=imagesEnabled=false \
-               --virtual-time-budget=8000 --dump-dom "http://127.0.0.1:8765/?paint=1" > /tmp/paint.html 2> /dev/null \
-             && node .github/paint.js /tmp/paint.html index.html; then
-            echo "кадр готов"
-          else
-            echo "::warning::кадр не обновлён — новый гость долю секунды видит прошлый кадр, потом свежее меню"
-            git checkout -- index.html
-          fi
+          for L in "" kk/; do  # русская и казахская главная
+            if timeout 90 google-chrome --headless=new --no-sandbox --disable-gpu --blink-settings=imagesEnabled=false \
+                 --virtual-time-budget=8000 --dump-dom "http://127.0.0.1:8765/${L}?paint=1" > /tmp/paint.html 2> /dev/null \
+               && node .github/paint.js /tmp/paint.html "${L}index.html"; then
+              echo "кадр ${L:-ru/} готов"
+            else
+              echo "::warning::кадр ${L:-ru/} не обновлён — новый гость долю секунды видит прошлый кадр, потом свежее меню"
+              git checkout -- "${L}index.html"
+            fi
+          done
 
       - name: Сохранить, если меню изменилось
         run: |
-          git add menu index.html
+          git add menu index.html kk/index.html
           if git diff --cached --quiet; then echo "меню не менялось"; exit 0; fi
           git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -q -m "Снимок меню"
           for i in 1 2 3; do git pull -q --rebase && git push -q && exit 0; sleep 5; done
