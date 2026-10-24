@@ -7,15 +7,15 @@
 //    просто добавляются в него по мере просмотра, старые остаются лежать вечно
 //    (пока сам браузер гостя не решит почистить место на диске).
 
-const APP_CACHE = "seventimes-app-cd6c5f67";
+const APP_CACHE = "seventimes-app-bcf7b9d8";
 const IMAGE_CACHE = "seventimes-images"; // без номера версии — стабильное имя навсегда
 
 const APP_SHELL = [
   "./",
   "./index.html",
-  "assets/core.css?v=a508071d",
-  "assets/core.js?v=b881c5b2",
-  "assets/menu.js?v=393b1b9c"
+  "assets/core.css?v=006a39fe",
+  "assets/core.js?v=8d6d821d",
+  "assets/menu.js?v=a4f30260"
 ];
 
 self.addEventListener("install", function (event) {
@@ -56,7 +56,10 @@ self.addEventListener("fetch", function (event) {
     // no-cache: браузер обязан спросить сервер (304, если не менялось) — иначе GitHub Pages
     // до 10 минут отдаёт старую страницу из HTTP-кэша и гость видит прошлую версию
     var network = fetch(req.url, { cache: "no-cache", credentials: "same-origin" }).then(function (res) {
-      if (res && res.ok && !res.redirected) {
+      // ссылка без «/» на конце (…/booking, …/kk): GitHub отвечает 301. Такой «переадресованный» ответ
+      // на переход браузер не принимает и показывает ошибку сети — отдаём ему чистую переадресацию
+      if (res && res.redirected) return Response.redirect(res.url, 302);
+      if (res && res.ok) {
         var resClone = res.clone();
         caches.open(APP_CACHE).then(function (cache) { cache.put(req, resClone); });
       }
