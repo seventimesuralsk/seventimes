@@ -44,9 +44,14 @@ jobs:
       # новый гость видит меню с первой отрисовкой, ещё до скриптов. Меню поменялось —
       # снимаем кадр заново: Chrome открывает сайт в режиме ?paint=1 (без запросов наружу,
       # меню из свежего снимка), .github/paint.js кладёт кадр в страницу.
+      # С 1 ноября 2026 (00:00 по Уральску) сайт сам показывает сезонное меню первой категорией —
+      # кадр снимаем заново, даже если в таблице ничего не менялось.
       - name: Обновить кадр первого экрана
         run: |
-          if git diff --quiet -- menu && ! grep -q '<template id="p0"></template>' index.html kk/index.html; then echo "меню не менялось"; exit 0; fi
+          SEASON=0
+          if [ "$(date -u +%s)" -ge 1793473200 ] && jq -e '.categories | keys | any(test("^Сезонное меню"))' menu/samal.json > /dev/null \
+             && ! grep -q 'Сезонное меню' index.html; then SEASON=1; fi
+          if [ "$SEASON" = 0 ] && git diff --quiet -- menu && ! grep -q '<template id="p0"></template>' index.html kk/index.html; then echo "меню не менялось"; exit 0; fi
           python3 -m http.server 8765 --bind 127.0.0.1 > /dev/null 2>&1 &
           sleep 1
           for L in "" kk/; do  # русская и казахская главная
