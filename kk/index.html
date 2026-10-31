@@ -44,9 +44,9 @@
  </head>
  <body>
   <div id="appShell">
-   <div class="ann" id="annBar" role="status" style="background:#ffd60a;color:#1d1d1f;font-weight:600;white-space:normal;text-align:left;justify-content:flex-start;line-height:1.25;cursor:default">
-    <svg aria-hidden="true" fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="18" style="flex-shrink:0"><path d="M12 3.5 2.5 20h19z"/><path d="M12 10v4.5"/><circle cx="12" cy="17.3" r=".4" fill="currentColor"/></svg>
-    <span>Маңызды: тағам суреттері жаңартылуда. Қолайсыздық үшін кешірім сұраймыз</span>
+   <div class="ann" id="annBar" role="button" tabindex="0" style="background:#ffd60a;color:#1d1d1f;font-weight:600;white-space:normal;text-align:left;justify-content:flex-start;line-height:1.25;cursor:pointer" onclick="try{logGuestEvent('Нажал жёлтую полосу (розыгрыш)','')}catch(e){}try{openDraw()}catch(e){}">
+    <svg aria-hidden="true" fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="18" style="flex-shrink:0"><rect x="3.5" y="8.5" width="17" height="4" rx="1"/><path d="M5 12.5v7.5h14v-7.5M12 8.5V20"/><path d="M12 8.5C10.5 5 7 4.5 7 6.6S10 8.5 12 8.5zM12 8.5C13.5 5 17 4.5 17 6.6S14 8.5 12 8.5z"/></svg>
+    <span>Айфонды бөліп төлейсің бе? Қойшы 😅<br/>8 000 ₸-ге жеп, iPhone 18 Pro ұтып ал</span>
    </div>
    <script>!function(){var b=document.getElementById("annBar");b&&document.documentElement.style.setProperty("--bar-h",b.offsetHeight+"px")}()</script>
    <nav>
