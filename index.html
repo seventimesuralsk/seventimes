@@ -786,14 +786,16 @@
     <span style="font-size:0.66rem;font-weight:600">Сервисы</span>
    </a>
   </div>
- <script>/* Старт розыгрыша (1 ноября, 00:00 по Уральску): окно «Розыгрыш начался» — 3 секунды его не закрыть,
- потом кнопка «Участвую»; карточка розыгрыша в карусели сияет. Окно — один раз на гостя. */
+ <script>/* Розыгрыш (с 1 ноября, 00:00 по Уральску): окно «Розыгрыш начался» с фото iPhone — 3 секунды его не закрыть,
+ потом кнопка «Участвую»; карточка розыгрыша в карусели сияет. Окно — на каждом заходе на сайт
+ (при переходах внутри сайта в той же вкладке не повторяется). */
 !function(){var S=1793473200000,E=1798225200000,K="st_draw_start_pop",kk=document.documentElement.lang==="kk";
 if(/[?&]paint=1/.test(location.search))return;
 var T=kk?{h:"Ұтыс ойыны басталды!",s:"Бас жүлде — iPhone 18 Pro",n:"8 000 ₸-ден бастап әр чек — ұтыс ойынына қатысу",go:"Қатысамын",later:"Кейін",w:"3"}
  :{h:"Розыгрыш начался!",s:"Главный приз — iPhone 18 Pro",n:"Каждый чек от 8 000 ₸ — участие в розыгрыше",go:"Участвую",later:"Позже",w:"3"};
-function seen(){try{return localStorage.getItem(K)==="1"}catch(e){return false}}
-function mark(){try{localStorage.setItem(K,"1")}catch(e){}}
+function seen(){try{return sessionStorage.getItem(K)==="1"}catch(e){return false}}
+function mark(){try{sessionStorage.setItem(K,"1")}catch(e){}}
+var IMG="img/draw-pop.1a7d6cf5.jpg";
 function css(){if(document.getElementById("drawLiveCss"))return;var st=document.createElement("style");st.id="drawLiveCss";st.textContent=
 "#promoCarousel .draw-live{position:relative;animation:drawGlow 1.6s ease-in-out infinite;border-radius:20px}"+
 "#promoCarousel .draw-live:after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(110deg,transparent 30%,rgba(255,236,190,.55) 50%,transparent 70%);background-size:250% 100%;animation:drawShine 2.4s ease-in-out infinite}"+
@@ -803,9 +805,9 @@ function css(){if(document.getElementById("drawLiveCss"))return;var st=document.
 ".dp-ov.on{opacity:1}"+
 ".dp-card{position:relative;overflow:hidden;width:100%;max-width:360px;border-radius:28px;padding:30px 24px 24px;text-align:center;color:#fff;background:radial-gradient(120% 80% at 50% 0%,#a3193b 0%,#5a0d1d 55%,#2b0812 100%);box-shadow:0 30px 80px rgba(0,0,0,.55);transform:scale(.8);transition:transform .5s cubic-bezier(.2,1.4,.4,1)}"+
 ".dp-ov.on .dp-card{transform:scale(1)}"+
-".dp-gift{font-size:56px;line-height:1;animation:dpBounce 1s ease-in-out infinite}"+
-"@keyframes dpBounce{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-8px) rotate(6deg)}}"+
-".dp-h{margin:14px 0 6px;font-size:26px;font-weight:700;letter-spacing:-.02em}"+
+".dp-img{margin:-30px -24px 2px;aspect-ratio:5/4;background:#5a0d1d 50% 42%/cover no-repeat;-webkit-mask-image:linear-gradient(#000 72%,transparent);mask-image:linear-gradient(#000 72%,transparent);animation:dpZoom 6s ease-out both}"+
+"@keyframes dpZoom{from{transform:scale(1.12)}to{transform:scale(1)}}"+
+".dp-h{margin:0 0 6px;font-size:26px;font-weight:700;letter-spacing:-.02em}"+
 ".dp-s{font-size:16px;font-weight:600;color:#ffd98a}"+
 ".dp-n{margin-top:8px;font-size:14px;line-height:1.4;color:rgba(255,255,255,.82)}"+
 ".dp-bar{position:relative;height:4px;margin:20px auto 0;width:70%;border-radius:4px;background:rgba(255,255,255,.18);overflow:hidden}"+
@@ -820,7 +822,7 @@ function glow(){css();var x=document.querySelector("#promoCarousel .promo-cd");i
  c.parentElement&&c.classList.add("draw-live")}
 function pop(){if(seen()||document.querySelector(".dp-ov"))return;mark();css();
  var ov=document.createElement("div");ov.className="dp-ov";ov.setAttribute("role","dialog");
- ov.innerHTML='<div class="dp-card"><div class="dp-gift">🎁</div><div class="dp-h">'+T.h+'</div><div class="dp-s">'+T.s+'</div><div class="dp-n">'+T.n+'</div><div class="dp-bar"><i></i></div><button class="dp-go">'+T.go+'</button><button class="dp-later">'+T.later+'</button></div>';
+ ov.innerHTML='<div class="dp-card"><div class="dp-img" style="background-image:url(\''+IMG+'\')"></div><div class="dp-h">'+T.h+'</div><div class="dp-s">'+T.s+'</div><div class="dp-n">'+T.n+'</div><div class="dp-bar"><i></i></div><button class="dp-go">'+T.go+'</button><button class="dp-later">'+T.later+'</button></div>';
  var card=ov.querySelector(".dp-card"),cols=["#ffd98a","#ffffff","#e6c48a","#ff8fa3","#f5b041"];
  for(var i=0;i<46;i++){var f=document.createElement("b");f.className="dp-cf";f.style.left=Math.random()*100+"%";f.style.background=cols[i%cols.length];
   f.style.animationDuration=(1.8+Math.random()*1.8)+"s";f.style.animationDelay=(Math.random()*.9)+"s";card.appendChild(f)}
@@ -832,7 +834,7 @@ function pop(){if(seen()||document.querySelector(".dp-ov"))return;mark();css();
  ov.querySelector(".dp-go").onclick=function(){try{logGuestEvent("Нажал «Участвую» в окне розыгрыша","")}catch(e){}close();setTimeout(function(){try{openDraw()}catch(e){}},360)};
  ov.querySelector(".dp-later").onclick=close;ov.addEventListener("click",function(e){if(open&&e.target===ov)close()})}
 function start(){glow();setTimeout(glow,1500);setTimeout(glow,4000);pop()}
-function run(){var n=Date.now();if(n>=E)return;if(n>=S){setTimeout(start,1200);return}
+function run(){var n=Date.now();if(n>=E)return;try{(new Image).src=IMG}catch(e){}if(n>=S){setTimeout(start,1200);return}
  if(S-n<864e5)setTimeout(start,S-n+300)}
 document.readyState==="loading"?document.addEventListener("DOMContentLoaded",run):run()}();</script>
 <script>/* Доставка во время розыгрыша: галочка «участвую — запишите имя и номер на чеке» (чек от 8 000 ₸). Отмеченная попадает строкой в сообщение заказа (core.js → drawJoinOn). */
