@@ -37,7 +37,7 @@
   <link href="https://script.googleusercontent.com" rel="preconnect"/>
   <link href="https://res.cloudinary.com" rel="preconnect"/>
   <link rel="stylesheet" href="assets/core.css?v=90047dca"/>
-  <script src="assets/core.js?v=6939c1ee" defer></script>
+  <script src="assets/core.js?v=ec74a7d1" defer></script>
   <script src="assets/menu.js?v=c22d5e4e" defer></script>
   <script type="speculationrules">{"prefetch":[{"source":"document","where":{"href_matches":"/*"},"eagerness":"moderate"}]}</script>
  </head>
@@ -652,6 +652,7 @@
         Если у вас есть аллергия на какой-то продукт — сообщите об этом заранее.
        </div>
       </div>
+      <div id="drawJoinRow" style="display:none;align-items:flex-start;gap:9px;margin-bottom:12px;padding:11px 12px;background:#fff6d6;border:1px solid #f1d27a;border-radius:11px"><input id="drawJoin" type="checkbox" checked style="width:18px;height:18px;margin-top:1px;flex-shrink:0;accent-color:#7a1128"/><label for="drawJoin" style="font-size:0.7rem;color:#1d1d1f;line-height:1.45;cursor:pointer"><b>🎁 Хочу участвовать в розыгрыше iPhone 18 Pro</b><br>Запишите моё имя и номер на чеке<span id="drawJoinHint" style="display:none;color:#7a1128;margin-top:3px"></span></label></div>
       <div id="agreeRow" style="display:none;align-items:flex-start;gap:9px;margin-bottom:12px;padding:11px 12px;background:#f6f6f6;border-radius:11px">
        <input id="agreeTerms" onchange="toggleAgreeErr()" style="width:18px;height:18px;margin-top:1px;flex-shrink:0;accent-color:#1d1d1f" type="checkbox"/>
        <label for="agreeTerms" style="font-size:0.65rem;color:#1d1d1f;line-height:1.5;cursor:pointer">
@@ -834,5 +835,13 @@ function start(){glow();setTimeout(glow,1500);setTimeout(glow,4000);pop()}
 function run(){var n=Date.now();if(n>=E)return;if(n>=S){setTimeout(start,1200);return}
  if(S-n<864e5)setTimeout(start,S-n+300)}
 document.readyState==="loading"?document.addEventListener("DOMContentLoaded",run):run()}();</script>
+<script>/* Доставка во время розыгрыша: галочка «участвую — запишите имя и номер на чеке» (чек от 8 000 ₸). Отмеченная попадает строкой в сообщение заказа (core.js → drawJoinOn). */
+!function(){var S=1793473200000,E=1798225200000,MIN=8000;function act(){var n=Date.now();return n>=S&&n<E}
+function tot(){try{return cartTotal()}catch(e){return 0}}function del(){try{return oType==="delivery"}catch(e){return false}}
+window.drawJoinOn=function(){var c=document.getElementById("drawJoin");return!!(c&&c.checked&&!c.disabled&&act()&&del()&&tot()>=MIN)};
+function sync(){var r=document.getElementById("drawJoinRow");if(!r)return;var on=act()&&del();r.style.display=on?"flex":"none";if(!on)return;
+ var c=document.getElementById("drawJoin"),h=document.getElementById("drawJoinHint"),m=MIN-tot();if(m>0){c.disabled=true;r.style.opacity=".75";
+  h.textContent="Участвуют чеки от 8 000 ₸ — добавьте ещё "+m.toLocaleString("ru")+" ₸";h.style.display="block"}else{c.disabled=false;r.style.opacity="1";h.style.display="none"}}
+setInterval(sync,700);document.addEventListener("click",function(){setTimeout(sync,50)},true)}();</script>
 </body>
 </html>
