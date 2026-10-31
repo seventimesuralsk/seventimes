@@ -785,5 +785,54 @@
     <span style="font-size:0.66rem;font-weight:600">Сервисы</span>
    </a>
   </div>
- </body>
+ <script>/* Старт розыгрыша (1 ноября, 00:00 по Уральску): окно «Розыгрыш начался» — 3 секунды его не закрыть,
+ потом кнопка «Участвую»; карточка розыгрыша в карусели сияет. Окно — один раз на гостя. */
+!function(){var S=1793473200000,E=1798225200000,K="st_draw_start_pop",kk=document.documentElement.lang==="kk";
+if(/[?&]paint=1/.test(location.search))return;
+var T=kk?{h:"Ұтыс ойыны басталды!",s:"Бас жүлде — iPhone 18 Pro",n:"8 000 ₸-ден бастап әр чек — ұтыс ойынына қатысу",go:"Қатысамын",later:"Кейін",w:"3"}
+ :{h:"Розыгрыш начался!",s:"Главный приз — iPhone 18 Pro",n:"Каждый чек от 8 000 ₸ — участие в розыгрыше",go:"Участвую",later:"Позже",w:"3"};
+function seen(){try{return localStorage.getItem(K)==="1"}catch(e){return false}}
+function mark(){try{localStorage.setItem(K,"1")}catch(e){}}
+function css(){if(document.getElementById("drawLiveCss"))return;var st=document.createElement("style");st.id="drawLiveCss";st.textContent=
+"#promoCarousel .draw-live{position:relative;animation:drawGlow 1.6s ease-in-out infinite;border-radius:20px}"+
+"#promoCarousel .draw-live:after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(110deg,transparent 30%,rgba(255,236,190,.55) 50%,transparent 70%);background-size:250% 100%;animation:drawShine 2.4s ease-in-out infinite}"+
+"@keyframes drawGlow{0%,100%{box-shadow:0 0 0 0 rgba(230,196,138,.0),0 6px 22px rgba(122,17,40,.35)}50%{box-shadow:0 0 0 3px rgba(230,196,138,.95),0 8px 34px rgba(230,160,60,.55)}}"+
+"@keyframes drawShine{0%{background-position:150% 0}60%,100%{background-position:-60% 0}}"+
+".dp-ov{position:fixed;inset:0;z-index:10050;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(15,5,9,.72);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);opacity:0;transition:opacity .35s}"+
+".dp-ov.on{opacity:1}"+
+".dp-card{position:relative;overflow:hidden;width:100%;max-width:360px;border-radius:28px;padding:30px 24px 24px;text-align:center;color:#fff;background:radial-gradient(120% 80% at 50% 0%,#a3193b 0%,#5a0d1d 55%,#2b0812 100%);box-shadow:0 30px 80px rgba(0,0,0,.55);transform:scale(.8);transition:transform .5s cubic-bezier(.2,1.4,.4,1)}"+
+".dp-ov.on .dp-card{transform:scale(1)}"+
+".dp-gift{font-size:56px;line-height:1;animation:dpBounce 1s ease-in-out infinite}"+
+"@keyframes dpBounce{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-8px) rotate(6deg)}}"+
+".dp-h{margin:14px 0 6px;font-size:26px;font-weight:700;letter-spacing:-.02em}"+
+".dp-s{font-size:16px;font-weight:600;color:#ffd98a}"+
+".dp-n{margin-top:8px;font-size:14px;line-height:1.4;color:rgba(255,255,255,.82)}"+
+".dp-bar{position:relative;height:4px;margin:20px auto 0;width:70%;border-radius:4px;background:rgba(255,255,255,.18);overflow:hidden}"+
+".dp-bar i{position:absolute;left:0;top:0;bottom:0;width:0;background:#ffd98a;border-radius:4px;transition:width 3s linear}"+
+".dp-go{display:none;width:100%;margin-top:20px;padding:15px 0;border:0;border-radius:16px;background:#ffd98a;color:#2b0812;font:700 17px/1 inherit;font-family:inherit;cursor:pointer;animation:dpIn .4s ease both}"+
+".dp-later{display:none;margin-top:12px;background:none;border:0;color:rgba(255,255,255,.6);font-size:14px;font-family:inherit;cursor:pointer}"+
+"@keyframes dpIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}"+
+".dp-cf{position:absolute;top:-12px;width:8px;height:14px;border-radius:2px;opacity:.95;animation:dpFall linear forwards}"+
+"@keyframes dpFall{to{transform:translateY(560px) rotate(720deg);opacity:.9}}";
+document.head.appendChild(st)}
+function glow(){css();var x=document.querySelector("#promoCarousel .promo-cd");if(!x)return;var c=x;while(c.parentElement&&c.parentElement.id!=="promoCarousel")c=c.parentElement;
+ c.parentElement&&c.classList.add("draw-live")}
+function pop(){if(seen()||document.querySelector(".dp-ov"))return;mark();css();
+ var ov=document.createElement("div");ov.className="dp-ov";ov.setAttribute("role","dialog");
+ ov.innerHTML='<div class="dp-card"><div class="dp-gift">🎁</div><div class="dp-h">'+T.h+'</div><div class="dp-s">'+T.s+'</div><div class="dp-n">'+T.n+'</div><div class="dp-bar"><i></i></div><button class="dp-go">'+T.go+'</button><button class="dp-later">'+T.later+'</button></div>';
+ var card=ov.querySelector(".dp-card"),cols=["#ffd98a","#ffffff","#e6c48a","#ff8fa3","#f5b041"];
+ for(var i=0;i<46;i++){var f=document.createElement("b");f.className="dp-cf";f.style.left=Math.random()*100+"%";f.style.background=cols[i%cols.length];
+  f.style.animationDuration=(1.8+Math.random()*1.8)+"s";f.style.animationDelay=(Math.random()*.9)+"s";card.appendChild(f)}
+ document.body.appendChild(ov);try{logGuestEvent("Показано окно «Розыгрыш начался»","")}catch(e){}
+ requestAnimationFrame(function(){ov.classList.add("on");requestAnimationFrame(function(){ov.querySelector(".dp-bar i").style.width="100%"})});
+ try{navigator.vibrate&&navigator.vibrate([30,60,30])}catch(e){}
+ var open=false;setTimeout(function(){open=true;ov.querySelector(".dp-bar").style.display="none";ov.querySelector(".dp-go").style.display="block";ov.querySelector(".dp-later").style.display="inline-block"},3000);
+ function close(){ov.classList.remove("on");setTimeout(function(){ov.remove()},350)}
+ ov.querySelector(".dp-go").onclick=function(){try{logGuestEvent("Нажал «Участвую» в окне розыгрыша","")}catch(e){}close();setTimeout(function(){try{openDraw()}catch(e){}},360)};
+ ov.querySelector(".dp-later").onclick=close;ov.addEventListener("click",function(e){if(open&&e.target===ov)close()})}
+function start(){glow();setTimeout(glow,1500);setTimeout(glow,4000);pop()}
+function run(){var n=Date.now();if(n>=E)return;if(n>=S){setTimeout(start,1200);return}
+ if(S-n<864e5)setTimeout(start,S-n+300)}
+document.readyState==="loading"?document.addEventListener("DOMContentLoaded",run):run()}();</script>
+</body>
 </html>
