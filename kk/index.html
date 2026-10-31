@@ -785,7 +785,7 @@
    </a>
   </div>
  <script>/* Розыгрыш (с 1 ноября, 00:00 по Уральску): окно «Розыгрыш начался» с фото iPhone — 3 секунды его не закрыть,
- потом кнопка «Участвую»; карточка розыгрыша в карусели сияет. Окно — на каждом заходе на сайт
+ потом кнопка «Участвую»; по карточке розыгрыша в карусели плавно пробегает блик. Окно — на каждом заходе на сайт
  (при переходах внутри сайта в той же вкладке не повторяется). */
 !function(){var S=1793473200000,E=1798225200000,K="st_draw_start_pop",kk=document.documentElement.lang==="kk";
 if(/[?&]paint=1/.test(location.search))return;
@@ -795,10 +795,9 @@ function seen(){try{return sessionStorage.getItem(K)==="1"}catch(e){return false
 function mark(){try{sessionStorage.setItem(K,"1")}catch(e){}}
 var IMG="../img/draw-pop.1a7d6cf5.jpg";
 function css(){if(document.getElementById("drawLiveCss"))return;var st=document.createElement("style");st.id="drawLiveCss";st.textContent=
-"#promoCarousel .draw-live{position:relative;animation:drawGlow 1.6s ease-in-out infinite;border-radius:20px}"+
-"#promoCarousel .draw-live:after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(110deg,transparent 30%,rgba(255,236,190,.55) 50%,transparent 70%);background-size:250% 100%;animation:drawShine 2.4s ease-in-out infinite}"+
-"@keyframes drawGlow{0%,100%{box-shadow:0 0 0 0 rgba(230,196,138,.0),0 6px 22px rgba(122,17,40,.35)}50%{box-shadow:0 0 0 3px rgba(230,196,138,.95),0 8px 34px rgba(230,160,60,.55)}}"+
-"@keyframes drawShine{0%{background-position:150% 0}60%,100%{background-position:-60% 0}}"+
+"#promoCarousel .draw-live{position:relative}"+
+"#promoCarousel .draw-live:after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(110deg,transparent 38%,rgba(255,255,255,.08) 45%,rgba(255,255,255,.3) 50%,rgba(255,255,255,.08) 55%,transparent 62%);background-size:300% 100%;animation:drawShine 4.5s cubic-bezier(.45,0,.25,1) infinite}"+
+"@keyframes drawShine{0%{background-position:150% 0}50%,100%{background-position:-50% 0}}"+
 ".dp-ov{position:fixed;inset:0;z-index:10050;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(15,5,9,.72);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);opacity:0;transition:opacity .35s}"+
 ".dp-ov.on{opacity:1}"+
 ".dp-card{position:relative;overflow:hidden;width:100%;max-width:360px;border-radius:28px;padding:30px 24px 24px;text-align:center;color:#fff;background:radial-gradient(120% 80% at 50% 0%,#a3193b 0%,#5a0d1d 55%,#2b0812 100%);box-shadow:0 30px 80px rgba(0,0,0,.55);transform:scale(.8);transition:transform .5s cubic-bezier(.2,1.4,.4,1)}"+
@@ -812,8 +811,12 @@ function css(){if(document.getElementById("drawLiveCss"))return;var st=document.
 ".dp-bar i{position:absolute;left:0;top:0;bottom:0;width:0;background:#ffd98a;border-radius:4px;transition:width 3s linear}"+
 ".dp-go{display:none;width:100%;margin-top:20px;padding:15px 0;border:0;border-radius:16px;background:#ffd98a;color:#2b0812;font:700 17px/1 inherit;font-family:inherit;cursor:pointer;animation:dpIn .4s ease both}"+
 "@keyframes dpIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}"+
-".dp-cf{position:absolute;top:-12px;width:8px;height:14px;border-radius:2px;opacity:.95;animation:dpFall linear forwards}"+
-"@keyframes dpFall{to{transform:translateY(560px) rotate(720deg);opacity:.9}}";
+".dp-cf{position:absolute;top:-12px;width:8px;height:14px;border-radius:2px;opacity:.95;animation:dpFall var(--d,2.5s) linear var(--dl,0s) forwards}"+
+"@keyframes dpFall{to{transform:translateY(560px) rotate(720deg);opacity:.9}}"+
+/* на сайте все анимации выключены общим правилом (core.css) — окну и блику возвращаем, если человек не просил меньше движения */
+"@media (prefers-reduced-motion:no-preference){#promoCarousel .draw-live:after{animation-duration:4.5s!important}.dp-ov{transition-duration:.35s!important}"+
+".dp-ov .dp-card{transition-duration:.5s!important}.dp-bar i{transition-duration:3s!important}.dp-img{animation-duration:6s!important}.dp-go{animation-duration:.4s!important}"+
+".dp-cf{animation-duration:var(--d)!important;animation-delay:var(--dl)!important}}";
 document.head.appendChild(st)}
 function glow(){css();var x=document.querySelector("#promoCarousel .promo-cd");if(!x)return;var c=x;while(c.parentElement&&c.parentElement.id!=="promoCarousel")c=c.parentElement;
  c.parentElement&&c.classList.add("draw-live")}
@@ -822,7 +825,7 @@ function pop(){if(seen()||document.querySelector(".dp-ov"))return;mark();css();
  ov.innerHTML='<div class="dp-card"><div class="dp-img" style="background-image:url(\''+IMG+'\')"></div><div class="dp-h">'+T.h+'</div><div class="dp-s">'+T.s+'</div><div class="dp-n">'+T.n+'</div><div class="dp-bar"><i></i></div><button class="dp-go">'+T.go+'</button></div>';
  var card=ov.querySelector(".dp-card"),cols=["#ffd98a","#ffffff","#e6c48a","#ff8fa3","#f5b041"];
  for(var i=0;i<46;i++){var f=document.createElement("b");f.className="dp-cf";f.style.left=Math.random()*100+"%";f.style.background=cols[i%cols.length];
-  f.style.animationDuration=(1.8+Math.random()*1.8)+"s";f.style.animationDelay=(Math.random()*.9)+"s";card.appendChild(f)}
+  f.style.setProperty("--d",(1.8+Math.random()*1.8).toFixed(2)+"s");f.style.setProperty("--dl",(Math.random()*.9).toFixed(2)+"s");card.appendChild(f)}
  document.body.appendChild(ov);try{logGuestEvent("Показано окно «Розыгрыш начался»","")}catch(e){}
  requestAnimationFrame(function(){ov.classList.add("on");requestAnimationFrame(function(){ov.querySelector(".dp-bar i").style.width="100%"})});
  try{navigator.vibrate&&navigator.vibrate([30,60,30])}catch(e){}
