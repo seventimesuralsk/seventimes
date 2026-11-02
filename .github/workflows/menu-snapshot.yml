@@ -22,7 +22,7 @@ concurrency:
 jobs:
   snapshot:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v5
 
@@ -39,6 +39,14 @@ jobs:
               echo "::warning::$b — меню не получено, оставляю прошлый снимок"
             fi
           done
+
+      # Фото блюд — копией на GitHub (img/m): Google Drive отдаёт их медленно и режет при наплыве.
+      # Скачиваем только новые фото, убираем те, которых больше нет в меню. Не вышло — сайт берёт фото с Drive.
+      - name: Зеркало фото блюд
+        run: |
+          python3 -c "import PIL" 2>/dev/null || python3 -m pip install -q --disable-pip-version-check --user --break-system-packages pillow \
+            || python3 -m pip install -q --disable-pip-version-check --user pillow || { echo "::warning::нет Pillow — фото не обновлены"; exit 0; }
+          timeout 180 python3 .github/mirror_photos.py menu/samal.json img/m || echo "::warning::зеркало фото не обновлено"
 
       # Кадр первого экрана (баннер, категории, два первых раздела) лежит прямо в index.html:
       # новый гость видит меню с первой отрисовкой, ещё до скриптов. Меню поменялось —
@@ -67,7 +75,7 @@ jobs:
 
       - name: Сохранить, если меню изменилось
         run: |
-          git add menu index.html kk/index.html
+          git add menu index.html kk/index.html img/m
           if git diff --cached --quiet; then echo "меню не менялось"; exit 0; fi
           git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -q -m "Снимок меню"
           for i in 1 2 3; do git pull -q --rebase && git push -q && exit 0; sleep 5; done
