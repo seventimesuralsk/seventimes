@@ -7,13 +7,13 @@
 //    просто добавляются в него по мере просмотра, старые остаются лежать вечно
 //    (пока сам браузер гостя не решит почистить место на диске).
 
-const APP_CACHE = "seventimes-app-6258407c";
+const APP_CACHE = "seventimes-app-b4be97eb";
 const IMAGE_CACHE = "seventimes-images"; // без номера версии — стабильное имя навсегда
 
 const APP_SHELL = [
   "./",
   "./index.html",
-  "assets/core.css?v=182bece3",
+  "assets/core.css?v=5296c6b0",
   "assets/core.js?v=feae524f",
   "assets/menu.js?v=5ca27985"
 ];
