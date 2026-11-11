@@ -28,7 +28,7 @@ jobs:
 
       - name: Забрать меню из Google-скрипта
         run: |
-          API=$(grep -rhoE 'https://script\.google\.com/macros/s/[A-Za-z0-9_-]+/exec' index.html assets 2>/dev/null | head -1)
+          API=$(grep -rhoE 'https://script\.google\.com/macros/s/[A-Za-z0-9_-]+/exec' index.html assets _src 2>/dev/null | head -1)
           if [ -z "$API" ]; then echo "::error::не нашёл адрес скрипта"; exit 1; fi
           mkdir -p menu
           for b in samal; do
