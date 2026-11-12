@@ -844,19 +844,15 @@ function start(){glow();setTimeout(glow,1500);setTimeout(glow,4000)}
 function run(){var n=Date.now();if(n>=E)return;if(n>=S){setTimeout(start,1200);return}if(S-n<864e5)setTimeout(start,S-n+300)}
 document.readyState==="loading"?document.addEventListener("DOMContentLoaded",run):run()}();</script>
 <script>/* Новогоднее поздравление. 31.12.2026 10:00 – 31.12 23:59 (Уральск): «С наступающим»; 01.01.2027 00:00 – 02.01 23:59: «С Новым годом».
-Имён не показываем (с одного телефона могут заказывать разные люди); постоянному гостю — число заказов за 2026 год. Каждое показывается один раз. Проверка: ?ny=pre / ?ny=new */
+Одно тёплое поздравление для всех: без имён и без числа заказов. Каждое показывается один раз. Проверка: ?ny=pre / ?ny=new */
 !function(){var A=1798693200000,B=1798743600000,C=1798916400000,kk=document.documentElement.lang==="kk",q=location.search;
 if(/[?&]paint=1/.test(q))return;var m=/[?&]ny=(pre|new)/.exec(q),n=m?(m[1]==="pre"?A+1:B+1):Date.now();if(n<A||n>=C)return;
 var ph=n<B?"pre":"new",K="st_ny27_"+ph;try{if(!m&&localStorage.getItem(K))return}catch(e){}
 var T=kk?{pre:"Келе жатқан Жаңа жылыңызбен!",new:"Жаңа жылыңызбен!",
- thx:"Биыл бізбен бірге болғаныңыз үшін шын жүректен рахмет — Seven Times-ты {c} рет таңдадыңыз. Бұл біз үшін үлкен құрмет.",thx0:"Биыл бізбен бірге болғаныңыз үшін шын жүректен рахмет. Бұл біз үшін үлкен құрмет.",
- gen:"Бізге келгеніңіз үшін рахмет. Жаңа жылда сізді қарсы алуға әрқашан қуаныштымыз.",wish:"2027 жыл сізге қуаныш, денсаулық және жақындарыңызбен ортақ дастарқан басындағы жылы кездесулер сыйласын.",sig:"Ыстық ықыласпен, Seven Times командасы",btn:"Рахмет"}
+ gen:"Биыл бізбен бірге болғаныңыз үшін шын жүректен рахмет — әр кездесу, жылы сөз және сенім үшін. Бұл біз үшін өте қымбат.",wish:"2027 жыл сізге қуаныш, денсаулық және жақындарыңызбен ортақ дастарқан басындағы жылы кездесулер сыйласын.",sig:"Ыстық ықыласпен, Seven Times командасы",btn:"Рахмет"}
  :{pre:"С наступающим Новым годом!",new:"С Новым годом!",
- thx:"Спасибо, что в этом году вы были с нами — {c} {w} выбирали Seven Times. Для нас это большая честь.",thx0:"Спасибо, что в этом году вы были с нами. Для нас это большая честь.",
- gen:"Спасибо, что заглянули к нам. Будем рады встречать вас в новом году.",wish:"Пусть 2027 год будет щедрым на радость, здоровье и тёплые встречи с близкими за общим столом.",sig:"С теплом, команда Seven Times",btn:"Спасибо"};
-function raz(c){var a=c%10,b=c%100;return a===1&&b!==11?"раз":a>=2&&a<=4&&(b<12||b>14)?"раза":"раз"}
-function go(){var cnt=0;try{(JSON.parse(localStorage.getItem("st_order_history")||"[]")||[]).forEach(function(o){if(/2026$/.test(o&&o.dateStr||""))cnt++})}catch(e){}
- var t1=cnt>=2&&cnt<20?T.thx.replace("{c}",cnt).replace("{w}",raz(cnt)):cnt>=1?T.thx0:T.gen;
+ gen:"Биыл бізбен бірге болғаныңыз үшін шын жүректен рахмет — әр кездесу, жылы сөз және сенім үшін. Бұл біз үшін өте қымбат.",wish:"Пусть 2027 год будет щедрым на радость, здоровье и тёплые встречи с близкими за общим столом.",sig:"С теплом, команда Seven Times",btn:"Спасибо"};
+function go(){var t1=T.gen;
  var st=document.createElement("style");st.textContent=
  ".ny-ov{position:fixed;inset:0;z-index:10050;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(10,4,6,.6);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);opacity:0;transition:opacity .35s}.ny-ov.on{opacity:1}"+
  ".ny-c{position:relative;overflow:hidden;width:100%;max-width:330px;border-radius:22px;padding:46px 24px 22px;text-align:center;color:#fff;background:radial-gradient(120% 80% at 50% 0%,#7a1530 0%,#4a0a1a 55%,#2a0510 100%);box-shadow:0 24px 70px rgba(0,0,0,.45),inset 0 0 0 1px rgba(233,196,106,.35);transform:translateY(12px) scale(.98);transition:transform .4s cubic-bezier(.16,1,.3,1)}"+
@@ -885,7 +881,7 @@ function go(){var cnt=0;try{(JSON.parse(localStorage.getItem("st_order_history")
  var sn=ov.querySelector(".ny-in");for(var i=0;i<22;i++){var f=document.createElement("i"),z=(1.5+Math.random()*2.5).toFixed(1),d=(6+Math.random()*7).toFixed(1)+"s",l="-"+(Math.random()*12).toFixed(1)+"s";
   f.style.cssText="left:"+(Math.random()*100).toFixed(1)+"%;width:"+z+"px;height:"+z+"px;opacity:"+(.3+Math.random()*.5).toFixed(2);f.style.setProperty("--d",d);f.style.setProperty("--dl",l);f.style.animationDuration=d;f.style.animationDelay=l;sn.appendChild(f)}
  var x=ov.querySelectorAll(".ny-t");ov.querySelector(".ny-h").textContent=T[ph];x[0].textContent=t1;x[1].textContent=T.wish;ov.querySelector(".ny-s").textContent="— "+T.sig;ov.querySelector(".ny-b").textContent=T.btn;
- document.body.appendChild(ov);try{localStorage.setItem(K,"1")}catch(e){}try{logGuestEvent("Показано новогоднее поздравление",cnt?"постоянный гость":"новый гость")}catch(e){}
+ document.body.appendChild(ov);try{localStorage.setItem(K,"1")}catch(e){}try{logGuestEvent("Показано новогоднее поздравление","всем")}catch(e){}
  requestAnimationFrame(function(){ov.classList.add("on")});
  function close(){ov.classList.remove("on");setTimeout(function(){ov.remove()},350)}
  ov.querySelector(".ny-b").onclick=close;ov.addEventListener("click",function(e){if(e.target===ov)close()})}
