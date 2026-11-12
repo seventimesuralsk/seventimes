@@ -36,7 +36,7 @@
   <link href="https://script.google.com" rel="preconnect"/>
   <link href="https://script.googleusercontent.com" rel="preconnect"/>
   <link href="https://res.cloudinary.com" rel="preconnect"/>
-  <link rel="stylesheet" href="assets/core.css?v=90047dca"/>
+  <link rel="stylesheet" href="assets/core.css?v=1845a823"/>
   <script src="assets/core.js?v=01b45099" defer></script>
   <script src="assets/menu.js?v=14b5e3be" defer></script>
   <script type="speculationrules">{"prefetch":[{"source":"document","where":{"href_matches":"/*"},"eagerness":"moderate"}]}</script>
@@ -851,15 +851,19 @@ function go(){var name="",cnt=0;try{var p=JSON.parse(localStorage.getItem("st_cl
  var h=name?T[ph+"N"].replace("{n}",name):T[ph],t1=name?(cnt>=2&&cnt<20?T.thx.replace("{c}",cnt).replace("{w}",raz(cnt)):T.thx0):T.gen;
  var st=document.createElement("style");st.textContent=
  ".ny-ov{position:fixed;inset:0;z-index:10050;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(20,10,12,.5);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);opacity:0;transition:opacity .3s}"+
- ".ny-ov.on{opacity:1}.ny-c{width:100%;max-width:330px;background:#fff;border-radius:20px;padding:30px 24px 22px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);transform:translateY(10px);transition:transform .35s ease}"+
- ".ny-ov.on .ny-c{transform:none}.ny-y{font-size:44px;font-weight:200;letter-spacing:.06em;color:#7a1128;line-height:1}.ny-l{width:36px;height:1px;background:#c9a24a;margin:14px auto 16px}"+
+ ".ny-sn{position:absolute;inset:0;overflow:hidden;pointer-events:none}.ny-sn i{position:absolute;top:-10px;border-radius:50%;background:#fff;opacity:.8;animation:nyFall linear infinite}"+
+ "@keyframes nyFall{to{transform:translate3d(20px,105vh,0)}}"+
+ ".ny-ov.on{opacity:1}.ny-c{position:relative;width:100%;max-width:330px;background:#fff;border-radius:20px;padding:30px 24px 22px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);transform:translateY(10px);transition:transform .35s ease}"+
+ ".ny-ov.on .ny-c{transform:none}.ny-y{font-size:46px;font-weight:200;letter-spacing:.08em;line-height:1;color:#a8832f;background:linear-gradient(100deg,#8a6a22 0%,#c9a24a 30%,#f3e1a6 45%,#c9a24a 60%,#8a6a22 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:nyGold 5s ease-in-out infinite}@keyframes nyGold{0%,100%{background-position:100% 0}50%{background-position:0 0}}.ny-l{width:36px;height:1px;background:#c9a24a;margin:14px auto 16px}"+
  ".ny-h{font-size:18px;font-weight:700;letter-spacing:-.02em;color:#1d1d1f;line-height:1.3}.ny-t{margin-top:10px;font-size:14px;line-height:1.5;color:#3a3a3c}.ny-s{margin-top:14px;font-size:12px;color:#86868b}"+
  ".ny-b{width:100%;margin-top:20px;padding:14px 0;border:0;border-radius:12px;background:#7a1128;color:#fff;font:600 16px/1 inherit;font-family:inherit;cursor:pointer}"+
- "@media (prefers-reduced-motion:no-preference){.ny-ov{transition-duration:.3s!important}.ny-c{transition-duration:.35s!important}}";
+ "@media (prefers-reduced-motion:no-preference){.ny-ov{transition-duration:.3s!important}.ny-c{transition-duration:.35s!important}.ny-y{animation-duration:5s!important}.ny-sn i{animation-duration:var(--d)!important}}"+
+ "@media (prefers-reduced-motion:reduce){.ny-sn{display:none}}";
  document.head.appendChild(st);
  var ov=document.createElement("div");ov.className="ny-ov";ov.setAttribute("role","dialog");
- ov.innerHTML='<div class="ny-c"><div class="ny-y">2027</div><div class="ny-l"></div><div class="ny-h"></div><div class="ny-t"></div><div class="ny-t"></div><div class="ny-s"></div><button class="ny-b"></button></div>';
+ ov.innerHTML='<div class="ny-sn"></div><div class="ny-c"><div class="ny-y">2027</div><div class="ny-l"></div><div class="ny-h"></div><div class="ny-t"></div><div class="ny-t"></div><div class="ny-s"></div><button class="ny-b"></button></div>';
  var x=ov.querySelectorAll(".ny-t");ov.querySelector(".ny-h").textContent=h;x[0].textContent=t1;x[1].textContent=T.wish;ov.querySelector(".ny-s").textContent="— "+T.sig;ov.querySelector(".ny-b").textContent=T.btn;
+ var sn=ov.querySelector(".ny-sn");for(var i=0;i<26;i++){var d=document.createElement("i"),z=2+Math.random()*3,u=(9+Math.random()*9).toFixed(1)+"s";d.style.cssText="left:"+(Math.random()*100).toFixed(1)+"%;width:"+z+"px;height:"+z+"px;opacity:"+(.35+Math.random()*.5).toFixed(2)+";animation-duration:"+u+";--d:"+u+";animation-delay:-"+(Math.random()*15).toFixed(1)+"s";sn.appendChild(d)}
  document.body.appendChild(ov);try{localStorage.setItem(K,"1")}catch(e){}try{logGuestEvent("Показано новогоднее поздравление",name?"по имени":"новый гость")}catch(e){}
  requestAnimationFrame(function(){ov.classList.add("on")});
  function close(){ov.classList.remove("on");setTimeout(function(){ov.remove()},300)}
