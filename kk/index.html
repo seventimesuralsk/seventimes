@@ -896,6 +896,32 @@ function go(){var name="";try{var p=JSON.parse(localStorage.getItem("st_client_p
  requestAnimationFrame(function(){ov.classList.add("on")});function close(){ov.classList.remove("on");setTimeout(function(){ov.remove()},300)}
  ov.querySelector(".nd-b").onclick=close;ov.addEventListener("click",function(e){if(e.target===ov)close()})}
 function run(){setTimeout(go,1500)}document.readyState==="loading"?document.addEventListener("DOMContentLoaded",run):run()}();</script>
+<script>/* Наурыз: окно-поздравление 21.03.2027 00:00 – 23.03 23:59 (Уральск). Гость с профилем — по имени. Один раз. Проверка: ?nz=1 */
+!function(){var A=1805569200000,B=1805828400000,kk=document.documentElement.lang==="kk",q=location.search;if(/[?&]paint=1/.test(q))return;
+var t=/[?&]nz=1/.test(q),n=Date.now();if(!t&&(n<A||n>=B))return;var K="st_nz27";try{if(!t&&localStorage.getItem(K))return}catch(e){}
+var T=kk?{h:"Наурыз құтты болсын!",hn:"{n}, Наурыз құтты болсын!",s:"Ұлыстың ұлы күні",t:"Ұлыс оң болсын, ақ мол болсын! Сізге және жақындарыңызға береке, бірлік және амандық тілейміз.",sig:"Seven Times командасы",btn:"Рахмет"}
+ :{h:"С праздником Наурыз!",hn:"{n}, с праздником Наурыз!",s:"Наурыз құтты болсын!",t:"Желаем вам и вашим близким благополучия, единства и достатка в новом году.",sig:"Команда Seven Times",btn:"Спасибо"};
+var SH='<svg viewBox="0 0 64 64" width="56" height="56" fill="none" stroke="#c9a24a" stroke-width="2"><circle cx="32" cy="32" r="28"/><circle cx="32" cy="32" r="24.5" stroke-width="1.2"/><path d="M22 9Q30 32 22 55M32 7.5V56.5M42 9Q34 32 42 55M9 22Q32 30 55 22M7.5 32H56.5M9 42Q32 34 55 42" stroke-linecap="round"/></svg>';
+var HL='<svg viewBox="0 0 330 70" preserveAspectRatio="none" width="100%" height="70"><path d="M0 40 C60 10 110 30 165 34 C220 38 270 12 330 30 V70 H0Z" fill="#9ccf6b"/><path d="M0 52 C70 30 140 48 200 46 C260 44 300 34 330 42 V70 H0Z" fill="#5fa83a"/></svg>';
+function go(){var name="";try{var p=JSON.parse(localStorage.getItem("st_client_profile")||"null");name=p&&p.name?String(p.name).trim().split(/\s+/)[0].slice(0,20):""}catch(e){}
+ var st=document.createElement("style");st.textContent=
+ ".nz-ov{position:fixed;inset:0;z-index:10060;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(20,30,15,.5);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);opacity:0;transition:opacity .3s}"+
+ ".nz-ov.on{opacity:1}.nz-c{position:relative;overflow:hidden;width:100%;max-width:330px;border-radius:20px;padding:28px 24px 0;text-align:center;background:linear-gradient(#fff 0%,#fff 60%,#f1f8e9 100%);box-shadow:0 20px 60px rgba(0,0,0,.3);transform:translateY(10px);transition:transform .35s ease}"+
+ ".nz-ov.on .nz-c{transform:none}.nz-sh{display:flex;justify-content:center;animation:nzSpin 40s linear infinite}@keyframes nzSpin{to{transform:rotate(360deg)}}"+
+ ".nz-h{margin-top:14px;font-size:22px;font-weight:700;letter-spacing:-.01em;line-height:1.25;color:#c8102e}.nz-s{margin-top:4px;font-size:12px;letter-spacing:.06em;color:#a8832f;font-weight:600}"+
+ ".nz-t{margin-top:12px;font-size:14px;line-height:1.5;color:#3a3a3c}.nz-sig{margin-top:12px;font-size:12px;color:#86868b}"+
+ ".nz-b{position:relative;z-index:1;width:100%;margin-top:18px;padding:14px 0;border:0;border-radius:12px;background:#c8102e;color:#fff;font:600 16px/1 inherit;font-family:inherit;cursor:pointer}"+
+ ".nz-hl{display:block;margin:4px -24px 0;line-height:0}"+
+ "@media (prefers-reduced-motion:no-preference){.nz-ov{transition-duration:.3s!important}.nz-c{transition-duration:.35s!important}.nz-sh{animation-duration:40s!important}}";
+ document.head.appendChild(st);
+ var ov=document.createElement("div");ov.className="nz-ov";ov.setAttribute("role","dialog");
+ ov.innerHTML='<div class="nz-c"><div class="nz-sh">'+SH+'</div><div class="nz-h"></div><div class="nz-s"></div><div class="nz-t"></div><div class="nz-sig"></div><button class="nz-b"></button><div class="nz-hl">'+HL+'</div></div>';
+ ov.querySelector(".nz-h").textContent=name?T.hn.replace("{n}",name):T.h;ov.querySelector(".nz-s").textContent=T.s;ov.querySelector(".nz-t").textContent=T.t;
+ ov.querySelector(".nz-sig").textContent="— "+T.sig;ov.querySelector(".nz-b").textContent=T.btn;
+ document.body.appendChild(ov);try{localStorage.setItem(K,"1")}catch(e){}try{logGuestEvent("Показано поздравление с Наурызом",name?"по имени":"новый гость")}catch(e){}
+ requestAnimationFrame(function(){ov.classList.add("on")});function close(){ov.classList.remove("on");setTimeout(function(){ov.remove()},300)}
+ ov.querySelector(".nz-b").onclick=close;ov.addEventListener("click",function(e){if(e.target===ov)close()})}
+function run(){setTimeout(go,1500)}document.readyState==="loading"?document.addEventListener("DOMContentLoaded",run):run()}();</script>
 <script>/* Доставка во время розыгрыша: галочка «участвую — запишите имя и номер на чеке» (чек от 8 000 ₸). Отмеченная попадает строкой в сообщение заказа (core.js → drawJoinOn). */
 !function(){var S=1793473200000,E=1798225200000,MIN=8000;function act(){var n=Date.now();return n>=S&&n<E}
 function tot(){try{return cartTotal()}catch(e){return 0}}function del(){try{return oType==="delivery"}catch(e){return false}}
