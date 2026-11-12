@@ -869,6 +869,35 @@ function go(){var name="",cnt=0;try{var p=JSON.parse(localStorage.getItem("st_cl
  function close(){ov.classList.remove("on");setTimeout(function(){ov.remove()},300)}
  ov.querySelector(".ny-b").onclick=close;ov.addEventListener("click",function(e){if(e.target===ov)close()})}
 function run(){setTimeout(go,1500)}document.readyState==="loading"?document.addEventListener("DOMContentLoaded",run):run()}();</script>
+<script>/* День Независимости РК: окно-поздравление 16.12.2026 00:00 – 17.12 23:59 (Уральск). Гость с профилем — по имени. Один раз. Проверка: ?nd=1 */
+!function(){var A=1797361200000,B=1797534000000,kk=document.documentElement.lang==="kk",q=location.search;if(/[?&]paint=1/.test(q))return;
+var t=/[?&]nd=1/.test(q),n=Date.now();if(!t&&(n<A||n>=B))return;var K="st_ind26";try{if(!t&&localStorage.getItem(K))return}catch(e){}
+var T=kk?{m:"Желтоқсан",h:"Тәуелсіздік күні құтты болсын!",hn:"{n}, Тәуелсіздік күні құтты болсын!",s:"Қазақстан Республикасының Тәуелсіздік күні",
+ t:"Еліміздің бейбітшілігі мен береке-бірлігі баянды болсын! Сізге және жақындарыңызға амандық пен игілік тілейміз.",sig:"Seven Times командасы",btn:"Рахмет"}
+ :{m:"Декабря",h:"С Днём Независимости!",hn:"{n}, с Днём Независимости!",s:"Республики Казахстан",
+ t:"Желаем мира, благополучия и процветания нашей стране, вам и вашим близким.",sig:"Команда Seven Times",btn:"Спасибо"};
+function go(){var name="";try{var p=JSON.parse(localStorage.getItem("st_client_profile")||"null");name=p&&p.name?String(p.name).trim().split(/\s+/)[0].slice(0,20):""}catch(e){}
+ var st=document.createElement("style");st.textContent=
+ ".nd-ov{position:fixed;inset:0;z-index:10060;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(5,25,35,.55);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);opacity:0;transition:opacity .3s}"+
+ ".nd-ov.on{opacity:1}.nd-c{position:relative;overflow:hidden;width:100%;max-width:330px;border-radius:20px;padding:30px 24px 22px;text-align:center;color:#fff;background:linear-gradient(160deg,#00a9c8 0%,#0089a8 55%,#006f8c 100%);box-shadow:0 20px 60px rgba(0,0,0,.35);transform:translateY(10px);transition:transform .35s ease}"+
+ ".nd-ov.on .nd-c{transform:none}.nd-c:before{content:'';position:absolute;right:-60px;top:-60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(255,215,90,.35),rgba(255,215,90,0) 70%);pointer-events:none}"+
+ ".nd-g{background:linear-gradient(100deg,#b8892a 0%,#f5d77a 40%,#fff2c2 50%,#f5d77a 60%,#b8892a 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:#f5d77a;animation:ndGold 5s ease-in-out infinite}"+
+ "@keyframes ndGold{0%,100%{background-position:100% 0}50%{background-position:0 0}}"+
+ ".nd-d{font-size:76px;font-weight:700;line-height:.95;letter-spacing:-.03em}.nd-m{margin-top:2px;font-size:13px;font-weight:600;letter-spacing:.22em;text-transform:uppercase}"+
+ ".nd-o{margin:14px auto 14px;height:10px;width:150px;background:radial-gradient(circle,#f5d77a 0 2px,transparent 2.5px) 0 50%/15px 10px repeat-x;opacity:.9}"+
+ ".nd-h{font-size:19px;font-weight:700;letter-spacing:-.01em;line-height:1.3}.nd-s{margin-top:4px;font-size:12px;opacity:.85;letter-spacing:.04em}"+
+ ".nd-t{margin-top:12px;font-size:14px;line-height:1.5;color:rgba(255,255,255,.95)}.nd-sig{margin-top:14px;font-size:12px;opacity:.75}"+
+ ".nd-b{width:100%;margin-top:20px;padding:14px 0;border:0;border-radius:12px;background:#f5d77a;color:#05414f;font:700 16px/1 inherit;font-family:inherit;cursor:pointer}"+
+ "@media (prefers-reduced-motion:no-preference){.nd-ov{transition-duration:.3s!important}.nd-c{transition-duration:.35s!important}.nd-g{animation-duration:5s!important}}";
+ document.head.appendChild(st);
+ var ov=document.createElement("div");ov.className="nd-ov";ov.setAttribute("role","dialog");
+ ov.innerHTML='<div class="nd-c"><div class="nd-d nd-g">16</div><div class="nd-m nd-g"></div><div class="nd-o"></div><div class="nd-h"></div><div class="nd-s"></div><div class="nd-t"></div><div class="nd-sig"></div><button class="nd-b"></button></div>';
+ ov.querySelector(".nd-m").textContent=T.m;ov.querySelector(".nd-h").textContent=name?T.hn.replace("{n}",name):T.h;ov.querySelector(".nd-s").textContent=T.s;
+ ov.querySelector(".nd-t").textContent=T.t;ov.querySelector(".nd-sig").textContent="— "+T.sig;ov.querySelector(".nd-b").textContent=T.btn;
+ document.body.appendChild(ov);try{localStorage.setItem(K,"1")}catch(e){}try{logGuestEvent("Показано поздравление с Днём Независимости",name?"по имени":"новый гость")}catch(e){}
+ requestAnimationFrame(function(){ov.classList.add("on")});function close(){ov.classList.remove("on");setTimeout(function(){ov.remove()},300)}
+ ov.querySelector(".nd-b").onclick=close;ov.addEventListener("click",function(e){if(e.target===ov)close()})}
+function run(){setTimeout(go,1500)}document.readyState==="loading"?document.addEventListener("DOMContentLoaded",run):run()}();</script>
 <script>/* Доставка во время розыгрыша: галочка «участвую — запишите имя и номер на чеке» (чек от 8 000 ₸). Отмеченная попадает строкой в сообщение заказа (core.js → drawJoinOn). */
 !function(){var S=1793473200000,E=1798225200000,MIN=8000;function act(){var n=Date.now();return n>=S&&n<E}
 function tot(){try{return cartTotal()}catch(e){return 0}}function del(){try{return oType==="delivery"}catch(e){return false}}
