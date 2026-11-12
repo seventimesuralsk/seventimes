@@ -832,6 +832,37 @@ function glow(){css();var x=document.querySelector("#promoCarousel .promo-cd");i
 function start(){glow();setTimeout(glow,1500);setTimeout(glow,4000)}
 function run(){var n=Date.now();if(n>=E)return;if(n>=S){setTimeout(start,1200);return}if(S-n<864e5)setTimeout(start,S-n+300)}
 document.readyState==="loading"?document.addEventListener("DOMContentLoaded",run):run()}();</script>
+<script>/* Новогоднее поздравление. 31.12.2026 10:00 – 31.12 23:59 (Уральск): «С наступающим»; 01.01.2027 00:00 – 02.01 23:59: «С Новым годом».
+Гость с сохранённым профилем — по имени и с числом заказов за 2026 год; новый гость — общее поздравление. Каждое показывается гостю один раз. Проверка: ?ny=pre / ?ny=new. */
+!function(){var A=1798693200000,B=1798743600000,C=1798916400000,kk=document.documentElement.lang==="kk",q=location.search;
+if(/[?&]paint=1/.test(q))return;var m=/[?&]ny=(pre|new)/.exec(q),n=m?(m[1]==="pre"?A+1:B+1):Date.now();if(n<A||n>=C)return;
+var ph=n<B?"pre":"new",K="st_ny27_"+ph;try{if(!m&&localStorage.getItem(K))return}catch(e){}
+var T=kk?{pre:"Келе жатқан Жаңа жылыңызбен!",new:"Жаңа 2027 жылыңызбен!",preN:"{n}, келе жатқан Жаңа жылыңызбен!",newN:"{n}, Жаңа 2027 жылыңызбен!",
+ thx:"2026 жылы Seven Times-ты {c} рет таңдағаныңыз үшін шын жүректен алғыс білдіреміз.",thx0:"Биыл бізбен бірге болғаныңыз үшін шын жүректен алғыс білдіреміз.",
+ gen:"Seven Times командасы сізді және жақындарыңызды мерекемен құттықтайды.",wish:"Сізге денсаулық, амандық және ортақ дастарқан басындағы жылы кездесулер тілейміз.",sig:"Seven Times командасы",btn:"Рахмет"}
+ :{pre:"С наступающим Новым годом!",new:"С Новым 2027 годом!",preN:"{n}, с наступающим Новым годом!",newN:"{n}, с Новым 2027 годом!",
+ thx:"Благодарим вас за то, что в 2026 году вы выбирали Seven Times {c} {w}.",thx0:"Благодарим вас за то, что в уходящем году вы были с нами.",
+ gen:"Команда Seven Times поздравляет вас и ваших близких с праздником.",wish:"Желаем здоровья, благополучия и тёплых встреч за общим столом.",sig:"Команда Seven Times",btn:"Спасибо"};
+function raz(c){var a=c%10,b=c%100;return a===1&&b!==11?"раз":a>=2&&a<=4&&(b<12||b>14)?"раза":"раз"}
+function go(){var name="",cnt=0;try{var p=JSON.parse(localStorage.getItem("st_client_profile")||"null");name=p&&p.name?String(p.name).trim().split(/\s+/)[0].slice(0,20):""}catch(e){}
+ try{(JSON.parse(localStorage.getItem("st_order_history")||"[]")||[]).forEach(function(o){if(/2026$/.test(o&&o.dateStr||""))cnt++})}catch(e){}
+ var h=name?T[ph+"N"].replace("{n}",name):T[ph],t1=name?(cnt>=2&&cnt<20?T.thx.replace("{c}",cnt).replace("{w}",raz(cnt)):T.thx0):T.gen;
+ var st=document.createElement("style");st.textContent=
+ ".ny-ov{position:fixed;inset:0;z-index:10050;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(20,10,12,.5);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);opacity:0;transition:opacity .3s}"+
+ ".ny-ov.on{opacity:1}.ny-c{width:100%;max-width:330px;background:#fff;border-radius:20px;padding:30px 24px 22px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);transform:translateY(10px);transition:transform .35s ease}"+
+ ".ny-ov.on .ny-c{transform:none}.ny-y{font-size:44px;font-weight:200;letter-spacing:.06em;color:#7a1128;line-height:1}.ny-l{width:36px;height:1px;background:#c9a24a;margin:14px auto 16px}"+
+ ".ny-h{font-size:18px;font-weight:700;letter-spacing:-.02em;color:#1d1d1f;line-height:1.3}.ny-t{margin-top:10px;font-size:14px;line-height:1.5;color:#3a3a3c}.ny-s{margin-top:14px;font-size:12px;color:#86868b}"+
+ ".ny-b{width:100%;margin-top:20px;padding:14px 0;border:0;border-radius:12px;background:#7a1128;color:#fff;font:600 16px/1 inherit;font-family:inherit;cursor:pointer}"+
+ "@media (prefers-reduced-motion:no-preference){.ny-ov{transition-duration:.3s!important}.ny-c{transition-duration:.35s!important}}";
+ document.head.appendChild(st);
+ var ov=document.createElement("div");ov.className="ny-ov";ov.setAttribute("role","dialog");
+ ov.innerHTML='<div class="ny-c"><div class="ny-y">2027</div><div class="ny-l"></div><div class="ny-h"></div><div class="ny-t"></div><div class="ny-t"></div><div class="ny-s"></div><button class="ny-b"></button></div>';
+ var x=ov.querySelectorAll(".ny-t");ov.querySelector(".ny-h").textContent=h;x[0].textContent=t1;x[1].textContent=T.wish;ov.querySelector(".ny-s").textContent="— "+T.sig;ov.querySelector(".ny-b").textContent=T.btn;
+ document.body.appendChild(ov);try{localStorage.setItem(K,"1")}catch(e){}try{logGuestEvent("Показано новогоднее поздравление",name?"по имени":"новый гость")}catch(e){}
+ requestAnimationFrame(function(){ov.classList.add("on")});
+ function close(){ov.classList.remove("on");setTimeout(function(){ov.remove()},300)}
+ ov.querySelector(".ny-b").onclick=close;ov.addEventListener("click",function(e){if(e.target===ov)close()})}
+function run(){setTimeout(go,1500)}document.readyState==="loading"?document.addEventListener("DOMContentLoaded",run):run()}();</script>
 <script>/* Доставка во время розыгрыша: галочка «участвую — запишите имя и номер на чеке» (чек от 8 000 ₸). Отмеченная попадает строкой в сообщение заказа (core.js → drawJoinOn). */
 !function(){var S=1793473200000,E=1798225200000,MIN=8000;function act(){var n=Date.now();return n>=S&&n<E}
 function tot(){try{return cartTotal()}catch(e){return 0}}function del(){try{return oType==="delivery"}catch(e){return false}}
