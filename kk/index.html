@@ -47,8 +47,8 @@
    <script>/* Праздничная полоса сверху (Уральск, без имён): 16–17.12 — День Независимости; 25–31.12 — «С наступающим»; 01–07.01 — «С Новым годом»; 21–23.03 — Наурыз. Проверка: ?bar=ind|pre|new|nz */
 !function(){var kk=document.documentElement.lang==="kk",q=location.search,P=[
  ["ind",1797361200000,1797534000000,"#0094b6","#fff",kk?"Тәуелсіздік күні құтты болсын!":"С Днём Независимости Республики Казахстан!"],
- ["pre",1798138800000,1798743600000,"#5a0c1f","#f3d27e",kk?"✦ Келе жатқан Жаңа жылыңызбен! ✦":"✦ С наступающим Новым годом! ✦"],
- ["new",1798743600000,1799348400000,"#5a0c1f","#f3d27e",kk?"✦ Жаңа жылыңызбен! ✦":"✦ С Новым годом! ✦"],
+ ["pre",1798138800000,1798743600000,"#5a0c1f","#f3d27e",kk?"✦ Келе жатқан Жаңа жылыңызбен! Бізбен бірге болғаныңыз үшін рахмет ✦":"✦ С наступающим Новым годом! Спасибо, что вы с нами ✦"],
+ ["new",1798743600000,1799348400000,"#5a0c1f","#f3d27e",kk?"✦ Жаңа жылыңызбен! Бізбен бірге болғаныңыз үшін рахмет ✦":"✦ С Новым годом! Спасибо, что вы с нами ✦"],
  ["nz",1805569200000,1805828400000,"#c8102e","#fff",kk?"Наурыз құтты болсын! Ұлыс оң болсын!":"С праздником Наурыз! Наурыз құтты болсын!"]],
  m=/[?&]bar=(\w+)/.exec(q),n=Date.now(),p=null;if(/[?&]paint=1/.test(q))return;
 P.forEach(function(x){if(m?m[1]===x[0]:n>=x[1]&&n<x[2])p=x});if(!p)return;
@@ -849,11 +849,11 @@ document.readyState==="loading"?document.addEventListener("DOMContentLoaded",run
 if(/[?&]paint=1/.test(q))return;var m=/[?&]ny=(pre|new)/.exec(q),n=m?(m[1]==="pre"?A+1:B+1):Date.now();if(n<A||n>=C)return;
 var ph=n<B?"pre":"new",K="st_ny27_"+ph;try{if(!m&&localStorage.getItem(K))return}catch(e){}
 var T=kk?{pre:"Келе жатқан Жаңа жылыңызбен!",new:"Жаңа жылыңызбен!",
- thx:"2026 жылы Seven Times-ты {c} рет таңдағаныңыз үшін шын жүректен алғыс білдіреміз.",thx0:"Биыл бізбен бірге болғаныңыз үшін шын жүректен алғыс білдіреміз.",
- gen:"Seven Times командасы сізді және жақындарыңызды мерекемен құттықтайды.",wish:"Сізге денсаулық, амандық және ортақ дастарқан басындағы жылы кездесулер тілейміз.",sig:"Seven Times командасы",btn:"Рахмет"}
+ thx:"Биыл бізбен бірге болғаныңыз үшін шын жүректен рахмет — Seven Times-ты {c} рет таңдадыңыз. Бұл біз үшін үлкен құрмет.",thx0:"Биыл бізбен бірге болғаныңыз үшін шын жүректен рахмет. Бұл біз үшін үлкен құрмет.",
+ gen:"Бізге келгеніңіз үшін рахмет. Жаңа жылда сізді қарсы алуға әрқашан қуаныштымыз.",wish:"2027 жыл сізге қуаныш, денсаулық және жақындарыңызбен ортақ дастарқан басындағы жылы кездесулер сыйласын.",sig:"Ыстық ықыласпен, Seven Times командасы",btn:"Рахмет"}
  :{pre:"С наступающим Новым годом!",new:"С Новым годом!",
- thx:"Благодарим вас за то, что в 2026 году вы выбирали Seven Times {c} {w}.",thx0:"Благодарим вас за то, что в уходящем году вы были с нами.",
- gen:"Команда Seven Times поздравляет вас и ваших близких с праздником.",wish:"Желаем здоровья, благополучия и тёплых встреч за общим столом.",sig:"Команда Seven Times",btn:"Спасибо"};
+ thx:"Спасибо, что в этом году вы были с нами — {c} {w} выбирали Seven Times. Для нас это большая честь.",thx0:"Спасибо, что в этом году вы были с нами. Для нас это большая честь.",
+ gen:"Спасибо, что заглянули к нам. Будем рады встречать вас в новом году.",wish:"Пусть 2027 год будет щедрым на радость, здоровье и тёплые встречи с близкими за общим столом.",sig:"С теплом, команда Seven Times",btn:"Спасибо"};
 function raz(c){var a=c%10,b=c%100;return a===1&&b!==11?"раз":a>=2&&a<=4&&(b<12||b>14)?"раза":"раз"}
 function go(){var cnt=0;try{(JSON.parse(localStorage.getItem("st_order_history")||"[]")||[]).forEach(function(o){if(/2026$/.test(o&&o.dateStr||""))cnt++})}catch(e){}
  var t1=cnt>=2&&cnt<20?T.thx.replace("{c}",cnt).replace("{w}",raz(cnt)):cnt>=1?T.thx0:T.gen;
@@ -894,9 +894,9 @@ function run(){setTimeout(go,1500)}document.readyState==="loading"?document.addE
 !function(){var A=1797361200000,B=1797534000000,kk=document.documentElement.lang==="kk",q=location.search;if(/[?&]paint=1/.test(q))return;
 var t=/[?&]nd=1/.test(q),n=Date.now();if(!t&&(n<A||n>=B))return;var K="st_ind26";try{if(!t&&localStorage.getItem(K))return}catch(e){}
 var T=kk?{m:"Желтоқсан",h:"Тәуелсіздік күні құтты болсын!",s:"Қазақстан Республикасының Тәуелсіздік күні",
- t:"Еліміздің бейбітшілігі мен береке-бірлігі баянды болсын! Сізге және жақындарыңызға амандық пен игілік тілейміз.",sig:"Seven Times командасы",btn:"Рахмет"}
+ t:"Бізбен бірге болғаныңыз үшін рахмет! Еліміздің бейбітшілігі мен береке-бірлігі баянды болсын, сізге және жақындарыңызға амандық пен игілік тілейміз.",sig:"Ыстық ықыласпен, Seven Times командасы",btn:"Рахмет"}
  :{m:"Декабря",h:"С Днём Независимости!",s:"Республики Казахстан",
- t:"Желаем мира, благополучия и процветания нашей стране, вам и вашим близким.",sig:"Команда Seven Times",btn:"Спасибо"};
+ t:"Спасибо, что вы с нами. Желаем мира, благополучия и процветания нашей стране, вам и вашим близким.",sig:"С теплом, команда Seven Times",btn:"Спасибо"};
 function go(){ var st=document.createElement("style");st.textContent=
  ".nd-ov{position:fixed;inset:0;z-index:10060;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(5,25,35,.55);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);opacity:0;transition:opacity .3s}"+
  ".nd-ov.on{opacity:1}.nd-c{position:relative;overflow:hidden;width:100%;max-width:330px;border-radius:20px;padding:30px 24px 22px;text-align:center;color:#fff;background:linear-gradient(160deg,#00a9c8 0%,#0089a8 55%,#006f8c 100%);box-shadow:0 20px 60px rgba(0,0,0,.35);transform:translateY(10px);transition:transform .35s ease}"+
@@ -921,8 +921,8 @@ function run(){setTimeout(go,1500)}document.readyState==="loading"?document.addE
 <script>/* Наурыз: окно-поздравление 21.03.2027 00:00 – 23.03 23:59 (Уральск). Без имён. Один раз. Проверка: ?nz=1 */
 !function(){var A=1805569200000,B=1805828400000,kk=document.documentElement.lang==="kk",q=location.search;if(/[?&]paint=1/.test(q))return;
 var t=/[?&]nz=1/.test(q),n=Date.now();if(!t&&(n<A||n>=B))return;var K="st_nz27";try{if(!t&&localStorage.getItem(K))return}catch(e){}
-var T=kk?{h:"Наурыз құтты болсын!",s:"Ұлыстың ұлы күні",t:"Ұлыс оң болсын, ақ мол болсын! Сізге және жақындарыңызға береке, бірлік және амандық тілейміз.",sig:"Seven Times командасы",btn:"Рахмет"}
- :{h:"С праздником Наурыз!",s:"Наурыз құтты болсын!",t:"Желаем вам и вашим близким благополучия, единства и достатка в новом году.",sig:"Команда Seven Times",btn:"Спасибо"};
+var T=kk?{h:"Наурыз құтты болсын!",s:"Ұлыстың ұлы күні",t:"Бізбен бірге болғаныңыз үшін рахмет! Ұлыс оң болсын, ақ мол болсын! Сізге және жақындарыңызға береке, бірлік және амандық тілейміз.",sig:"Ыстық ықыласпен, Seven Times командасы",btn:"Рахмет"}
+ :{h:"С праздником Наурыз!",s:"Наурыз құтты болсын!",t:"Спасибо, что вы с нами. Пусть весна принесёт вам и вашим близким тепло, единство и достаток.",sig:"С теплом, команда Seven Times",btn:"Спасибо"};
 var SH='<svg viewBox="0 0 64 64" width="56" height="56" fill="none" stroke="#c9a24a" stroke-width="2"><circle cx="32" cy="32" r="28"/><circle cx="32" cy="32" r="24.5" stroke-width="1.2"/><path d="M22 9Q30 32 22 55M32 7.5V56.5M42 9Q34 32 42 55M9 22Q32 30 55 22M7.5 32H56.5M9 42Q32 34 55 42" stroke-linecap="round"/></svg>';
 var HL='<svg viewBox="0 0 330 70" preserveAspectRatio="none" width="100%" height="70"><path d="M0 40 C60 10 110 30 165 34 C220 38 270 12 330 30 V70 H0Z" fill="#9ccf6b"/><path d="M0 52 C70 30 140 48 200 46 C260 44 300 34 330 42 V70 H0Z" fill="#5fa83a"/></svg>';
 function go(){ var st=document.createElement("style");st.textContent=
