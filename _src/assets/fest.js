@@ -109,3 +109,24 @@ function go(){ var st=document.createElement("style");st.textContent=
  requestAnimationFrame(function(){ov.classList.add("on")});function close(){ov.classList.remove("on");setTimeout(function(){ov.remove()},300)}
  ov.querySelector(".nz-b").onclick=close;ov.addEventListener("click",function(e){if(e.target===ov)close()})}
 function run(){setTimeout(go,1500)}document.readyState==="loading"?document.addEventListener("DOMContentLoaded",run):run()}();;
+/* Розыгрыш: лёгкий блик по промо-карточке (окно убрано). */
+!function(){var S=1793473200000,E=1798225200000,kk=document.documentElement.lang==="kk";
+if(/[?&]paint=1/.test(location.search))return;
+function css(){if(document.getElementById("drawLiveCss"))return;var st=document.createElement("style");st.id="drawLiveCss";st.textContent=
+"#promoCarousel .draw-live{position:relative}"+
+"#promoCarousel .draw-live:after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(110deg,transparent 38%,rgba(255,255,255,.08) 45%,rgba(255,255,255,.3) 50%,rgba(255,255,255,.08) 55%,transparent 62%);background-size:300% 100%;animation:drawShine 4.5s cubic-bezier(.45,0,.25,1) infinite}"+
+"@keyframes drawShine{0%{background-position:150% 0}50%,100%{background-position:-50% 0}}"+
+"@media (prefers-reduced-motion:no-preference){#promoCarousel .draw-live:after{animation-duration:4.5s!important}}";
+document.head.appendChild(st)}
+function glow(){css();var x=document.querySelector("#promoCarousel .promo-cd");if(!x)return;var c=x;while(c.parentElement&&c.parentElement.id!=="promoCarousel")c=c.parentElement;c.parentElement&&c.classList.add("draw-live")}
+function start(){glow();setTimeout(glow,1500);setTimeout(glow,4000)}
+function run(){var n=Date.now();if(n>=E)return;if(n>=S){setTimeout(start,1200);return}if(S-n<864e5)setTimeout(start,S-n+300)}
+document.readyState==="loading"?document.addEventListener("DOMContentLoaded",run):run()}();;
+/* Доставка во время розыгрыша: галочка «участвую — запишите имя и номер на чеке» (чек от 8 000 ₸). Отмеченная попадает строкой в сообщение заказа (core.js → drawJoinOn). */
+!function(){var S=1793473200000,E=1798225200000,MIN=8000;function act(){var n=Date.now();return n>=S&&n<E}
+function tot(){try{return cartTotal()}catch(e){return 0}}function del(){try{return oType==="delivery"}catch(e){return false}}
+window.drawJoinOn=function(){var c=document.getElementById("drawJoin");return!!(c&&c.checked&&!c.disabled&&act()&&del()&&tot()>=MIN)};
+function sync(){var r=document.getElementById("drawJoinRow");if(!r)return;var on=act()&&del();r.style.display=on?"flex":"none";if(!on)return;
+ var c=document.getElementById("drawJoin"),h=document.getElementById("drawJoinHint"),m=MIN-tot();if(m>0){c.disabled=true;r.style.opacity=".75";
+  h.textContent="Участвуют чеки от 8 000 ₸ — добавьте ещё "+m.toLocaleString("ru")+" ₸";h.style.display="block"}else{c.disabled=false;r.style.opacity="1";h.style.display="none"}}
+setInterval(sync,700);document.addEventListener("click",function(){setTimeout(sync,50)},true)}();;
