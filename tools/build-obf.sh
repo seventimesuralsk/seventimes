@@ -4,7 +4,7 @@
 set -e
 cd "$(dirname "$0")/.."
 for f in assets/core.js assets/menu.js assets/booking.js assets/projects.js assets/services.js assets/vacancy.js \
-         kk/assets/core.js kk/assets/menu.js kk/assets/booking.js kk/assets/projects.js kk/assets/services.js kk/assets/vacancy.js kk/assets/kk.js; do
+         assets/fest.js kk/assets/fest.js kk/assets/core.js kk/assets/menu.js kk/assets/booking.js kk/assets/projects.js kk/assets/services.js kk/assets/vacancy.js kk/assets/kk.js; do
   node tools/obfuscate.mjs "_src/$f" "$f"
   node --check "$f" || { echo "ПАРСИНГ УПАЛ: $f"; exit 1; }
 done
