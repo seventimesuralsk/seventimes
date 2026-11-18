@@ -31,7 +31,7 @@ function hideTiles(h){if(tw)tw.style.display=h?"none":""}
 var GH=["2026-11-23","2026-11-24","2026-11-25"],dayEls=[].slice.call(root.querySelectorAll(".day"));
 function ghTick(n){var cur=-1,nx=-1;GH.forEach(function(d,i){var s=at(d,840),e=at(d,1080);if(n>=s&&n<e)cur=i;else if(n<s&&nx<0)nx=i});
  dayEls.forEach(function(el,i){var s=at(GH[i],840),e=at(GH[i],1080),st=n>=e?"done":(n>=s?"live":"next");el.className="day rv in "+st;
-  var em=el.querySelector("em"),bar=el.querySelector(".bar");em.textContent="14:00–18:00 · "+(st==="done"?L.dDone:st==="live"?L.dLive:L.dNext);bar.style.width=st==="live"?((n-s)/(e-s)*100).toFixed(2)+"%":"0"});
+  var em=el.querySelector("em"),bar=el.querySelector(".bar");em.textContent=st==="done"?L.dDone:st==="live"?L.dLive:L.dNext;bar.style.width=st==="live"?((n-s)/(e-s)*100).toFixed(2)+"%":"0"});
  if(cur>=0){setChip(L.live,1);hideTiles(0);setTiles(at(GH[cur],1080)-n);cap&&(cap.textContent=L.until18)}
  else if(nx>=0){setChip(nx===0?L.up:L.next,0);hideTiles(0);setTiles(at(GH[nx],840)-n);cap&&(cap.textContent=cap.getAttribute("data-cap").split("|")[nx])}
  else{setChip(L.done,0);hideTiles(1);cap&&(cap.textContent=cap.getAttribute("data-end"))}}
@@ -47,11 +47,7 @@ function tick(){var n=now();kind==="gh"?ghTick(n):kind==="set"?setTick(n):drTick
 tick();setInterval(tick,1e3);
 /* появление блоков */
 var rv=[].slice.call(root.querySelectorAll(".rv:not(.day)"));
-rv.forEach(function(e){var p=e.parentNode,k=[].indexOf.call(p.children,e);e.style.setProperty("--dl",(Math.min(k,6)*.08)+"s")});
+rv.forEach(function(e){var p=e.parentNode,k=[].indexOf.call(p.children,e);e.style.setProperty("--dl",(Math.min(k,6)*.15)+"s")});
 if(rm||!("IntersectionObserver" in window))rv.forEach(function(e){e.classList.add("in")});
 else{var io=new IntersectionObserver(function(en){en.forEach(function(x){if(x.isIntersecting){io.unobserve(x.target);x.target.classList.add("in")}})},{rootMargin:"0px 0px -8% 0px"});rv.forEach(function(e){io.observe(e)})}
-/* цена сета — счётчик */
-var pr=root.querySelector("[data-count]");if(pr){var to=+pr.getAttribute("data-count");if(rm)pr.firstChild.textContent=to.toLocaleString("ru-RU");else{var t0=0;setTimeout(function(){requestAnimationFrame(function f(ts){t0=t0||ts;var p=Math.min(1,(ts-t0)/1300),e=1-Math.pow(1-p,3);pr.firstChild.textContent=Math.round(to*e).toLocaleString("ru-RU");p<1&&requestAnimationFrame(f)})},1200)}}
-/* частицы Golden Hours */
-var sky=root.querySelector(".sky");if(sky&&!rm){for(var i=0;i<16;i++){var d=document.createElement("i");d.style.left=(6+Math.random()*88)+"%";d.style.setProperty("--d",(7+Math.random()*7).toFixed(1)+"s");d.style.setProperty("--dl",(Math.random()*8).toFixed(1)+"s");var w=(2+Math.random()*4).toFixed(1)+"px";d.style.width=d.style.height=w;sky.appendChild(d)}}
 }();
