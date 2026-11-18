@@ -9,15 +9,15 @@ var off=0;try{fetch(location.pathname,{method:"HEAD",cache:"no-store"}).then(fun
 function now(){return Date.now()+off}
 function at(ds,min){var p=ds.split("-");return Date.UTC(+p[0],+p[1]-1,+p[2],0,min)-18e6}
 var L=kk?{d:"күн",h:"сағ",m:"мин",s:"сек",
-  up:"Алдағы акция",live:"Дәл қазір жүріп жатыр",next:"Жалғасы — 14:00-ден",done:"Акция аяқталды",
+  up:"Жақында",live:"Дәл қазір жүріп жатыр",next:"Жалғасы — 14:00-ден",done:"Аяқталды",
   until18:"18:00-ге дейін",dDone:"өтті",dLive:"қазір",dNext:"алда",
-  setLive:"Бүгін 18:00-ге дейін",setLater:"Бүгін 11:00-ден",setTom:"Ертең 11:00-ден",setDone:"Акция аяқталды",
-  drOpen:"Чек қабылдау ашық",drClosed:"Чек қабылдау аяқталды",drDone:"Ұтыс өтті"}
+  setLive:"Бүгін 18:00-ге дейін",setLater:"Бүгін 11:00-ден",setTom:"Ертең 11:00-ден",setDone:"Аяқталды",
+  drOpen:"Чек қабылдау ашық",drClosed:"Чек қабылдау аяқталды",drDone:"Қорытынды шығарылды"}
  :{d:"дн",h:"ч",m:"мин",s:"сек",
-  up:"Предстоящая акция",live:"Идёт сейчас",next:"Продолжение — с 14:00",done:"Акция завершена",
+  up:"Скоро",live:"Идёт сейчас",next:"Продолжение — с 14:00",done:"Завершено",
   until18:"До 18:00",dDone:"прошёл",dLive:"сейчас",dNext:"впереди",
-  setLive:"Сегодня до 18:00",setLater:"Сегодня с 11:00",setTom:"Завтра с 11:00",setDone:"Акция завершена",
-  drOpen:"Приём чеков открыт",drClosed:"Приём чеков завершён",drDone:"Розыгрыш состоялся"};
+  setLive:"Сегодня до 18:00",setLater:"Сегодня с 11:00",setTom:"Завтра с 11:00",setDone:"Завершено",
+  drOpen:"Приём чеков открыт",drClosed:"Приём чеков завершён",drDone:"Итоги подведены"};
 /* плитки */
 var tw=root.querySelector(".tiles"),T=[];
 if(tw){[L.d,L.h,L.m,L.s].forEach(function(lab){var t=document.createElement("div");t.className="tile";t.innerHTML="<b>00</b><i>"+lab+"</i>";tw.appendChild(t);T.push(t.firstChild)})}
