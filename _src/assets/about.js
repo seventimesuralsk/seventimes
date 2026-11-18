@@ -24,15 +24,15 @@ menu().then(function(d){var ids=[],seen={};Object.keys(d&&d.categories||{}).forE
 var rv=[].slice.call(root.querySelectorAll(".ap-rv"));
 if(rm||!("IntersectionObserver" in window))rv.forEach(function(e){e.classList.add("in")});
 else{var io=new IntersectionObserver(function(en){en.forEach(function(x){if(x.isIntersecting){io.unobserve(x.target);x.target.classList.add("in")}})},{rootMargin:"0px 0px -10% 0px"});rv.forEach(function(e){io.observe(e)})}
-/* прокрутка: приветствие, фото, слова */
+/* прокрутка: лёгкая, без «залипания» — фото растёт по ходу, строки загораются по очереди сами */
 var hero=root.querySelector(".ap-hero"),sc=root.querySelector(".ap-scale"),wd=root.querySelector(".ap-words"),lines=wd?[].slice.call(wd.querySelectorAll(".ap-w")):[];
-function prog(el){var r=el.getBoundingClientRect(),h=r.height-innerHeight;return h>0?Math.max(0,Math.min(1,-r.top/h)):(r.top<0?1:0)}
-if(rm){lines.forEach(function(l){l.classList.add("on");[].forEach.call(l.querySelectorAll("[data-count]"),count)});if(sc)sc.style.setProperty("--p","1");return}
+function light(){lines.forEach(function(l,i){setTimeout(function(){l.classList.add("on");[].forEach.call(l.querySelectorAll("[data-count]"),count)},rm?0:i*420)})}
+if(wd){if(rm||!("IntersectionObserver" in window))light();else{var wio=new IntersectionObserver(function(en){if(en[0].isIntersecting){wio.disconnect();light()}},{threshold:.35});wio.observe(wd)}}
+if(rm){if(sc)sc.style.setProperty("--p","1");return}
 var tick=false;
-function upd(){tick=false;
+function upd(){tick=false;var vh=innerHeight;
  if(hero){var hr=hero.getBoundingClientRect(),hp=Math.max(0,Math.min(1,-hr.top/Math.max(1,hr.height)));hero.style.setProperty("--hp",hp.toFixed(3))}
- if(sc)sc.style.setProperty("--p",prog(sc).toFixed(3));
- if(wd){var wr=wd.getBoundingClientRect(),p=wr.top>innerHeight*.3?-1:prog(wd),n=lines.length;lines.forEach(function(l,i){var on=p>=(i/n)*.92-.02;if(on&&!l.classList.contains("on")){l.classList.add("on");[].forEach.call(l.querySelectorAll("[data-count]"),count)}else if(!on&&l.classList.contains("on"))l.classList.remove("on")})}}
+ if(sc){var r=sc.getBoundingClientRect();if(r.top<vh&&r.bottom>0)sc.style.setProperty("--p",Math.max(0,Math.min(1,(vh-r.top)/(vh*.85))).toFixed(3))}}
 function req(){if(!tick){tick=true;requestAnimationFrame(upd)}}
 addEventListener("scroll",req,{passive:true});addEventListener("resize",req);upd();
 }();
