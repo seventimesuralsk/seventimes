@@ -1,41 +1,41 @@
-var _0x0424f=["LnB6","cHotanM=","","a2s=","ZGF0YS1raW5k","KHByZWZlcnMtcmVkdWNlZC1tb3Rpb246IHJlZHVjZSk=","SEVBRA==","bm8tc3RvcmU=","RGF0ZQ==","","LQ==","0LrSr9C9","0YHQsNKT","0LzQuNC9","0YHQtdC6","0JDQu9C00LDSk9GLINCw0LrRhtC40Y8=","0JTTmdC7INKb0LDQt9GW0YAg0LbSr9GA0ZbQvyDQttCw0YLRi9GA","0JbQsNC70pPQsNGB0Ysg4oCUIDE0OjAwLdC00LXQvQ==","0JDQutGG0LjRjyDQsNGP0pvRgtCw0LvQtNGL","MTg6MDAt0LPQtSDQtNC10LnRltC9","06nRgtGC0ZY=","0pvQsNC30ZbRgA==","0LDQu9C00LA=","0JHSr9Cz0ZbQvSAxODowMC3Qs9C1INC00LXQudGW0L0=","0JHSr9Cz0ZbQvSAxMTowMC3QtNC10L0=","0JXRgNGC0LXSoyAxMTowMC3QtNC10L0=","0JDQutGG0LjRjyDQsNGP0pvRgtCw0LvQtNGL","0KfQtdC6INKb0LDQsdGL0LvQtNCw0YMg0LDRiNGL0ps=","0KfQtdC6INKb0LDQsdGL0LvQtNCw0YMg0LDRj9Kb0YLQsNC70LTRiw==","0rDRgtGL0YEg06nRgtGC0ZY=","0LTQvQ==","0Yc=","0LzQuNC9","0YHQtdC6","0J/RgNC10LTRgdGC0L7Rj9GJ0LDRjyDQsNC60YbQuNGP","0JjQtNGR0YIg0YHQtdC50YfQsNGB","0J/RgNC+0LTQvtC70LbQtdC90LjQtSDigJQg0YEgMTQ6MDA=","0JDQutGG0LjRjyDQt9Cw0LLQtdGA0YjQtdC90LA=","0JTQviAxODowMA==","0L/RgNC+0YjRkdC7","0YHQtdC50YfQsNGB","0LLQv9C10YDQtdC00Lg=","0KHQtdCz0L7QtNC90Y8g0LTQviAxODowMA==","0KHQtdCz0L7QtNC90Y8g0YEgMTE6MDA=","0JfQsNCy0YLRgNCwINGBIDExOjAw","0JDQutGG0LjRjyDQt9Cw0LLQtdGA0YjQtdC90LA=","0J/RgNC40ZHQvCDRh9C10LrQvtCyINC+0YLQutGA0YvRgg==","0J/RgNC40ZHQvCDRh9C10LrQvtCyINC30LDQstC10YDRiNGR0L0=","0KDQvtC30YvQs9GA0YvRiCDRgdC+0YHRgtC+0Y/Qu9GB0Y8=","LnRpbGVz","ZGl2","dGlsZQ==","PGI+MDA8L2I+PGk+","PC9pPg==","MA==","","dGs=","dGs=","LmNoaXA=","c3BhbjpsYXN0LWNoaWxk","W2RhdGEtY2FwXQ==","bGl2ZQ==","b2Zm","bm9uZQ==","","MjAyNi0xMS0yMw==","MjAyNi0xMS0yNA==","MjAyNi0xMS0yNQ==","LmRheQ==","ZG9uZQ==","bGl2ZQ==","bmV4dA==","ZGF5IHJ2IGluIA==","ZW0=","LmJhcg==","MTQ6MDDigJMxODowMCDCtyA=","ZG9uZQ==","bGl2ZQ==","bGl2ZQ==","JQ==","MA==","ZGF0YS1jYXA=","fA==","ZGF0YS1lbmQ=","MjAyNi0xMS0xNA==","MjAyNi0xMS0yMg==","LmxpbmUgaQ==","MTAwJQ==","JQ==","MjAyNi0xMS0wMQ==","MjAyNi0xMi0yNg==","MjAyNi0xMi0yNw==","ZGF0YS1lbmQ=","Z2g=","c2V0","LnJ2Om5vdCguZGF5KQ==","LS1kbA==","cw==","SW50ZXJzZWN0aW9uT2JzZXJ2ZXI=","aW4=","aW4=","MHB4IDBweCAtOCUgMHB4","W2RhdGEtY291bnRd","ZGF0YS1jb3VudA==","cnUtUlU=","cnUtUlU=","LnNreQ==","aQ==","JQ==","LS1k","cw==","LS1kbA==","cw==","cHg="],_0xacfd4=[];
-function _0x9e00b(i){return _0xacfd4[i]!==undefined?_0xacfd4[i]:(_0xacfd4[i]=decodeURIComponent(escape(atob(_0x0424f[i]))))}
+var _0x377bb=["LnB6","cHotanM=","","a2s=","ZGF0YS1raW5k","KHByZWZlcnMtcmVkdWNlZC1tb3Rpb246IHJlZHVjZSk=","SEVBRA==","bm8tc3RvcmU=","RGF0ZQ==","","LQ==","0LrSr9C9","0YHQsNKT","0LzQuNC9","0YHQtdC6","0JDQu9C00LDSk9GLINCw0LrRhtC40Y8=","0JTTmdC7INKb0LDQt9GW0YAg0LbSr9GA0ZbQvyDQttCw0YLRi9GA","0JbQsNC70pPQsNGB0Ysg4oCUIDE0OjAwLdC00LXQvQ==","0JDQutGG0LjRjyDQsNGP0pvRgtCw0LvQtNGL","MTg6MDAt0LPQtSDQtNC10LnRltC9","06nRgtGC0ZY=","0pvQsNC30ZbRgA==","0LDQu9C00LA=","0JHSr9Cz0ZbQvSAxODowMC3Qs9C1INC00LXQudGW0L0=","0JHSr9Cz0ZbQvSAxMTowMC3QtNC10L0=","0JXRgNGC0LXSoyAxMTowMC3QtNC10L0=","0JDQutGG0LjRjyDQsNGP0pvRgtCw0LvQtNGL","0KfQtdC6INKb0LDQsdGL0LvQtNCw0YMg0LDRiNGL0ps=","0KfQtdC6INKb0LDQsdGL0LvQtNCw0YMg0LDRj9Kb0YLQsNC70LTRiw==","0rDRgtGL0YEg06nRgtGC0ZY=","0LTQvQ==","0Yc=","0LzQuNC9","0YHQtdC6","0J/RgNC10LTRgdGC0L7Rj9GJ0LDRjyDQsNC60YbQuNGP","0JjQtNGR0YIg0YHQtdC50YfQsNGB","0J/RgNC+0LTQvtC70LbQtdC90LjQtSDigJQg0YEgMTQ6MDA=","0JDQutGG0LjRjyDQt9Cw0LLQtdGA0YjQtdC90LA=","0JTQviAxODowMA==","0L/RgNC+0YjRkdC7","0YHQtdC50YfQsNGB","0LLQv9C10YDQtdC00Lg=","0KHQtdCz0L7QtNC90Y8g0LTQviAxODowMA==","0KHQtdCz0L7QtNC90Y8g0YEgMTE6MDA=","0JfQsNCy0YLRgNCwINGBIDExOjAw","0JDQutGG0LjRjyDQt9Cw0LLQtdGA0YjQtdC90LA=","0J/RgNC40ZHQvCDRh9C10LrQvtCyINC+0YLQutGA0YvRgg==","0J/RgNC40ZHQvCDRh9C10LrQvtCyINC30LDQstC10YDRiNGR0L0=","0KDQvtC30YvQs9GA0YvRiCDRgdC+0YHRgtC+0Y/Qu9GB0Y8=","LnRpbGVz","ZGl2","dGlsZQ==","PGI+MDA8L2I+PGk+","PC9pPg==","MA==","","dGs=","dGs=","LmNoaXA=","c3BhbjpsYXN0LWNoaWxk","W2RhdGEtY2FwXQ==","bGl2ZQ==","b2Zm","bm9uZQ==","","MjAyNi0xMS0yMw==","MjAyNi0xMS0yNA==","MjAyNi0xMS0yNQ==","LmRheQ==","ZG9uZQ==","bGl2ZQ==","bmV4dA==","ZGF5IHJ2IGluIA==","ZW0=","LmJhcg==","ZG9uZQ==","bGl2ZQ==","bGl2ZQ==","JQ==","MA==","ZGF0YS1jYXA=","fA==","ZGF0YS1lbmQ=","MjAyNi0xMS0xNA==","MjAyNi0xMS0yMg==","LmxpbmUgaQ==","MTAwJQ==","JQ==","MjAyNi0xMS0wMQ==","MjAyNi0xMi0yNg==","MjAyNi0xMi0yNw==","ZGF0YS1lbmQ=","Z2g=","c2V0","LnJ2Om5vdCguZGF5KQ==","LS1kbA==","cw==","SW50ZXJzZWN0aW9uT2JzZXJ2ZXI=","aW4=","aW4=","MHB4IDBweCAtOCUgMHB4"],_0xc231e=[];
+function _0x13a0c(i){return _0xc231e[i]!==undefined?_0xc231e[i]:(_0xc231e[i]=decodeURIComponent(escape(atob(_0x377bb[i]))))}
 !function () {
-    var root = document.querySelector(_0x9e00b(0x0));
+    var root = document.querySelector(_0x13a0c(0x0));
     if (!root)
         return;
-    document.documentElement.classList.add(_0x9e00b(0x1));
-    var kk = (document.documentElement.lang || _0x9e00b(0x2)).indexOf(_0x9e00b(0x3)) === 0, kind = root.getAttribute(_0x9e00b(0x4));
+    document.documentElement.classList.add(_0x13a0c(0x1));
+    var kk = (document.documentElement.lang || _0x13a0c(0x2)).indexOf(_0x13a0c(0x3)) === 0, kind = root.getAttribute(_0x13a0c(0x4));
     var rm = false;
     try {
-        rm = matchMedia(_0x9e00b(0x5)).matches;
+        rm = matchMedia(_0x13a0c(0x5)).matches;
     }
     catch (e) { }
     var off = 0;
     try {
-        fetch(location.pathname, { method: _0x9e00b(0x6), cache: _0x9e00b(0x7) }).then(function (r) { var d = Date.parse(r.headers.get(_0x9e00b(0x8)) || _0x9e00b(0x9)); if (d && Math.abs(d - Date.now()) > 6e4) {
+        fetch(location.pathname, { method: _0x13a0c(0x6), cache: _0x13a0c(0x7) }).then(function (r) { var d = Date.parse(r.headers.get(_0x13a0c(0x8)) || _0x13a0c(0x9)); if (d && Math.abs(d - Date.now()) > 6e4) {
             off = d - Date.now();
             tick();
         } }).catch(function () { });
     }
     catch (e) { }
     function now() { return Date.now() + off; }
-    function at(ds, min) { var p = ds.split(_0x9e00b(0xa)); return Date.UTC(+p[0], +p[1] - 1, +p[2], 0, min) - 18e6; }
-    var L = kk ? { d: _0x9e00b(0xb), h: _0x9e00b(0xc), m: _0x9e00b(0xd), s: _0x9e00b(0xe),
-        up: _0x9e00b(0xf), live: _0x9e00b(0x10), next: _0x9e00b(0x11), done: _0x9e00b(0x12),
-        until18: _0x9e00b(0x13), dDone: _0x9e00b(0x14), dLive: _0x9e00b(0x15), dNext: _0x9e00b(0x16),
-        setLive: _0x9e00b(0x17), setLater: _0x9e00b(0x18), setTom: _0x9e00b(0x19), setDone: _0x9e00b(0x1a),
-        drOpen: _0x9e00b(0x1b), drClosed: _0x9e00b(0x1c), drDone: _0x9e00b(0x1d) }
-        : { d: _0x9e00b(0x1e), h: _0x9e00b(0x1f), m: _0x9e00b(0x20), s: _0x9e00b(0x21),
-            up: _0x9e00b(0x22), live: _0x9e00b(0x23), next: _0x9e00b(0x24), done: _0x9e00b(0x25),
-            until18: _0x9e00b(0x26), dDone: _0x9e00b(0x27), dLive: _0x9e00b(0x28), dNext: _0x9e00b(0x29),
-            setLive: _0x9e00b(0x2a), setLater: _0x9e00b(0x2b), setTom: _0x9e00b(0x2c), setDone: _0x9e00b(0x2d),
-            drOpen: _0x9e00b(0x2e), drClosed: _0x9e00b(0x2f), drDone: _0x9e00b(0x30) };
-    var tw = root.querySelector(_0x9e00b(0x31)), T = [];
+    function at(ds, min) { var p = ds.split(_0x13a0c(0xa)); return Date.UTC(+p[0], +p[1] - 1, +p[2], 0, min) - 18e6; }
+    var L = kk ? { d: _0x13a0c(0xb), h: _0x13a0c(0xc), m: _0x13a0c(0xd), s: _0x13a0c(0xe),
+        up: _0x13a0c(0xf), live: _0x13a0c(0x10), next: _0x13a0c(0x11), done: _0x13a0c(0x12),
+        until18: _0x13a0c(0x13), dDone: _0x13a0c(0x14), dLive: _0x13a0c(0x15), dNext: _0x13a0c(0x16),
+        setLive: _0x13a0c(0x17), setLater: _0x13a0c(0x18), setTom: _0x13a0c(0x19), setDone: _0x13a0c(0x1a),
+        drOpen: _0x13a0c(0x1b), drClosed: _0x13a0c(0x1c), drDone: _0x13a0c(0x1d) }
+        : { d: _0x13a0c(0x1e), h: _0x13a0c(0x1f), m: _0x13a0c(0x20), s: _0x13a0c(0x21),
+            up: _0x13a0c(0x22), live: _0x13a0c(0x23), next: _0x13a0c(0x24), done: _0x13a0c(0x25),
+            until18: _0x13a0c(0x26), dDone: _0x13a0c(0x27), dLive: _0x13a0c(0x28), dNext: _0x13a0c(0x29),
+            setLive: _0x13a0c(0x2a), setLater: _0x13a0c(0x2b), setTom: _0x13a0c(0x2c), setDone: _0x13a0c(0x2d),
+            drOpen: _0x13a0c(0x2e), drClosed: _0x13a0c(0x2f), drDone: _0x13a0c(0x30) };
+    var tw = root.querySelector(_0x13a0c(0x31)), T = [];
     if (tw) {
-        [L.d, L.h, L.m, L.s].forEach(function (lab) { var t = document.createElement(_0x9e00b(0x32)); t.className = _0x9e00b(0x33); t.innerHTML = _0x9e00b(0x34) + lab + _0x9e00b(0x35); tw.appendChild(t); T.push(t.firstChild); });
+        [L.d, L.h, L.m, L.s].forEach(function (lab) { var t = document.createElement(_0x13a0c(0x32)); t.className = _0x13a0c(0x33); t.innerHTML = _0x13a0c(0x34) + lab + _0x13a0c(0x35); tw.appendChild(t); T.push(t.firstChild); });
     }
-    function z(v) { return (v < 10 ? _0x9e00b(0x36) : _0x9e00b(0x37)) + v; }
+    function z(v) { return (v < 10 ? _0x13a0c(0x36) : _0x13a0c(0x37)) + v; }
     function setTiles(ms) {
         if (!T.length)
             return;
@@ -43,19 +43,19 @@ function _0x9e00b(i){return _0xacfd4[i]!==undefined?_0xacfd4[i]:(_0xacfd4[i]=dec
         T.forEach(function (b, i) { var x = i ? z(v[i]) : String(v[i]); if (b.textContent !== x) {
             b.textContent = x;
             if (!rm) {
-                b.classList.remove(_0x9e00b(0x38));
+                b.classList.remove(_0x13a0c(0x38));
                 void b.offsetWidth;
-                b.classList.add(_0x9e00b(0x39));
+                b.classList.add(_0x13a0c(0x39));
             }
         } });
     }
-    var chip = root.querySelector(_0x9e00b(0x3a)), chipT = chip && chip.querySelector(_0x9e00b(0x3b)), cap = root.querySelector(_0x9e00b(0x3c));
+    var chip = root.querySelector(_0x13a0c(0x3a)), chipT = chip && chip.querySelector(_0x13a0c(0x3b)), cap = root.querySelector(_0x13a0c(0x3c));
     function setChip(txt, live) { if (!chip)
         return; if (chipT.textContent !== txt)
-        chipT.textContent = txt; chip.classList.toggle(_0x9e00b(0x3d), !!live); chip.classList.toggle(_0x9e00b(0x3e), !live); }
+        chipT.textContent = txt; chip.classList.toggle(_0x13a0c(0x3d), !!live); chip.classList.toggle(_0x13a0c(0x3e), !live); }
     function hideTiles(h) { if (tw)
-        tw.style.display = h ? _0x9e00b(0x3f) : _0x9e00b(0x40); }
-    var GH = [_0x9e00b(0x41), _0x9e00b(0x42), _0x9e00b(0x43)], dayEls = [].slice.call(root.querySelectorAll(_0x9e00b(0x44)));
+        tw.style.display = h ? _0x13a0c(0x3f) : _0x13a0c(0x40); }
+    var GH = [_0x13a0c(0x41), _0x13a0c(0x42), _0x13a0c(0x43)], dayEls = [].slice.call(root.querySelectorAll(_0x13a0c(0x44)));
     function ghTick(n) {
         var cur = -1, nx = -1;
         GH.forEach(function (d, i) { var s = at(d, 840), e = at(d, 1080); if (n >= s && n < e)
@@ -63,11 +63,11 @@ function _0x9e00b(i){return _0xacfd4[i]!==undefined?_0xacfd4[i]:(_0xacfd4[i]=dec
         else if (n < s && nx < 0)
             nx = i; });
         dayEls.forEach(function (el, i) {
-            var s = at(GH[i], 840), e = at(GH[i], 1080), st = n >= e ? _0x9e00b(0x45) : (n >= s ? _0x9e00b(0x46) : _0x9e00b(0x47));
-            el.className = _0x9e00b(0x48) + st;
-            var em = el.querySelector(_0x9e00b(0x49)), bar = el.querySelector(_0x9e00b(0x4a));
-            em.textContent = _0x9e00b(0x4b) + (st === _0x9e00b(0x4c) ? L.dDone : st === _0x9e00b(0x4d) ? L.dLive : L.dNext);
-            bar.style.width = st === _0x9e00b(0x4e) ? ((n - s) / (e - s) * 100).toFixed(2) + _0x9e00b(0x4f) : _0x9e00b(0x50);
+            var s = at(GH[i], 840), e = at(GH[i], 1080), st = n >= e ? _0x13a0c(0x45) : (n >= s ? _0x13a0c(0x46) : _0x13a0c(0x47));
+            el.className = _0x13a0c(0x48) + st;
+            var em = el.querySelector(_0x13a0c(0x49)), bar = el.querySelector(_0x13a0c(0x4a));
+            em.textContent = st === _0x13a0c(0x4b) ? L.dDone : st === _0x13a0c(0x4c) ? L.dLive : L.dNext;
+            bar.style.width = st === _0x13a0c(0x4d) ? ((n - s) / (e - s) * 100).toFixed(2) + _0x13a0c(0x4e) : _0x13a0c(0x4f);
         });
         if (cur >= 0) {
             setChip(L.live, 1);
@@ -79,28 +79,28 @@ function _0x9e00b(i){return _0xacfd4[i]!==undefined?_0xacfd4[i]:(_0xacfd4[i]=dec
             setChip(nx === 0 ? L.up : L.next, 0);
             hideTiles(0);
             setTiles(at(GH[nx], 840) - n);
-            cap && (cap.textContent = cap.getAttribute(_0x9e00b(0x51)).split(_0x9e00b(0x52))[nx]);
+            cap && (cap.textContent = cap.getAttribute(_0x13a0c(0x50)).split(_0x13a0c(0x51))[nx]);
         }
         else {
             setChip(L.done, 0);
             hideTiles(1);
-            cap && (cap.textContent = cap.getAttribute(_0x9e00b(0x53)));
+            cap && (cap.textContent = cap.getAttribute(_0x13a0c(0x52)));
         }
     }
-    var SET0 = at(_0x9e00b(0x54), 660), SET1 = at(_0x9e00b(0x55), 1080), line = root.querySelector(_0x9e00b(0x56));
+    var SET0 = at(_0x13a0c(0x53), 660), SET1 = at(_0x13a0c(0x54), 1080), line = root.querySelector(_0x13a0c(0x55));
     function setTick(n) {
         if (n >= SET1) {
             setChip(L.setDone, 0);
             hideTiles(1);
-            line && (line.style.width = _0x9e00b(0x57));
+            line && (line.style.width = _0x13a0c(0x56));
             return;
         }
         var u = new Date(n + 18e6), m = u.getUTCHours() * 60 + u.getUTCMinutes();
         setChip(n < SET0 ? L.up : (m >= 660 && m < 1080 ? L.setLive : (m < 660 ? L.setLater : L.setTom)), n >= SET0 && m >= 660 && m < 1080);
         setTiles(SET1 - n);
-        line && (line.style.width = Math.max(0, Math.min(100, (n - SET0) / (SET1 - SET0) * 100)).toFixed(2) + _0x9e00b(0x58));
+        line && (line.style.width = Math.max(0, Math.min(100, (n - SET0) / (SET1 - SET0) * 100)).toFixed(2) + _0x13a0c(0x57));
     }
-    var DR0 = at(_0x9e00b(0x59), 0), DR1 = at(_0x9e00b(0x5a), 0), DR2 = at(_0x9e00b(0x5b), 0);
+    var DR0 = at(_0x13a0c(0x58), 0), DR1 = at(_0x13a0c(0x59), 0), DR2 = at(_0x13a0c(0x5a), 0);
     function drTick(n) { if (n < DR0) {
         setChip(L.up, 0);
         setTiles(DR0 - n);
@@ -112,42 +112,20 @@ function _0x9e00b(i){return _0xacfd4[i]!==undefined?_0xacfd4[i]:(_0xacfd4[i]=dec
     else {
         setChip(n < DR2 ? L.drClosed : L.drDone, 0);
         hideTiles(1);
-        cap && (cap.textContent = cap.getAttribute(_0x9e00b(0x5c)));
+        cap && (cap.textContent = cap.getAttribute(_0x13a0c(0x5b)));
     } }
-    function tick() { var n = now(); kind === _0x9e00b(0x5d) ? ghTick(n) : kind === _0x9e00b(0x5e) ? setTick(n) : drTick(n); }
+    function tick() { var n = now(); kind === _0x13a0c(0x5c) ? ghTick(n) : kind === _0x13a0c(0x5d) ? setTick(n) : drTick(n); }
     tick();
     setInterval(tick, 1e3);
-    var rv = [].slice.call(root.querySelectorAll(_0x9e00b(0x5f)));
-    rv.forEach(function (e) { var p = e.parentNode, k = [].indexOf.call(p.children, e); e.style.setProperty(_0x9e00b(0x60), (Math.min(k, 6) * .08) + _0x9e00b(0x61)); });
-    if (rm || !(_0x9e00b(0x62) in window))
-        rv.forEach(function (e) { e.classList.add(_0x9e00b(0x63)); });
+    var rv = [].slice.call(root.querySelectorAll(_0x13a0c(0x5e)));
+    rv.forEach(function (e) { var p = e.parentNode, k = [].indexOf.call(p.children, e); e.style.setProperty(_0x13a0c(0x5f), (Math.min(k, 6) * .15) + _0x13a0c(0x60)); });
+    if (rm || !(_0x13a0c(0x61) in window))
+        rv.forEach(function (e) { e.classList.add(_0x13a0c(0x62)); });
     else {
         var io = new IntersectionObserver(function (en) { en.forEach(function (x) { if (x.isIntersecting) {
             io.unobserve(x.target);
-            x.target.classList.add(_0x9e00b(0x64));
-        } }); }, { rootMargin: _0x9e00b(0x65) });
+            x.target.classList.add(_0x13a0c(0x63));
+        } }); }, { rootMargin: _0x13a0c(0x64) });
         rv.forEach(function (e) { io.observe(e); });
-    }
-    var pr = root.querySelector(_0x9e00b(0x66));
-    if (pr) {
-        var to = +pr.getAttribute(_0x9e00b(0x67));
-        if (rm)
-            pr.firstChild.textContent = to.toLocaleString(_0x9e00b(0x68));
-        else {
-            var t0 = 0;
-            setTimeout(function () { requestAnimationFrame(function f(ts) { t0 = t0 || ts; var p = Math.min(1, (ts - t0) / 1300), e = 1 - Math.pow(1 - p, 3); pr.firstChild.textContent = Math.round(to * e).toLocaleString(_0x9e00b(0x69)); p < 1 && requestAnimationFrame(f); }); }, 1200);
-        }
-    }
-    var sky = root.querySelector(_0x9e00b(0x6a));
-    if (sky && !rm) {
-        for (var i = 0; i < 16; i++) {
-            var d = document.createElement(_0x9e00b(0x6b));
-            d.style.left = (6 + Math.random() * 88) + _0x9e00b(0x6c);
-            d.style.setProperty(_0x9e00b(0x6d), (7 + Math.random() * 7).toFixed(1) + _0x9e00b(0x6e));
-            d.style.setProperty(_0x9e00b(0x6f), (Math.random() * 8).toFixed(1) + _0x9e00b(0x70));
-            var w = (2 + Math.random() * 4).toFixed(1) + _0x9e00b(0x71);
-            d.style.width = d.style.height = w;
-            sky.appendChild(d);
-        }
     }
 }();
