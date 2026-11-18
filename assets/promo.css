@@ -1,0 +1,178 @@
+/* Страницы акций (баннеры): Golden Hours, Акционный сет, Новогодний розыгрыш. У каждой свой дизайн.
+   Анимации: глобальное правило в core.css выключает их всем (1ms) — здесь включаем обратно только при prefers-reduced-motion:no-preference. */
+.pz{position:relative;max-width:none;margin:0;padding:0;font-size:16px;line-height:1.5;overflow-x:clip}
+.pz p{margin:0}
+.pz .pz-in{position:relative;z-index:1;max-width:560px;margin:0 auto;padding:0 22px}
+.pz .pz-sec{padding:0 0 56px}
+.pz .pz-h{margin:0 0 18px;font-size:26px;line-height:1.15;letter-spacing:-.02em;font-weight:500}
+.pz .tiles{display:flex;gap:8px;justify-content:center}
+.pz .tile{flex:0 0 68px;padding:12px 0 9px;border-radius:16px;text-align:center}
+.pz .tile b{display:block;font-size:30px;line-height:1;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.pz .tile i{display:block;margin-top:6px;font-style:normal;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+.pz .chip{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;font-size:13px;letter-spacing:.01em}
+.pz .chip .dot{width:7px;height:7px;border-radius:50%}
+.pz .list{list-style:none;margin:0;padding:0}
+.pz .list li{position:relative;padding:12px 0 12px 22px;font-size:16px;line-height:1.4}
+.pz .list li:before{content:"";position:absolute;left:2px;top:20px;width:7px;height:7px;border-radius:50%}
+html.pz-js .pz .rv{opacity:0}
+.pz .rv.in{animation:pzUp .9s cubic-bezier(.16,1,.3,1) var(--dl,0s) both}
+@keyframes pzUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+@keyframes pzTick{0%{transform:translateY(-35%);opacity:0}100%{transform:none;opacity:1}}
+@keyframes pzPulse{0%{box-shadow:0 0 0 0 currentColor}70%{box-shadow:0 0 0 8px transparent}100%{box-shadow:0 0 0 0 transparent}}
+@keyframes pzMq{to{transform:translateX(-50%)}}
+.pz .tile b.tk{animation:pzTick .45s cubic-bezier(.16,1,.3,1)}
+.pz .chip.live .dot{animation:pzPulse 1.6s infinite}
+
+/* ============ GOLDEN HOURS — закат, золото, лучи, частицы ============ */
+html[data-page=pz-golden],html[data-page=pz-golden] body,html[data-page=pz-golden] .pg-wrap{background:#0d0604}
+html[data-page=pz-golden] .pg-head{background:rgba(13,6,4,.6);border-bottom:1px solid rgba(255,200,120,.1)}
+html[data-page=pz-golden] .pg-title,html[data-page=pz-golden] .pg-back{color:#fff}
+.pz-gh{color:#fff}
+.pz-gh .sky{position:absolute;left:0;right:0;top:0;height:780px;overflow:hidden;pointer-events:none}
+.pz-gh .sun{position:absolute;left:50%;top:330px;width:620px;height:620px;margin-left:-310px;border-radius:50%;background:radial-gradient(circle,rgba(255,190,90,.95) 0,rgba(240,130,40,.55) 22%,rgba(170,60,20,.25) 45%,rgba(13,6,4,0) 68%);animation:ghRise 3.2s cubic-bezier(.16,1,.3,1) both,ghBreath 7s 3.2s ease-in-out infinite alternate}
+.pz-gh .rays{position:absolute;left:50%;top:640px;width:1400px;height:1400px;margin:-700px 0 0 -700px;background:repeating-conic-gradient(from 0deg,rgba(255,200,120,.09) 0deg 4deg,rgba(255,200,120,0) 4deg 16deg);-webkit-mask-image:radial-gradient(circle,#000 0,rgba(0,0,0,.6) 30%,transparent 62%);mask-image:radial-gradient(circle,#000 0,rgba(0,0,0,.6) 30%,transparent 62%);animation:ghSpin 90s linear infinite}
+.pz-gh .sky i{position:absolute;bottom:0;width:4px;height:4px;border-radius:50%;background:#ffd58a;box-shadow:0 0 10px #ffb347;opacity:0;animation:ghFloat var(--d,9s) linear var(--dl,0s) infinite}
+@keyframes ghRise{from{transform:translateY(160px) scale(.7);opacity:0}to{transform:none;opacity:1}}
+@keyframes ghBreath{to{transform:scale(1.08)}}
+@keyframes ghSpin{to{transform:rotate(360deg)}}
+@keyframes ghFloat{0%{transform:translateY(0);opacity:0}15%{opacity:.9}100%{transform:translateY(-640px);opacity:0}}
+@keyframes ghShine{to{background-position:-200% 0}}
+.pz-gh .hero{position:relative;z-index:1;min-height:calc(100vh - 140px);min-height:calc(100svh - 140px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:36px 22px 40px}
+.pz-gh .eb{font-size:12px;letter-spacing:.26em;text-transform:uppercase;color:#ffcf86}
+.pz-gh h1{margin:14px 0 10px;font-size:clamp(52px,15vw,96px);line-height:.95;letter-spacing:-.045em;font-weight:500;background:linear-gradient(100deg,#fff6e0 0%,#ffd27a 30%,#fff 45%,#e8a542 60%,#fff6e0 100%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;animation:pzUp 1.2s .3s cubic-bezier(.16,1,.3,1) both,ghShine 5s 1.5s linear infinite}
+.pz-gh .sub{font-size:22px;color:#fff;letter-spacing:-.01em}
+.pz-gh .chip{margin:26px 0 18px;background:rgba(255,200,120,.12);color:#ffd99c;box-shadow:inset 0 0 0 1px rgba(255,200,120,.28)}
+.pz-gh .chip .dot{background:#ffc46b;color:rgba(255,196,107,.7)}
+.pz-gh .tile{background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,210,140,.18)}
+.pz-gh .tile b{color:#fff}
+.pz-gh .tile i{color:rgba(255,220,170,.6)}
+.pz-gh .when{margin-top:14px;font-size:14px;color:rgba(255,230,190,.7)}
+.pz-gh .pz-h{color:#fff}
+.pz-gh .days{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.pz-gh .day{position:relative;padding:16px 12px 14px;border-radius:20px;background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,210,140,.14);overflow:hidden}
+.pz-gh .day b{display:block;font-size:38px;line-height:1;font-weight:500;letter-spacing:-.03em;color:#fff}
+.pz-gh .day span{display:block;margin-top:4px;font-size:13px;color:rgba(255,230,190,.7)}
+.pz-gh .day em{display:block;margin-top:12px;font-style:normal;font-size:12px;color:rgba(255,230,190,.55)}
+.pz-gh .day.live{background:linear-gradient(160deg,rgba(255,190,90,.28),rgba(255,140,40,.08));box-shadow:inset 0 0 0 1px rgba(255,200,120,.6),0 10px 40px rgba(255,150,50,.25)}
+.pz-gh .day.live em{color:#ffd99c}
+.pz-gh .day.done{opacity:.45}
+.pz-gh .day .bar{position:absolute;left:0;bottom:0;height:3px;width:0;background:linear-gradient(90deg,#ffcf86,#ff9d3c)}
+.pz-gh .mqw{overflow:hidden;margin:0 0 56px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
+.pz-gh .mq{display:flex;gap:12px;width:max-content;animation:pzMq 40s linear infinite}
+.pz-gh .mq img{width:200px;height:134px;object-fit:cover;border-radius:18px;flex:none}
+.pz-gh .where{display:flex;flex-wrap:wrap;gap:8px}
+.pz-gh .where span{padding:10px 16px;border-radius:999px;background:rgba(255,255,255,.07);box-shadow:inset 0 0 0 1px rgba(255,210,140,.2);font-size:15px}
+.pz-gh .where+p{margin-top:12px;font-size:14px;color:rgba(255,230,190,.65)}
+.pz-gh .list li{border-top:1px solid rgba(255,210,140,.12);color:rgba(255,255,255,.88)}
+.pz-gh .list li:before{background:#ffc46b;box-shadow:0 0 10px rgba(255,180,80,.8)}
+.pz-gh .lore{padding:24px;border-radius:24px;background:linear-gradient(160deg,rgba(255,180,80,.14),rgba(255,180,80,.02));box-shadow:inset 0 0 0 1px rgba(255,210,140,.16);font-size:16px;line-height:1.5;color:rgba(255,240,215,.85)}
+.pz-gh .lore b{display:block;margin-bottom:8px;font-weight:500;color:#ffd99c;font-size:13px;letter-spacing:.18em;text-transform:uppercase}
+
+/* ============ АКЦИОННЫЙ СЕТ — светлый, кремовый, «уравнение» ============ */
+html[data-page=pz-set],html[data-page=pz-set] body,html[data-page=pz-set] .pg-wrap{background:#f6efe4}
+html[data-page=pz-set] .pg-head{background:rgba(246,239,228,.85);border-bottom:1px solid rgba(122,17,40,.08)}
+.pz-set{color:#2a1015}
+.pz-set .hero{padding:44px 0 40px;text-align:center}
+.pz-set .eb{display:inline-flex;align-items:center;gap:10px;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:#7a1128}
+.pz-set .new{padding:3px 9px;border-radius:7px;background:#d4ff3a;color:#1d1d1f;font-size:12px;letter-spacing:.06em;animation:stBob 2.4s ease-in-out infinite}
+@keyframes stBob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-4px) rotate(4deg)}}
+.pz-set .eq{display:flex;align-items:center;justify-content:center;gap:6px;margin:30px 0 8px}
+.pz-set .ball{width:94px;height:94px;border-radius:50%;background-repeat:no-repeat;box-shadow:0 10px 30px rgba(122,17,40,.18),inset 0 0 0 3px #fff;animation:stPop .8s cubic-bezier(.34,1.56,.64,1) var(--dl,0s) both}
+.pz-set .op{font-size:28px;color:#7a1128;animation:stPop .6s cubic-bezier(.34,1.56,.64,1) var(--dl,0s) both}
+@keyframes stPop{from{transform:scale(.3);opacity:0}to{transform:none;opacity:1}}
+.pz-set .lbls{display:flex;justify-content:center;gap:38px;font-size:13px;color:#8a6a6f}
+.pz-set .price{margin:26px 0 6px;font-size:clamp(64px,19vw,104px);line-height:1;letter-spacing:-.05em;font-weight:500;color:#7a1128;font-variant-numeric:tabular-nums;animation:pzUp 1s 1.2s cubic-bezier(.16,1,.3,1) both}
+.pz-set .price small{font-size:.45em;letter-spacing:0;margin-left:4px}
+.pz-set .sub{font-size:17px;color:#5a3a3f}
+.pz-set .cdw{padding:22px;border-radius:26px;background:#fff;box-shadow:0 14px 40px rgba(122,17,40,.08);text-align:center}
+.pz-set .chip{margin-bottom:14px;background:#fbeaec;color:#7a1128}
+.pz-set .chip .dot{background:#7a1128;color:rgba(122,17,40,.5)}
+.pz-set .tile{background:#f6efe4}
+.pz-set .tile b{color:#7a1128}
+.pz-set .tile i{color:#a48a8e}
+.pz-set .line{position:relative;height:4px;margin:18px 4px 6px;border-radius:2px;background:#f0e2d6;overflow:hidden}
+.pz-set .line i{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:2px;background:linear-gradient(90deg,#d4ff3a,#7a1128)}
+.pz-set .ends{display:flex;justify-content:space-between;font-size:12px;color:#a48a8e}
+.pz-set .rec{position:relative;padding:22px 22px 26px;background:#fff;border-radius:18px 18px 4px 4px;box-shadow:0 14px 40px rgba(122,17,40,.08)}
+.pz-set .rec:after{content:"";position:absolute;left:0;right:0;bottom:-10px;height:12px;background:radial-gradient(circle at 8px -2px,transparent 8px,#fff 8.5px) 0 0/16px 12px repeat-x}
+.pz-set .row{display:flex;align-items:baseline;gap:8px;padding:10px 0;font-size:16px}
+.pz-set .row span:first-child{flex:0 1 auto}
+.pz-set .row .dots{flex:1;border-bottom:2px dotted #e3d3c6;transform:translateY(-4px)}
+.pz-set .row b{font-weight:500;color:#7a1128;white-space:nowrap}
+.pz-set .tot{display:flex;justify-content:space-between;margin-top:8px;padding-top:14px;border-top:2px dashed #e3d3c6;font-size:20px;color:#7a1128}
+.pz-set .info{display:grid;gap:10px}
+.pz-set .inf{display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:18px;background:#fff}
+.pz-set .inf svg{flex:none;color:#7a1128}
+.pz-set .inf p{font-size:16px}
+.pz-set .inf p span{display:block;font-size:13px;color:#8a6a6f}
+.pz-set .stamp{display:inline-block;margin:22px auto 0;padding:12px 20px;border:2px solid #7a1128;border-radius:12px;color:#7a1128;font-size:14px;letter-spacing:.06em;text-transform:uppercase;transform:rotate(-4deg)}
+.pz-set .stamp.in{animation:stStamp .7s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes stStamp{from{transform:rotate(-14deg) scale(1.8);opacity:0}to{transform:rotate(-4deg) scale(1);opacity:1}}
+
+/* ============ РОЗЫГРЫШ iPhone — чёрный, бордо, чек печатается ============ */
+html[data-page=pz-draw],html[data-page=pz-draw] body,html[data-page=pz-draw] .pg-wrap{background:#050203}
+html[data-page=pz-draw] .pg-head{background:rgba(5,2,3,.65);border-bottom:1px solid rgba(255,255,255,.06)}
+html[data-page=pz-draw] .pg-title,html[data-page=pz-draw] .pg-back{color:#fff}
+.pz-dr{color:#f5f5f7}
+.pz-dr .hero{position:relative;height:calc(100vh - 150px);height:calc(100svh - 150px);max-height:760px;min-height:500px;overflow:hidden}
+.pz-dr .ph{position:absolute;inset:0;background:#2a0710 url(../img/promo-iphone.5c1a4004.webp) 88% 50%/auto 120% no-repeat;animation:drZoom 14s ease-out both}
+.pz-dr .ph:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,2,3,.2) 0,rgba(5,2,3,.1) 30%,rgba(5,2,3,.85) 72%,#050203 100%)}
+.pz-dr .sweep{position:absolute;inset:-20%;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.14) 50%,transparent 60%);animation:drSweep 5.5s 1s ease-in-out infinite}
+@keyframes drZoom{from{transform:scale(1.18)}to{transform:none}}
+@keyframes drSweep{0%{transform:translateX(-60%)}60%,100%{transform:translateX(60%)}}
+.pz-dr .ht{position:absolute;left:0;right:0;bottom:24px;padding:0 22px;text-align:center}
+.pz-dr .eb{font-size:12px;letter-spacing:.26em;text-transform:uppercase;color:#ff8fa8}
+.pz-dr h1{margin:12px 0 8px;font-size:clamp(46px,13vw,84px);line-height:1;letter-spacing:-.04em;font-weight:500;background:linear-gradient(180deg,#fff 30%,#e7a3b3);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;animation:pzUp 1.1s .4s cubic-bezier(.16,1,.3,1) both}
+.pz-dr .sub{font-size:19px;color:rgba(255,255,255,.85)}
+.pz-dr .txt{margin-top:10px;font-size:15px;color:rgba(255,255,255,.55)}
+.pz-dr .cdw{text-align:center}
+.pz-dr .chip{margin-bottom:16px;background:rgba(52,199,89,.12);color:#7ee29a}
+.pz-dr .chip .dot{background:#34c759;color:rgba(52,199,89,.6)}
+.pz-dr .chip.off{background:rgba(255,255,255,.08);color:rgba(255,255,255,.7)}
+.pz-dr .chip.off .dot{background:rgba(255,255,255,.5)}
+.pz-dr .tile{background:#0f0a0b;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.pz-dr .tile b{color:#fff;font-family:"SF Mono",ui-monospace,Menlo,monospace;font-size:28px}
+.pz-dr .tile i{color:rgba(255,255,255,.4)}
+.pz-dr .cap{margin-top:12px;font-size:13px;color:rgba(255,255,255,.45)}
+.pz-dr .pz-h{color:#fff}
+.pz-dr .how{display:grid;grid-template-columns:120px 1fr;gap:20px;align-items:start}
+.pz-dr .slot{position:relative;height:250px;overflow:hidden}
+.pz-dr .slot:before{content:"";position:absolute;left:4px;right:4px;top:0;height:8px;border-radius:4px;background:#1c1416;z-index:2;box-shadow:0 2px 0 #2c2124}
+.pz-dr .paper{position:absolute;left:12px;right:12px;top:4px;height:236px;transform:translateY(-100%)}
+.pz-dr .slot.in .paper{animation:drPrint 2.6s steps(26) .2s forwards}
+@keyframes drPrint{to{transform:none}}
+.pz-dr .paper svg{display:block;width:100%;height:100%}
+.pz-dr ol{list-style:none;margin:0;padding:0;counter-reset:s}
+.pz-dr ol li{position:relative;padding:0 0 18px 40px;font-size:16px;line-height:1.4;counter-increment:s}
+.pz-dr ol li:before{content:counter(s);position:absolute;left:0;top:-2px;width:28px;height:28px;border-radius:50%;background:rgba(255,143,168,.14);color:#ff8fa8;font-size:14px;line-height:28px;text-align:center}
+.pz-dr .more{margin-top:6px;padding:18px 20px;border-radius:18px;background:linear-gradient(120deg,rgba(255,143,168,.16),rgba(255,143,168,.03));font-size:20px;line-height:1.25;letter-spacing:-.01em}
+.pz-dr .more span{display:block;margin-top:6px;font-size:14px;color:rgba(255,255,255,.55)}
+.pz-dr .prz{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pz-dr .pr{padding:18px 16px;border-radius:20px;background:#0f0a0b;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);font-size:15px;line-height:1.35}
+.pz-dr .pr i{display:block;margin-bottom:10px;font-style:normal;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.pz-dr .pr.wide{grid-column:1/-1}.pz-dr .pr.main{grid-column:1/-1;padding:22px 20px;background:linear-gradient(130deg,#3a0b18,#120608);box-shadow:inset 0 0 0 1px rgba(255,143,168,.3)}
+.pz-dr .pr.main b{display:block;font-size:26px;font-weight:500;letter-spacing:-.02em}
+.pz-dr .list li{border-top:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.85)}
+.pz-dr .list li:before{background:#ff8fa8}
+.pz-dr .rest{padding:18px 0 0;font-size:14px;color:rgba(255,255,255,.45);text-align:center}
+
+@media (prefers-reduced-motion:no-preference){
+.pz .rv.in{animation-duration:.9s!important;animation-delay:var(--dl,0s)!important}
+.pz .tile b.tk{animation-duration:.45s!important}
+.pz .chip.live .dot{animation-duration:1.6s!important}
+.pz-gh .sun{animation-duration:3.2s,7s!important;animation-delay:0s,3.2s!important}
+.pz-gh .rays{animation-duration:90s!important}
+.pz-gh .sky i{animation-duration:var(--d,9s)!important;animation-delay:var(--dl,0s)!important}
+.pz-gh h1{animation-duration:1.2s,5s!important;animation-delay:.3s,1.5s!important}
+.pz-gh .mq{animation-duration:40s!important}
+.pz-set .new{animation-duration:2.4s!important}
+.pz-set .ball,.pz-set .op{animation-duration:.8s!important;animation-delay:var(--dl,0s)!important}
+.pz-set .price{animation-duration:1s!important;animation-delay:1.2s!important}
+.pz-set .stamp.in{animation-duration:.7s!important}
+.pz-dr .ph{animation-duration:14s!important}
+.pz-dr .sweep{animation-duration:5.5s!important;animation-delay:1s!important}
+.pz-dr h1{animation-duration:1.1s!important;animation-delay:.4s!important}
+.pz-dr .slot.in .paper{animation-duration:2.6s!important;animation-delay:.2s!important}
+}
+@media (prefers-reduced-motion:reduce){.pz-dr .paper{transform:none}.pz-gh .sky i{display:none}}
+@media (min-width:700px){.pz .tile{flex-basis:84px}.pz-gh .mq img{width:260px;height:174px}}
