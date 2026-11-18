@@ -7,8 +7,8 @@
  ["nz",1805569200000,1805828400000,"#c8102e","#fff",kk?"Наурыз құтты болсын! Ұлыс оң болсын!":"С праздником Наурыз! Наурыз құтты болсын!"]],
  m=/[?&]bar=(\w+)/.exec(q),n=Date.now(),p=null;if(/[?&]paint=1/.test(q))return;
 P.forEach(function(x){if(m?m[1]===x[0]:n>=x[1]&&n<x[2])p=x});if(!p)return;
-var b=document.createElement("div");b.className="ann";b.id="annBar";b.setAttribute("role","note");b.style.cssText="background:"+p[3]+";color:"+p[4]+";font-weight:600;white-space:normal;text-align:center;line-height:1.25";
-b.textContent=p[5];document.currentScript.parentNode.insertBefore(b,document.currentScript);
+var b=document.createElement("div");b.className="ann";b.id="annBar";b.setAttribute("role","note");b.style.cssText="background:"+p[3]+";color:"+p[4]+";font-weight:500;white-space:normal;text-align:center;line-height:1.25";
+b.textContent=p[5];var sh=document.getElementById("appShell");if(!sh)return;sh.insertBefore(b,sh.firstChild);
 var h=b.offsetHeight;document.documentElement.style.setProperty("--bar-h",h+"px");var a=document.getElementById("appShell");a&&(a.style.paddingTop=h+"px")}();;
 /* Новогоднее поздравление. 31.12.2026 10:00 – 31.12 23:59 (Уральск): «С наступающим»; 01.01.2027 00:00 – 02.01 23:59: «С Новым годом».
 Одно тёплое поздравление для всех: без имён и без числа заказов. Показывается при каждом заходе, один тёплый текст для всех. Проверка: ?ny=pre / ?ny=new */
@@ -34,9 +34,9 @@ function go(){var t1=pk(VV,"st_nyv");
  "@keyframes nyGold{0%,100%{background-position:100% 0}50%{background-position:0 0}}"+
  ".ny-sp{position:absolute;color:#f6dc8c;font-size:12px;animation:nyTw 1.8s ease-in-out infinite}"+
  ".ny-l{width:40px;height:1px;background:linear-gradient(90deg,transparent,#e9c46a,transparent);margin:14px auto 14px}"+
- ".ny-h{position:relative;font-size:19px;font-weight:700;letter-spacing:-.01em;line-height:1.3}.ny-t{position:relative;margin-top:10px;font-size:14px;line-height:1.5;color:rgba(255,255,255,.82)}"+
+ ".ny-h{position:relative;font-size:19px;font-weight:500;letter-spacing:-.01em;line-height:1.3}.ny-t{position:relative;margin-top:10px;font-size:14px;line-height:1.5;color:rgba(255,255,255,.82)}"+
  ".ny-s{position:relative;margin-top:14px;font-size:12px;color:#e9c46a;letter-spacing:.04em}"+
- ".ny-b{position:relative;width:100%;margin-top:20px;padding:14px 0;border:0;border-radius:12px;background:linear-gradient(180deg,#f3d27e,#d9ae4f);color:#3a0814;font:700 16px/1 inherit;font-family:inherit;cursor:pointer;box-shadow:0 6px 18px rgba(217,174,79,.35)}"+
+ ".ny-b{position:relative;width:100%;margin-top:20px;padding:14px 0;border:0;border-radius:12px;background:linear-gradient(180deg,#f3d27e,#d9ae4f);color:#3a0814;font:500 16px/1 inherit;font-family:inherit;cursor:pointer;box-shadow:0 6px 18px rgba(217,174,79,.35)}"+
  "@media (prefers-reduced-motion:no-preference){.ny-ov{transition-duration:.35s!important}.ny-c{transition-duration:.4s!important}.ny-y{animation-duration:4s!important}.ny-gl b,.ny-sp{animation-duration:var(--d)!important;animation-delay:var(--dl)!important}.ny-in i{animation-duration:var(--d)!important;animation-delay:var(--dl)!important}}"+
  "@media (prefers-reduced-motion:reduce){.ny-in{display:none}}";
  document.head.appendChild(st);
@@ -68,11 +68,11 @@ function go(){ var st=document.createElement("style");st.textContent=
  ".nd-ov.on .nd-c{transform:none}.nd-c:before{content:'';position:absolute;right:-60px;top:-60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(255,215,90,.35),rgba(255,215,90,0) 70%);pointer-events:none}"+
  ".nd-g{background:linear-gradient(100deg,#b8892a 0%,#f5d77a 40%,#fff2c2 50%,#f5d77a 60%,#b8892a 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:#f5d77a;animation:ndGold 5s ease-in-out infinite}"+
  "@keyframes ndGold{0%,100%{background-position:100% 0}50%{background-position:0 0}}"+
- ".nd-d{font-size:76px;font-weight:700;line-height:.95;letter-spacing:-.03em}.nd-m{margin-top:2px;font-size:13px;font-weight:600;letter-spacing:.22em;text-transform:uppercase}"+
+ ".nd-d{font-size:76px;font-weight:500;line-height:.95;letter-spacing:-.03em}.nd-m{margin-top:2px;font-size:13px;font-weight:500;letter-spacing:.22em;text-transform:uppercase}"+
  ".nd-o{margin:14px auto 14px;height:10px;width:150px;background:radial-gradient(circle,#f5d77a 0 2px,transparent 2.5px) 0 50%/15px 10px repeat-x;opacity:.9}"+
- ".nd-h{font-size:19px;font-weight:700;letter-spacing:-.01em;line-height:1.3}.nd-s{margin-top:4px;font-size:12px;opacity:.85;letter-spacing:.04em}"+
+ ".nd-h{font-size:19px;font-weight:500;letter-spacing:-.01em;line-height:1.3}.nd-s{margin-top:4px;font-size:12px;opacity:.85;letter-spacing:.04em}"+
  ".nd-t{margin-top:12px;font-size:14px;line-height:1.5;color:rgba(255,255,255,.95)}.nd-sig{margin-top:14px;font-size:12px;opacity:.75}"+
- ".nd-b{width:100%;margin-top:20px;padding:14px 0;border:0;border-radius:12px;background:#f5d77a;color:#05414f;font:700 16px/1 inherit;font-family:inherit;cursor:pointer}"+
+ ".nd-b{width:100%;margin-top:20px;padding:14px 0;border:0;border-radius:12px;background:#f5d77a;color:#05414f;font:500 16px/1 inherit;font-family:inherit;cursor:pointer}"+
  "@media (prefers-reduced-motion:no-preference){.nd-ov{transition-duration:.3s!important}.nd-c{transition-duration:.35s!important}.nd-g{animation-duration:5s!important}}";
  document.head.appendChild(st);
  var ov=document.createElement("div");ov.className="nd-ov";ov.setAttribute("role","dialog");
@@ -95,9 +95,9 @@ function go(){ var st=document.createElement("style");st.textContent=
  ".nz-ov{position:fixed;inset:0;z-index:10060;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(20,30,15,.5);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);opacity:0;transition:opacity .3s}"+
  ".nz-ov.on{opacity:1}.nz-c{position:relative;overflow:hidden;width:100%;max-width:330px;border-radius:20px;padding:28px 24px 0;text-align:center;background:linear-gradient(#fff 0%,#fff 60%,#f1f8e9 100%);box-shadow:0 20px 60px rgba(0,0,0,.3);transform:translateY(10px);transition:transform .35s ease}"+
  ".nz-ov.on .nz-c{transform:none}.nz-sh{display:flex;justify-content:center;animation:nzSpin 40s linear infinite}@keyframes nzSpin{to{transform:rotate(360deg)}}"+
- ".nz-h{margin-top:14px;font-size:22px;font-weight:700;letter-spacing:-.01em;line-height:1.25;color:#c8102e}.nz-s{margin-top:4px;font-size:12px;letter-spacing:.06em;color:#a8832f;font-weight:600}"+
+ ".nz-h{margin-top:14px;font-size:22px;font-weight:500;letter-spacing:-.01em;line-height:1.25;color:#c8102e}.nz-s{margin-top:4px;font-size:12px;letter-spacing:.06em;color:#a8832f;font-weight:500}"+
  ".nz-t{margin-top:12px;font-size:14px;line-height:1.5;color:#3a3a3c}.nz-sig{margin-top:12px;font-size:12px;color:#86868b}"+
- ".nz-b{position:relative;z-index:1;width:100%;margin-top:18px;padding:14px 0;border:0;border-radius:12px;background:#c8102e;color:#fff;font:600 16px/1 inherit;font-family:inherit;cursor:pointer}"+
+ ".nz-b{position:relative;z-index:1;width:100%;margin-top:18px;padding:14px 0;border:0;border-radius:12px;background:#c8102e;color:#fff;font:500 16px/1 inherit;font-family:inherit;cursor:pointer}"+
  ".nz-hl{display:block;margin:4px -24px 0;line-height:0}"+
  "@media (prefers-reduced-motion:no-preference){.nz-ov{transition-duration:.3s!important}.nz-c{transition-duration:.35s!important}.nz-sh{animation-duration:40s!important}}";
  document.head.appendChild(st);
