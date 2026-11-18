@@ -9,7 +9,7 @@ function updateSearchTop(){var e=document.querySelector("nav"),t2=document.getEl
  <div class="item-img-wrap">
  <div class="item-img">${i}</div>
  ${e.teaser?'<div class="teaser-lbl">'+t("teaser_soon")+"</div>":o?`<div class="item-badge" data-type="${d}">${trn(e.badge)}</div>`:""}
- ${c?"<div style=\"position:absolute;top:8px;left:8px;background:rgba(122,17,40,.78);color:#fff;font-size:0.6rem;font-weight:600;padding:5px 10px;border-radius:10px;white-space:nowrap;z-index:2\">қалды: <span id=\"tptimer-"+e.id+'" style="font-variant-numeric:tabular-nums">'+fmtCountdownHMS(e.tempUntil)+"</span></div>":""}
+ ${c?"<div style=\"position:absolute;top:8px;left:8px;background:rgba(122,17,40,.78);color:#fff;font-size:0.6rem;font-weight:500;padding:5px 10px;border-radius:10px;white-space:nowrap;z-index:2\">қалды: <span id=\"tptimer-"+e.id+'" style="font-variant-numeric:tabular-nums">'+fmtCountdownHMS(e.tempUntil)+"</span></div>":""}
  </div>
  <div class="item-body">
  <div class="item-name">${trn(e.name)}</div>

@@ -1,7 +1,8 @@
 # Зеркало фото блюд на GitHub Pages.
 # Фото в таблице — ссылки на Google Drive. Drive отдаёт их медленно (лишняя переадресация,
 # 0,4–0,7 с на фото) и режет, когда гость открывает меню и браузер просит десятки фото сразу.
-# Скрипт кладёт копии рядом с сайтом: img/m/<id Drive>-400.jpg (карточки) и -800.jpg (окно блюда).
+# Скрипт кладёт копии рядом с сайтом: img/m/<id Drive>-400.webp (карточки) и -800.webp (окно блюда),
+# плюс .jpg той же картинки — запасной вариант для очень старых телефонов без WebP.
 # Сайт берёт фото отсюда, а если копии ещё нет (новое фото, прошло <10 мин) — по-старому с Drive.
 # python3 .github/mirror_photos.py menu/samal.json img/m
 import io, json, os, re, sys, time, urllib.request
@@ -39,15 +40,32 @@ def save(data, fid):
         if x.width > w:
             x = x.resize((w, round(x.height * w / x.width)), Image.LANCZOS)
         x.save(os.path.join(OUT, "%s-%d.jpg" % (fid, w)), "JPEG", quality=80, optimize=True, progressive=True)
+        x.save(os.path.join(OUT, "%s-%d.webp" % (fid, w)), "WEBP", quality=74, method=6)
+
+
+def webp_from_jpg(fid):
+    # уже скачанное фото без WebP-копии: делаем её из своего же JPEG, без запроса к Drive
+    src = os.path.join(OUT, "%s-800.jpg" % fid)
+    if not os.path.exists(src):
+        return False
+    im = Image.open(src).convert("RGB")
+    for w in SIZES:
+        x = im.copy()
+        if x.width > w:
+            x = x.resize((w, round(x.height * w / x.width)), Image.LANCZOS)
+        x.save(os.path.join(OUT, "%s-%d.webp" % (fid, w)), "WEBP", quality=74, method=6)
+    return True
 
 
 def main():
     os.makedirs(OUT, exist_ok=True)
     ids = drive_ids(json.load(open(SNAP, encoding="utf8")))
-    have = {f.rsplit("-", 1)[0] for f in os.listdir(OUT) if f.endswith(".jpg")}
+    have = {f.rsplit("-", 1)[0] for f in os.listdir(OUT) if f.endswith((".jpg", ".webp"))}
     new, bad = 0, 0
     for fid in ids:
         if all(os.path.exists(os.path.join(OUT, "%s-%d.jpg" % (fid, w))) for w in SIZES):
+            if not all(os.path.exists(os.path.join(OUT, "%s-%d.webp" % (fid, w))) for w in SIZES):
+                webp_from_jpg(fid)
             continue
         for attempt in range(3):
             try:
@@ -64,9 +82,10 @@ def main():
     gone = have - set(ids)
     for fid in gone:
         for w in SIZES:
-            p = os.path.join(OUT, "%s-%d.jpg" % (fid, w))
-            if os.path.exists(p):
-                os.remove(p)
+            for ext in ("jpg", "webp"):
+                p = os.path.join(OUT, "%s-%d.%s" % (fid, w, ext))
+                if os.path.exists(p):
+                    os.remove(p)
     print("фото в меню: %d · скачано новых: %d · не скачано: %d · убрано старых: %d" % (len(ids), new, bad, len(gone)))
 
 
