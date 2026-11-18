@@ -9,7 +9,7 @@
 P.forEach(function(x){if(m?m[1]===x[0]:n>=x[1]&&n<x[2])p=x});if(!p)p=["info",0,0,"#e8eef5","#3d4b5c","Барлық филиалда ас үй жабылардан 30 минут бұрын жабылады — мейрамхана жұмысын жалғастырады"];
 var b=document.createElement("div");b.className="ann";b.id="annBar";b.setAttribute("role","note");b.style.cssText="background:"+p[3]+";color:"+p[4]+";font-weight:400;white-space:normal;text-align:center;line-height:1.3;height:auto;min-height:36px;padding:8px 18px;font-size:.72rem";
 b.textContent=p[5];var sh=document.getElementById("appShell");if(!sh)return;sh.insertBefore(b,sh.firstChild);
-var h=b.offsetHeight;document.documentElement.style.setProperty("--bar-h",h+"px");var a=document.getElementById("appShell");a&&(a.style.paddingTop=h+"px")}();;
+/* высота полосы сверху: шапка и распорка под ней (navSpacer) сдвигаются через --bar-h; отступ у #appShell не нужен — иначе место учитывается дважды */function sz(){document.documentElement.style.setProperty("--bar-h",b.offsetHeight+"px");try{typeof updateSearchTop=="function"&&updateSearchTop()}catch(x){}}sz();addEventListener("resize",sz)}();;
 /* Новогоднее поздравление. 31.12.2026 10:00 – 31.12 23:59 (Уральск): «С наступающим»; 01.01.2027 00:00 – 02.01 23:59: «С Новым годом».
 Одно тёплое поздравление для всех: без имён и без числа заказов. Показывается при каждом заходе, один тёплый текст для всех. Проверка: ?ny=pre / ?ny=new */
 !function(){var A=1798693200000,B=1798743600000,C=1798916400000,kk=document.documentElement.lang==="kk",q=location.search;
