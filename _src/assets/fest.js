@@ -6,8 +6,8 @@
  ["new",1798743600000,1799348400000,"#5a0c1f","#f3d27e",kk?"✦ Жаңа жылыңызбен! Бізбен бірге болғаныңыз үшін рахмет ✦":"✦ С Новым годом! Спасибо, что вы с нами ✦"],
  ["nz",1805569200000,1805828400000,"#c8102e","#fff",kk?"Наурыз құтты болсын! Ұлыс оң болсын!":"С праздником Наурыз! Наурыз құтты болсын!"]],
  m=/[?&]bar=(\w+)/.exec(q),n=Date.now(),p=null;if(/[?&]paint=1/.test(q))return;
-P.forEach(function(x){if(m?m[1]===x[0]:n>=x[1]&&n<x[2])p=x});if(!p)return;
-var b=document.createElement("div");b.className="ann";b.id="annBar";b.setAttribute("role","note");b.style.cssText="background:"+p[3]+";color:"+p[4]+";font-weight:500;white-space:normal;text-align:center;line-height:1.25";
+P.forEach(function(x){if(m?m[1]===x[0]:n>=x[1]&&n<x[2])p=x});if(!p)p=["info",0,0,"#e8eef5","#3d4b5c","Кухня во всех филиалах закрывается за 30 минут до закрытия — ресторан продолжает работать"];
+var b=document.createElement("div");b.className="ann";b.id="annBar";b.setAttribute("role","note");b.style.cssText="background:"+p[3]+";color:"+p[4]+";font-weight:400;white-space:normal;text-align:center;line-height:1.3;height:auto;min-height:36px;padding:8px 18px;font-size:.72rem";
 b.textContent=p[5];var sh=document.getElementById("appShell");if(!sh)return;sh.insertBefore(b,sh.firstChild);
 var h=b.offsetHeight;document.documentElement.style.setProperty("--bar-h",h+"px");var a=document.getElementById("appShell");a&&(a.style.paddingTop=h+"px")}();;
 /* Новогоднее поздравление. 31.12.2026 10:00 – 31.12 23:59 (Уральск): «С наступающим»; 01.01.2027 00:00 – 02.01 23:59: «С Новым годом».
