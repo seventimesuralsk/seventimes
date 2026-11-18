@@ -4,7 +4,7 @@
 .pz{position:relative;max-width:none;margin:0;padding:0;font-size:16px;line-height:1.5;overflow-x:clip;letter-spacing:-.005em}
 .pz p{margin:0}
 .pz .pz-in{position:relative;z-index:1;max-width:520px;margin:0 auto;padding:0 28px}
-.pz .pz-sec{padding:0 0 72px}
+.pz .pz-sec{padding:0 0 48px}
 .pz .pz-h{margin:0 0 20px;font-size:13px;line-height:1;font-weight:500;letter-spacing:.18em;text-transform:uppercase}
 .pz .tiles{display:flex;justify-content:center;gap:0}
 .pz .tile{flex:0 0 72px;text-align:center}
@@ -30,12 +30,12 @@ html[data-page=pz-golden],html[data-page=pz-golden] body,html[data-page=pz-golde
 html[data-page=pz-golden] .pg-head{background:rgba(11,7,5,.7);border-bottom:1px solid rgba(214,178,118,.08)}
 html[data-page=pz-golden] .pg-title,html[data-page=pz-golden] .pg-back{color:#efe6d6}
 .pz-gh{--gold:#d6b276;--hl:rgba(214,178,118,.14);color:#efe6d6}
-.pz-gh .glow{position:absolute;left:50%;top:38vh;width:760px;height:760px;margin-left:-380px;border-radius:50%;background:radial-gradient(circle,rgba(214,150,70,.38) 0,rgba(180,110,50,.14) 34%,rgba(11,7,5,0) 66%);pointer-events:none;animation:pzBreath 12s ease-in-out infinite}
-.pz-gh .hero{position:relative;z-index:1;min-height:calc(100vh - 150px);min-height:calc(100svh - 150px);display:flex;flex-direction:column;justify-content:space-between;align-items:center;text-align:center;padding:16vh 28px 48px}
+.pz-gh .glow{position:absolute;left:50%;top:22vh;width:760px;height:760px;margin-left:-380px;border-radius:50%;background:radial-gradient(circle,rgba(214,150,70,.38) 0,rgba(180,110,50,.14) 34%,rgba(11,7,5,0) 66%);pointer-events:none;animation:pzBreath 12s ease-in-out infinite}
+.pz-gh .hero{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;text-align:center;padding:9vh 28px 48px}
 .pz-gh .eb{font-size:12px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold)}
 .pz-gh h1{margin:22px 0 14px;font-size:clamp(50px,14vw,92px);line-height:.95;letter-spacing:-.045em;font-weight:400;background:linear-gradient(180deg,#f6ead2 0%,#d6b276 70%,#b88c4e 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
 .pz-gh .sub{font-size:18px;color:rgba(239,230,214,.8)}
-.pz-gh .cd{display:flex;flex-direction:column;align-items:center;gap:22px}
+.pz-gh .cd{display:flex;flex-direction:column;align-items:center;gap:20px;margin-top:7vh}
 .pz-gh .chip{color:var(--gold)}
 .pz-gh .chip .dot{background:var(--gold)}
 .pz-gh .tile b{color:#f6ead2}
@@ -65,10 +65,10 @@ html[data-page=pz-set],html[data-page=pz-set] body,html[data-page=pz-set] .pg-wr
 html[data-page=pz-set] .pg-head{background:rgba(244,238,229,.85);border-bottom:1px solid rgba(110,20,38,.07)}
 html[data-page=pz-set] .pg-title,html[data-page=pz-set] .pg-back{color:#2b1418}
 .pz-set{--acc:#6e1426;--hl:rgba(110,20,38,.12);color:#2b1418}
-.pz-set .shot{position:relative;height:56vh;max-height:520px;overflow:hidden}
+.pz-set .shot{position:relative;height:34vh;max-height:340px;overflow:hidden}
 .pz-set .shot img{width:100%;height:100%;object-fit:cover;object-position:40% 60%;display:block;animation:pzKen 18s ease-out both}
 .pz-set .shot:after{content:"";position:absolute;left:0;right:0;bottom:0;height:40%;background:linear-gradient(180deg,rgba(244,238,229,0),#f4eee5)}
-.pz-set .hero{margin-top:-28px;padding:0 28px 64px;text-align:center}
+.pz-set .hero{margin-top:-24px;padding:0 28px 40px;text-align:center}
 .pz-set .eb{font-size:12px;letter-spacing:.32em;text-transform:uppercase;color:var(--acc)}
 .pz-set h1{margin:16px 0 10px;font-size:clamp(64px,19vw,104px);line-height:1;letter-spacing:-.05em;font-weight:300;color:var(--acc)}
 .pz-set .sub{font-size:17px;color:rgba(43,20,24,.7)}
@@ -84,22 +84,20 @@ html[data-page=pz-set] .pg-title,html[data-page=pz-set] .pg-back{color:#2b1418}
 .pz-set .row span{color:#2b1418}
 .pz-set .row b{color:rgba(43,20,24,.55)}
 .pz-set .tot{display:flex;justify-content:space-between;padding:18px 0 0;font-size:18px;color:var(--acc)}
-.pz-set .dl .row span:first-child{flex:0 0 96px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:rgba(43,20,24,.45)}
-.pz-set .dl .row span:last-child{text-align:right}
 
 /* ============ РОЗЫГРЫШ — чёрное и розовое золото ============ */
 html[data-page=pz-draw],html[data-page=pz-draw] body,html[data-page=pz-draw] .pg-wrap{background:#060304}
 html[data-page=pz-draw] .pg-head{background:rgba(6,3,4,.7);border-bottom:1px solid rgba(255,255,255,.05)}
 html[data-page=pz-draw] .pg-title,html[data-page=pz-draw] .pg-back{color:#f3eef0}
 .pz-dr{--acc:#e8b4c0;--hl:rgba(255,255,255,.08);color:#f3eef0}
-.pz-dr .hero{position:relative;height:calc(100vh - 150px);height:calc(100svh - 150px);max-height:760px;min-height:500px;overflow:hidden}
+.pz-dr .hero{position:relative;height:50vh;height:50svh;max-height:480px;min-height:360px;overflow:hidden}
 .pz-dr .ph{position:absolute;inset:0;background:#2a0710 url(../img/promo-iphone.5c1a4004.webp) 88% 50%/auto 118% no-repeat;animation:pzKen 20s ease-out both}
 .pz-dr .ph:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,3,4,.15) 0,rgba(6,3,4,.05) 35%,rgba(6,3,4,.88) 76%,#060304 100%)}
 .pz-dr .ht{position:absolute;left:0;right:0;bottom:36px;padding:0 28px;text-align:center}
 .pz-dr .eb{font-size:12px;letter-spacing:.32em;text-transform:uppercase;color:var(--acc)}
 .pz-dr h1{margin:16px 0 10px;font-size:clamp(44px,12.5vw,82px);line-height:1;letter-spacing:-.045em;font-weight:400;color:#fff}
 .pz-dr .sub{font-size:18px;color:rgba(243,238,240,.7)}
-.pz-dr .cd{display:flex;flex-direction:column;align-items:center;gap:22px;padding-top:24px;text-align:center}
+.pz-dr .cd{display:flex;flex-direction:column;align-items:center;gap:20px;padding-top:8px;text-align:center}
 .pz-dr .chip{color:var(--acc)}
 .pz-dr .chip .dot{background:var(--acc)}
 .pz-dr .chip.off{color:rgba(243,238,240,.6)}
@@ -126,3 +124,11 @@ html[data-page=pz-draw] .pg-title,html[data-page=pz-draw] .pg-back{color:#f3eef0
 .pz-dr .ph{animation-duration:20s!important}
 }
 @media (min-width:700px){.pz .tile{flex-basis:96px}.pz .tile b{font-size:52px}}
+
+/* «Когда / Где / Как» — одинаково на всех страницах */
+.pz .dl .row{justify-content:flex-start;align-items:flex-start;gap:16px}
+.pz .dl .row span:first-child{flex:0 0 72px;padding-top:3px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--lab)}
+.pz .dl .row span:last-child{flex:1;text-align:left;font-size:16px;line-height:1.45}
+.pz-gh{--lab:rgba(214,178,118,.7)}.pz-gh .dl .row span:last-child{color:#f6ead2}
+.pz-set{--lab:rgba(110,20,38,.6)}.pz-set .dl .row span:last-child{color:#2b1418}
+.pz-dr{--lab:rgba(232,180,192,.75)}.pz-dr .dl .row span:last-child{color:#f3eef0}
