@@ -132,17 +132,3 @@ html.ap-js .ap-rv.in{opacity:1;transform:none}
 #promoCardsDots{position:relative;z-index:5;width:max-content;margin:-23px auto 10px;padding:4px 7px!important;gap:4px!important;border-radius:999px;background:rgba(0,0,0,.25);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);pointer-events:none}
 #promoCardsDots .promo-dot{width:5px!important;height:5px!important;border-radius:50%!important;background:rgba(255,255,255,.55)!important}
 #promoCardsDots .promo-dot.active{background:#fff!important}
-.pg-body.lg{max-width:680px;padding:28px 22px 64px;font-size:15px;line-height:1.65;color:#1d1d1f}
-.lg h1{margin:0 0 6px!important;font-size:26px!important;font-weight:500!important;line-height:1.2;letter-spacing:-.02em;color:#1d1d1f}
-.lg .lg-sub{margin:0 0 6px!important;font-size:15px;color:#6e6e73!important}
-.lg .lg-ed{margin:0 0 28px!important;font-size:13px;color:#8e8e93!important}
-.lg h2{margin:30px 0 10px!important;font-size:17px!important;font-weight:500!important;color:#1d1d1f}
-.lg p{margin:0 0 10px!important;font-size:15px;color:#3a3a3c!important}
-.lg p.dash{padding-left:14px}
-.lg a{color:#0071e3;text-decoration:none}
-.lg .ph{background:#fff1b8;padding:0 4px;border-radius:4px}
-.lg .lg-rk{margin:4px 0 0;border-top:1px solid #ececf0}
-.lg .lg-rk .r{display:flex;gap:14px;padding:11px 0;border-bottom:1px solid #ececf0}
-.lg .lg-rk i{flex:0 0 118px;font-style:normal;font-size:13px;line-height:1.6;color:#8e8e93}
-.lg .lg-rk b{flex:1;min-width:0;font-weight:400;font-size:15px;color:#1d1d1f;overflow-wrap:anywhere}
-.svc-docs{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;padding:14px var(--px) 4px}.svc-docs a{font-size:.68rem;color:#8e8e93;text-decoration:none}
