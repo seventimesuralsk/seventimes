@@ -118,7 +118,7 @@ catch (e) { } if (h)
   <link href="https://res.cloudinary.com" rel="preconnect"/>
   <link rel="stylesheet" href="../assets/core.css?v=d8b7ddb8"/>
   <script src="assets/kk.js?v=64f91407" defer></script>
-  <script src="assets/core.js?v=d0a8f83c" defer></script>
+  <script src="assets/core.js?v=15ebfb60" defer></script>
   <script src="assets/menu.js?v=99e2d20a" defer></script>
   <script type="speculationrules">{"prefetch":[{"source":"document","where":{"href_matches":"/*"},"eagerness":"moderate"}]}</script>
  </head>
@@ -697,11 +697,12 @@ else
         <input class="oinput" data-i18n-ph="house_ph" id="ohouse" placeholder="Үй"/>
         <div class="ferr" id="ehouse">
         </div>
-        <button type="button" class="o-more" id="oMore" onclick="this.style.display='none';document.getElementById('oMoreF').style.display='grid'">+ Кіреберіс, пәтер, қабат</button><div id="oMoreF" style="grid-template-columns:1fr 1fr 1fr;gap:8px;display:none">
+        <div id="oMoreF" style="grid-template-columns:1fr 1fr 1fr;gap:8px;display:grid">
          <input class="oinput" data-i18n-ph="entrance_ph" id="oentrance" inputmode="numeric" oninput="limitDigits(this,2)" placeholder="Кіреберіс" style="margin-bottom:0"/>
          <input class="oinput" data-i18n-ph="flat_ph" id="oflat" inputmode="numeric" oninput="limitDigits(this,4)" placeholder="Пәтер" style="margin-bottom:0"/>
          <input class="oinput" data-i18n-ph="floor_ph" id="ofloor" inputmode="numeric" oninput="limitDigits(this,3)" placeholder="Қабат" style="margin-bottom:0"/>
         </div>
+        <div class="ferr" id="eapt"></div>
        </div>
       </div>
       <div class="dfield" id="pickupFields">
