@@ -132,3 +132,6 @@ html[data-page=pz-draw] .pg-title,html[data-page=pz-draw] .pg-back{color:#f3eef0
 .pz-gh{--lab:rgba(214,178,118,.7)}.pz-gh .dl .row span:last-child{color:#f6ead2}
 .pz-set{--lab:rgba(110,20,38,.6)}.pz-set .dl .row span:last-child{color:#2b1418}
 .pz-dr{--lab:rgba(232,180,192,.75)}.pz-dr .dl .row span:last-child{color:#f3eef0}
+/* страницы баннеров — во весь экран, без нижнего меню */
+html[data-page=pz-golden] #bottomTabBar,html[data-page=pz-set] #bottomTabBar,html[data-page=pz-draw] #bottomTabBar{display:none!important}
+html[data-page=pz-golden] .pg-wrap,html[data-page=pz-set] .pg-wrap,html[data-page=pz-draw] .pg-wrap{padding-bottom:calc(16px + env(safe-area-inset-bottom))!important}
