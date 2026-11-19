@@ -43,7 +43,7 @@ function setTick(n){if(n>=SET1){setChip(L.setDone,0);hideTiles(1);line&&(line.st
 /* Розыгрыш: чеки 1 ноября – 25 декабря, эфир 26 декабря */
 var DR0=at("2026-11-01",0),DR1=at("2026-12-26",0),DR2=at("2026-12-27",0);
 function drTick(n){if(n<DR0){setChip(L.up,0);setTiles(DR0-n)}else if(n<DR1){setChip(L.drOpen,1);setTiles(DR1-n)}else{setChip(n<DR2?L.drClosed:L.drDone,0);hideTiles(1);cap&&(cap.textContent=cap.getAttribute("data-end"))}}
-function tick(){var n=now();kind==="gh"?ghTick(n):kind==="set"?setTick(n):drTick(n)}
+function tick(){var n=now();if(kind==="gh")ghTick(n);else if(kind==="set")setTick(n);else if(kind==="draw")drTick(n)}
 tick();setInterval(tick,1e3);
 /* появление блоков */
 var rv=[].slice.call(root.querySelectorAll(".rv:not(.day)"));
