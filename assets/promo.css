@@ -161,3 +161,7 @@ html[data-page=pz-dream] .pg-title,html[data-page=pz-dream] .pg-back{color:#1f2a
 .pz-dream .thanks{padding:56px 8px;text-align:center;font-size:22px;line-height:1.4;letter-spacing:-.01em;color:var(--ink)}
 .pz-dream .thanks span{display:block;margin-top:12px;font-size:16px;color:rgba(31,42,55,.6)}
 @media (prefers-reduced-motion:no-preference){.pz-dream .shot img{animation-duration:20s!important}}
+.pz .pz-cta{display:block;padding:16px;border-radius:999px;text-align:center;text-decoration:none;font-size:16px}
+.pz-gh .pz-cta{background:linear-gradient(100deg,#f1d79c,#c9a45c);color:#1a0f05}
+.pz-set .pz-cta{background:#6e1426;color:#fff}
+.pz-dr .pz-cta{background:#e8b4c0;color:#1a0a0e}

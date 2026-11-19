@@ -117,9 +117,9 @@ catch (e) { } if (h)
   <link href="https://script.google.com" rel="preconnect"/>
   <link href="https://script.googleusercontent.com" rel="preconnect"/>
   <link href="https://res.cloudinary.com" rel="preconnect"/>
-  <link rel="stylesheet" href="assets/core.css?v=66da0367"/>
-  <script src="assets/core.js?v=da10472b" defer></script>
-  <script src="assets/menu.js?v=cdaf2f09" defer></script>
+  <link rel="stylesheet" href="assets/core.css?v=d8b7ddb8"/>
+  <script src="assets/core.js?v=7fcdb9ec" defer></script>
+  <script src="assets/menu.js?v=fe588498" defer></script>
   <script type="speculationrules">{"prefetch":[{"source":"document","where":{"href_matches":"/*"},"eagerness":"moderate"}]}</script>
  </head>
  <body>
@@ -128,7 +128,7 @@ catch (e) { } if (h)
    <nav>
     <div style="position:relative">
      <button class="nav-branch-btn" id="navBranchBtn" type="button" aria-haspopup="dialog" onclick="openBranchHeader()" onpointerdown="bookBtnPressStart()" onpointerup="bookBtnPressEnd()" onpointerleave="bookBtnPressEnd()" onpointercancel="bookBtnPressEnd()">
-      <span id="navBranchLabel">Выбор филиала</span>
+      <span class="nav-dot" id="navBrDot"></span><span id="navBranchLabel">Выбор филиала</span>
       <svg fill="none" height="12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" width="12" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
      </button>
      <script>!function(){try{var n={abulhair:"Абулхаир Хана 177",samal:"Самал 70/3",skoro:"Скоробогатова 65/1"}[localStorage.getItem("st_obranch")];n&&(document.getElementById("navBranchLabel").textContent=n)}catch(e){}}()</script>
@@ -697,7 +697,7 @@ else
         <input class="oinput" data-i18n-ph="house_ph" id="ohouse" placeholder="Дом"/>
         <div class="ferr" id="ehouse">
         </div>
-        <div style="grid-template-columns:1fr 1fr 1fr;gap:8px;display:grid">
+        <button type="button" class="o-more" id="oMore" onclick="this.style.display='none';document.getElementById('oMoreF').style.display='grid'">+ Подъезд, квартира, этаж</button><div id="oMoreF" style="grid-template-columns:1fr 1fr 1fr;gap:8px;display:none">
          <input class="oinput" data-i18n-ph="entrance_ph" id="oentrance" inputmode="numeric" oninput="limitDigits(this,2)" placeholder="Подъезд" style="margin-bottom:0"/>
          <input class="oinput" data-i18n-ph="flat_ph" id="oflat" inputmode="numeric" oninput="limitDigits(this,4)" placeholder="Квартира" style="margin-bottom:0"/>
          <input class="oinput" data-i18n-ph="floor_ph" id="ofloor" inputmode="numeric" oninput="limitDigits(this,3)" placeholder="Этаж" style="margin-bottom:0"/>
