@@ -9,7 +9,7 @@ function menu(){if(!menuP)menuP=fetch(pre+"menu/samal.json",{cache:"no-cache"}).
 function countItems(d){var ids={},n=0;Object.keys(d&&d.categories||{}).forEach(function(c){if(/Прибор/.test(c))return;(d.categories[c]||[]).forEach(function(i){var k=String(i&&(i.id||i.name)||"");if(k&&i.name&&!i.teaser&&!ids[k]){ids[k]=1;n++}})});return n}
 function plural(n,f){f=f.split("|");var a=n%10,b=n%100;return f[a===1&&b!==11?0:a>=2&&a<=4&&(b<10||b>=20)?1:2]}
 function setPl(el,n){var w=el.parentNode&&el.parentNode.querySelector("[data-pl]");if(w)w.textContent=plural(n,w.getAttribute("data-pl"))}
-var live=root.querySelector("[data-live]");
+[].forEach.call(root.querySelectorAll("[data-since]"),function(el){var y=new Date(Date.now()+18e6).getUTCFullYear()-parseInt(el.getAttribute("data-since"),10);if(y>0){el.setAttribute("data-count",String(y));el.textContent=String(y);setPl(el,y)}});var live=root.querySelector("[data-live]");
 if(live)menu().then(function(d){var n=countItems(d);if(n>0){live.setAttribute("data-count",String(n));if(live._done||rm){live.textContent=String(n)}setPl(live,n)}});
 function count(el){if(el._c)return;el._c=1;var n=parseInt(el.getAttribute("data-count"),10);if(!n)return;if(rm){el.textContent=n;return}
  var s=null,d=1400;function f(ts){s=s||ts;var p=Math.min(1,(ts-s)/d),e=1-Math.pow(1-p,3),m=parseInt(el.getAttribute("data-count"),10)||n;el.textContent=Math.round(m*e);if(p<1)requestAnimationFrame(f);else{el._done=1;el.textContent=m}}el.textContent="0";requestAnimationFrame(f)}
