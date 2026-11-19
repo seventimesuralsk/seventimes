@@ -91,7 +91,7 @@ html[data-page=pz-draw] .pg-head{background:rgba(6,3,4,.7);border-bottom:1px sol
 html[data-page=pz-draw] .pg-title,html[data-page=pz-draw] .pg-back{color:#f3eef0}
 .pz-dr{--acc:#e8b4c0;--hl:rgba(255,255,255,.08);color:#f3eef0}
 .pz-dr .hero{position:relative;height:50vh;height:50svh;max-height:480px;min-height:360px;overflow:hidden}
-.pz-dr .ph{position:absolute;inset:0;background:#2a0710 url(../img/promo-iphone.5c1a4004.webp) 88% 50%/auto 118% no-repeat;animation:pzKen 20s ease-out both}
+.pz-dr .ph{position:absolute;inset:0;background:#2a0710 url(../img/promo-iphone.7bb11b83.webp) 88% 50%/auto 118% no-repeat;animation:pzKen 20s ease-out both}
 .pz-dr .ph:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,3,4,.15) 0,rgba(6,3,4,.05) 35%,rgba(6,3,4,.88) 76%,#060304 100%)}
 .pz-dr .ht{position:absolute;left:0;right:0;bottom:36px;padding:0 28px;text-align:center}
 .pz-dr .eb{font-size:12px;letter-spacing:.32em;text-transform:uppercase;color:var(--acc)}
