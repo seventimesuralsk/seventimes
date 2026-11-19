@@ -8,6 +8,9 @@
   <url><loc>https://seventimesuralsk.github.io/seventimes/faq/</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://seventimesuralsk.github.io/seventimes/services/</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://seventimesuralsk.github.io/seventimes/projects/</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://seventimesuralsk.github.io/seventimes/golden-hours/</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://seventimesuralsk.github.io/seventimes/set/</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://seventimesuralsk.github.io/seventimes/draw/</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://seventimesuralsk.github.io/seventimes/kk/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>
   <url><loc>https://seventimesuralsk.github.io/seventimes/kk/booking/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://seventimesuralsk.github.io/seventimes/kk/restaurants/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
@@ -16,4 +19,7 @@
   <url><loc>https://seventimesuralsk.github.io/seventimes/kk/faq/</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://seventimesuralsk.github.io/seventimes/kk/services/</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://seventimesuralsk.github.io/seventimes/kk/projects/</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://seventimesuralsk.github.io/seventimes/kk/golden-hours/</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://seventimesuralsk.github.io/seventimes/kk/set/</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://seventimesuralsk.github.io/seventimes/kk/draw/</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
 </urlset>
