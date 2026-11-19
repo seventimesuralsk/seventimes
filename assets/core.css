@@ -132,13 +132,8 @@ html.ap-js .ap-rv.in{opacity:1;transform:none}
 #promoCardsDots{position:relative;z-index:5;width:max-content;margin:-23px auto 10px;padding:4px 7px!important;gap:4px!important;border-radius:999px;background:rgba(0,0,0,.25);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);pointer-events:none}
 #promoCardsDots .promo-dot{width:5px!important;height:5px!important;border-radius:50%!important;background:rgba(255,255,255,.55)!important}
 #promoCardsDots .promo-dot.active{background:#fff!important}
-#ordNote{display:none}
-html.ord-off #ordNote{position:fixed;left:16px;right:16px;bottom:calc(74px + env(safe-area-inset-bottom));z-index:490;display:flex;align-items:center;gap:14px;max-width:560px;margin:0 auto;padding:12px 14px 12px 16px;border-radius:16px;background:rgba(29,29,31,.94);color:#fff;font-size:.8rem;line-height:1.35;box-shadow:0 8px 24px rgba(0,0,0,.16);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
-html.ord-off #ordNote span{flex:1}
-html.ord-off #ordNote button{flex:none;border:1px solid rgba(255,255,255,.35);border-radius:999px;background:none;padding:6px 12px;color:#fff;font:inherit;cursor:pointer}
 html.ord-off .add-btn,html.ord-off .dadd{background:#c7c7cc!important;color:#fff!important;box-shadow:none!important}
 html.ord-off .qty-sm .qty-btn:last-child{color:#c7c7cc!important}
-html.ord-off .scroll-top-btn{bottom:calc(134px + env(safe-area-inset-bottom))}
 /* уведомления — по центру экрана, в оптическом центре (чуть выше середины) */
 .toast{top:44%;bottom:auto!important;left:50%;max-width:min(300px,calc(100vw - 64px));width:max-content;white-space:normal;text-align:center;padding:15px 22px;border-radius:18px;background:rgba(29,29,31,.92);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);font-size:.84rem;line-height:1.4;box-shadow:0 14px 40px rgba(0,0,0,.18);transform:translate(-50%,-50%) scale(.96)}
 .toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
@@ -155,22 +150,8 @@ html.ord-off .scroll-top-btn{bottom:calc(134px + env(safe-area-inset-bottom))}
 @keyframes stnIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
 .cart-br{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 var(--px,16px) 6px;padding:10px 14px;border-radius:12px;background:#f5f5f7;font-size:.74rem;color:#1d1d1f}
 .cart-br button{flex:none;border:0;background:none;padding:0;color:#7a1128;font:inherit;cursor:pointer}
-/* приветствие при первом заходе: выбор ресторана */
-.wlc-ov{position:fixed;inset:0;z-index:9980;display:none;align-items:center;justify-content:center;padding:20px 20px 9vh;background:rgba(0,0,0,.42);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
-.wlc-ov.show{display:flex}
-.wlc{position:relative;width:100%;max-width:360px;padding:34px 22px 14px;border-radius:26px;background:#fff;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.25)}
-.wlc-x{position:absolute;top:12px;right:12px;width:32px;height:32px;border:0;border-radius:50%;background:#f2f2f4;color:#6e6e73;font-size:1rem;line-height:1;cursor:pointer}
-.wlc-e{margin:0;font-size:.62rem;letter-spacing:.32em;text-transform:uppercase;color:#7a1128}
-.wlc-t{margin:10px 0 6px;font-size:1.65rem;font-weight:400;letter-spacing:-.025em;color:#1d1d1f}
-.wlc-s{margin:0;font-size:.84rem;line-height:1.45;color:#6e6e73}
-.wlc-g{margin:14px 0 0;font-size:.74rem;color:#7a1128}
-.wlc-l{display:flex;flex-direction:column;gap:8px;margin-top:18px;text-align:left}
-.wlc-o{display:block;width:100%;padding:13px 16px;border:1px solid #e5e5e7;border-radius:16px;background:#fff;font:inherit;color:#1d1d1f;cursor:pointer;text-align:left}
-.wlc-o:active{background:#f5f5f7}
-.wlc-o b{display:flex;align-items:center;gap:8px;font-weight:400;font-size:.92rem}
-.wlc-o i{font-style:normal;padding:2px 8px;border-radius:999px;background:#7a1128;color:#fff;font-size:.58rem;letter-spacing:.02em}
-.wlc-o span{display:block;margin-top:3px;font-size:.72rem;color:#86868b}
-.wlc-o.near{border-color:#7a1128;background:#fbf7f8}
-.wlc-skip{margin-top:10px;border:0;background:none;color:#86868b;font:inherit;font-size:.76rem;padding:10px;cursor:pointer}
-@media (prefers-reduced-motion:no-preference){.wlc-ov.show .wlc{animation:stnIn .45s cubic-bezier(.22,1,.36,1) both!important;animation-duration:.45s!important}}
-.stn-b button:focus,.stn-b button:focus-visible,.wlc button:focus,.wlc button:focus-visible{outline:none}
+.stn-b button:focus,.stn-b button:focus-visible{outline:none}
+.nav-br-w{display:flex;flex-direction:column;min-width:0;line-height:1.15}
+.nav-br-st{font-size:.6rem;font-weight:400;letter-spacing:0;color:#86868b;transition:color .3s}
+.nav-br-st:empty{display:none}
+.nav-br-st.fl{color:#7a1128}
