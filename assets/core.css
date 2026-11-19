@@ -166,3 +166,5 @@ html.ord-off .qty-sm .qty-btn:last-child{color:#c7c7cc!important}
 .dadd{white-space:nowrap}
 .nav-lang{position:relative}
 .nav-lang:before{content:"";position:absolute;inset:-9px -4px}
+.bk-wa-btn.bk-disabled{pointer-events:auto}
+.bk-consent-row.bk-need{border-color:#7a1128;background:#fbf3f5}
