@@ -22,4 +22,6 @@
   <url><loc>https://seventimesuralsk.github.io/seventimes/kk/golden-hours/</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://seventimesuralsk.github.io/seventimes/kk/set/</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://seventimesuralsk.github.io/seventimes/kk/draw/</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://seventimesuralsk.github.io/seventimes/loyalty/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://seventimesuralsk.github.io/seventimes/kk/loyalty/</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
 </urlset>
