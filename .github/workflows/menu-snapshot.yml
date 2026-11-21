@@ -40,6 +40,23 @@ jobs:
             fi
           done
 
+      # Погода в Уральске для приветствия на главной: MET Norway (коммерческое использование разрешено, CC BY 4.0).
+      # Гость не ходит на сторонний сервер — сайт берёт menu/weather.json со своего домена.
+      # Файл меняется только при смене температуры/осадков (или раз в 3 часа) — лишних коммитов нет.
+      - name: Погода
+        run: |
+          if curl -sSf --max-time 20 -A "seventimes-site/1.0 github.com/seventimesuralsk/seventimes" \
+               "https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=51.23&lon=51.37" -o /tmp/wx.json \
+             && NEW=$(jq -ce '.properties.timeseries[0].data as $d | {c: ($d.instant.details.air_temperature|round), s: (($d.next_1_hours.summary.symbol_code // $d.next_6_hours.summary.symbol_code // "")|sub("_(day|night|polartwilight)$";""))}' /tmp/wx.json); then
+            OLD=$(jq -c '{c,s}' menu/weather.json 2>/dev/null || echo '{}')
+            AT=$(jq -r '.at // 0' menu/weather.json 2>/dev/null || echo 0)
+            if [ "$NEW" != "$OLD" ] || [ $(( $(date +%s) - AT )) -gt 10800 ]; then
+              echo "$NEW" | jq -c --argjson at "$(date +%s)" '. + {at: $at}' > menu/weather.json
+            fi
+          else
+            echo "::warning::погода не получена — сайт покажет приветствие без погоды"
+          fi
+
       # Фото блюд — копией на GitHub (img/m): Google Drive отдаёт их медленно и режет при наплыве.
       # Скачиваем только новые фото, убираем те, которых больше нет в меню. Не вышло — сайт берёт фото с Drive.
       - name: Зеркало фото блюд
@@ -59,7 +76,7 @@ jobs:
           SEASON=0
           if grep -q 'SEASON_ON=true' assets/core.js && jq -e '.categories | keys | any(test("^Сезонное меню"))' menu/samal.json > /dev/null \
              && ! grep -q 'Сезонное меню' index.html; then SEASON=1; fi
-          if [ "$SEASON" = 0 ] && git diff --quiet -- menu && ! grep -q '<template id="p0"></template>' index.html kk/index.html; then echo "меню не менялось"; exit 0; fi
+          if [ "$SEASON" = 0 ] && git diff --quiet -- menu/samal.json && ! grep -q '<template id="p0"></template>' index.html kk/index.html; then echo "меню не менялось"; exit 0; fi
           python3 -m http.server 8765 --bind 127.0.0.1 > /dev/null 2>&1 &
           sleep 1
           for L in "" kk/; do  # русская и казахская главная
