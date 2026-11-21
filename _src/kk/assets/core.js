@@ -34,7 +34,7 @@ function openGoldenPromo(){showFunModal("","<img src=\"../img/promo-golden.d3313
 !function(){if(PAGE!=="menu"||/[?&]paint=1/.test(location.search))return;var KK=document.documentElement.lang==="kk";
 var T=KK?{m:"Қайырлы таң",mA:"Таңғы ас — 08:00-ден залда, лоялдық картасы бойынша оған сыйлық бар. Жеткізу — 12:00-ден.",mS:"Таңғы ас — 11:00-ден залда, лоялдық картасы бойынша оған сыйлық бар. Жеткізу — 12:00-ден.",mK:"Мұнда таңғы ас жоқ — ол Абулхаир Хана мен Самалда. Жеткізу — 12:00-ден.",mC:"Бізде жылынуға болады: залда авторлық шай мен таңғы ас.",bf:"Таңғы ас",rest:"Мейрамханалар",
 d:"Түскі ас уақыты",dB:"Бизнес-ланч жұмыс күндері 15:00-ге дейін — {p} ₸-ден. Жұмысқа жеткіземіз немесе өзіңіз алып кетесіз.",bl:"Бизнес-ланч",dD:"Ыстық сорпалар мен негізгі тағамдар — сіз бос емес кезде жеткіземіз.",soup:"Сорпалар",
-gh:"Golden Hours · 18:00-ге дейін",ghS:"Роллдар 999 ₸ — маусымдықтардан басқа.",ghC:"Роллдарды таңдау",cold:"Далада {d}",coldS:"Жылынуға келіңіз: кез келген мейрамханамызда авторлық шай мен десерттер.",near:"Ең жақын мейрамхана",
+gh:"Golden Hours · 18:00-ге дейін",ghS:"Роллдар 999 ₸ — маусымдықтардан басқа.",ghC:"Роллдарды таңдау",cold:"Далада {d}",coldN:"Далада аяз",hotN:"Ыстық",coldS:"Жылынуға келіңіз: кез келген мейрамханамызда авторлық шай мен десерттер.",near:"Ең жақын мейрамхана",
 hot:"Ыстық: {d}",hotS:"Салқындау үшін — залда лимонадтар мен смузи.",e:"Қайырлы кеш",eS:"Жұмыстан не оқудан кейін тамақ әзірлегіңіз келмейді — кешкі асты бәріне жеткіземіз.",eC:"Ешқайда шықпаңыз — ыстық кешкі асты жеткіземіз.",combo:"Комбо мен сеттер",
 nO:"Кешкі ас",nOS:"Ас үй тапсырысты {k}-ға дейін қабылдайды.",n:"Қайырлы түн",nS:"Ас үй жабық. Мәзірді қарауға болады, тапсырыстарды 12:00-ден қабылдаймыз.",up:"Тапсырысқа қосу",x:"Жабу"}
 :{m:"Доброе утро",mA:"Завтраки — с 08:00 в зале, к ним подарок по карте лояльности. Доставка — с 12:00.",mS:"Завтраки — с 11:00 в зале, к ним подарок по карте лояльности. Доставка — с 12:00.",mK:"Здесь завтраков нет — они на Абулхаир Хана и Самал. Доставка — с 12:00.",mC:"Согреться можно у нас: авторский чай и завтраки в зале.",bf:"Завтраки",rest:"Рестораны",
@@ -47,25 +47,25 @@ function keys(){return Object.keys(menuData||{})}
 function cat(p){var k=keys();for(var i=0;i<k.length;i++)if(k[i].indexOf(p)===0)return k[i];return null}
 function catMin(p){var c=cat(p);if(!c)return 0;var a=(menuData[c]||[]).filter(function(x){return!x.stopped&&x.price>0}).map(function(x){return x.price});return a.length?Math.min.apply(null,a):0}
 function wx(){try{var w=JSON.parse(localStorage.getItem("st_wx")||"null");return w&&Date.now()-w.t<36e5?w:null}catch(e){return null}}
-function loadWx(cb){if(wx())return;try{fetch("../menu/weather.json?h="+Math.floor(Date.now()/9e5),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||typeof j.c!=="number"||Date.now()/1e3-(j.at||0)>21600)return;try{localStorage.setItem("st_wx",JSON.stringify({t:Date.now(),c:j.c,w:j.s||""}))}catch(e){}cb()}).catch(function(){})}catch(e){}}
+function loadWx(cb){if(wx())return;try{fetch("../menu/weather.json?h="+Math.floor(Date.now()/9e5),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||typeof j.c!=="number"||Date.now()/1e3-(j.at||0)>43200)return;try{localStorage.setItem("st_wx",JSON.stringify({t:Date.now(),c:j.c,w:j.s||"",a:j.at||0}))}catch(e){}cb()}).catch(function(){})}catch(e){}}
 function deg(c){return(c>0?"+":c<0?"−":"")+Math.abs(c)+"°"}
-function pick(){var n=now5(),h=n.h,b=_oBranch||"",w=wx(),open=b?canOrderNow(b):false,cold=w&&w.c<=0,hot=w&&w.c>=28,D=w?deg(w.c):"",k=b==="skoro"?"01:30":"00:30";
+function pick(){var n=now5(),h=n.h,b=_oBranch||"",w=wx(),open=b?canOrderNow(b):false,cold=w&&w.c<=0,hot=w&&w.c>=28,D=w&&Date.now()/1e3-(w.a||0)<10800?deg(w.c):"",k=b==="skoro"?"01:30":"00:30";
  var R=function(cat_){return cat_&&cat(cat_)?{l:null,cat:cat_}:null};
  var gh=typeof GH!=="undefined"&&Date.now()>=GH.start&&Date.now()<GH.end&&h>=14&&h<18&&(b==="abulhair"||b==="samal");
  if(gh)return{id:"gh",t:T.gh,s:T.ghS,c:cat("Японская")?{l:T.ghC,cat:"Японская"}:null};
  if(h>=5&&h<11){
   if(b==="skoro")return{id:"m",t:T.m,s:T.mK,c:{l:T.rest,href:"restaurants/"}};
-  if(cold)return{id:"mc",t:T.m+" · "+D,s:T.mC,c:{l:T.rest,href:"restaurants/"}};
+  if(cold)return{id:"mc",t:D?T.m+" · "+D:T.m,s:T.mC,c:{l:T.rest,href:"restaurants/"}};
   return{id:"m",t:T.m,s:b==="samal"?T.mS:T.mA,c:cat("Завтраки")?{l:T.bf,cat:"Завтраки"}:null}}
  if(h>=11&&h<16){
   if(n.dow>=1&&n.dow<=5&&h<15&&cat("Бизнес ланч")&&catMin("Бизнес ланч"))return{id:"dB",t:T.d,s:T.dB.replace("{p}",catMin("Бизнес ланч").toLocaleString("ru")),c:{l:T.bl,cat:"Бизнес ланч"}};
-  if(cold)return{id:"dc",t:T.cold.replace("{d}",D),s:T.coldS,c:{l:T.near,href:"restaurants/"}};
-  if(hot)return{id:"dh",t:T.hot.replace("{d}",D),s:T.hotS,c:{l:T.rest,href:"restaurants/"}};
+  if(cold)return{id:"dc",t:D?T.cold.replace("{d}",D):T.coldN,s:T.coldS,c:{l:T.near,href:"restaurants/"}};
+  if(hot)return{id:"dh",t:D?T.hot.replace("{d}",D):T.hotN,s:T.hotS,c:{l:T.rest,href:"restaurants/"}};
   return{id:"d",t:T.d,s:T.dD,c:cat("Супы")?{l:T.soup,cat:"Супы"}:null}}
  if(h>=16&&h<21){
   var cc=cat("Комбо")?"Комбо":cat("Сеты")?"Сеты":cat("Пицца")?"Пицца":null;
-  if(hot)return{id:"eh",t:T.hot.replace("{d}",D),s:T.hotS,c:{l:T.rest,href:"restaurants/"}};
-  return{id:cold?"ec":"e",t:cold?T.e+" · "+D:T.e,s:cold?T.eC:T.eS,c:cc?{l:T.combo,cat:cc}:null}}
+  if(hot)return{id:"eh",t:D?T.hot.replace("{d}",D):T.hotN,s:T.hotS,c:{l:T.rest,href:"restaurants/"}};
+  return{id:cold?"ec":"e",t:cold&&D?T.e+" · "+D:T.e,s:cold?T.eC:T.eS,c:cc?{l:T.combo,cat:cc}:null}}
  if(open)return{id:"no",t:T.nO,s:T.nOS.replace("{k}",k),c:null};
  return{id:"n",t:T.n,s:T.nS,c:null}}
 function go(c){if(c.href){goPage(c.href);return}var k=keys(),ix=-1;for(var i=0;i<k.length;i++)if(k[i].indexOf(c.cat)===0){ix=i;break}ix>=0&&scrollToSec(ix)}
