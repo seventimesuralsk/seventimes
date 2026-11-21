@@ -47,7 +47,7 @@ function keys(){return Object.keys(menuData||{})}
 function cat(p){var k=keys();for(var i=0;i<k.length;i++)if(k[i].indexOf(p)===0)return k[i];return null}
 function catMin(p){var c=cat(p);if(!c)return 0;var a=(menuData[c]||[]).filter(function(x){return!x.stopped&&x.price>0}).map(function(x){return x.price});return a.length?Math.min.apply(null,a):0}
 function wx(){try{var w=JSON.parse(localStorage.getItem("st_wx")||"null");return w&&Date.now()-w.t<36e5?w:null}catch(e){return null}}
-function loadWx(cb){if(wx())return;try{fetch("https://api.open-meteo.com/v1/forecast?latitude=51.23&longitude=51.37&current=temperature_2m,weather_code&timezone=auto").then(function(r){return r.json()}).then(function(j){var c=j&&j.current;if(!c||typeof c.temperature_2m!=="number")return;try{localStorage.setItem("st_wx",JSON.stringify({t:Date.now(),c:Math.round(c.temperature_2m),w:c.weather_code}))}catch(e){}cb()}).catch(function(){})}catch(e){}}
+function loadWx(cb){if(wx())return;try{fetch("menu/weather.json?h="+Math.floor(Date.now()/9e5),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||typeof j.c!=="number"||Date.now()/1e3-(j.at||0)>21600)return;try{localStorage.setItem("st_wx",JSON.stringify({t:Date.now(),c:j.c,w:j.s||""}))}catch(e){}cb()}).catch(function(){})}catch(e){}}
 function deg(c){return(c>0?"+":c<0?"−":"")+Math.abs(c)+"°"}
 function pick(){var n=now5(),h=n.h,b=_oBranch||"",w=wx(),open=b?canOrderNow(b):false,cold=w&&w.c<=0,hot=w&&w.c>=28,D=w?deg(w.c):"",k=b==="skoro"?"01:30":"00:30";
  var R=function(cat_){return cat_&&cat(cat_)?{l:null,cat:cat_}:null};
