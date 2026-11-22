@@ -99,7 +99,7 @@ var DRAW_S=1793473200000,DRAW_E=1798225200000,MIN_D=8000,FREE=3e3;
 function drawOn(){var n=Date.now();return n>=DRAW_S&&n<DRAW_E}
 function isDel(){try{return oType!=="pickup"}catch(e){return true}}
 function typeOf(x,c){var n=x.name||"";
- if(/^Сезонное/.test(c))return/Black Berry|Филадельфия|Нанатаби/.test(n)?"roll":/Салат/.test(n)?"salad":/Завтрак/.test(n)?"breakfast":"main";
+ if(/^Сезонное/.test(c))return/Black Berry|Филадельфия|Нанатаби/.test(n)?"roll":/[Сс]алат/.test(n)?"salad":/Завтрак/.test(n)?"breakfast":"main";
  if(c==="Сеты")return/Kids/.test(n)?"kids":/Жарен/.test(n)?"setF":/Запеч/.test(n)?"setB":"set";
  if(c==="Комбо")return"combo";
  if(/^Японская/.test(c))return/Темпур|Жарен/i.test(n)?"rollF":/Запеч/i.test(n)?"rollB":"roll";
@@ -148,7 +148,7 @@ function upPlan(){CATOF=null;var inC={},H={},tot=cartTotal(),h=now5().h,morning=
  var groups=(PAIR[anchor]||PAIR.other).filter(function(g){return!g[0].split("|").some(function(t){return H[t]})});if(anchor!=="set"&&anchor!=="combo"){var g0=groups.shift(),rs=groups.slice();for(var q=rs.length-1;q>0;q--){var w=Math.floor(Math.random()*(q+1)),tm=rs[q];rs[q]=rs[w];rs[w]=tm}groups=g0?[g0].concat(rs):rs}
  var s0=SPREF[anchor].split("|"),sp=[];s0.forEach(function(t){sp=sp.concat(seas.filter(function(x){return x._t===t}))});sp.length||(sp=seas);
  for(var g=0;g<groups.length&&out.length<N-1;g++){var L=[];groups[g][0].split("|").forEach(function(t){L=L.concat(pool[t]||[])});choose(L,groups[g][1])}
- choose(sp,"seas");
+ var ct=out.map(function(o){return o.x._t}),sp2=sp.filter(function(x){return ct.indexOf(x._t)<0});sp2.length&&(sp=sp2);if(!sp2.length){var any=seas.filter(function(x){return ct.indexOf(x._t)<0});any.length&&(sp=any)}choose(sp,"seas");
  ["drink","side","sauce"].forEach(function(t){out.length<N&&!H[t]&&choose(pool[t]||[],t)});
  return{anchor:anchor,head:HEAD[anchor]||"other",items:out}}
 function upState(){var tot=cartTotal(),st,l=0;if(drawOn()){if(isDel()&&tot<FREE){st="fi";l=FREE-tot}else if(tot<MIN_D){st="il";l=MIN_D-tot}else st="iw"}else if(isDel()&&tot<FREE){st="fl";l=FREE-tot}else st="rc";return{st:st,l:l,txt:T.ust[st].replace("{L}",l.toLocaleString("ru"))}}
