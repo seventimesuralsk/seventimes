@@ -16,3 +16,19 @@ for f in files:
 h=hashlib.md5(b"".join(open(x,"rb").read() for x in sorted(glob.glob("assets/*")+glob.glob("kk/assets/*")))).hexdigest()[:8]
 s=open("sw.js",encoding="utf8").read();s=re.sub(r'seventimes-app-[0-9a-f]{8}','seventimes-app-'+h,s);open("sw.js","w",encoding="utf8").write(s)
 print("versions bumped, APP_CACHE",h)
+# Версия сборки для «живого» обновления открытых страниц: assets + HTML (без самой метки) → version.json и <meta name="st-b"> на каждой странице
+pages=[f for f in glob.glob("**/*.html",recursive=True) if not f.startswith("_src")]
+META=re.compile(r'\s*<meta name="st-b" content="[0-9a-f]*"\s*/?>')
+hb=hashlib.md5()
+for x in sorted(glob.glob("assets/*")+glob.glob("kk/assets/*")): hb.update(open(x,"rb").read())
+for f in sorted(pages): hb.update(META.sub("",open(f,encoding="utf8").read()).encode())
+B=hb.hexdigest()[:10]
+for f in pages:
+    s=open(f,encoding="utf8").read()
+    if not re.search(r'<meta charset=[^>]*>',s,re.I): continue
+    s2=META.sub("",s)
+    s2=re.sub(r'(<meta charset=[^>]*>)',lambda m:m.group(1)+'<meta name="st-b" content="'+B+'"/>',s2,count=1,flags=re.I)
+    if s2!=s: open(f,"w",encoding="utf8").write(s2)
+open("version.json","w",encoding="utf8").write('{"b":"'+B+'"}\n')
+print("build",B)
+
