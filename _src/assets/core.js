@@ -16,7 +16,9 @@ function _ghApply(){if(typeof GH=="undefined"||!GH)return;var end=_ghEnd(),on=!!
   x.gh=0;if(!on||x.teaser||!_ghIs(c,x))return;
   var nm=x.mods&&x.mods.trim()?_ghMods(x.mods):x.mods;if(x.price<=GH.p&&nm===x.mods)return;
   x._ghP=x.price;x._ghM=x.mods;x._ghO=x.originalPrice;x._ghT=x.tempUntil;x.originalPrice=x.price;x.price=Math.min(x.price,GH.p);x.mods=nm;x.tempUntil=loc;x.gh=1})});
- _ghCart()}
+ _ghCart();_ghOrder(on)}
+/* пока идут Golden Hours — роллы первой категорией; закончились — прежний порядок */
+var _ghOrig=null;function _ghOrder(on){var md=menuData;if(!md)return;var ks=Object.keys(md);if(!ks.length)return;var jp=ks.filter(function(c){return GH.cat.test(c)}),want;if(!jp.length)return;if(on)want=jp.concat(ks.filter(function(c){return!GH.cat.test(c)}));else{if(!_ghOrig)return;want=ks.slice().sort(function(a,b){var ia=_ghOrig.indexOf(a),ib=_ghOrig.indexOf(b);return(ia<0?999:ia)-(ib<0?999:ib)})}if(want.join("|")!==ks.join("|")){on&&!_ghOrig&&(_ghOrig=ks.slice());want.forEach(function(c){var v=md[c];delete md[c];md[c]=v})}on||(_ghOrig=null)}
 function _ghCart(){var ch=false;(cart||[]).forEach(function(it){var p=String(it.id).split("__"),o=findItem(p[0]);if(!o)return;var np=o.price;if(p.length>1){if(!o.mods)return;var lab=p.slice(1).join("__"),m=parseMods(o.mods).filter(function(z){return z.label===lab})[0];if(!m)return;np=m.price}if(np&&np!==it.price){it.price=np;ch=true}it.gh=o.gh?1:0});if(ch){try{saveCartToStorage();typeof updBadge=="function"&&updBadge();var cm=document.getElementById("cartMov");cm&&cm.classList.contains("open")&&renderCart();var om=document.getElementById("orderMov");om&&om.classList.contains("open")&&renderSum()}catch(e){}}return ch}
 function _ghFmt(ms){var s=Math.max(0,Math.floor(ms/1e3)),d=Math.floor(s/86400),z=function(v){return(v<10?"0":"")+v};return(d?d+GH_T.d+" ":"")+z(Math.floor(s%86400/3600))+":"+z(Math.floor(s%3600/60))+":"+z(s%60)}
 function _ghCd(){var n=_ghNow(),e=_ghEnd();if(e)return GH_T.left+_ghFmt(e-n);var nx=_ghNext();if(!nx)return GH_T.done;return(n<GH.start?GH_T.start:GH_T.next)+_ghFmt(nx-n)}
@@ -102,13 +104,13 @@ function plan(){var n=now5(),h=n.h,b=_oBranch||"",open=b?canOrderNow(b):false,wk
  var last=[];try{last=JSON.parse(localStorage.getItem("st_ctx_last")||"[]")}catch(e){}
  var seas=items(SEAS).filter(function(x){return h>=5&&h<11||!/Завтрак/.test(x.name)}),seasNoRoll=seas.filter(function(x){return!/Black Berry|Филадельфия|Нанатаби/.test(x.name)}),A=[],slot,add=function(L,k){A=A.concat(pickN(L,k,last,A))};
  var gh=typeof GH!=="undefined"&&Date.now()>=GH.start&&Date.now()<GH.end&&h>=14&&h<18&&(b==="abulhair"||b==="samal");
- if(gh){slot="gh";add(items("Японская").filter(function(x){return!(x.mods&&x.mods.trim())}),2);add(seasNoRoll,1)}
+ if(gh){slot="gh";A=items("Японская").filter(function(x){return GH.seas.indexOf(x.name)<0})}
  else if(h>=5&&h<11){slot="m";add(items("Завтраки").concat(items(SEAS,/Завтрак/)),2);add(seas,1);A.length<3&&add(seas,3-A.length)}
  else if(h>=11&&h<16){if(!wkd&&items("Бизнес ланч").length){slot="d";add(items("Бизнес ланч"),2);A.length<2&&add(items("Супы"),1);add(seas,1)}else{slot="w";add(items(SEAS,/Куырдак|Боул|Фокс/),2);add(seas,1)}}
  else if(h>=16&&h<21){slot="e";add(items("Комбо").concat(items("Сеты")),2);add(seas,1)}
  else{slot=open?"n":"nc";open?(add(items("Сеты").concat(items("Комбо"),items("Японская")),2),add(seas,1)):(add(items("Завтраки").concat(items(SEAS,/Завтрак/)),3),A.length||add(seas,3))}
  A.length||add(seas,3);
- var r={slot:slot,list:A.slice(0,3)};memo[key]=r;try{localStorage.setItem("st_ctx_last",JSON.stringify(r.list.map(function(x){return x.id})))}catch(e){}return r}
+ var r={slot:slot,list:slot==="gh"?A.slice(0,30):A.slice(0,3)};memo[key]=r;try{localStorage.setItem("st_ctx_last",JSON.stringify(r.list.map(function(x){return x.id})))}catch(e){}return r}
 function texts(p){var n=now5(),w=wx(),D=w&&Date.now()/1e3-(w.a||0)<10800?deg(w.c):"",cold=w&&w.c<=0,b=_oBranch||"",k=b==="skoro"?"01:30":"00:30",brk=p.list.some(function(x){return/Завтрак/.test(x.name)||catOf(x.id)==="Завтраки"}),hh=b==="samal"?"11:00":b==="abulhair"?"08:00":"",wk=n.dow===0||n.dow===6,pk=function(a){return a[NCI%a.length]},t,s,g;
  switch(p.slot){case"m":t=brk?pk(T.tm):"@";g=T.gm;s=brk?T.sm+(b==="samal"?T.sm11:b==="abulhair"?T.sm8:""):T.smx;break;case"d":t=pk(T.td);g=T.gd;s=T.sd;break;case"w":t=pk(wk?T.tww:T.tw2);g=T.gd;s=wk?T.sw:T.sd2;break;case"gh":t="Golden Hours · "+T.to18;s=T.sgh;break;case"e":t=pk(T.te);g=T.ge;s=cold?T.sec:T.se;break;case"n":t=pk(T.nt);var ml=b&&typeof getDeliveryMinutesLeft=="function"?getDeliveryMinutesLeft(b):null;s=ml!==null&&ml<=30&&ml>0?T.snl.replace("{k}",k+(KKL?(/:30$/.test(k)?"-ға":"-ге"):"")).replace("{m}",ml):T.sn.replace("{k}",k);break;default:t=pk(T.nct);s=brk&&hh?pk(T.ncs).replace("{h}",hh):pk(T.ncs0)}
  var greet=t==="@"||p.slot==="gh";t==="@"&&(t=D?g+" · "+D:g);
