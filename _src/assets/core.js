@@ -272,9 +272,3 @@ function busy(){var a=document.activeElement;return!!(document.querySelector('[i
  document.addEventListener("visibilitychange",function(){document.hidden?tryGo():check()});
  try{var R=JSON.parse(sessionStorage.getItem("st_ry")||"null");if(R&&R.p===location.pathname&&Date.now()-R.t<6e4){sessionStorage.removeItem("st_ry");var n=0,iv=setInterval(function(){var h=document.documentElement.scrollHeight;if(h>=R.y+innerHeight||++n>40){clearInterval(iv);window.scrollTo(0,R.y)}},150)}}catch(e){}
 }();
-/* Тёмная тема: переключатель в шапке. Тёмные стили грузятся только у тех, кто её выбрал. */
-window.stTheme=function(){var h=document.documentElement,on=!h.classList.contains("dk");try{localStorage.setItem("st_theme",on?"dark":"light")}catch(e){}
- var tc=document.querySelector('meta[name="theme-color"]');tc&&!tc.dataset.l&&(tc.dataset.l=tc.getAttribute("content")||"");
- function go(){h.classList.toggle("dk",on);tc&&tc.setAttribute("content",on?"#0b0708":tc.dataset.l)}
- if(on&&!document.getElementById("dkCss")&&window.__dk){var l=document.createElement("link");l.id="dkCss";l.rel="stylesheet";l.href=window.__dk;l.onload=go;l.onerror=go;document.head.appendChild(l)}else go();
- try{logGuestEvent("Тема сайта",on?"тёмная":"светлая")}catch(e){}};
