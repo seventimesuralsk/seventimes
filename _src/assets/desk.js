@@ -10,7 +10,7 @@ var T=KK?{add:"Себетке",menu:"Мәзір",order:"Сіздің тапсы�
  nav:[["./","Мәзір"],["booking/","Брондау"],["loyalty/","Лоялдық картасы"],["restaurants/","Мейрамханалар"],["about/","Компания туралы"]]}
 :{add:"В корзину",menu:"Меню",order:"Ваш заказ",close:"Закрыть",
  nav:[["./","Меню"],["booking/","Бронирование"],["loyalty/","Карта лояльности"],["restaurants/","Рестораны"],["about/","О компании"]]};
-var bound=false,lock=0,lastN=-1,raf=0,mx=0,my=0,tx=0,ty=0;
+var bound=false,lock=0,lastN=-1,raf=0;
 
 function $(s,r){return(r||document).querySelector(s)}
 function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
@@ -37,47 +37,66 @@ function cartPill(){
  if(lastN>=0&&n>lastN){b.classList.add("dk-bump");setTimeout(function(){b.classList.remove("dk-bump")},420)}
  lastN=n}
 
-/* первый экран: три блюда из меню, карточка-подсказка, параллакс */
+/* первый экран: три рамки с блюдами из меню. Фото стоят на месте и по очереди, по часовой стрелке
+   (верх-справа → низ-слева → центр), очень плавно сменяются на другие блюда. Без качания и параллакса. */
+var HF=[],hp=0,hStep=0,hT=0,hVis=true,hHold=false,RM=window.matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches;
+function okCard(c){return!c.classList.contains("teaser")&&!c.classList.contains("stopped")&&c.querySelector(".item-img img")}
+function cName(c){return((c.querySelector(".item-name")||{}).textContent||"").trim()}
+function heroPool(){
+ var cs=$$("#menuContent .item-card").filter(okCard);
+ var skip=/соус|напит|кофе|чай|шай|лимонад|коктейл|смузи|мохито|гарнир|добавк|сусын|сироп|вода|қосымша/i;
+ var G=[];
+ cs.forEach(function(c){var s=c.closest(".cat-section"),t=s&&s.querySelector(".sec-title");if((t&&skip.test(t.textContent))||skip.test(cName(c)))return;
+  var g=null;G.some(function(x){if(x.s===s){g=x;return true}return false});if(!g){g={s:s,a:[]};G.push(g)}g.a.push(c)});
+ var out=[],i=0,more=true;
+ while(more&&out.length<30){more=false;G.forEach(function(g){if(g.a[i]){out.push(g.a[i]);more=true}});i++}
+ return out.length>=4?out:cs}
+function heroImg(c){var s=c.querySelector(".item-img img").getAttribute("src");return{big:big(s),sm:s}}
+function heroSet(F,c,first){
+ var L=F.ly[F.cur^1],im=L.firstChild,u=heroImg(c),done=false;
+ var go=function(){if(done)return;done=true;L.classList.add("on");F.ly[F.cur].classList.remove("on");F.cur^=1;F.id=c.dataset.id;if(F.main)tagSet(c,first)};
+ im.onerror=function(){im.onerror=null;im.src=u.sm};
+ im.src=u.big;
+ if(first)return go();
+ (im.decode?im.decode():Promise.resolve()).then(go,function(){setTimeout(go,200)})}
+function tagSet(c,first){
+ var bt=$("#dkArt .dkh-tag");if(!bt)return;
+ var put=function(){var bd=c.querySelector(".item-badge"),s=c.closest(".cat-section"),st=s&&s.querySelector(".sec-title");
+  bt.querySelector("small").textContent=bd?bd.textContent.trim():(st?st.textContent.trim():T.menu);
+  bt.querySelector("span").textContent=cName(c);
+  bt.querySelector("em").textContent=((c.querySelector(".item-price")||{}).textContent||"").trim();
+  bt.querySelector("img").src=heroImg(c).sm;bt.dataset.id=c.dataset.id;bt.classList.remove("dk-sw")};
+ if(first)return put();
+ bt.classList.add("dk-sw");setTimeout(put,520)}
+function heroNext(){
+ clearTimeout(hT);
+ if(RM||!HF.length)return;
+ if(document.hidden||!hVis||hHold){hT=setTimeout(heroNext,1200);return}
+ var P=heroPool(),F=HF[[1,2,0][hStep%3]],shown=HF.map(function(x){return x.id});
+ for(var k=0;k<P.length;k++){var c=P[hp%P.length];hp++;if(shown.indexOf(c.dataset.id)<0){heroSet(F,c);break}}
+ hStep++;hT=setTimeout(heroNext,3400)}
 function heroArt(){
  var a=$("#dkArt");if(!a||a.dataset.ok)return;
- if($$("#menuContent .cat-section").length<4){try{menuFlush()}catch(e){}}
- var cs=$$("#menuContent .item-card").filter(function(c){return!c.classList.contains("teaser")&&!c.classList.contains("stopped")&&c.querySelector(".item-img img")});
- if(cs.length<3)return;
- var first=cs.filter(function(c){return c.querySelector('.item-badge[data-type="fire"]')})[0]||cs[0];
- /* разные по виду блюда: хит + два других типа (боул, завтрак, бургер, пицца…), иначе первые из других разделов */
- var rx=/боул|завтрак|таңғы|бургер|пицц|куырдак|қуырдақ|стейк|паст|салат|сэндвич|донер|блин|құймақ|суп|сорпа|крыл|чизкейк|десерт/i;
- var nm=function(c){return((c.querySelector(".item-name")||{}).textContent||"")};
- var pick=[first],used={},m0=nm(first).match(rx);if(m0)used[m0[0].toLowerCase()]=1;
- cs.forEach(function(c){if(pick.length>=3||pick.indexOf(c)>=0)return;var m=nm(c).match(rx);if(!m||used[m[0].toLowerCase()])return;used[m[0].toLowerCase()]=1;pick.push(c)});
- $$("#menuContent .cat-section").forEach(function(s){if(pick.length>=3)return;var c=cs.filter(function(x){return x.closest(".cat-section")===s&&pick.indexOf(x)<0})[0];if(c&&!pick.some(function(p){return p.closest(".cat-section")===s}))pick.push(c)});
- cs.forEach(function(c){if(pick.length<3&&pick.indexOf(c)<0)pick.push(c)});
- a.dataset.ok=1;a.textContent="";
- pick.forEach(function(c,i){
-  var f=document.createElement("figure");f.className="dkh-ph p"+(i+1);f.dataset.d=[.6,1.15,.85][i];
+ var P=heroPool();if(P.length<3)return;
+ a.dataset.ok=1;a.textContent="";HF=[];
+ for(var i=0;i<3;i++){
+  var f=document.createElement("figure");f.className="dkh-ph p"+(i+1);
   var pp=document.createElement("div");pp.className="dkh-pop";var fl=document.createElement("div");fl.className="dkh-fl";
-  var im=document.createElement("img");im.alt="";im.decoding="async";if(i===0)im.setAttribute("fetchpriority","high");
-  var src=c.querySelector(".item-img img").getAttribute("src");im.src=big(src);im.onerror=function(){this.onerror=null;this.src=src};
-  fl.appendChild(im);pp.appendChild(fl);f.appendChild(pp);a.appendChild(f)});
- var c0=pick[0],id=c0.dataset.id,bt=document.createElement("button");bt.type="button";bt.className="dkh-tag";
- var ti=document.createElement("img");ti.src=c0.querySelector(".item-img img").getAttribute("src");ti.alt="";
- var tw=document.createElement("div"),sm=document.createElement("small"),sp=document.createElement("span"),em=document.createElement("em"),pl=document.createElement("i");
- var bd=c0.querySelector(".item-badge");sm.textContent=bd?bd.textContent.trim():T.menu;
- sp.textContent=((c0.querySelector(".item-name")||{}).textContent||"").trim();
- em.textContent=((c0.querySelector(".item-price")||{}).textContent||"").trim();pl.textContent="+";
- tw.appendChild(sm);tw.appendChild(sp);tw.appendChild(em);bt.appendChild(ti);bt.appendChild(tw);bt.appendChild(pl);
- bt.addEventListener("click",function(){var it=null;try{it=findItem(id)}catch(e){}if(it&&!it.stopped&&!it.lunchLocked){openDetail(it)}else dkToMenu()});
+  var F={f:f,ly:[],cur:0,id:"",main:i===0};
+  for(var k=0;k<2;k++){var ly=document.createElement("div");ly.className="dkh-ly";var im=document.createElement("img");im.alt="";im.decoding="async";if(i===0&&k===0)im.setAttribute("fetchpriority","high");ly.appendChild(im);fl.appendChild(ly);F.ly.push(ly)}
+  F.cur=1;pp.appendChild(fl);f.appendChild(pp);a.appendChild(f);HF.push(F)}
+ var bt=document.createElement("button");bt.type="button";bt.className="dkh-tag";
+ bt.innerHTML='<img alt=""><div class="dkh-tx"><small></small><span></span><em></em></div><i>+</i>';
+ bt.addEventListener("click",function(){var it=null;try{it=findItem(bt.dataset.id)}catch(e){}if(it&&!it.stopped&&!it.lunchLocked){openDetail(it)}else dkToMenu()});
  a.appendChild(bt);
- var h=$("#dkHero");
- h.addEventListener("mousemove",function(e){var r=h.getBoundingClientRect();mx=(e.clientX-r.left)/r.width-.5;my=(e.clientY-r.top)/r.height-.5;tick()});
- h.addEventListener("mouseleave",function(){mx=my=0;tick()});
- tick()}
+ HF.forEach(function(F,i){heroSet(F,P[i],true)});hp=3;
+ bt.addEventListener("mouseenter",function(){hHold=true});bt.addEventListener("mouseleave",function(){hHold=false});
+ if("IntersectionObserver" in window)new IntersectionObserver(function(es){hVis=es[0].isIntersecting}).observe(a);
+ hT=setTimeout(heroNext,4200)}
 function heroStep(){
  var h=$("#dkHero");if(!h)return false;var y=scrollY,H=h.offsetHeight||1;
- tx+=(mx-tx)*.07;ty+=(my-ty)*.07;
- if(y<H+200){
-  var t=$(".dkh-txt",h);if(t){t.style.transform="translate3d(0,"+(y*.16).toFixed(1)+"px,0)";t.style.opacity=String(Math.max(0,1-y/H*1.15).toFixed(3))}
-  $$(".dkh-ph",h).forEach(function(f){var d=+f.dataset.d||1;f.style.transform="translate3d("+(-tx*38*d).toFixed(1)+"px,"+(-ty*28*d-y*.1*d).toFixed(1)+"px,0)"})}
- return Math.abs(mx-tx)>.0015||Math.abs(my-ty)>.0015}
+ if(y<H+200){var t=$(".dkh-txt",h);if(t){t.style.transform=y>0?"translate3d(0,"+(y*.16).toFixed(1)+"px,0)":"";t.style.opacity=y>0?String(Math.max(0,1-y/H*1.15).toFixed(3)):""}}
+ return false}
 
 /* боковое меню разделов */
 function brName(){var s=$("#dksBr"),l=$("#navBranchLabel");if(s&&l)s.textContent=l.textContent.trim()}
