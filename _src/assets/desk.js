@@ -192,6 +192,13 @@ function reveal(){
  var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add("dk-in");io.unobserve(en.target)}})},{rootMargin:"0px 0px -8% 0px"});
  ["#ctxCard","#promoCarousel"].forEach(function(s){var e=$(s);if(e&&e.getBoundingClientRect().top>innerHeight){e.classList.add("dk-rv");io.observe(e)}})}
 
+/* «Сервисы» — костыль нижнего меню телефона; на компьютере всё есть в шапке и подвале → на главную.
+   Профиль: ссылка ./#profile открывает окно профиля на главной */
+function svcAway(){if(document.documentElement.getAttribute("data-page")==="services"){location.replace("./");return true}return false}
+function profHash(){
+ var go=function(){if(location.hash!=="#profile")return;try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}if(typeof openProfile=="function")setTimeout(function(){try{openProfile()}catch(e){}},60)};
+ go();addEventListener("hashchange",go)}
+
 /* бронь: карточки ресторанов слева выбирают филиал в форме справа и подсвечиваются вместе с ним */
 function bookSync(){
  var rs=$$(".dkb-r");if(!rs.length)return;
@@ -204,6 +211,7 @@ function tick(){if(!raf)raf=requestAnimationFrame(frame)}
 function frame(){raf=0;var more=heroStep();spy();var n=$("nav");n&&n.classList.toggle("dk-sc",scrollY>8);if(more)tick()}
 
 function init(){
+ if(svcAway())return;
  navInit();wrapOrder();
  if(bound)return;bound=true;
  cartPill();var cn=$("#cartN");cn&&new MutationObserver(cartPill).observe(cn,{childList:true,characterData:true,subtree:true,attributes:true});
@@ -214,7 +222,7 @@ function init(){
  menuPass();
  var cb=$("#cartBody");cb&&new MutationObserver(thumbs).observe(cb,{childList:true});thumbs();
  var si=$("#searchInput");si&&si.addEventListener("input",function(){var m=$("#menuContent");if(!si.value.trim()||!m)return;var top=m.getBoundingClientRect().top;if(top>navOff()+120||top<-40)scrollTo({top:top+scrollY-navOff()-64,behavior:"instant"})});
- detailX();reveal();bookSync();
+ detailX();reveal();bookSync();profHash();
  var yr=$("#dkYr");yr&&(yr.textContent=new Date().getFullYear());
  document.addEventListener("keydown",esc);
  addEventListener("scroll",tick,{passive:true});
