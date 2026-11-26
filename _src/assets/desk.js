@@ -190,7 +190,12 @@ function esc(e){
 function reveal(){
  if(!("IntersectionObserver" in window))return;
  var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add("dk-in");io.unobserve(en.target)}})},{rootMargin:"0px 0px -8% 0px"});
- ["#ctxCard","#promoCarousel"].forEach(function(s){var e=$(s);if(e&&e.getBoundingClientRect().top>innerHeight){e.classList.add("dk-rv");io.observe(e)}})}
+ /* плитки «Сейчас у нас»: поднимаются по очереди при прокрутке. ctxCard и промо пересоздаются скриптами —
+    проверяем заново; анимируем только то, что ещё ниже экрана (видимое не мигает) */
+ var scan=function(){[$("#ctxCard")].concat($$("#promoCarousel .promo-card-ring")).forEach(function(e){if(!e||e.dataset.dkt)return;e.dataset.dkt=1;
+   if(e.getBoundingClientRect().top>innerHeight*.92){e.classList.add("dk-tile");io.observe(e)}})};
+ scan();var sh=$("#appShell"),pc=$("#promoCarousel");
+ sh&&new MutationObserver(scan).observe(sh,{childList:true});pc&&new MutationObserver(scan).observe(pc,{childList:true})}
 
 /* «Сервисы» — костыль нижнего меню телефона; на компьютере всё есть в шапке и подвале → на главную.
    Профиль: ссылка ./#profile открывает окно профиля на главной */
