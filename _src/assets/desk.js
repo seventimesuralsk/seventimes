@@ -192,16 +192,25 @@ function reveal(){
  var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add("dk-in");io.unobserve(en.target)}})},{rootMargin:"0px 0px -8% 0px"});
  /* плитки «Сейчас у нас»: поднимаются по очереди при прокрутке. ctxCard и промо пересоздаются скриптами —
     проверяем заново; анимируем только то, что ещё ниже экрана (видимое не мигает) */
- var scan=function(){[$("#ctxCard")].concat($$("#promoCarousel .promo-card-ring")).forEach(function(e){if(!e||e.dataset.dkt)return;e.dataset.dkt=1;
-   if(e.getBoundingClientRect().top>innerHeight*.92){e.classList.add("dk-tile");io.observe(e)}})};
+ var t0=Date.now();
+ var scan=function(){nowRow();[$("#ctxCard")].concat($$("#promoCarousel .promo-card-ring")).forEach(function(e){if(!e||e.dataset.dkt)return;e.dataset.dkt=1;
+   if(Date.now()-t0<6000||e.getBoundingClientRect().top>innerHeight*.92){e.classList.add("dk-tile");io.observe(e)}})};
  scan();var sh=$("#appShell"),pc=$("#promoCarousel");
  sh&&new MutationObserver(scan).observe(sh,{childList:true});pc&&new MutationObserver(scan).observe(pc,{childList:true})}
+/* «Холодильник пустой?», iPhone и «Армандар» — одним рядом из трёх карточек: плашку и промо кладём в общий ряд.
+   Скрипты главной пересоздают их на месте (replaceWith/innerHTML) — ряд сохраняется; если плашка вставлена заново рядом — возвращаем */
+function nowRow(){
+ var pc=$("#promoCarousel");if(!pc)return;var w=$("#dkNow");
+ if(!w){w=document.createElement("section");w.id="dkNow";pc.parentNode.insertBefore(w,pc)}
+ var cc=$("#ctxCard");if(cc&&cc.parentNode!==w)w.insertBefore(cc,w.firstChild);
+ if(pc.parentNode!==w)w.appendChild(pc)}
+function unNow(){var w=$("#dkNow");if(!w)return;var p=w.parentNode;Array.prototype.slice.call(w.children).forEach(function(e){p.insertBefore(e,w)});w.remove()}
 
 /* «Сервисы» — костыль нижнего меню телефона; на компьютере всё есть в шапке и подвале → на главную.
    Профиль: ссылка ./#profile открывает окно профиля на главной */
 function svcAway(){if(document.documentElement.getAttribute("data-page")==="services"){location.replace("./");return true}return false}
 function profHash(){
- var go=function(){if(location.hash!=="#profile")return;try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}if(typeof openProfile=="function")setTimeout(function(){try{openProfile()}catch(e){}},60)};
+ var go=function(){if(location.hash!=="#profile")return;try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}location.replace("profile/")};
  go();addEventListener("hashchange",go)}
 
 /* бронь: карточки ресторанов слева выбирают филиал в форме справа и подсвечиваются вместе с ним */
@@ -236,6 +245,6 @@ function init(){
 
 function start(){if(!Q.matches)return;if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init()}
 start();
-var onCh=function(e){if(e.matches)start();else unwrapOrder()};
+var onCh=function(e){if(e.matches){start();nowRow()}else{unwrapOrder();unNow()}};
 Q.addEventListener?Q.addEventListener("change",onCh):Q.addListener&&Q.addListener(onCh);
 })();
