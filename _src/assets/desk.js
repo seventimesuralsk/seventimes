@@ -192,6 +192,14 @@ function reveal(){
  var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add("dk-in");io.unobserve(en.target)}})},{rootMargin:"0px 0px -8% 0px"});
  ["#ctxCard","#promoCarousel"].forEach(function(s){var e=$(s);if(e&&e.getBoundingClientRect().top>innerHeight){e.classList.add("dk-rv");io.observe(e)}})}
 
+/* бронь: карточки ресторанов слева выбирают филиал в форме справа и подсвечиваются вместе с ним */
+function bookSync(){
+ var rs=$$(".dkb-r");if(!rs.length)return;
+ var paint=function(){rs.forEach(function(r){var b=document.getElementById("bk-branchBtn"+r.dataset.b);r.classList.toggle("on",!!(b&&b.classList.contains("bk-on")))})};
+ rs.forEach(function(r){r.addEventListener("click",function(){var b=document.getElementById("bk-branchBtn"+r.dataset.b);if(b){b.click();setTimeout(paint,30)}})});
+ var pk=$("#bk-branchPicker");pk&&new MutationObserver(paint).observe(pk,{attributes:true,subtree:true,attributeFilter:["class"]});
+ paint()}
+
 function tick(){if(!raf)raf=requestAnimationFrame(frame)}
 function frame(){raf=0;var more=heroStep();spy();var n=$("nav");n&&n.classList.toggle("dk-sc",scrollY>8);if(more)tick()}
 
@@ -206,7 +214,7 @@ function init(){
  menuPass();
  var cb=$("#cartBody");cb&&new MutationObserver(thumbs).observe(cb,{childList:true});thumbs();
  var si=$("#searchInput");si&&si.addEventListener("input",function(){var m=$("#menuContent");if(!si.value.trim()||!m)return;var top=m.getBoundingClientRect().top;if(top>navOff()+120||top<-40)scrollTo({top:top+scrollY-navOff()-64,behavior:"instant"})});
- detailX();reveal();
+ detailX();reveal();bookSync();
  var yr=$("#dkYr");yr&&(yr.textContent=new Date().getFullYear());
  document.addEventListener("keydown",esc);
  addEventListener("scroll",tick,{passive:true});
