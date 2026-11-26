@@ -213,6 +213,108 @@ function profHash(){
  var go=function(){if(location.hash!=="#profile")return;try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}location.replace("profile/")};
  go();addEventListener("hashchange",go)}
 
+/* ===== Профиль на компьютере: личный кабинет «тут я главный» =====
+   Тот же localStorage, что и у модуля профиля (core.js); настройки — модуль профиля (без выбора темы). */
+var PFT=KK?{greet:["Қайырлы түн","Қайырлы таң","Қайырлы күн","Қайырлы кеш"],welcome:"Қош келдіңіз",since:"Seven Times қонағы",
+  mon:["қаңтар","ақпан","наурыз","сәуір","мамыр","маусым","шілде","тамыз","қыркүйек","қазан","қараша","желтоқсан"],
+  edit:"Деректерді өзгерту",fill:"Деректерді толтыру",menu:"Мәзірді ашу",guest:"Қонақ",fillSub:"Аты, телефон мен мекенжайды бір рет толтырыңыз — тапсырыс екі басуда.",
+  st:["тапсырыс","брондау","сүйікті тағам","бірінші тапсырыс"],fav:"Сүйікті",order:"Тапсырыс беру",mine:"Менің деректерім",addr:"Жеткізу мекенжайы",noAddr:"Мекенжай көрсетілмеген",
+  card:"Қонақ картасы",cardSub:"залда алғашқы келгеннен шотқа",cardHow:"Картаны қалай алуға болады",tg:"Telegram-да ашу",noBk:"Кешке үстел керек пе?",bkBtn:"Үстел брондау",
+  favEmpty:"Мұнда сүйікті тағамыңыз пайда болады",ent:"кіреберіс",flat:"пәтер",floor:"қабат",deliv:"Жеткізу",pick:"Алып кету",guests:"қонақ"}
+:{greet:["Доброй ночи","Доброе утро","Добрый день","Добрый вечер"],welcome:"Добро пожаловать",since:"Гость Seven Times",
+  mon:["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"],
+  edit:"Изменить данные",fill:"Заполнить данные",menu:"Открыть меню",guest:"Гость",fillSub:"Заполните имя, телефон и адрес один раз — и заказ будет в два касания.",
+  st:["заказ","брони","любимое блюдо","первый заказ"],fav:"Любимое",order:"Заказать",mine:"Мои данные",addr:"Адрес доставки",noAddr:"Адрес не указан",
+  card:"Карта гостя",cardSub:"к счёту в зале с первого визита",cardHow:"Как получить карту",tg:"Открыть в Telegram",noBk:"Столик на вечер?",bkBtn:"Забронировать стол",
+  favEmpty:"Здесь появится ваше любимое блюдо",ent:"подъезд",flat:"кв.",floor:"этаж",deliv:"Доставка",pick:"Самовывоз",guests:"гостей"};
+var pfOn=3,pfBn=3;
+function pfE(s){try{return _pfE(s)}catch(e){return String(s==null?"":s).replace(/[&<>"']/g,"")}}
+function pfPl(n,a){try{return _pfPl(n,a)}catch(e){return a[a.length-1]}}
+function pfDash(){
+ var host=$("#dkPf");if(!host)return;
+ var p={};try{p=loadClientProfile()||{}}catch(e){}
+ var H=[],B=[],S=[];try{H=_pfHist();B=_pfBks();S=_pfJ("st_seen",[])}catch(e){}
+ var nm=String(p.name||"").trim(),first=nm.split(/\s+/)[0]||"",ini="";try{ini=_pfIni(nm)}catch(e){}
+ var h=new Date().getHours(),gi=h<5?0:h<12?1:h<17?2:h<23?3:0;
+ var f0=H.length?_pfDate(H[H.length-1]):null,fav=H.length?_pfFav(H):"",favId="",favPh="";
+ if(fav){H.some(function(o){return(o.itemsList||[]).some(function(x){if(String(x.name||"").replace(/\s*\(.*\)$/,"")===fav){favId=x.id;return true}})});
+  S.some(function(x){if(x&&(x.id===favId||x.n===fav)){favPh=x.ph||"";favId=favId||x.id;return true}})}
+ var up=B.filter(function(b){return b.up})[0];
+ var r='';
+ /* первый экран */
+ r+='<section class="dpf-hero"><div class="dpf-glow"><i></i><i></i><i></i></div><div class="dpf-hin"><div class="dpf-me">'
+  +'<div class="dpf-av"><span>'+(ini?pfE(ini):'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="9" r="3.6"/><path d="M4.5 20c1-4 4-6 7.5-6s6.5 2 7.5 6"/></svg>')+'</span></div>'
+  +'<div class="dpf-greet">'+(first?PFT.greet[gi]+',':PFT.welcome)+'</div>'
+  +'<h1 class="dpf-name">'+pfE(first||PFT.guest)+'</h1>'
+  +(f0?'<div class="dpf-since">'+PFT.since+' · '+(KK?PFT.mon[f0.getMonth()]+' '+f0.getFullYear():'с '+PFT.mon[f0.getMonth()]+' '+f0.getFullYear())+'</div>':(first?'':'<div class="dpf-since">'+PFT.fillSub+'</div>'))
+  +'<div class="dpf-acts"><button type="button" class="dpf-btn" onclick="_pfGo(\'set\')">'+(nm||p.phone?PFT.edit:PFT.fill)+'</button><a class="dpf-lnk" href="./">'+PFT.menu+'<span>›</span></a></div></div>'
+  +'<a class="dpf-card" href="loyalty/"><div class="dpf-cd"><div class="dpf-sh"></div><div class="dpf-ct"><span class="dk-logo"><i></i>Seven Times</span><em>'+PFT.card+'</em></div>'
+  +'<div class="dpf-chip"></div><div class="dpf-cm"><b>−3%</b><span>'+PFT.cardSub+'</span></div>'
+  +'<div class="dpf-cb"><span>'+pfE((nm||PFT.guest).toUpperCase())+'</span><span>'+(f0?f0.getFullYear():new Date().getFullYear())+'</span></div></div></a></div>';
+ if(H.length||B.length){
+  r+='<div class="dpf-stats">'
+   +'<div><b data-n="'+H.length+'">0</b><span>'+pfPl(H.length,PFL.ow)+'</span></div>'
+   +'<div><b data-n="'+B.length+'">0</b><span>'+(KK?PFT.st[1]:pfPl(B.length,["бронь","брони","броней"]))+'</span></div>'
+   +'<div><b class="t">'+pfE(fav?_pfTr(fav):"—")+'</b><span>'+PFT.st[2]+'</span></div>'
+   +'<div><b class="t">'+(f0?PFL.mn[f0.getMonth()]+' '+f0.getFullYear():"—")+'</b><span>'+PFT.st[3]+'</span></div></div>'}
+ r+='</section>';
+ /* плитки */
+ var addr=[p.street,p.house].filter(Boolean).join(", ");var ad2=[p.entrance?PFT.ent+" "+p.entrance:"",p.flat?PFT.flat+" "+p.flat:"",p.floor?PFT.floor+" "+p.floor:""].filter(Boolean).join(" · ");
+ r+='<section class="dpf-bento">';
+ r+='<a class="dpf-t dpf-fav'+(favPh?' ph':'')+'" href="'+(favId?'./?dish='+encodeURIComponent(favId):'./')+'">'+(favPh?'<img src="'+pfE(favPh)+'" alt="">':'')
+  +'<div class="dpf-tx"><small>'+PFT.fav+'</small><b>'+pfE(fav?_pfTr(fav):PFT.favEmpty)+'</b><span class="dpf-go">'+(fav?PFT.order:PFT.menu)+' ›</span></div></a>';
+ if(up){var gid="";try{gid=_2gis[up.br]||""}catch(e){}
+  r+='<div class="dpf-t dpf-bk"><small>'+PFL.bk+'</small><div class="dpf-time">'+pfE(up.tm)+'</div><div class="dpf-day">'+pfE(_pfDay(up.at))+'</div><div class="dpf-where">'+pfE(_pfBrName(up.br))+' · '+pfE(_pfGuests(up.g))+'</div>'
+   +(gid?'<a class="dpf-pill" href="https://2gis.kz/uralsk/firm/'+gid+'" target="_blank" rel="noopener">'+PFL.route+'</a>':'')+'</div>'}
+ else r+='<a class="dpf-t dpf-bk dpf-nobk" href="booking/"><small>'+PFL.bks+'</small><div class="dpf-day">'+PFT.noBk+'</div><span class="dpf-pill">'+PFT.bkBtn+'</span></a>';
+ r+='<div class="dpf-t dpf-data"><small>'+PFT.mine+'</small><div class="dpf-dn">'+pfE(nm||"—")+'</div><div class="dpf-dp">'+pfE(p.phone||"")+'</div>'
+  +'<div class="dpf-da"><span>'+PFT.addr+'</span>'+pfE(addr||PFT.noAddr)+(ad2?'<em>'+pfE(ad2)+'</em>':'')+'</div><button type="button" class="dpf-pill" onclick="_pfGo(\'set\')">'+PFL.edit+'</button></div>';
+ r+='<a class="dpf-t dpf-loy" href="loyalty/"><small>'+PFL.loy+'</small><div class="dpf-pct">−3%</div><div class="dpf-ls">'+PFT.cardSub+'</div><span class="dpf-go">'+PFT.cardHow+' ›</span></a>';
+ r+='</section>';
+ /* заказы */
+ r+='<section class="dpf-sec"><div class="dpf-sh2"><h2>'+PFL.orders+'</h2>'+(H.length?'<span>'+H.length+'</span>':'')+'</div>';
+ if(H.length){r+='<div class="dpf-list">';H.slice(0,pfOn).forEach(function(o,i){var d=_pfDate(o);
+   r+='<div class="dpf-row"><div class="dpf-date"><b>'+(d?d.getDate():"")+'</b><span>'+(d?PFL.mn[d.getMonth()]:"")+'</span></div>'
+    +'<div class="dpf-ri"><div class="dpf-rt">'+pfE(_pfBrName(o.branch))+' <em>'+("delivery"===o.type?PFT.deliv:PFT.pick)+(o.orderNum?' · '+pfE(o.orderNum):'')+'</em></div>'
+    +'<div class="dpf-rs">'+pfE(o.itemsList&&o.itemsList.length?o.itemsList.map(function(x){return _pfTr(x.name)+(x.qty>1?" ×"+x.qty:"")}).join(", "):o.items||"")+'</div></div>'
+    +'<div class="dpf-sum">'+Number(o.total).toLocaleString("ru").replace(/\s/g," ")+' ₸</div>'
+    +(o.itemsList&&o.itemsList.length?'<button type="button" class="dpf-pill" onclick="_pfRep('+i+')">'+PFL.repBtn+'</button>':'<span></span>')+'</div>'});
+  r+='</div>'+(H.length>pfOn?'<button type="button" class="dpf-more" data-k="o">'+PFL.more+'</button>':'')}
+ else r+='<div class="dpf-empty">'+PFL.noOrd+'<a class="dpf-pill" href="./">'+PFT.menu+'</a></div>';
+ r+='</section>';
+ /* брони */
+ r+='<section class="dpf-sec"><div class="dpf-sh2"><h2>'+PFL.bks+'</h2>'+(B.length?'<span>'+B.length+'</span>':'')+'</div>';
+ if(B.length){r+='<div class="dpf-list">';B.slice(0,pfBn).forEach(function(b){var gid="";try{gid=_2gis[b.br]||""}catch(e){}
+   r+='<div class="dpf-row'+(b.up?'':' past')+'"><div class="dpf-date t"><b>'+pfE(b.tm)+'</b><span>'+pfE(_pfDay(b.at))+'</span></div>'
+    +'<div class="dpf-ri"><div class="dpf-rt">'+pfE(_pfBrName(b.br))+' <em>'+pfE(_pfGuests(b.g))+'</em></div></div>'
+    +'<div class="dpf-tag'+(b.up?' up':'')+'">'+(b.up?PFL.soon:PFL.past)+'</div>'
+    +(b.up&&gid?'<a class="dpf-pill" href="https://2gis.kz/uralsk/firm/'+gid+'" target="_blank" rel="noopener">'+PFL.route+'</a>':'<span></span>')+'</div>'});
+  r+='</div>'+(B.length>pfBn?'<button type="button" class="dpf-more" data-k="b">'+PFL.more+'</button>':'')}
+ else r+='<div class="dpf-empty">'+PFL.noBk+'<a class="dpf-pill" href="booking/">'+PFT.bkBtn+'</a></div>';
+ r+='</section>';
+ /* недавно смотрели */
+ if(S.length){r+='<section class="dpf-sec"><div class="dpf-sh2"><h2>'+PFL.seen+'</h2><button type="button" class="dpf-clr">'+PFL.clr+'</button></div><div class="dpf-seen">';
+  S.slice(0,6).forEach(function(x){r+='<a class="dpf-sc" href="./?dish='+encodeURIComponent(x.id)+'">'+(x.ph?'<img src="'+pfE(x.ph)+'" alt="" loading="lazy">':'<i></i>')+'<b>'+pfE(_pfTr(x.n||""))+'</b><span>'+(x.p?Number(x.p).toLocaleString("ru").replace(/\s/g," ")+' ₸':'')+'</span></a>'});
+  r+='</div></section>'}
+ host.innerHTML=r;
+ /* счётчики */
+ $$(".dpf-stats b[data-n]",host).forEach(function(b){var n=+b.dataset.n,t0=0;if(RM||!n){b.textContent=n;return}
+  var st=function(ts){t0=t0||ts;var k=Math.min(1,(ts-t0)/1300),e=1-Math.pow(1-k,3);b.textContent=Math.round(n*e);k<1&&requestAnimationFrame(st)};setTimeout(function(){requestAnimationFrame(st)},500)});
+ /* «Показать ещё», «Очистить» */
+ $$(".dpf-more",host).forEach(function(m){m.addEventListener("click",function(){var y=scrollY;m.dataset.k==="o"?pfOn+=3:pfBn+=3;pfDash();scrollTo(0,y)})});
+ var cl=$(".dpf-clr",host);cl&&cl.addEventListener("click",function(){try{_pfSeenClr()}catch(e){try{localStorage.removeItem("st_seen")}catch(x){}}pfDash()});
+ /* появление при прокрутке */
+ if("IntersectionObserver" in window){var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add("dk-in");io.unobserve(en.target)}})},{rootMargin:"0px 0px -6% 0px"});
+  host.addEventListener("transitionend",function(e){e.propertyName==="opacity"&&e.target.style&&e.target.style.removeProperty("--d")});
+  $$(".dpf-t,.dpf-sec",host).forEach(function(e,i){e.classList.add("dpf-rv");e.style.setProperty("--d",(e.classList.contains("dpf-t")?i*.08:0)+"s");io.observe(e)})}
+}
+function pfPage(){
+ if(document.documentElement.getAttribute("data-page")!=="profile")return;
+ var pb=$("#profileBody");if(!pb)return;
+ var host=$("#dkPf");if(!host){host=document.createElement("div");host.id="dkPf";host.hidden=true;pb.parentNode.insertBefore(host,pb)}
+ var sync=function(){var set=typeof _pfV!=="undefined"&&_pfV==="set";document.documentElement.classList.toggle("dkpf-set",set);if(!set)pfDash()};
+ new MutationObserver(sync).observe(pb,{childList:true});sync()}
+
 /* бронь: карточки ресторанов слева выбирают филиал в форме справа и подсвечиваются вместе с ним */
 function bookSync(){
  var rs=$$(".dkb-r");if(!rs.length)return;
@@ -236,7 +338,7 @@ function init(){
  menuPass();
  var cb=$("#cartBody");cb&&new MutationObserver(thumbs).observe(cb,{childList:true});thumbs();
  var si=$("#searchInput");si&&si.addEventListener("input",function(){var m=$("#menuContent");if(!si.value.trim()||!m)return;var top=m.getBoundingClientRect().top;if(top>navOff()+120||top<-40)scrollTo({top:top+scrollY-navOff()-64,behavior:"instant"})});
- detailX();reveal();bookSync();profHash();
+ detailX();reveal();bookSync();profHash();pfPage();
  var yr=$("#dkYr");yr&&(yr.textContent=new Date().getFullYear());
  document.addEventListener("keydown",esc);
  addEventListener("scroll",tick,{passive:true});
