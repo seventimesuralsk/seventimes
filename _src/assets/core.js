@@ -625,9 +625,9 @@ if(typeof openProfile=="function"){var _pfOP=openProfile;openProfile=function(){
   var b=$("pfVrfBtn");b&&(b.disabled=true);var c=code();
   var done=function(){try{localStorage.setItem("st_vrf",JSON.stringify({c:c,t:Date.now()}))}catch(x){}try{logGuestEvent("Профиль: запрос галочки",c)}catch(x){}showToast(T.vSent);renderProfile()},
    fail=function(){b&&(b.disabled=false);showToast(T.vErr)};
-  vfGet().then(function(j){var r=api(j,askQ(c));if(r)return r.then(function(o){o&&o.status==="success"?done():fail()},fail);
-   /* скрипт ещё не подключён — по-старому, через «Армандар орындалады» */
-   if(typeof apiGet!="function")return fail();var H=_pfHist();apiGet({action:"submitWish",name:nm,phone:ph,dream:"[Галочка ✓] Запрос подтверждения профиля · код "+c+" · заказов: "+H.length+" · с нами с "+new Date(firstTs(H)).toLocaleDateString("ru")+(KK?" · KZ":"")},done,fail)})};
+  /* скрипт не подключён или не отвечает — заявка не теряется: уходит по-старому, через «Армандар орындалады»; потом сама переедет в таблицу «Галочка» */
+  var old=function(){if(typeof apiGet!="function")return fail();var H=_pfHist();apiGet({action:"submitWish",name:nm,phone:ph,dream:"[Галочка ✓] Запрос подтверждения профиля · код "+c+" · заказов: "+H.length+" · с нами с "+new Date(firstTs(H)).toLocaleDateString("ru")+(KK?" · KZ":"")},done,fail)};
+  vfGet().then(function(j){var r=api(j,askQ(c));if(!r)return old();r.then(function(o){o&&o.status==="success"?done():old()},old)})};
  var vfDone=0;function vfSync(){var v=vrf();if(!v||vfDone)return;vfDone=1;
   var set=function(on){on=!!on;if(on!==!!v.ok){v.ok=on?1:0;try{localStorage.setItem("st_vrf",JSON.stringify(v))}catch(x){}renderProfile()}};
   vfGet().then(function(j){var list=j&&j.ok||[];if(list.indexOf(v.c)>=0)return set(1);var r=api(j,{action:"vrfCheck",c:v.c});if(!r)return list.length||j.api?set(0):0;
