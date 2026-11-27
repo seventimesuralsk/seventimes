@@ -509,8 +509,8 @@ if(typeof openProfile=="function"){var _pfOP=openProfile;openProfile=function(){
 }();
 ;/* Профиль как в Instagram: живой фон под настроение, аватар, имя с галочкой, цифры, кнопки «Изменить профиль» и «Статистика»,
    кружки-хайлайты, вкладки Заказы / Брони / Смотрели (смотрели — плиткой, как сетка). Статистика — отдельный экран. «Недавно смотрели» без кнопки «Очистить».
-   Галочка — только после проверки: заявка уходит тем же путём, что и «Армандар орындалады» (скрипт не трогаем),
-   у заявки короткий код; одобренные коды лежат в vf.json — совпал код с телефона гостя → галочка. */
+   Галочка — только после проверки: заявка уходит в отдельный скрипт и отдельную таблицу «Галочка» (адрес — в vf.json, поле api);
+   владелец пишет «да» в колонке «Одобрено» → у гостя галочка, пусто → нет. vf.json.ok — ручной список кодов на всякий случай. */
 !function(){
  if(typeof _pfMain!="function"||window._pfIG)return;window._pfIG=1;
  var KK=document.documentElement.lang==="kk";
@@ -548,7 +548,7 @@ if(typeof openProfile=="function"){var _pfOP=openProfile;openProfile=function(){
   case"chill":s=I("sun sm","")+I("wv w1","")+I("wv w2","");break}
   return'<div class="pfm-l" aria-hidden="true">'+s+"</div>"}
  function cover(id,cls,inner){var k=sid(id);return'<div class="pfm pfm-'+k+(LIGHT[k]?" lt":"")+" "+(cls||"")+'">'+scene(k)+inner+"</div>"}
- var VF='<svg class="pig-vf" viewBox="0 0 24 24" aria-label="✓"><path fill="#2f8cff" d="M12 1.6l2.6 1.9 3.2-.1 1 3 2.6 1.9-1 3 1 3-2.6 1.9-1 3-3.2-.1L12 22.4l-2.6-1.9-3.2.1-1-3-2.6-1.9 1-3-1-3 2.6-1.9 1-3 3.2.1z"/><path d="M7.6 12.3l3 3 5.8-6" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+ var VF='<svg class="pig-vf" viewBox="0 0 24 24" role="img" aria-label="✓"><path fill="#0a95f0" d="M12 .4L14.36 3.21 17.8 1.95 18.43 5.57 22.05 6.2 20.79 9.64 23.6 12 20.79 14.36 22.05 17.8 18.43 18.43 17.8 22.05 14.36 20.79 12 23.6 9.64 20.79 6.2 22.05 5.57 18.43 1.95 17.8 3.21 14.36.4 12 3.21 9.64 1.95 6.2 5.57 5.57 6.2 1.95 9.64 3.21z"/><path d="M7.7 12.2l2.9 2.8 5.7-6.1" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
  var IC={rep:'<path d="M4 11a8 8 0 0 1 14-5.3L20 8M20 3v5h-5M20 13a8 8 0 0 1-14 5.3L4 16M4 21v-5h5"/>',bk:'<rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',card:'<rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9.5h19M6 15h4"/>',st:'<path d="M5 20V11M12 20V4M19 20v-6"/>',pal:'<path d="M12 3a9 9 0 1 0 0 18c1.2 0 1.6-.9 1.2-1.8-.5-1 .2-2.2 1.4-2.2H17a4 4 0 0 0 4-4c0-5.5-4-10-9-10z"/><circle cx="7.5" cy="11" r="1.2"/><circle cx="10.5" cy="7" r="1.2"/><circle cx="15.5" cy="7.5" r="1.2"/>',trash:'<path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13"/>',heart:'<path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 7.5 2.8C19.5 15.4 12 20 12 20z"/>'};
  function svg(k,w){return'<svg width="'+(w||24)+'" height="'+(w||24)+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+IC[k]+"</svg>"}
  /* данные */
@@ -574,10 +574,6 @@ if(typeof openProfile=="function"){var _pfOP=openProfile;openProfile=function(){
    +'<div class="pig-btns"><button type="button" onclick="_pfGo(\'set\')">'+(nm||p.phone?T.edit:T.fill)+'</button><button type="button" onclick="_pfGo(\'stat\')">'+T.stat+'</button><button type="button" class="ic'+(mOpen?" on":"")+'" onclick="_pfMoodTog()" aria-label="'+T.bg+'" aria-expanded="'+!!mOpen+'">'+svg("pal",20)+"</button></div></div>");
   r+='<div class="pig-moods"'+(mOpen?"":" hidden")+">"+moodTiles(p.th,"_pfMood")+"</div>";
   if(up){var gid=_2gis[up.br]||"";r+='<div class="pf-card pf-bk pig-up"><div class="pf-cal"><b>'+E(up.tm)+"</b><span>"+E(_pfDay(up.at))+'</span></div><div class="pf-who"><div class="pf-ct">'+E(_pfBrName(up.br))+'</div><div class="pf-cs">'+E(_pfGuests(up.g))+"</div></div>"+(gid?'<a class="pf-b2" href="https://2gis.kz/uralsk/firm/'+gid+'" target="_blank" rel="noopener">'+PFL.route+"</a>":"")+"</div>"}
-  var hl="",r0=H.length?rawIdx(H[0]):-1;r0>=0&&(hl+='<button type="button" onclick="_pfRep('+r0+')"><i>'+svg("rep")+"</i>"+T.hl[0]+"</button>");
-  hl+='<a href="booking/"><i>'+svg("bk")+"</i>"+T.hl[1]+'</a><a href="loyalty/"><i>'+svg("card")+"</i>"+T.hl[2]+"</a>";
-  fv.n&&(hl+='<a href="./?dish='+encodeURIComponent(fv.id)+'" onclick="return _pfDish(\''+E(String(fv.id).replace(/[\\']/g,""))+'\')"><i'+(fv.ph?' class="ph" style="background-image:url(\''+E(fv.ph)+'\')"':"")+">"+(fv.ph?"":svg("heart"))+"</i>"+T.hl[3]+"</a>");
-  r+='<div class="pig-hl">'+hl+"</div>";
   r+='<div class="pig-tabs" role="tablist">'+["o","b","s"].map(function(k,i){var n=[H.length,B.length,S.length][i];return'<button type="button" role="tab" aria-selected="'+(tab===k)+'" class="'+(tab===k?"on":"")+'" onclick="_pfTab(\''+k+'\')">'+T.tabs[i]+(n?"<span>"+n+"</span>":"")+"</button>"}).join("")+"</div>";
   r+='<div class="pig-tc">'+(tab==="o"?orders(H):tab==="b"?books(B):seen(S))+"</div>";
   r+='<a class="pf-row pig-loy" href="loyalty/"><i>'+_pfIc.card+'</i><div class="pf-who"><b>'+PFL.loy+"</b><small>"+PFL.loySub+"</small></div>"+_pfIc.chev+"</a></div>";
@@ -620,14 +616,23 @@ if(typeof openProfile=="function"){var _pfOP=openProfile;openProfile=function(){
  /* «Недавно смотрели» не очищаются — это подсказка гостю, что он хотел заказать */
  /* галочка */
  function code(){var a="ABCDEFGHJKLMNPQRSTUVWXYZ23456789",s="";for(var i=0;i<5;i++)s+=a.charAt(Math.floor(Math.random()*a.length));return"V"+s}
+ var vfP=null;function vfGet(){return vfP||(vfP=fetch(new URL((KK?"../":"")+"vf.json?t="+Math.floor(Date.now()/6e4),document.baseURI).href,{cache:"no-store"}).then(function(r){return r.ok?r.json():{}}).catch(function(){return{}}))}
+ function api(j,q){var u=j&&j.api;if(!u||!/^https:\/\/script\.google\.com\//.test(u))return null;return fetch(u+"?"+Object.keys(q).map(function(k){return k+"="+encodeURIComponent(q[k])}).join("&")).then(function(r){return r.json()})}
+ function askQ(c){var p=loadClientProfile()||{},H=_pfHist();return{action:"vrfAsk",c:c,name:String(p.name||"").trim(),phone:String(p.phone||""),n:H.length,since:new Date(firstTs(H)).toLocaleDateString("ru"),lang:KK?"kk":"ru"}}
  window._pfVrfAsk=function(){var p=loadClientProfile()||{},nm=String(p.name||"").trim(),ph=String(p.phone||"");
   if(nm.length<2||!(typeof validPhone=="function"&&validPhone(ph))){showToast(T.vNeed);return void _pfGo("set")}
-  var b=$("pfVrfBtn");b&&(b.disabled=true);var c=code(),H=_pfHist();
-  var txt="[Галочка ✓] Запрос подтверждения профиля · код "+c+" · заказов: "+H.length+" · с нами с "+new Date(firstTs(H)).toLocaleDateString("ru")+(KK?" · KZ":"");
-  var done=function(){try{localStorage.setItem("st_vrf",JSON.stringify({c:c,t:Date.now()}))}catch(x){}try{logGuestEvent("Профиль: запрос галочки",c)}catch(x){}showToast(T.vSent);renderProfile()};
-  if(typeof apiGet!="function"){b&&(b.disabled=false);return void showToast(T.vErr)}
-  apiGet({action:"submitWish",name:nm,phone:ph,dream:txt},done,function(){b&&(b.disabled=false);showToast(T.vErr)})};
- var vfDone=0;function vfSync(){var v=vrf();if(!v||vfDone)return;vfDone=1;try{fetch(new URL((KK?"../":"")+"vf.json?t="+Math.floor(Date.now()/6e4),document.baseURI).href,{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.ok)return;var on=j.ok.indexOf(v.c)>=0;if(on!==!!v.ok){v.ok=on?1:0;localStorage.setItem("st_vrf",JSON.stringify(v));renderProfile()}}).catch(function(){})}catch(x){}}
+  var b=$("pfVrfBtn");b&&(b.disabled=true);var c=code();
+  var done=function(){try{localStorage.setItem("st_vrf",JSON.stringify({c:c,t:Date.now()}))}catch(x){}try{logGuestEvent("Профиль: запрос галочки",c)}catch(x){}showToast(T.vSent);renderProfile()},
+   fail=function(){b&&(b.disabled=false);showToast(T.vErr)};
+  vfGet().then(function(j){var r=api(j,askQ(c));if(r)return r.then(function(o){o&&o.status==="success"?done():fail()},fail);
+   /* скрипт ещё не подключён — по-старому, через «Армандар орындалады» */
+   if(typeof apiGet!="function")return fail();var H=_pfHist();apiGet({action:"submitWish",name:nm,phone:ph,dream:"[Галочка ✓] Запрос подтверждения профиля · код "+c+" · заказов: "+H.length+" · с нами с "+new Date(firstTs(H)).toLocaleDateString("ru")+(KK?" · KZ":"")},done,fail)})};
+ var vfDone=0;function vfSync(){var v=vrf();if(!v||vfDone)return;vfDone=1;
+  var set=function(on){on=!!on;if(on!==!!v.ok){v.ok=on?1:0;try{localStorage.setItem("st_vrf",JSON.stringify(v))}catch(x){}renderProfile()}};
+  vfGet().then(function(j){var list=j&&j.ok||[];if(list.indexOf(v.c)>=0)return set(1);var r=api(j,{action:"vrfCheck",c:v.c});if(!r)return list.length||j.api?set(0):0;
+   r.then(function(o){if(!o||o.status!=="success")return;if(o.found)return set(o.ok);
+    /* заявка ушла до нового скрипта — тихо переносим её в новую таблицу с тем же кодом */
+    v.mv||(v.mv=1,localStorage.setItem("st_vrf",JSON.stringify(v)),api(j,askQ(v.c)));set(0)}).catch(function(){})}).catch(function(){})}
  /* стили */
  function css(){if($("pfCss2"))return;var s=document.createElement("style");s.id="pfCss2";s.textContent=CSS;document.head.appendChild(s)}
  var CSS='\
