@@ -377,3 +377,81 @@ if(typeof openProfile=="function"){var _pfOP=openProfile;openProfile=function(){
 
 /* ./#order — вернуться к оформлению (после «Изменить» на странице профиля) */
 !function(){if(typeof PAGE=="undefined"||PAGE!=="menu"||location.hash!=="#order")return;var n=0,iv=setInterval(function(){if(++n>100)return clearInterval(iv);if(typeof _pfMenu=="function"&&!_pfMenu())return;clearInterval(iv);try{history.replaceState(history.state,"",location.pathname+location.search)}catch(e){}try{if(typeof cart!="undefined"&&cart.length)startOrder();else openCart()}catch(e){}},250)}();
+
+;/* Телефон на всём сайте: «+7 (7» — стена. Стереть, изменить, встать туда курсором нельзя; после 10 цифр номера — больше не впечатать.
+   Привычную «8» после стены и повторно набранную «7» (когда дальше идёт 70x/74x) убираем сами — так «+7 807…» больше не случится.
+   Вакансии: «+7» стоит снаружи поля, внутри стена — «7». Поля только с «+7 (7» при уходе очищаются — для проверок это «пусто». */
+!function(){
+ if(window._ph7)return;window._ph7=1;
+ var V=["700","701","702","705","706","707","708","747","750","751","760","761","762","763","764","771","775","776","777","778"];
+ function pre(s){s=s.slice(0,3);return V.some(function(c){return c.indexOf(s)===0})}
+ function tel(e){return!!(e&&e.tagName==="INPUT"&&e.type==="tel"&&!e.readOnly&&!e.disabled)}
+ function rw(e){return e.id==="hrPhone"||e.getAttribute("autocomplete")==="tel-national"}
+ function P(e){return rw(e)?"7":"+7 (7"}
+ function dg(s){return String(s==null?"":s).replace(/\D/g,"")}
+ function on(e){return e.value.indexOf(P(e))===0}
+ function nat(v,r){var s=String(v||""),d=dg(s);
+  if(!r&&/^\s*\+\s*7/.test(s))d=d.slice(1);else if(d.length>=11&&/^[78]/.test(d))d=d.slice(1);
+  d.charAt(0)!=="7"&&(d="7"+d);
+  d.length>=2&&d.charAt(1)==="8"&&(d=d.charAt(0)+d.slice(2));
+  d.length>=3&&d.charAt(1)==="7"&&!pre(d.slice(0,3))&&pre(d.slice(1,4))&&(d=d.slice(1));
+  return fix(d).slice(0,10)}
+ /* лишняя цифра в конце — это почти всегда «7» набрали дважды (или трижды): срезаем лишние семёрки, если дальше живой код */
+ function fix(d){for(var j=1;j<=3&&d.length>10&&d.charAt(j-1)==="7";j++)if(pre(d.slice(j,j+3)))return d.slice(j);return d}
+ function pn(t,r){var d=dg(t);d.length>=11&&/^[78]/.test(d)&&(d=d.slice(1));return nat(r?d.slice(0,10):"+7"+d.slice(0,10),r)}
+ function fmt(d,r){if(r)return d;var n="+7 ("+d.slice(0,3);d.length>=3&&(n+=")");d.length>3&&(n+=" "+d.slice(3,6));d.length>6&&(n+="-"+d.slice(6,8));d.length>8&&(n+="-"+d.slice(8,10));return n}
+ function cnt(s,r){var n=dg(s).length;return r?n:Math.max(0,n-1)}
+ function sel(e,i){if(document.activeElement!==e)return;try{e.setSelectionRange(i,i)}catch(x){}}
+ function put(e,k){var v=e.value,i=P(e).length;if(k>1){for(var c=1;i<v.length;i++){var h=v.charCodeAt(i);if(h>47&&h<58&&++c===k){i++;break}}}sel(e,Math.min(i,v.length))}
+ var ms;function chip(e){if(!e.offsetParent&&getComputedStyle(e).position!=="fixed")return 0;try{var cs=getComputedStyle(e),pl=parseFloat(cs.paddingLeft)||0;
+  if(!/^(start|left|-webkit-left)$/.test(cs.textAlign)||cs.direction==="rtl"||pl<8){e.classList.add("ph7x");return 1}e.classList.remove("ph7x");
+  ms||(ms=document.createElement("span"),ms.style.cssText="position:absolute;visibility:hidden;white-space:pre;left:-9999px;top:0;padding:0;border:0",document.body.appendChild(ms));
+  ["fontFamily","fontSize","fontWeight","fontStyle","fontStretch","letterSpacing","wordSpacing","fontFeatureSettings","fontVariantNumeric","textTransform"].forEach(function(k){ms.style[k]=cs[k]});
+  ms.textContent=P(e);var w=ms.getBoundingClientRect().width,fs=parseFloat(cs.fontSize)||16,h=Math.min(Math.round(fs*1.6),e.clientHeight-6);
+  e._ph7t=w;wid(e);e.style.setProperty("--ph7l",Math.round(pl-5.5)+"px");e.style.setProperty("--ph7h",h+"px");return 1}catch(x){return 0}}
+ /* одна стена — плашка с ровными полями; дальше цифры — правый край плашки встаёт в щель перед следующей цифрой */
+ function wid(e){e._ph7t&&e.style.setProperty("--ph7w",Math.round(e._ph7t+5.5+(e.value===P(e)?5.5:2))+"px")}
+ function sync(e){var o=on(e);e.classList.toggle("ph7on",o);o&&!e._ph7k&&(e._ph7k=chip(e));o&&wid(e)}
+ function prep(e){if(e.hasAttribute("data-ph7"))return;e.setAttribute("data-ph7","");
+  if(!rw(e)){e.setAttribute("maxlength","18");var ph=e.getAttribute("placeholder");(!ph||/^\+7 \(_/.test(ph))&&e.setAttribute("placeholder","+7 (7__) ___-__-__")}}
+ function fire(e){e._ph7m=1;try{e.dispatchEvent(new Event("input",{bubbles:true}))}catch(x){}e._ph7m=0}
+ function set(e,n,k){var r=rw(e);e.value=fmt(n,r);e._ph7v=e.value;k<0?sel(e,e.value.length):put(e,k);e._ph7c=e.selectionStart;sync(e);fire(e)}
+ function ins(e,d,s,t){var r=rw(e),v=e.value,p=P(e).length;s=Math.max(s,p);t=Math.max(t,s);
+  var n=nat(v,r),a=cnt(v.slice(0,s),r),b=cnt(v.slice(0,t),r),m=n.slice(0,a)+d+n.slice(b);set(e,nat(r?m:"+7"+m,r),a+d.length)}
+ function wall(e){if(!on(e)||e.selectionStart!==e.selectionEnd)return;var p=P(e).length;e.selectionStart<p&&sel(e,p)}
+ document.addEventListener("beforeinput",function(ev){var e=ev.target;if(!tel(e))return;prep(e);e._bv=e.value;if(!on(e))return;
+  var p=P(e).length,s=e.selectionStart,t=e.selectionEnd,it=ev.inputType||"",r=rw(e);if(s==null)return;
+  if(it.indexOf("delete")===0){(s===t?(/Forward/.test(it)?s<p:s<=p):t<=p)&&ev.preventDefault();return}
+  if(it.indexOf("insert")!==0)return;var d=dg(ev.data);
+  if(ev.data!=null&&!d&&/^insert(Text|ReplacementText)$/.test(it)){ev.preventDefault();return}
+  if(d.length>=10){ev.preventDefault();set(e,pn(ev.data,r),-1);return}
+  var n=nat(e.value,r);if(s===t&&n.length>=10){ev.preventDefault();if(d.length===1&&s===e.value.length){var m=fix(n+d);m.length<=10&&set(e,m,-1)}return}
+  if(s<p&&d){ev.preventDefault();ins(e,d,s,t)}},true);
+ document.addEventListener("input",function(ev){var e=ev.target;if(!tel(e)||e._ph7m||!e.value&&document.activeElement!==e)return;prep(e);
+  var r=rw(e),v=e.value,it=ev.inputType||"",bv=e._bv,pos=e.selectionStart==null?v.length:e.selectionStart,end=pos>=v.length,n,k,da=dg(ev.data);e._bv=null;
+  if(da.length>=10)n=pn(ev.data,r),k=-1;
+  else{n=nat(v,r);k=end?-1:Math.max(1,cnt(v.slice(0,pos),r)+n.length-cnt(v,r));
+   if(it.indexOf("delete")===0&&bv!=null&&nat(bv,r)===n&&dg(bv).length===dg(v).length){k=Math.max(1,cnt(v.slice(0,pos),r));
+    /Forward/.test(it)?n=n.slice(0,k)+n.slice(k+1):k>1&&(n=n.slice(0,k-1)+n.slice(k),k--);n=nat(r?n:"+7"+n,r)}}
+  e.value=fmt(n,r);e._ph7v=e.value;k<0?sel(e,e.value.length):put(e,k);e._ph7c=e.selectionStart;sync(e)},true);
+ document.addEventListener("input",function(ev){var e=ev.target;if(!tel(e)||e._ph7v==null)return;
+  e.value!==e._ph7v&&(e.value=e._ph7v);e._ph7c!=null&&sel(e,e._ph7c);sync(e)});
+ document.addEventListener("paste",function(ev){var e=ev.target;if(!tel(e))return;prep(e);var tx="";try{tx=(ev.clipboardData||window.clipboardData).getData("text")||""}catch(x){}
+  if(!tx)return;ev.preventDefault();var d=dg(tx),r=rw(e);if(!d)return;
+  if(d.length>=10){set(e,pn(tx,r),-1);return}
+  on(e)||(e.value=fmt(nat(e.value,r),r));var s=e.selectionStart,t=e.selectionEnd;if(s===t&&nat(e.value,r).length>=10)return;ins(e,d,s,t)},true);
+ document.addEventListener("focusin",function(ev){var e=ev.target;if(!tel(e))return;prep(e);
+  dg(e.value).length<=1&&(e.value=P(e),e._ph7v=null);sync(e);chip(e);on(e)&&(sel(e,e.value.length),setTimeout(function(){document.activeElement===e&&wall(e)},0))},true);
+ document.addEventListener("focusout",function(ev){var e=ev.target;if(!tel(e))return;on(e)&&nat(e.value,rw(e)).length<=1&&(e.value="",e._ph7v=null);sync(e)},true);
+ document.addEventListener("keydown",function(ev){var e=ev.target;if(!tel(e)||!on(e)||ev.shiftKey||ev.altKey||ev.ctrlKey||ev.metaKey)return;var p=P(e).length,s=e.selectionStart;
+  if(s===e.selectionEnd&&(ev.key==="Home"||ev.key==="ArrowUp"||ev.key==="ArrowLeft"&&s<=p)){ev.preventDefault();sel(e,p)}},true);
+ ["click","keyup","mouseup","touchend"].forEach(function(t){document.addEventListener(t,function(ev){tel(ev.target)&&wall(ev.target)},true)});
+ document.addEventListener("selectionchange",function(){var e=document.activeElement;tel(e)&&wall(e)});
+ var st=document.createElement("style");st.textContent='html body input.ph7on[data-ph7]:not(.olock):not(.ph7x){background-image:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2760%27 height=%2728%27 viewBox=%270 0 60 28%27 preserveAspectRatio=%27none%27%3E%3Crect width=%2760%27 height=%2728%27 rx=%278%27 fill=%27%23787880%27 fill-opacity=%27.16%27/%3E%3C/svg%3E")!important;background-repeat:no-repeat!important;background-size:var(--ph7w,60px) var(--ph7h,28px)!important;background-position:var(--ph7l,8px) 50%!important;background-origin:padding-box!important}';
+ (document.head||document.documentElement).appendChild(st);
+ function scan(){[].forEach.call(document.querySelectorAll('input[type="tel"]'),function(e){tel(e)&&(prep(e),sync(e))})}
+ document.readyState==="loading"?document.addEventListener("DOMContentLoaded",scan):scan();
+ try{new MutationObserver(function(m){for(var i=0;i<m.length;i++)if(m[i].addedNodes.length){scan();break}}).observe(document.documentElement,{childList:true,subtree:true})}catch(x){}
+ addEventListener("load",function(){[].forEach.call(document.querySelectorAll("input[data-ph7]"),function(e){e._ph7k=0;sync(e)})});
+ document.fonts&&document.fonts.ready&&document.fonts.ready.then(function(){[].forEach.call(document.querySelectorAll("input.ph7on"),chip)});
+}();
