@@ -854,3 +854,5 @@ html[data-page=profile] #profileBody .pf-ths,html[data-page=profile] #profileBod
 #orderMov .brl-in{border-radius:14px!important;border:1px solid #d2d2d7!important}
 #orderMov .brl-n{font-size:.92rem}
 #orderMov .brl-s,#orderMov .brl-c{font-size:.78rem}
+.dpf-btn2{background:#1d1d1f!important;color:#fff!important}
+.dpf-btn2:hover{background:#000!important}

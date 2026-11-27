@@ -247,7 +247,7 @@ function pfDash(){
   +'<div class="dpf-greet">'+(first?PFT.greet[gi]+',':PFT.welcome)+'</div>'
   +'<h1 class="dpf-name">'+pfE(first||PFT.guest)+'</h1>'
   +(f0?'<div class="dpf-since">'+PFT.since+' · '+(KK?PFT.mon[f0.getMonth()]+' '+f0.getFullYear():'с '+PFT.mon[f0.getMonth()]+' '+f0.getFullYear())+'</div>':(first?'':'<div class="dpf-since">'+PFT.fillSub+'</div>'))
-  +'<div class="dpf-acts"><button type="button" class="dpf-btn" onclick="_pfGo(\'set\')">'+(nm||p.phone?PFT.edit:PFT.fill)+'</button><a class="dpf-lnk" href="./">'+PFT.menu+'<span>›</span></a></div></div>'
+  +'<div class="dpf-acts"><button type="button" class="dpf-btn" onclick="_pfGo(\'set\')">'+(nm||p.phone?PFT.edit:PFT.fill)+'</button><button type="button" class="dpf-btn dpf-btn2" onclick="_pfGo(\'stat\')">'+(KK?"Статистика":"Статистика")+'</button><a class="dpf-lnk" href="./">'+PFT.menu+'<span>›</span></a></div></div>'
   +'<a class="dpf-card" href="loyalty/"><div class="dpf-cd"><div class="dpf-sh"></div><div class="dpf-ct"><span class="dk-logo"><i></i>Seven Times</span><em>'+PFT.card+'</em></div>'
   +'<div class="dpf-chip"></div><div class="dpf-cm"><b>−3%</b><span>'+PFT.cardSub+'</span></div>'
   +'<div class="dpf-cb"><span>'+pfE((nm||PFT.guest).toUpperCase())+'</span><span>'+(f0?f0.getFullYear():new Date().getFullYear())+'</span></div></div></a></div>';
@@ -293,16 +293,16 @@ function pfDash(){
  else r+='<div class="dpf-empty">'+PFL.noBk+'<a class="dpf-pill" href="booking/">'+PFT.bkBtn+'</a></div>';
  r+='</section>';
  /* недавно смотрели */
- if(S.length){r+='<section class="dpf-sec"><div class="dpf-sh2"><h2>'+PFL.seen+'</h2><button type="button" class="dpf-clr">'+PFL.clr+'</button></div><div class="dpf-seen">';
+ if(S.length){r+='<section class="dpf-sec"><div class="dpf-sh2"><h2>'+PFL.seen+'</h2></div><div class="dpf-seen">';
   S.slice(0,6).forEach(function(x){r+='<a class="dpf-sc" href="./?dish='+encodeURIComponent(x.id)+'">'+(x.ph?'<img src="'+pfE(x.ph)+'" alt="" loading="lazy">':'<i></i>')+'<b>'+pfE(_pfTr(x.n||""))+'</b><span>'+(x.p?Number(x.p).toLocaleString("ru").replace(/\s/g," ")+' ₸':'')+'</span></a>'});
   r+='</div></section>'}
  host.innerHTML=r;
  /* счётчики */
  $$(".dpf-stats b[data-n]",host).forEach(function(b){var n=+b.dataset.n,t0=0;if(RM||!n){b.textContent=n;return}
   var st=function(ts){t0=t0||ts;var k=Math.min(1,(ts-t0)/1300),e=1-Math.pow(1-k,3);b.textContent=Math.round(n*e);k<1&&requestAnimationFrame(st)};setTimeout(function(){requestAnimationFrame(st)},500)});
- /* «Показать ещё», «Очистить» */
+ /* «Показать ещё» (недавно смотрели не очищаются) */
  $$(".dpf-more",host).forEach(function(m){m.addEventListener("click",function(){var y=scrollY;m.dataset.k==="o"?pfOn+=3:pfBn+=3;pfDash();scrollTo(0,y)})});
- var cl=$(".dpf-clr",host);cl&&cl.addEventListener("click",function(){try{_pfSeenClr()}catch(e){try{localStorage.removeItem("st_seen")}catch(x){}}pfDash()});
+ 
  /* появление при прокрутке */
  if("IntersectionObserver" in window){var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add("dk-in");io.unobserve(en.target)}})},{rootMargin:"0px 0px -6% 0px"});
   host.addEventListener("transitionend",function(e){e.propertyName==="opacity"&&e.target.style&&e.target.style.removeProperty("--d")});
@@ -312,7 +312,7 @@ function pfPage(){
  if(document.documentElement.getAttribute("data-page")!=="profile")return;
  var pb=$("#profileBody");if(!pb)return;
  var host=$("#dkPf");if(!host){host=document.createElement("div");host.id="dkPf";host.hidden=true;pb.parentNode.insertBefore(host,pb)}
- var sync=function(){var set=typeof _pfV!=="undefined"&&_pfV==="set";document.documentElement.classList.toggle("dkpf-set",set);if(!set)pfDash()};
+ var sync=function(){var set=typeof _pfV!=="undefined"&&_pfV!=="main";document.documentElement.classList.toggle("dkpf-set",set);if(!set)pfDash()};
  new MutationObserver(sync).observe(pb,{childList:true});sync()}
 
 /* бронь: карточки ресторанов слева выбирают филиал в форме справа и подсвечиваются вместе с ним */
