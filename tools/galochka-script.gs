@@ -47,7 +47,8 @@ function isYes_(v) {
 
 function doGet(e) {
   var p = (e && e.parameter) || {};
-  var code = String(p.c || '').toUpperCase();
+  // «c» у Google зарезервирован (с ним веб-приложение отвечает ошибкой) — код галочки приходит в «code»
+  var code = String(p.code || '').toUpperCase();
   if (!/^V[A-Z0-9]{5}$/.test(code)) return out_({ status: 'error' });
   try {
     if (p.action === 'vrfAsk') {

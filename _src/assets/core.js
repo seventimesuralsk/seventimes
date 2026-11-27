@@ -619,7 +619,7 @@ if(typeof openProfile=="function"){var _pfOP=openProfile;openProfile=function(){
  function code(){var a="ABCDEFGHJKLMNPQRSTUVWXYZ23456789",s="";for(var i=0;i<5;i++)s+=a.charAt(Math.floor(Math.random()*a.length));return"V"+s}
  var vfP=null;function vfGet(){return vfP||(vfP=fetch(new URL((KK?"../":"")+"vf.json?t="+Math.floor(Date.now()/6e4),document.baseURI).href,{cache:"no-store"}).then(function(r){return r.ok?r.json():{}}).catch(function(){return{}}))}
  function api(j,q){var u=j&&j.api;if(!u||!/^https:\/\/script\.google\.com\//.test(u))return null;return fetch(u+"?"+Object.keys(q).map(function(k){return k+"="+encodeURIComponent(q[k])}).join("&")).then(function(r){return r.json()})}
- function askQ(c){var p=loadClientProfile()||{},H=_pfHist();return{action:"vrfAsk",c:c,name:String(p.name||"").trim(),phone:String(p.phone||""),n:H.length,since:new Date(firstTs(H)).toLocaleDateString("ru"),lang:KK?"kk":"ru"}}
+ function askQ(c){var p=loadClientProfile()||{},H=_pfHist();return{action:"vrfAsk",code:c,name:String(p.name||"").trim(),phone:String(p.phone||""),n:H.length,since:new Date(firstTs(H)).toLocaleDateString("ru"),lang:KK?"kk":"ru"}}
  window._pfVrfAsk=function(){var p=loadClientProfile()||{},nm=String(p.name||"").trim(),ph=String(p.phone||"");
   if(nm.length<2||!(typeof validPhone=="function"&&validPhone(ph))){showToast(T.vNeed);return void _pfGo("set")}
   var b=$("pfVrfBtn");b&&(b.disabled=true);var c=code();
@@ -630,7 +630,7 @@ if(typeof openProfile=="function"){var _pfOP=openProfile;openProfile=function(){
   vfGet().then(function(j){var r=api(j,askQ(c));if(!r)return old();r.then(function(o){o&&o.status==="success"?done():old()},old)})};
  var vfDone=0;function vfSync(){var v=vrf();if(!v||vfDone)return;vfDone=1;
   var set=function(on){on=!!on;if(on!==!!v.ok){v.ok=on?1:0;try{localStorage.setItem("st_vrf",JSON.stringify(v))}catch(x){}renderProfile()}};
-  vfGet().then(function(j){var list=j&&j.ok||[];if(list.indexOf(v.c)>=0)return set(1);var r=api(j,{action:"vrfCheck",c:v.c});if(!r)return list.length||j.api?set(0):0;
+  vfGet().then(function(j){var list=j&&j.ok||[];if(list.indexOf(v.c)>=0)return set(1);var r=api(j,{action:"vrfCheck",code:v.c});if(!r)return list.length||j.api?set(0):0;
    r.then(function(o){if(!o||o.status!=="success")return;if(o.found)return set(o.ok);
     /* заявка ушла до нового скрипта — тихо переносим её в новую таблицу с тем же кодом */
     v.mv||(v.mv=1,localStorage.setItem("st_vrf",JSON.stringify(v)),api(j,askQ(v.c)));set(0)}).catch(function(){})}).catch(function(){})}
