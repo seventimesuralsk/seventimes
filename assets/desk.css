@@ -857,3 +857,5 @@ html[data-page=profile] #profileBody .pf-ths,html[data-page=profile] #profileBod
 .dpf-btn2{background:#1d1d1f!important;color:#fff!important}
 .dpf-btn2:hover{background:#000!important}
 .dpf-vf{width:.42em;height:.42em;margin-left:.16em;vertical-align:.08em}
+.dpf-vfa{display:inline-flex;color:rgba(255,255,255,.78);vertical-align:.04em;transition:opacity .2s ease!important}.dpf-vfa:hover{opacity:.8}.dpf-vfa .dpf-vf{margin-left:.16em}
+html[data-page=verified] #vfBody{max-width:620px;margin:0 auto;padding:24px 0 56px}html[data-page=verified] .vfp-hero h1{font-size:40px}html[data-page=verified] .vfp-bd{width:128px;height:128px}
