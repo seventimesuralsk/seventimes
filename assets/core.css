@@ -180,3 +180,23 @@ html.ord-off .qty-sm .qty-btn:last-child{color:#c7c7cc!important}
 .cart-del i{display:block;height:4px;margin-top:6px;border-radius:2px;background:#ececee;overflow:hidden}.cart-del i b{display:block;height:100%;background:#7a1128;border-radius:2px}
 .o-more{display:block;margin:0 0 4px;padding:6px 0;border:0;background:none;color:#7a1128;font:inherit;font-size:.74rem;cursor:pointer}
 .rv-btn{display:inline-block;margin-top:10px;padding:9px 16px;border-radius:999px;background:#7a1128;color:#fff;font-size:.8rem;text-decoration:none}
+/* Филиал — список под кнопкой слева сверху, без окон */
+.brl{font-family:-apple-system,BlinkMacSystemFont,Inter,sans-serif}
+#brDrop{position:fixed;z-index:310;width:min(380px,calc(100vw - 24px));display:none;padding:6px;background:#fff;border-radius:18px;box-shadow:0 18px 50px -12px rgba(0,0,0,.3),0 0 0 1px rgba(0,0,0,.05)}
+#brDrop.show{display:block}
+.brl-c{padding:8px 12px 4px;font-size:.62rem;color:#8e8e93}
+.brl-c[hidden]{display:none}
+.brl-o{display:flex;align-items:center;gap:12px;width:100%;padding:11px 12px;border:0;border-radius:12px;background:none;text-align:left;cursor:pointer;color:#1d1d1f;font:inherit;-webkit-tap-highlight-color:transparent}
+.brl-o:active{background:#f5f5f7}
+.brl-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.brl-n{font-size:.76rem;letter-spacing:-.01em}
+.brl-s{font-size:.6rem;color:#8e8e93}
+.brl-s i{display:inline-block;width:6px;height:6px;margin-right:5px;border-radius:50%;background:#34c759;vertical-align:1px}
+.brl-s i.cl{background:#c7c7cc}
+.brl-k{flex-shrink:0;color:#7a1128;opacity:0}
+.brl-o.on .brl-k{opacity:1}
+.brl-o.on .brl-n{color:#7a1128}
+.brl-o.off{opacity:.45}
+.brl-in{margin-top:8px;padding:4px;background:#fff;border:1.5px solid #e5e5e5;border-radius:12px}
+.brl-in[hidden]{display:none}
+#obrCurName.ph{color:#8e8e93;font-weight:400}
