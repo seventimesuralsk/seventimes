@@ -510,7 +510,7 @@ if(typeof openProfile=="function"){var _pfOP=openProfile;openProfile=function(){
 ;/* Профиль как в Instagram: живой фон под настроение, аватар, имя с галочкой, цифры, кнопки «Изменить профиль» и «Статистика»,
    кружки-хайлайты, вкладки Заказы / Брони / Смотрели (смотрели — плиткой, как сетка). Статистика — отдельный экран. «Недавно смотрели» без кнопки «Очистить».
    Галочка — только после проверки: заявка уходит в отдельный скрипт и отдельную таблицу «Галочка» (адрес — в vf.json, поле api);
-   владелец пишет «да» в колонке «Одобрено» → у гостя галочка, пусто → нет. vf.json.ok — ручной список кодов на всякий случай. */
+   владелец пишет «да» в колонке «Одобрено» → у гостя галочка, пусто → нет. Ручного списка нет: галочка только по «да» в таблице. */
 !function(){
  if(typeof _pfMain!="function"||window._pfIG)return;window._pfIG=1;
  var KK=document.documentElement.lang==="kk";
@@ -561,7 +561,7 @@ if(typeof openProfile=="function"){var _pfOP=openProfile;openProfile=function(){
  function full(){var p=loadClientProfile()||{};return reg(p)&&_pfHist().length>0}
  function reg(p){p=p||loadClientProfile()||{};return String(p.name||"").trim().length>=2&&typeof validPhone=="function"&&validPhone(String(p.phone||""))}
  function vrf(){var v=_pfJ("st_vrf",null);return v&&v.c?v:null}
- function ok(){var v=vrf();return!!(v&&v.ok)}
+ function ok(){var v=vrf();return!!(v&&v.ok&&v.by==="s")}
  /* время — уральское (UTC+5), как в ресторане, на любом телефоне */
  function hhmm(ts){if(!ts)return"";var d=new Date(+ts+18e6);return pad(d.getUTCHours())+":"+pad(d.getUTCMinutes())}
  function dmy(d){return d.getDate()+" "+PFL.mg[d.getMonth()]+" "+d.getFullYear()}
@@ -642,10 +642,13 @@ if(typeof openProfile=="function"){var _pfOP=openProfile;openProfile=function(){
   /* скрипт не подключён или не отвечает — заявка не теряется: уходит по-старому, через «Армандар орындалады»; потом сама переедет в таблицу «Галочка» */
   var old=function(){if(typeof apiGet!="function")return fail();var H=_pfHist();apiGet({action:"submitWish",name:nm,phone:ph,dream:"[Галочка ✓] Запрос подтверждения профиля · код "+c+" · заказов: "+H.length+" · с нами с "+new Date(firstTs(H)).toLocaleDateString("ru")+(KK?" · KZ":"")},done,fail)};
   vfGet().then(function(j){var r=api(j,askQ(c));if(!r)return old();r.then(function(o){o&&o.status==="success"?done():old()},old)})};
+ /* галочка — ТОЛЬКО если в таблице «Галочка» владелец написал «да». Никаких автоматических и ручных списков:
+    галочка, полученная не из таблицы (by!=="s"), снимается; таблица не ответила — у кого из неё была, остаётся, новой не даём */
  var vfDone=0;function vfSync(){var v=vrf();if(!v||vfDone)return;vfDone=1;
-  var set=function(on){on=!!on;if(on!==!!v.ok){v.ok=on?1:0;try{localStorage.setItem("st_vrf",JSON.stringify(v))}catch(x){}renderProfile();isVf&&vfRender()}};
-  vfGet().then(function(j){var list=j&&j.ok||[];if(list.indexOf(v.c)>=0)return set(1);var r=api(j,{action:"vrfCheck",code:v.c});if(!r)return list.length||j.api?set(0):0;
-   r.then(function(o){if(!o||o.status!=="success")return;if(o.found)return set(o.ok);
+  var set=function(on){on=!!on;var ch=on!==!!v.ok||on&&v.by!=="s";v.ok=on?1:0;on?v.by="s":delete v.by;if(ch){try{localStorage.setItem("st_vrf",JSON.stringify(v))}catch(x){}renderProfile();isVf&&vfRender()}};
+  v.ok&&v.by!=="s"&&set(0);
+  vfGet().then(function(j){var r=api(j,{action:"vrfCheck",code:v.c});if(!r)return set(0);
+   r.then(function(o){if(!o||o.status!=="success")return;if(o.found)return set(o.ok===true);
     /* заявка ушла до нового скрипта — тихо переносим её в новую таблицу с тем же кодом */
     v.mv||(v.mv=1,localStorage.setItem("st_vrf",JSON.stringify(v)),api(j,askQ(v.c)));set(0)}).catch(function(){})}).catch(function(){})}
  /* страница галочки verified/ — объяснение и единственное место, где отправляется заявка */
@@ -655,7 +658,7 @@ if(typeof openProfile=="function"){var _pfOP=openProfile;openProfile=function(){
   r+='<div class="vfp-hero"><div class="vfp-glow" aria-hidden="true"></div><div class="vfp-bd">'+VF+'</div><h1>'+T.vpT+'</h1><p>'+T.vpS+'</p></div>';
   r+='<div class="vfp-card">'+T.vpR.map(function(x,i){return'<div class="vfp-row"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+VIC[i]+'</svg></i><div><b>'+x[0]+'</b><span>'+x[1]+'</span></div></div>'}).join("")+'</div>';
   r+='<div class="vfp-h">'+T.vpH+'</div><ol class="vfp-st">'+T.vpSt.map(function(x,i){return'<li><em>'+(i+1)+'</em><span>'+x+'</span></li>'}).join("")+'</ol>';
-  if(v&&v.ok)r+='<div class="vfp-res ok">'+VF+'<div><b>'+T.vpOk+'</b><span>'+T.vpOkS+'</span></div></div><a class="vfp-btn sec" href="profile/">'+T.vpProf+'</a>';
+  if(ok())r+='<div class="vfp-res ok">'+VF+'<div><b>'+T.vpOk+'</b><span>'+T.vpOkS+'</span></div></div><a class="vfp-btn sec" href="profile/">'+T.vpProf+'</a>';
   else if(v)r+='<div class="vfp-res sent">'+VF0+'<div><b>'+T.vpPend+'</b></div></div><a class="vfp-btn sec" href="profile/">'+T.vpProf+'</a>';
   else if(!rg)r+='<p class="vfp-need">'+T.vpNeed+'</p><a class="vfp-btn" href="profile/?edit=1&amp;from=vf">'+T.vpFill+'</a>';
   else if(!full())r+='<p class="vfp-need">'+T.vpLate+'</p><a class="vfp-btn" href="./">'+T.toMenu+'</a>';
